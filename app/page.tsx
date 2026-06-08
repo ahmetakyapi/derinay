@@ -17,14 +17,12 @@ import { fadeUp, staggerContainer } from '@/lib/variants'
 import { GlassCard } from '@/components/ui/GlassCard'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import CustomCursor from '@/components/CustomCursor'
 
 export default function Home() {
   const spotlight = useSpotlight()
 
   return (
     <>
-      <CustomCursor />
       <Header />
 
       <main className="relative min-h-screen overflow-hidden">

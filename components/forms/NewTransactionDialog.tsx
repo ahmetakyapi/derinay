@@ -83,12 +83,18 @@ export function NewTransactionDialog({
           </div>
 
           <Field label="Kategori">
-            <Select name="category" required defaultValue="">
-              <option value="" disabled>Seçin…</option>
+            <Input
+              name="category"
+              required
+              list="tx-cat-list"
+              placeholder="Seç veya kendi kalemini yaz…"
+              autoComplete="off"
+            />
+            <datalist id="tx-cat-list">
               {CATEGORY_BY_TYPE[type].map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c} />
               ))}
-            </Select>
+            </datalist>
           </Field>
 
           <Field label="Danışan (opsiyonel)">

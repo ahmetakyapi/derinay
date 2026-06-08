@@ -62,11 +62,6 @@ html:not(.dark) body {
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.5); }
 
-/* ─── Custom Cursor (desktop) ───────────────────────────────────────────── */
-@media (pointer: fine) and (hover: hover) {
-  *, *::before, *::after { cursor: none !important; }
-}
-
 /* ─── Background attachment mobile fix ─────────────────────────────────── */
 @media (max-width: 640px) {
   body { background-attachment: scroll; }

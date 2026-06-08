@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Users,
   ArrowLeftRight,
+  CalendarDays,
   FileText,
   CreditCard,
   Landmark,
@@ -18,11 +19,14 @@ import {
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { USER } from '@/lib/constants'
+import { PageTransition } from '@/components/dashboard/PageTransition'
 
 const NAV = [
   { label: 'Genel Bakış', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Danışanlar', href: '/dashboard/clients', icon: Users },
   { label: 'Gelir & Gider', href: '/dashboard/finances', icon: ArrowLeftRight },
+  { label: 'Kişisel', href: '/dashboard/personal', icon: CalendarDays },
   { label: 'Faturalar', href: '/dashboard/invoices', icon: FileText },
   { label: 'Ödemeler', href: '/dashboard/payments', icon: CreditCard },
   { label: 'Vergiler', href: '/dashboard/taxes', icon: Landmark },
@@ -54,13 +58,16 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
             href={item.href}
             onClick={onNavigate}
             className={cn(
-              'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
+              'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
               active
                 ? 'bg-indigo-500/12 text-indigo-500 dark:text-indigo-300'
                 : 'text-slate-500 hover:bg-slate-500/8 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
             )}
           >
-            <item.icon className={cn('h-[18px] w-[18px] shrink-0', active && 'text-indigo-500 dark:text-indigo-300')} />
+            {active && (
+              <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-indigo-500 to-emerald-400" />
+            )}
+            <item.icon className={cn('h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110', active && 'text-indigo-500 dark:text-indigo-300')} />
             {item.label}
           </Link>
         )
@@ -97,10 +104,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <Brand />
         </div>
         <NavList />
-        <div className="mt-auto flex items-center justify-between rounded-xl border border-slate-500/10 p-3">
-          <div className="text-xs">
-            <p className="font-semibold text-slate-700 dark:text-slate-200">Dr. Klinik</p>
-            <p className="text-slate-500 dark:text-slate-400">Pratik yönetimi</p>
+        <div className="mt-auto flex items-center justify-between gap-2 rounded-xl border border-slate-500/10 p-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-400 text-xs font-bold text-white">
+              SA
+            </span>
+            <div className="min-w-0 text-xs">
+              <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
+              <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
+            </div>
           </div>
           <ThemeToggle />
         </div>
@@ -157,7 +169,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
       {/* Content */}
       <main className="lg:pl-64">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">{children}</div>
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </main>
     </div>
   )

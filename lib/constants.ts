@@ -9,6 +9,9 @@ export type SessionStatus = (typeof SESSION_STATUSES)[number]
 export const TX_TYPES = ['income', 'expense'] as const
 export type TxType = (typeof TX_TYPES)[number]
 
+export const TX_SCOPES = ['business', 'personal'] as const
+export type TxScope = (typeof TX_SCOPES)[number]
+
 export const INVOICE_STATUSES = ['draft', 'sent', 'paid', 'overdue'] as const
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number]
 
@@ -78,6 +81,23 @@ export const CATEGORY_BY_TYPE: Record<TxType, readonly string[]> = {
   expense: EXPENSE_CATEGORIES,
 }
 
+// Kişisel harcama kategorileri (iş dışı) — kullanıcı özel kategori de yazabilir
+export const PERSONAL_CATEGORIES = [
+  'Market',
+  'Yemek & kafe',
+  'Ulaşım',
+  'Kira',
+  'Faturalar',
+  'Sağlık',
+  'Giyim',
+  'Eğlence',
+  'Abonelikler',
+  'Kişisel bakım',
+  'Hediye',
+  'Tatil',
+  'Diğer',
+] as const
+
 // ─── Vergi oranları (tahmini) ────────────────────────────────────────────────
 
 export const TAX = {
@@ -113,11 +133,18 @@ export const LOCALE = 'tr-TR' as const
 // Faturalarda görünen bilgiler — kendi bilgilerinle güncelle.
 export const BUSINESS = {
   name: 'Derinay',
-  owner: 'Uzm. Psk. [Ad Soyad]',
+  owner: 'Simay Ahi',
   title: 'Klinik Psikolog',
   taxOffice: '[Vergi Dairesi]',
   taxId: '[VKN / TC No]',
   address: '[Adres satırı, İlçe / İl]',
   phone: '[05xx xxx xx xx]',
   email: '[ornek@mail.com]',
+} as const
+
+// Uygulamayı kullanan kişi
+export const USER = {
+  firstName: 'Simay',
+  fullName: 'Simay Ahi',
+  title: 'Klinik Psikolog',
 } as const

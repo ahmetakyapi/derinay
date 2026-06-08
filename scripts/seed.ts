@@ -104,6 +104,35 @@ async function main() {
     }
   }
 
+  // ─── Bu haftanın seansları (saatli — haftalık takvim için) ─────────────────
+  const activeForWeek = inserted.filter((c) => c.status === 'active')
+  const monday = (() => {
+    const n = new Date()
+    const day = (n.getDay() + 6) % 7 // Pzt=0
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate() - day)
+  })()
+  const HOURS = [10, 11, 13, 14, 15, 16, 17]
+  for (let wd = 0; wd < 5; wd++) {
+    // her iş günü 2-3 seans
+    const slots = 2 + Math.floor(Math.random() * 2)
+    const usedHours: number[] = []
+    for (let s = 0; s < slots && s < activeForWeek.length; s++) {
+      const c = activeForWeek[(wd + s) % activeForWeek.length]
+      let hour = pick(HOURS)
+      while (usedHours.includes(hour)) hour = pick(HOURS)
+      usedHours.push(hour)
+      const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + wd, hour, 0, 0)
+      const isPast = d.getTime() < Date.now()
+      sessRows.push({
+        clientId: c.id,
+        date: d,
+        durationMin: 50,
+        status: isPast ? 'completed' : 'scheduled',
+        fee: money(Number(c.fee)),
+      })
+    }
+  }
+
   // ─── Giderler (her ay düzenli) ─────────────────────────────────────────────
   console.log('→ Giderler ekleniyor…')
   for (let m = 4; m >= 0; m--) {
@@ -112,6 +141,32 @@ async function main() {
     txRows.push({ type: 'expense', amount: money(650), category: 'Yazılım & abonelikler', date: isoDate(monthsAgo(m, 3)), description: 'Randevu & not yazılımı' })
     if (m % 2 === 0) txRows.push({ type: 'expense', amount: money(2500), category: 'Süpervizyon', date: isoDate(monthsAgo(m, 12)) })
     if (m % 3 === 0) txRows.push({ type: 'expense', amount: money(1800), category: 'Pazarlama', date: isoDate(monthsAgo(m, 9)), description: 'Sosyal medya reklamı' })
+  }
+
+  // ─── Kişisel harcamalar (bu ay, gün bazlı) ─────────────────────────────────
+  console.log('→ Kişisel harcamalar ekleniyor…')
+  const PERSONAL: [string, number, number][] = [
+    // [kategori, min, max]
+    ['Market', 400, 1200], ['Yemek & kafe', 150, 600], ['Ulaşım', 80, 300],
+    ['Kişisel bakım', 200, 900], ['Giyim', 500, 2500], ['Eğlence', 200, 800],
+    ['Abonelikler', 60, 350], ['Sağlık', 300, 1500], ['Hediye', 250, 1200],
+  ]
+  const today = now.getDate()
+  for (let day = 1; day <= today; day++) {
+    // her güne ~%55 ihtimalle 1, bazen 2 harcama
+    if (Math.random() > 0.55) continue
+    const count = Math.random() > 0.75 ? 2 : 1
+    for (let c = 0; c < count; c++) {
+      const [cat, lo, hi] = pick(PERSONAL)
+      const amount = Math.round((lo + Math.random() * (hi - lo)) / 5) * 5
+      txRows.push({
+        type: 'expense',
+        scope: 'personal',
+        amount: money(amount),
+        category: cat,
+        date: isoDate(new Date(now.getFullYear(), now.getMonth(), day)),
+      })
+    }
   }
 
   await db.insert(sessions).values(sessRows)

@@ -4,7 +4,7 @@ import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
-import type { ClientStatus, TxType } from './constants'
+import type { ClientStatus, TxType, TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -33,9 +33,11 @@ export type TxRow = {
 export async function listTransactions(opts?: {
   month?: string // YYYY-MM
   type?: TxType
+  scope?: TxScope
 }): Promise<TxRow[]> {
   const filters = []
   if (opts?.type) filters.push(eq(transactions.type, opts.type))
+  if (opts?.scope) filters.push(eq(transactions.scope, opts.scope))
   if (opts?.month) {
     const [y, m] = opts.month.split('-').map(Number)
     filters.push(gte(transactions.date, iso(new Date(y, m - 1, 1))))
@@ -63,7 +65,8 @@ export async function listTransactions(opts?: {
 // ─── Dashboard istatistikleri ────────────────────────────────────────────────
 export async function getDashboard(monthsBack = 6) {
   const [allTx, allInvoices, clientRows] = await Promise.all([
-    db.select().from(transactions).orderBy(desc(transactions.date)),
+    // Dashboard = iş (business) genel görünümü; kişisel harcamalar hariç
+    db.select().from(transactions).where(eq(transactions.scope, 'business')).orderBy(desc(transactions.date)),
     db.select().from(invoices),
     db.select().from(clients),
   ])
@@ -258,10 +261,117 @@ export async function clientOptions() {
   return rows
 }
 
+// ─── Kişisel harcamalar (gün bazlı takvim) ───────────────────────────────────
+export async function getPersonalMonth(month?: string) {
+  const base = month ? new Date(Number(month.split('-')[0]), Number(month.split('-')[1]) - 1, 1) : new Date()
+  const start = iso(new Date(base.getFullYear(), base.getMonth(), 1))
+  const end = iso(new Date(base.getFullYear(), base.getMonth() + 1, 0))
+
+  const rows = await db
+    .select()
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.scope, 'personal'),
+        gte(transactions.date, start),
+        lte(transactions.date, end),
+      ),
+    )
+    .orderBy(desc(transactions.date))
+
+  const items = rows.map((t) => ({
+    id: t.id,
+    amount: num(t.amount),
+    category: t.category,
+    description: t.description,
+    date: t.date, // YYYY-MM-DD
+  }))
+
+  // Gün → toplam ve kalemler
+  const byDay = new Map<string, { total: number; items: typeof items }>()
+  for (const it of items) {
+    const cur = byDay.get(it.date) ?? { total: 0, items: [] }
+    cur.total += it.amount
+    cur.items.push(it)
+    byDay.set(it.date, cur)
+  }
+
+  const total = items.reduce((s, it) => s + it.amount, 0)
+  // Kategori kırılımı
+  const byCat = new Map<string, number>()
+  items.forEach((it) => byCat.set(it.category, (byCat.get(it.category) ?? 0) + it.amount))
+  const categoryBreakdown = [...byCat.entries()]
+    .map(([category, amount]) => ({ category, amount }))
+    .sort((a, b) => b.amount - a.amount)
+
+  return {
+    monthDate: { year: base.getFullYear(), month: base.getMonth() },
+    byDay: Object.fromEntries([...byDay.entries()].map(([k, v]) => [k, v])),
+    items,
+    total,
+    categoryBreakdown,
+  }
+}
+
+// ─── Haftalık seans takvimi (dashboard) ──────────────────────────────────────
+export async function getWeekSessions(weekOffset = 0) {
+  const now = new Date()
+  // Haftanın başlangıcı = Pazartesi
+  const day = (now.getDay() + 6) % 7 // Pzt=0 … Paz=6
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + weekOffset * 7)
+  const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6, 23, 59, 59)
+
+  const rows = await db
+    .select({
+      id: sessions.id,
+      date: sessions.date,
+      durationMin: sessions.durationMin,
+      status: sessions.status,
+      fee: sessions.fee,
+      clientId: sessions.clientId,
+      clientName: clients.name,
+      colorTag: clients.colorTag,
+    })
+    .from(sessions)
+    .leftJoin(clients, eq(sessions.clientId, clients.id))
+    .where(and(gte(sessions.date, monday), lte(sessions.date, sunday)))
+    .orderBy(sessions.date)
+
+  // 7 güne dağıt
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)
+    return { date: d, key: iso(d), items: [] as typeof rows }
+  })
+  for (const s of rows) {
+    const k = iso(new Date(s.date))
+    const slot = days.find((d) => d.key === k)
+    if (slot) slot.items.push(s)
+  }
+
+  return {
+    weekStart: iso(monday),
+    todayKey: iso(now),
+    days: days.map((d) => ({
+      key: d.key,
+      label: new Intl.DateTimeFormat('tr-TR', { weekday: 'short' }).format(d.date),
+      dayNum: d.date.getDate(),
+      items: d.items.map((s) => ({
+        id: s.id,
+        time: new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' }).format(new Date(s.date)),
+        clientName: s.clientName ?? '—',
+        clientId: s.clientId,
+        colorTag: s.colorTag ?? 'indigo',
+        status: s.status,
+        durationMin: s.durationMin,
+      })),
+    })),
+  }
+}
+
 // ─── Vergi genel görünümü ────────────────────────────────────────────────────
 export async function getTaxOverview(monthsBack = 6) {
   const [allTx, allInvoices] = await Promise.all([
-    db.select().from(transactions),
+    db.select().from(transactions).where(eq(transactions.scope, 'business')),
     db.select().from(invoices),
   ])
   const now = new Date()

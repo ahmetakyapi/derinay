@@ -8,25 +8,29 @@ import {
   ArrowDownRight,
   Users,
   Plus,
+  CalendarDays,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { StatCard } from '@/components/ui/StatCard'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
 import { AreaTrendChart } from '@/components/charts/AreaTrendChart'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { MonthlyBar } from '@/components/charts/MonthlyBar'
-import { getDashboard } from '@/lib/queries'
+import { getDashboard, getWeekSessions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
+import { USER } from '@/lib/constants'
 
 export default async function DashboardPage() {
-  const d = await getDashboard()
+  const [d, week] = await Promise.all([getDashboard(), getWeekSessions()])
   const k = d.kpis
+  const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
 
   return (
     <>
       <PageHeader
-        title="Genel Bakış"
-        subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan`}
+        title={`Merhaba, ${USER.firstName} 👋`}
+        subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
         action={
           <Link
             href="/dashboard/finances"
@@ -71,6 +75,19 @@ export default async function DashboardPage() {
           hint={`KDV ${formatTRY(d.tax.kdvCollected, { compact: true })} + gelir v.`}
         />
       </div>
+
+      {/* Haftalık seans takvimi */}
+      <section className="glass mt-6 rounded-2xl p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+            <CalendarDays className="h-4 w-4 text-indigo-400" /> Bu haftanın seansları
+          </h2>
+          <Link href="/dashboard/clients" className="text-xs font-medium text-indigo-400 hover:text-indigo-300">
+            Tüm danışanlar →
+          </Link>
+        </div>
+        <WeekCalendar days={week.days} todayKey={week.todayKey} />
+      </section>
 
       {/* Grafikler */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

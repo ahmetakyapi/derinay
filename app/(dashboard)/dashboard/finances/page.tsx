@@ -8,7 +8,7 @@ import { deleteTransaction } from '@/app/actions/transactions'
 import { formatTRY, formatDateShort } from '@/lib/format'
 
 export default async function FinancesPage() {
-  const [txs, clients] = await Promise.all([listTransactions(), clientOptions()])
+  const [txs, clients] = await Promise.all([listTransactions({ scope: 'business' }), clientOptions()])
 
   const income = txs.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   const expense = txs.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)

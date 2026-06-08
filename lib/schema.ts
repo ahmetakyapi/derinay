@@ -3,6 +3,7 @@ import type {
   ClientStatus,
   SessionStatus,
   TxType,
+  TxScope,
   InvoiceStatus,
   PaymentMethod,
 } from './constants'
@@ -58,7 +59,8 @@ export const clientNotes = pgTable('client_notes', {
 // ─── Transactions (gelir/gider) ─────────────────────────────────────────────
 export const transactions = pgTable('transactions', {
   id:          uuid('id').primaryKey().defaultRandom(),
-  type:        text('type').$type<TxType>().notNull(), // 'income' | 'expense'
+  type:        text('type').$type<TxType>().notNull(),   // 'income' | 'expense'
+  scope:       text('scope').$type<TxScope>().notNull().default('business'), // 'business' | 'personal'
   amount:      numeric('amount', { precision: 12, scale: 2 }).notNull(),
   category:    text('category').notNull(),
   description: text('description'),
