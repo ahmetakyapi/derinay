@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Wallet } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Wallet, StickyNote } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { PersonalCalendar } from '@/components/personal/PersonalCalendar'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { getPersonalMonth } from '@/lib/queries'
-import { formatTRY, formatMonth, monthKey } from '@/lib/format'
+import { formatTRY, formatMonth, monthKey, formatDateShort } from '@/lib/format'
 
 export default async function PersonalPage({
   searchParams,
@@ -62,14 +62,45 @@ export default async function PersonalPage({
           <PersonalCalendar year={year} month={month} byDay={data.byDay} todayKey={todayKey} />
         </div>
 
-        <section className="glass h-fit rounded-2xl p-5">
-          <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Kategori dağılımı</h2>
-          {data.categoryBreakdown.length ? (
-            <CategoryDonut data={data.categoryBreakdown} />
-          ) : (
-            <EmptyState icon={Wallet} title="Bu ay kişisel harcama yok" description="Takvimden bir güne dokunarak başla." />
+        <div className="space-y-5">
+          <section className="glass rounded-2xl p-5">
+            <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Kategori dağılımı</h2>
+            {data.categoryBreakdown.length ? (
+              <CategoryDonut data={data.categoryBreakdown} />
+            ) : (
+              <EmptyState icon={Wallet} title="Bu ay kişisel harcama yok" description="Takvimden bir güne dokunarak başla." />
+            )}
+          </section>
+
+          {data.items.length > 0 && (
+            <section className="glass rounded-2xl p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">Harcama detayları</h2>
+                <span className="text-xs text-slate-400">{data.items.length} harcama</span>
+              </div>
+              <ul className="max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
+                {data.items.map((it) => (
+                  <li key={it.id} className="flex items-start gap-3 rounded-xl border border-slate-500/10 p-3">
+                    <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
+                      <span className="text-[10px] font-bold leading-none">{formatDateShort(it.date).split(' ')[0]}</span>
+                      <span className="text-[9px] uppercase leading-tight">{formatDateShort(it.date).split(' ')[1]}</span>
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{it.category}</p>
+                      {it.description && (
+                        <p className="flex items-start gap-1 text-xs text-slate-500 dark:text-slate-400">
+                          <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                          <span className="truncate">{it.description}</span>
+                        </p>
+                      )}
+                    </div>
+                    <span className="shrink-0 text-sm font-bold text-rose-500">−{formatTRY(it.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </section>
+        </div>
       </div>
     </>
   )

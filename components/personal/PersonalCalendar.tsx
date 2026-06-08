@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, StickyNote } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Field, Input } from '@/components/ui/Field'
 import { createTransaction, deleteTransaction } from '@/app/actions/transactions'
@@ -71,7 +71,7 @@ export function PersonalCalendar({
 
   return (
     <>
-      <div className="glass rounded-2xl p-3 sm:p-5">
+      <div className="glass rounded-2xl p-3 sm:p-4">
         {/* Hafta günleri */}
         <div className="mb-2 grid grid-cols-7 gap-1.5 sm:gap-2">
           {WEEKDAYS.map((w) => (
@@ -84,7 +84,7 @@ export function PersonalCalendar({
         {/* Günler */}
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
           {cells.map((key, i) => {
-            if (!key) return <div key={i} className="aspect-square sm:aspect-[4/5]" />
+            if (!key) return <div key={i} className="min-h-[68px] sm:min-h-[116px]" />
             const day = Number(key.split('-')[2])
             const data = byDay[key]
             const isToday = key === todayKey
@@ -93,26 +93,52 @@ export function PersonalCalendar({
                 key={key}
                 onClick={() => setSelected(key)}
                 className={cn(
-                  'group relative flex aspect-square flex-col rounded-xl border p-1.5 text-left transition-all sm:aspect-[4/5] sm:p-2',
-                  'border-slate-500/10 hover:border-indigo-500/40 hover:bg-indigo-500/5',
-                  data && 'bg-rose-500/[0.06]',
+                  'group flex min-h-[68px] flex-col rounded-xl border p-1.5 text-left transition-all sm:min-h-[116px] sm:p-2',
+                  'border-slate-500/10 hover:-translate-y-0.5 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5',
+                  data ? 'bg-gradient-to-b from-rose-500/[0.07] to-transparent' : 'hover:bg-indigo-500/[0.04]',
                   isToday && 'ring-1 ring-indigo-500/50',
                 )}
               >
-                <span className={cn('text-xs font-semibold', isToday ? 'text-indigo-400' : 'text-slate-500 dark:text-slate-300')}>
-                  {day}
-                </span>
-                {data ? (
-                  <span className="mt-auto">
-                    <span className="block truncate text-[10px] font-bold text-rose-500 sm:text-xs">
+                <div className="flex items-center justify-between">
+                  <span className={cn('text-xs font-bold', isToday ? 'text-indigo-400' : 'text-slate-500 dark:text-slate-300')}>
+                    {day}
+                  </span>
+                  {data && (
+                    <span className="text-[10px] font-bold text-rose-500 sm:text-[11px]">
                       −{formatTRY(data.total, { compact: true })}
                     </span>
-                    <span className="hidden text-[10px] text-slate-400 sm:block">
-                      {data.items.length} kalem
-                    </span>
+                  )}
+                </div>
+
+                {/* Harcama chip'leri (desktop) */}
+                {data && (
+                  <div className="mt-1.5 hidden flex-1 flex-col gap-1 sm:flex">
+                    {data.items.slice(0, 3).map((it) => (
+                      <span
+                        key={it.id}
+                        className="flex items-center gap-1 truncate rounded-md bg-white/50 px-1.5 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-500/10 dark:bg-white/[0.04] dark:text-slate-300"
+                        title={it.description ? `${it.category} — ${it.description}` : it.category}
+                      >
+                        {it.description && <StickyNote className="h-2.5 w-2.5 shrink-0 text-amber-500" />}
+                        <span className="truncate">{it.category}</span>
+                      </span>
+                    ))}
+                    {data.items.length > 3 && (
+                      <span className="text-[10px] font-medium text-slate-400">+{data.items.length - 3} daha</span>
+                    )}
+                  </div>
+                )}
+
+                {/* Mobil: harcama sayısı */}
+                {data && (
+                  <span className="mt-auto text-[10px] text-slate-400 sm:hidden">
+                    {data.items.length} harcama
                   </span>
-                ) : (
-                  <Plus className="mt-auto hidden h-3.5 w-3.5 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
+                )}
+
+                {/* Boş gün: hover + işareti */}
+                {!data && (
+                  <Plus className="mt-auto hidden h-3.5 w-3.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 dark:text-slate-600 sm:block" />
                 )}
               </button>
             )
@@ -125,22 +151,27 @@ export function PersonalCalendar({
         open={selected !== null}
         onClose={() => setSelected(null)}
         title={selected ? formatDate(selected) : ''}
-        description="Bu güne kişisel harcama ekle"
+        description={dayItems.length ? `${dayItems.length} harcama · ${formatTRY(dayItems.reduce((s, i) => s + i.amount, 0))}` : 'Bu güne kişisel harcama ekle'}
       >
         {dayItems.length > 0 && (
-          <ul className="mb-4 space-y-2">
+          <ul className="mb-5 space-y-2">
             {dayItems.map((it) => (
-              <li key={it.id} className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2">
+              <li key={it.id} className="flex items-start gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{it.category}</p>
-                  {it.description && <p className="truncate text-xs text-slate-500 dark:text-slate-400">{it.description}</p>}
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{it.category}</p>
+                  {it.description && (
+                    <p className="mt-0.5 flex items-start gap-1 text-xs text-slate-500 dark:text-slate-400">
+                      <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                      <span>{it.description}</span>
+                    </p>
+                  )}
                 </div>
-                <span className="text-sm font-semibold text-rose-500">−{formatTRY(it.amount)}</span>
+                <span className="shrink-0 text-sm font-bold text-rose-500">−{formatTRY(it.amount)}</span>
                 <button
                   onClick={() => removeExpense(it.id)}
                   disabled={pending}
                   aria-label="Sil"
-                  className="text-slate-400 transition-colors hover:text-rose-500"
+                  className="shrink-0 text-slate-400 transition-colors hover:text-rose-500"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -154,7 +185,7 @@ export function PersonalCalendar({
             <Field label="Tutar (₺)">
               <Input name="amount" type="number" step="0.01" min="0" required placeholder="0,00" autoFocus />
             </Field>
-            <Field label="Kategori">
+            <Field label="Ne aldın?">
               <Input name="category" list="personal-cat" required placeholder="Market…" autoComplete="off" />
               <datalist id="personal-cat">
                 {PERSONAL_CATEGORIES.map((c) => (
@@ -164,7 +195,7 @@ export function PersonalCalendar({
             </Field>
           </div>
           <Field label="Not (opsiyonel)">
-            <Input name="note" placeholder="örn. haftalık market" />
+            <Input name="note" placeholder="örn. haftalık market, kahve molası…" />
           </Field>
           {error && <p className="text-sm text-rose-500">{error}</p>}
           <div className="flex justify-end">
