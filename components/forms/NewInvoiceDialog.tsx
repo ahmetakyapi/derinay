@@ -1,0 +1,138 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { FilePlus } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
+import { Field, Input, Select } from '@/components/ui/Field'
+import { createInvoice } from '@/app/actions/invoices'
+import { calcKdv } from '@/lib/finance'
+import { formatTRY } from '@/lib/format'
+import { INVOICE_STATUSES, INVOICE_STATUS_LABEL, TAX, type InvoiceStatus } from '@/lib/constants'
+
+export function NewInvoiceDialog({
+  clients,
+  fixedClientId,
+  label = 'Fatura kes',
+}: {
+  clients: { id: string; name: string }[]
+  fixedClientId?: string
+  label?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [subtotal, setSubtotal] = useState(0)
+  const [kdvRate, setKdvRate] = useState<number>(TAX.KDV_RATE)
+  const [error, setError] = useState<string | null>(null)
+  const [pending, start] = useTransition()
+  const router = useRouter()
+
+  const { kdvAmount, total } = calcKdv(subtotal || 0, kdvRate)
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+    const fd = new FormData(e.currentTarget)
+    start(async () => {
+      const res = await createInvoice({
+        clientId: fixedClientId ?? ((fd.get('clientId') as string) || null),
+        subtotal: Number(fd.get('subtotal')),
+        kdvRate,
+        issueDate: String(fd.get('issueDate') || ''),
+        dueDate: String(fd.get('dueDate') || ''),
+        status: fd.get('status') as InvoiceStatus,
+      })
+      if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
+      setOpen(false)
+      setSubtotal(0)
+      router.refresh()
+    })
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500"
+      >
+        <FilePlus className="h-4 w-4" /> {label}
+      </button>
+
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni fatura" description="KDV otomatik hesaplanır">
+        <form onSubmit={onSubmit} className="space-y-4">
+          {!fixedClientId && (
+            <Field label="Danışan">
+              <Select name="clientId" defaultValue="">
+                <option value="">— (genel)</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </Select>
+            </Field>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Net tutar (₺)">
+              <Input
+                name="subtotal"
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                placeholder="0,00"
+                onChange={(e) => setSubtotal(Number(e.target.value))}
+              />
+            </Field>
+            <Field label="KDV oranı (%)">
+              <Select value={kdvRate} onChange={(e) => setKdvRate(Number(e.target.value))}>
+                {[0, 1, 10, 20].map((r) => (
+                  <option key={r} value={r}>%{r}</option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Düzenleme tarihi">
+              <Input name="issueDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
+            </Field>
+            <Field label="Vade tarihi">
+              <Input name="dueDate" type="date" />
+            </Field>
+          </div>
+
+          <Field label="Statü">
+            <Select name="status" defaultValue="sent">
+              {INVOICE_STATUSES.map((s) => (
+                <option key={s} value={s}>{INVOICE_STATUS_LABEL[s]}</option>
+              ))}
+            </Select>
+          </Field>
+
+          {/* Hesap özeti */}
+          <div className="rounded-xl border border-slate-500/15 bg-slate-500/5 p-3 text-sm">
+            <div className="flex justify-between py-0.5 text-slate-500 dark:text-slate-400">
+              <span>Net tutar</span><span>{formatTRY(subtotal || 0)}</span>
+            </div>
+            <div className="flex justify-between py-0.5 text-slate-500 dark:text-slate-400">
+              <span>KDV (%{kdvRate})</span><span>{formatTRY(kdvAmount)}</span>
+            </div>
+            <div className="mt-1 flex justify-between border-t border-slate-500/15 pt-2 font-bold text-slate-900 dark:text-white">
+              <span>Toplam</span><span>{formatTRY(total)}</span>
+            </div>
+          </div>
+
+          {error && <p className="text-sm text-rose-500">{error}</p>}
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-300">
+              İptal
+            </button>
+            <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
+              {pending ? 'Kaydediliyor…' : 'Faturayı oluştur'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </>
+  )
+}

@@ -1,0 +1,63 @@
+import { FileText } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { DeleteButton } from '@/components/ui/DeleteButton'
+import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
+import { InvoiceStatusSelect } from '@/components/forms/InvoiceStatusSelect'
+import { listInvoices, clientOptions } from '@/lib/queries'
+import { deleteInvoice } from '@/app/actions/invoices'
+import { formatTRY, formatDate } from '@/lib/format'
+
+export default async function InvoicesPage() {
+  const [invoices, clients] = await Promise.all([listInvoices(), clientOptions()])
+
+  const totalKdv = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.kdvAmount, 0)
+  const totalBilled = invoices.reduce((s, i) => s + i.total, 0)
+
+  return (
+    <>
+      <PageHeader
+        title="Faturalar"
+        subtitle={`${invoices.length} fatura · ${formatTRY(totalKdv, { compact: true })} KDV`}
+        action={<NewInvoiceDialog clients={clients} />}
+      />
+
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="glass rounded-2xl p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400">Toplam faturalanan</p>
+          <p className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatTRY(totalBilled)}</p>
+        </div>
+        <div className="glass rounded-2xl p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400">Toplanan KDV</p>
+          <p className="mt-1 text-xl font-extrabold text-indigo-400">{formatTRY(totalKdv)}</p>
+        </div>
+      </div>
+
+      <div className="glass overflow-hidden rounded-2xl">
+        {invoices.length ? (
+          <div className="divide-y divide-slate-500/10">
+            {invoices.map((i) => (
+              <div key={i.id} className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5">
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-xs text-slate-500 dark:text-slate-400">{i.number}</p>
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                    {i.clientName ?? 'Genel'} · {formatDate(i.issueDate)}
+                  </p>
+                </div>
+                <div className="text-right text-xs text-slate-500 dark:text-slate-400">
+                  <span className="block">Net {formatTRY(i.subtotal, { compact: true })}</span>
+                  <span className="block">KDV %{i.kdvRate}</span>
+                </div>
+                <span className="w-28 text-right text-sm font-bold text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
+                <InvoiceStatusSelect id={i.id} value={i.status} />
+                <DeleteButton action={deleteInvoice.bind(null, i.id)} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState icon={FileText} title="Henüz fatura yok" description="İlk faturanı kes." />
+        )}
+      </div>
+    </>
+  )
+}
