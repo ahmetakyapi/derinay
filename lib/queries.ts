@@ -202,6 +202,37 @@ export async function listInvoices() {
   }))
 }
 
+// ─── Tek fatura (yazdırma/PDF) ───────────────────────────────────────────────
+export async function getInvoiceDetail(id: string) {
+  const [row] = await db
+    .select({
+      id: invoices.id,
+      number: invoices.number,
+      issueDate: invoices.issueDate,
+      dueDate: invoices.dueDate,
+      subtotal: invoices.subtotal,
+      kdvRate: invoices.kdvRate,
+      kdvAmount: invoices.kdvAmount,
+      total: invoices.total,
+      status: invoices.status,
+      note: invoices.note,
+      clientName: clients.name,
+      clientEmail: clients.email,
+      clientPhone: clients.phone,
+    })
+    .from(invoices)
+    .leftJoin(clients, eq(invoices.clientId, clients.id))
+    .where(eq(invoices.id, id))
+
+  if (!row) return null
+  return {
+    ...row,
+    subtotal: num(row.subtotal),
+    kdvAmount: num(row.kdvAmount),
+    total: num(row.total),
+  }
+}
+
 // ─── Ödemeler ────────────────────────────────────────────────────────────────
 export async function listPayments() {
   const rows = await db

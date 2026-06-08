@@ -108,3 +108,16 @@ export const CLIENT_COLOR_BG: Record<string, string> = {
 
 export const CURRENCY = 'TRY' as const
 export const LOCALE = 'tr-TR' as const
+
+// ─── İşletme bilgisi (fatura başlığı) ────────────────────────────────────────
+// Faturalarda görünen bilgiler — kendi bilgilerinle güncelle.
+export const BUSINESS = {
+  name: 'Derinay',
+  owner: 'Uzm. Psk. [Ad Soyad]',
+  title: 'Klinik Psikolog',
+  taxOffice: '[Vergi Dairesi]',
+  taxId: '[VKN / TC No]',
+  address: '[Adres satırı, İlçe / İl]',
+  phone: '[05xx xxx xx xx]',
+  email: '[ornek@mail.com]',
+} as const

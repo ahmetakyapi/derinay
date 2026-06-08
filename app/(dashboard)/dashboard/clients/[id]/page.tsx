@@ -10,6 +10,7 @@ import {
   CreditCard,
   CheckCircle2,
   Wallet,
+  Printer,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -181,6 +182,14 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <span className="flex items-center gap-3">
                       <StatusBadge label={INVOICE_STATUS_LABEL[i.status]} tone={STATUS_TONE[i.status]} />
                       <span className="font-semibold text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
+                      <Link
+                        href={`/invoices/${i.id}/print`}
+                        target="_blank"
+                        aria-label="PDF / Yazdır"
+                        className="text-slate-400 transition-colors hover:text-indigo-400"
+                      >
+                        <Printer className="h-4 w-4" />
+                      </Link>
                     </span>
                   </li>
                 ))}

@@ -1,4 +1,5 @@
-import { FileText } from 'lucide-react'
+import Link from 'next/link'
+import { FileText, Printer } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
@@ -50,6 +51,14 @@ export default async function InvoicesPage() {
                 </div>
                 <span className="w-28 text-right text-sm font-bold text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
                 <InvoiceStatusSelect id={i.id} value={i.status} />
+                <Link
+                  href={`/invoices/${i.id}/print`}
+                  target="_blank"
+                  aria-label="PDF / Yazdır"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-400"
+                >
+                  <Printer className="h-4 w-4" />
+                </Link>
                 <DeleteButton action={deleteInvoice.bind(null, i.id)} />
               </div>
             ))}

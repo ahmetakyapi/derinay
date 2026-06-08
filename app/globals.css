@@ -72,6 +72,20 @@ html:not(.dark) body {
   body { background-attachment: scroll; }
 }
 
+/* ─── Print (fatura PDF çıktısı) ────────────────────────────────────────── */
+@media print {
+  html, body {
+    background: #fff !important;
+    color: #0f172a !important;
+  }
+  /* Renkli logo/gradient ve arka planlar yazdırmada korunsun */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  @page { margin: 16mm; }
+}
+
 /* ─── Components ────────────────────────────────────────────────────────── */
 @layer components {
 
