@@ -9,6 +9,8 @@ import {
   Users,
   Plus,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { StatCard } from '@/components/ui/StatCard'
@@ -21,10 +23,17 @@ import { getDashboard, getWeekSessions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
 import { USER } from '@/lib/constants'
 
-export default async function DashboardPage() {
-  const [d, week] = await Promise.all([getDashboard(), getWeekSessions()])
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { week?: string }
+}) {
+  const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
+  const [d, week] = await Promise.all([getDashboard(), getWeekSessions(weekOffset)])
   const k = d.kpis
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
+  const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
+  const weekTitle = weekOffset === 0 ? 'Bu haftanın seansları' : 'Haftalık seanslar'
 
   return (
     <>
@@ -78,13 +87,38 @@ export default async function DashboardPage() {
 
       {/* Haftalık seans takvimi */}
       <section className="glass mt-6 rounded-2xl p-5">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-            <CalendarDays className="h-4 w-4 text-indigo-400" /> Bu haftanın seansları
+            <CalendarDays className="h-4 w-4 text-indigo-400" /> {weekTitle}
           </h2>
-          <Link href="/dashboard/clients" className="text-xs font-medium text-indigo-400 hover:text-indigo-300">
-            Tüm danışanlar →
-          </Link>
+          <div className="flex items-center gap-2">
+            <span className="mr-1 text-xs font-medium text-slate-500 dark:text-slate-400">{weekRange}</span>
+            <Link
+              href={`/dashboard?week=${weekOffset - 1}`}
+              scroll={false}
+              aria-label="Önceki hafta"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Link>
+            {weekOffset !== 0 && (
+              <Link
+                href="/dashboard"
+                scroll={false}
+                className="rounded-lg border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+              >
+                Bugün
+              </Link>
+            )}
+            <Link
+              href={`/dashboard?week=${weekOffset + 1}`}
+              scroll={false}
+              aria-label="Sonraki hafta"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
         <WeekCalendar days={week.days} todayKey={week.todayKey} />
       </section>
@@ -150,7 +184,7 @@ export default async function DashboardPage() {
                       }`}
                     >
                       {income ? '+' : '−'}
-                      {formatTRY(t.amount, { compact: true })}
+                      {formatTRY(t.amount)}
                     </span>
                   </li>
                 )

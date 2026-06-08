@@ -1,62 +1,225 @@
-# Derinay — Proje Kuralları
+# Derinay — Proje Rehberi (CLAUDE.md)
 
-Psikologlar için gelir-gider, fatura, vergi ve danışan takip uygulaması.
+> Bu dosya projenin **canlı dokümantasyonudur**. Yeni bir özellik eklerken önce burayı
+> oku; mevcut desenleri, dosya konumlarını ve tuzakları takip et. Yapı değiştiğinde
+> (yeni tablo, yeni sayfa, yeni desen) bu dosyayı da güncelle.
 
 ---
 
-## Proje Özeti
+## 1. Proje Nedir
 
-Derinay, bir psikoloğun pratiğini tek panelden yönetmesini sağlar:
-- **Gelir/gider takibi** — kategori bazlı, aylık kırılım
-- **Danışan yönetimi** — ekle/çıkar, statü (aktif/duraklatıldı/tamamlandı), devam süresi
-- **Danışan notları** — seans dışı serbest notlar
-- **Seanslar** — tarih, süre, durum (planlandı/tamamlandı/iptal/gelmedi)
-- **Faturalar** — KDV otomatik hesap, statü (taslak/gönderildi/ödendi/gecikmiş)
-- **Ödemeler** — danışan/fatura bazlı tahsilat
-- **Vergi** — toplanan KDV + gelir vergisi tahmini + ödenecek toplam
-- **Dashboard** — KPI kartları + grafikler (alan, donut, bar, radial)
+**Derinay**, **Klinik Psikolog Simay Ahi** için tek kişilik bir pratik yönetim panelidir.
+Amaç: gelir-gider, danışan, seans, fatura, ödeme, vergi ve kişisel harcamaları tek,
+sakin ve görsel bir arayüzde toplamak.
 
-## Teknik Stack
+- **Kullanan kişi**: Simay Ahi (tek terapist). Çok kullanıcı/giriş YOK (bkz. §9).
+- **Dil**: Tüm arayüz **Türkçe**. Para **₺ / tr-TR**. Tarihler Türkçe ay/gün adları.
+- **Marka**: Derinay, logo "D", fatura no öneki `DER-YYYY-NNN`.
 
-- **Framework**: Next.js 14 App Router
-- **Stil**: Tailwind CSS 3 (`darkMode: 'class'`)
-- **Animasyon**: Framer Motion 11 (EASE `[0.22,1,0.36,1]`)
-- **Grafik**: Recharts
-- **DB**: Drizzle ORM + Neon Postgres (`@neondatabase/serverless`)
-- **Tema**: next-themes — dark (ahmetakyapi glass) + light (terapötik pastel)
-- **İkonlar**: lucide-react
-- **Deployment**: Vercel
+---
 
-## Proje Kararları
+## 2. Teknoloji Yığını
 
-- **Auth**: İlk sürümde YOK (tek terapist varsayımı). İleride next-auth v5 ile
-  eklenecek; `users` tablosu ve `.env` satırları hazır bırakıldı.
-- **Mutasyonlar**: API route yerine Server Actions (`app/actions/`).
-- **Okuma**: Server Component'ler doğrudan `lib/queries.ts` çağırır.
-- **Para birimi**: TRY, `tr-TR` formatlama (`lib/format.ts`). Tutarlar DB'de `numeric`.
-- **Vergi**: KDV ve gelir vergisi oranları `lib/constants.ts` içinde (`as const`).
+| Katman | Seçim | Not |
+|--------|-------|-----|
+| Framework | Next.js 14 App Router | Server Component varsayılan |
+| Stil | Tailwind CSS 3 (`darkMode: 'class'`) | `postcss.config.js` ŞART (yoksa derlenmez) |
+| Animasyon | Framer Motion 11 | GSAP yok. EASE = `[0.22,1,0.36,1]` |
+| Grafik | Recharts | `components/charts/` altında, hepsi `'use client'` |
+| DB | Neon Postgres + Drizzle ORM | `@neondatabase/serverless` (pg değil) |
+| Tema | next-themes | dark (glass) + light (terapötik pastel) |
+| İkonlar | lucide-react | |
+| Deploy | Vercel (bölge `fra1`) | GitHub: `ahmetakyapi/derinay` (private) |
 
-## Özel Kurallar
+---
 
-- Server Component'e `'use client'`/Framer Motion/Recharts KOYMA — ayır.
-- Grafik bileşenleri `components/charts/` altında, hepsi `'use client'`.
-- Renkler CSS değişkeni/token üzerinden — hardcoded hex yok.
-- Her FK'de `onDelete` davranışı açık (mistakes.md #7).
+## 3. Komutlar
 
-## Ekosistem Referansları
+```bash
+npm run dev        # geliştirme — http://localhost:3000
+npm run build      # production build (DEV AÇIKKEN ÇALIŞTIRMA — .next bozulur, bkz §10)
+npm run typecheck  # tsc --noEmit (strict)
+npm run lint       # next lint
+npm run db:push    # şemayı Neon'a uygula (drizzle-kit push)
+npm run db:seed    # örnek Türkçe veriyle doldur (scripts/seed.ts — önce TÜM tabloları siler)
+npm run db:studio  # Drizzle Studio
+```
+
+Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` → `dev`.
+
+---
+
+## 4. Mimari — Veri Akışı
+
+**Okuma** (Server Component → DB):
+- Sayfalar Server Component'tir, doğrudan `lib/queries.ts` fonksiyonlarını `await` eder.
+- `queries.ts` `import 'server-only'` ile korunur, Drizzle ile sorgular, **düz/serileştirilebilir
+  obje** döner (numeric → `Number()`).
+
+**Yazma** (Client → Server Action):
+- Mutasyonlar `app/actions/*.ts` içinde `'use server'` fonksiyonlardır.
+- Form bileşenleri (`components/forms/`) `'use client'`, `useTransition` + `router.refresh()` kullanır.
+- Her action sonunda ilgili yolları `revalidatePath(...)` ile tazeler ve `{ ok, error? }` döner.
+- API route YOK (sadece `app/api/health`). Yeni mutasyon = yeni action.
+
+**DB bağlantısı** (`lib/db.ts`):
+- **Lazy Proxy** — `neon()` yalnızca ilk sorguda çağrılır. Böylece `DATABASE_URL` olmadan
+  `next build` patlamaz. Dashboard route grubu `export const dynamic = 'force-dynamic'`.
+
+---
+
+## 5. Dizin Yapısı
+
+```
+app/
+  layout.tsx                       # ThemeProvider, Manrope+IBM Plex (subset latin+latin-ext), metadata
+  globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
+  page.tsx                         # Landing (hero/özellikler/CTA) — 'use client'
+  (dashboard)/
+    layout.tsx                     # DashboardShell + force-dynamic
+    dashboard/
+      page.tsx                     # Genel Bakış: KPI + haftalık takvim + grafikler + son işlemler
+      clients/page.tsx             # Danışan listesi (kart grid)
+      clients/[id]/page.tsx        # Danışan detayı: not/seans/ödeme/fatura/düzenle/sil
+      finances/page.tsx            # Gelir & gider (scope=business)
+      personal/page.tsx            # Kişisel harcamalar — gün bazlı takvim (scope=personal)
+      invoices/page.tsx            # Faturalar (+KDV, durum, PDF linki)
+      payments/page.tsx            # Ödemeler
+      taxes/page.tsx               # Vergi özeti (KDV + gelir vergisi tahmini)
+  invoices/[id]/print/page.tsx     # Yazdırılabilir fatura (PDF) — dashboard kabuğu DIŞINDA
+  actions/                         # clients, transactions, invoices, payments, notes (+sessions)
+lib/
+  schema.ts        # Drizzle tablolar + tip çıkarımı
+  constants.ts     # Statüler, kategoriler, etiketler, renkler, BUSINESS/USER, TAX oranları
+  queries.ts       # Tüm okuma fonksiyonları (server-only)
+  finance.ts       # calcKdv, estimateIncomeTax, taxSummary
+  format.ts        # formatTRY, formatDate*, monthKey, durationSince, initials, pctChange
+  db.ts            # lazy Drizzle/Neon proxy
+  utils.ts         # cn()
+  variants.ts      # Framer Motion varyantları + EASE
+components/
+  dashboard/       # DashboardShell (sidebar/topbar/drawer), PageHeader, PageTransition, WeekCalendar
+  charts/          # AreaTrendChart, CategoryDonut, MonthlyBar, TaxRadial ('use client')
+  forms/           # New*Dialog, EditClientDialog, NoteForm, InvoiceStatusSelect
+  ui/              # GlassCard, Button, Chip, Modal, Field(Input/Select/Textarea), StatCard,
+                   # StatusBadge, Avatar, EmptyState, DeleteButton
+  invoice/         # PrintButton
+scripts/seed.ts    # Demo veri üretimi
+```
+
+---
+
+## 6. Veri Modeli (`lib/schema.ts`)
+
+Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `onDelete` açık.
+
+- **users** — auth için rezerve (şu an kullanılmıyor).
+- **clients** — danışan: name, email, phone, `status`(active/paused/completed), startDate,
+  sessionFee, colorTag, tags[], notes.
+- **sessions** — seans: clientId→cascade, date(timestamp), durationMin, `status`
+  (scheduled/completed/cancelled/no_show), fee.
+- **clientNotes** — danışan notu: clientId→cascade, title, body.
+- **transactions** — gelir/gider: `type`(income/expense), **`scope`(business/personal)**,
+  amount, category(serbest metin), description, date, clientId→set null.
+- **invoices** — fatura: number(unique), clientId→set null, issueDate, dueDate, subtotal,
+  kdvRate, kdvAmount, total, `status`(draft/sent/paid/overdue), note.
+- **payments** — tahsilat: clientId→cascade, invoiceId→set null, amount, date,
+  `method`(cash/card/transfer), note.
+
+### `scope` kuralı (ÖNEMLİ)
+`business` = kliniğin finansı (dashboard, finances, taxes burayı sayar).
+`personal` = Simay'ın özel günlük harcamaları (yalnızca **Kişisel** sekmesi). Dashboard ve
+vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi etkilemez.
+
+---
+
+## 7. Tasarım Sistemi
+
+- **Tema kaynağı**: `~/dev-starter/knowledge/themes/ahmetakyapi.md`. Dark zemin `#04070d`,
+  light terapötik pastel (emerald/sage). Renkler `globals.css` değişkenleri + Tailwind ile;
+  **hardcoded hex yok**.
+- **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
+  `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
+- **Bileşen envanteri** (önce bunları kullan, yenisini yazma):
+  - Kart başlık: `<PageHeader title subtitle action />`
+  - KPI: `<StatCard label value icon={<Icon/>} accent change hint />` — `icon` **ReactNode**, lucide bileşeni DEĞİL (bkz §10)
+  - Durum etiketi: `<StatusBadge label tone />` (tone: emerald/amber/slate/sky/red/indigo/violet) — `STATUS_TONE[...]` ile eşle
+  - Avatar: `<Avatar name color size />`
+  - Modal: `<Modal open onClose title description>` + form
+  - Form alanları: `<Field label><Input/Select/Textarea/></Field>`
+  - Silme: `<DeleteButton action={fn.bind(null,id)} redirectTo? confirmText? />`
+  - Boş durum: `<EmptyState icon title description action />`
+  - Grafik: `AreaTrendChart / CategoryDonut / MonthlyBar / TaxRadial`
+- **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel…) + `EASE`.
+  Rotalar arası geçiş `PageTransition` ile otomatik.
+- **İmleç**: özel cursor YOK — normal mouse. Tekrar ekleme.
+
+---
+
+## 8. Yeni Özellik Ekleme Reçetesi
+
+Tipik akış (örnek: yeni bir varlık/sekme):
+
+1. **Şema** → `lib/schema.ts`'e tablo ekle (FK'lerde `onDelete`, para `numeric`,
+   tip çıkarımı `$inferSelect/$inferInsert`). Statü/enum değerlerini `lib/constants.ts`'e
+   `as const` + Türkçe etiket sözlüğü + `STATUS_TONE` olarak ekle.
+2. **Migrate** → `npm run db:push`.
+3. **Okuma** → `lib/queries.ts`'e `list*/get*` fonksiyonu (server-only, `Number()` ile sayıya çevir,
+   gerekiyorsa `scope='business'` filtrele).
+4. **Yazma** → `app/actions/<x>.ts`'e `'use server'` create/update/delete; doğrulama yap,
+   `{ ok, error }` dön, ilgili yolları `revalidatePath`.
+5. **Form** → `components/forms/`'a `'use client'` dialog (Modal + Field + `useTransition` +
+   `router.refresh()`). Var olan `New*Dialog`'u kopyalayarak başla.
+6. **Sayfa** → `app/(dashboard)/dashboard/<x>/page.tsx` Server Component; query'yi `await` et,
+   `PageHeader` + glass kartlar + uygun bileşenlerle render et.
+7. **Navigasyon** → `components/dashboard/DashboardShell.tsx`'teki `NAV` dizisine ekle (lucide ikon).
+8. **Seed** → `scripts/seed.ts`'e örnek veri ekle (demo dolu görünsün).
+9. **Doğrula** → `npm run typecheck`; dev'i durdurup `npm run build`; canlı kontrol.
+
+**Para/tarih**: hep `formatTRY` / `formatDate*` (lib/format.ts). KDV/vergi: `lib/finance.ts`.
+**Kişiselleştirme**: isim/işletme bilgisi `lib/constants.ts` → `USER` / `BUSINESS`.
+
+---
+
+## 9. Kararlar
+
+- **Auth yok** (tek terapist). İleride next-auth v5: `users` tablosu ve `.env` satırları hazır.
+- Mutasyon = Server Action; okuma = Server Component + queries. API route eklenmez.
+- Kişisel harcamalar `scope` ile ayrılır, ayrı tablo değil.
+- Kategoriler serbest metin (datalist önerili) — kullanıcı kendi kalemini yazabilir.
+- Fatura PDF'i tarayıcı yazdırma ile (`/invoices/[id]/print` + `@media print`), ekstra PDF kütüphanesi yok.
+
+---
+
+## 10. Tuzaklar (mistakes.md + bu projeye özgü)
+
+1. **postcss.config.js olmadan Tailwind derlenmez** — silme. Stiller kaybolursa ilk buraya bak.
+2. **Türkçe karakter** → `next/font` subset'i `['latin','latin-ext']` olmalı (layout.tsx). `<html lang="tr">`.
+3. **Server→Client'a fonksiyon/komponent geçme**: lucide ikonunu client bileşene **render edilmiş element**
+   olarak geçir (`icon={<X/>}`), bileşen referansı (`icon={X}`) HATA verir. (StatCard bu yüzden ReactNode alır.)
+4. **`npm run build` dev açıkken çalıştırma** — ikisi `.next`'i paylaşır, cache bozulur
+   (`Cannot find module './xxx.js'`). Çözüm: dev'i durdur → `rm -rf .next` → build/dev.
+5. `??` ile `||` parantezsiz karışmaz: `a ?? (b || c)`.
+6. next-themes: `<html suppressHydrationWarning>` + tema bağımlı bileşende `mounted` guard.
+7. Serverless DB: `@neondatabase/serverless`, `pg` değil. `numeric` string döner — `Number()`.
+8. Server Component'e `'use client'`/Framer Motion/Recharts koyma; ayır.
+9. drizzle-kit `.env.local`'i okumaz → `drizzle.config.ts` başında `dotenv` ile yüklenir.
+10. Hardcoded renk/magic number yok; token + named constant kullan.
+
+---
+
+## 11. Deploy (Vercel + GitHub)
+
+- Repo: **github.com/ahmetakyapi/derinay** (private). `main`'e push → otomatik deploy (bağlıysa).
+- `vercel.json`: `framework: nextjs`, `regions: ["fra1"]` (Neon eu-central-1'e yakın).
+- Vercel env: `DATABASE_URL`, `NEXT_PUBLIC_APP_NAME=Derinay`, `NEXT_PUBLIC_APP_URL`.
+- Şema/seed manueldir (deploy'da çalışmaz): gerektiğinde `db:push` / `db:seed`.
+- Commit dili **İngilizce** (kullanıcı tercihi), sonunda `Co-Authored-By` satırı.
+
+---
+
+## 12. Ekosistem Referansları
 
 - Tema: `~/dev-starter/knowledge/themes/ahmetakyapi.md`
 - Hatalar: `~/dev-starter/knowledge/mistakes.md`
 - Desenler: `~/dev-starter/knowledge/patterns.md`
-
----
-
-## Kurulum
-
-```bash
-cp .env.example .env.local   # DATABASE_URL doldur (Neon)
-npm install
-npm run db:push              # Şemayı Neon'a uygula
-npm run db:seed              # Örnek verileri yükle
-npm run dev
-```
