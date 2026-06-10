@@ -52,7 +52,7 @@ export function NewClientDialog() {
             <Input name="name" required placeholder="Ayşe Yılmaz" />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="E-posta">
               <Input name="email" type="email" placeholder="ornek@mail.com" />
             </Field>
@@ -61,7 +61,7 @@ export function NewClientDialog() {
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Statü">
               <Select name="status" defaultValue="active">
                 {CLIENT_STATUSES.map((s) => (
@@ -100,7 +100,7 @@ export function NewClientDialog() {
           {error && <p className="text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-300">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">

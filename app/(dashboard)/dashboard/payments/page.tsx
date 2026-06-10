@@ -26,7 +26,7 @@ export default async function PaymentsPage() {
         {payments.length ? (
           <div className="divide-y divide-slate-500/10">
             {payments.map((p) => (
-              <div key={p.id} className="flex items-center gap-4 px-4 py-3 sm:px-5">
+              <div key={p.id} className="flex items-center gap-3 px-4 py-3 sm:gap-4 sm:px-5">
                 <Avatar name={p.clientName ?? '—'} size="sm" />
                 <div className="min-w-0 flex-1">
                   <Link
@@ -40,7 +40,7 @@ export default async function PaymentsPage() {
                     {p.note ? ` · ${p.note}` : ''}
                   </p>
                 </div>
-                <span className="font-mono text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">+{formatTRY(p.amount)}</span>
+                <span className="shrink-0 font-mono text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">+{formatTRY(p.amount)}</span>
                 <DeleteButton action={deletePayment.bind(null, p.id)} />
               </div>
             ))}

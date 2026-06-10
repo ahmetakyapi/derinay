@@ -43,7 +43,7 @@ export function Modal({
           <motion.div
             variants={modalPanel}
             onClick={(e) => e.stopPropagation()}
-            className="surface my-8 w-full max-w-lg rounded-3xl p-6 shadow-2xl"
+            className="surface my-8 w-full max-w-lg rounded-3xl p-5 shadow-2xl sm:p-6"
           >
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>

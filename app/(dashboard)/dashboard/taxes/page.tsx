@@ -45,7 +45,7 @@ export default async function TaxesPage() {
           Aylık döküm
         </h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="text-left text-xs text-slate-500 dark:text-slate-400">
                 <th className="px-5 py-2.5 font-medium">Ay</th>
@@ -59,7 +59,7 @@ export default async function TaxesPage() {
             <tbody className="divide-y divide-slate-500/10">
               {months.map((m) => (
                 <tr key={m.key} className="text-slate-700 dark:text-slate-200">
-                  <td className="px-5 py-3 font-medium capitalize">{m.label}</td>
+                  <td className="whitespace-nowrap px-5 py-3 font-medium capitalize">{m.label}</td>
                   <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(m.income, { compact: true })}</td>
                   <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(m.expense, { compact: true })}</td>
                   <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvCollected, { compact: true })}</td>

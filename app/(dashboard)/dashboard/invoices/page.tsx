@@ -38,28 +38,40 @@ export default async function InvoicesPage() {
         {invoices.length ? (
           <div className="divide-y divide-slate-500/10">
             {invoices.map((i) => (
-              <div key={i.id} className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5">
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-xs text-slate-500 dark:text-slate-400">{i.number}</p>
-                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                    {i.clientName ?? 'Genel'} · {formatDate(i.issueDate)}
-                  </p>
+              // Mobil: iki satır (kimlik+tutar / kontroller) · sm+: tek satır
+              <div key={i.id} className="flex flex-col gap-2.5 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-5">
+                <div className="flex items-center justify-between gap-3 sm:min-w-0 sm:flex-1">
+                  <div className="min-w-0">
+                    <p className="font-mono text-xs text-slate-500 dark:text-slate-400">{i.number}</p>
+                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                      {i.clientName ?? 'Genel'} · {formatDate(i.issueDate)}
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white sm:hidden">
+                    {formatTRY(i.total)}
+                  </span>
                 </div>
-                <div className="text-right text-xs text-slate-500 dark:text-slate-400">
+                <div className="hidden text-right text-xs text-slate-500 dark:text-slate-400 sm:block">
                   <span className="block">Net {formatTRY(i.subtotal, { compact: true })}</span>
                   <span className="block">KDV %{i.kdvRate}</span>
                 </div>
-                <span className="w-28 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
-                <InvoiceStatusSelect id={i.id} value={i.status} />
-                <Link
-                  href={`/invoices/${i.id}/print`}
-                  target="_blank"
-                  aria-label="PDF / Yazdır"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
-                >
-                  <Printer className="h-4 w-4" />
-                </Link>
-                <DeleteButton action={deleteInvoice.bind(null, i.id)} />
+                <span className="hidden w-28 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white sm:block">
+                  {formatTRY(i.total)}
+                </span>
+                <div className="flex items-center justify-between gap-2 sm:justify-start">
+                  <InvoiceStatusSelect id={i.id} value={i.status} />
+                  <div className="flex items-center gap-1">
+                    <Link
+                      href={`/invoices/${i.id}/print`}
+                      target="_blank"
+                      aria-label="PDF / Yazdır"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+                    >
+                      <Printer className="h-4 w-4" />
+                    </Link>
+                    <DeleteButton action={deleteInvoice.bind(null, i.id)} />
+                  </div>
+                </div>
               </div>
             ))}
           </div>

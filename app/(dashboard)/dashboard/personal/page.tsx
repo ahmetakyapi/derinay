@@ -31,7 +31,7 @@ export default async function PersonalPage({
       />
 
       {/* Ay navigasyonu + toplam */}
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Link
             href={`/dashboard/personal?month=${prev}`}
@@ -40,7 +40,7 @@ export default async function PersonalPage({
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
-          <span className="min-w-[140px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white">
+          <span className="min-w-[120px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white sm:min-w-[140px]">
             {formatMonth(monthDate)}
           </span>
           <Link

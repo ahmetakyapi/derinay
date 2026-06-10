@@ -63,9 +63,9 @@ export function NewTransactionDialog({
                   'rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all',
                   type === t
                     ? t === 'income'
-                      ? 'border-emerald-500/50 bg-emerald-500/12 text-emerald-500'
-                      : 'border-rose-500/50 bg-rose-500/12 text-rose-500'
-                    : 'border-slate-500/20 text-slate-500 hover:text-slate-300',
+                      ? 'border-emerald-500/50 bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
+                      : 'border-rose-500/50 bg-rose-500/12 text-rose-600 dark:text-rose-400'
+                    : 'border-slate-500/20 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
                 )}
               >
                 {t === 'income' ? 'Gelir' : 'Gider'}
@@ -73,7 +73,7 @@ export function NewTransactionDialog({
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Tutar (₺)">
               <Input name="amount" type="number" step="0.01" min="0" required placeholder="0,00" />
             </Field>
@@ -116,7 +116,7 @@ export function NewTransactionDialog({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-300"
+              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
             >
               İptal
             </button>

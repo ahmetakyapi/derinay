@@ -173,6 +173,7 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
   /* Form alanları */
   .field {
     width: 100%;
+    min-width: 0; /* grid/flex içinde date input taşmasını önler */
     border-radius: 0.75rem;
     border: 1px solid rgba(var(--line), 0.16);
     background: rgba(var(--paper), 0.85);

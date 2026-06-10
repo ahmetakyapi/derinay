@@ -52,7 +52,7 @@ export default function Home() {
 
             <motion.h1
               variants={fadeUp}
-              className="mb-6 font-display text-[2.75rem] font-semibold leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-7xl"
+              className="mb-6 font-display text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl"
             >
               Pratiğini yönet,{' '}
               <span className="relative inline-block italic text-indigo-700 dark:text-indigo-300">

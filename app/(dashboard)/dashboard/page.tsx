@@ -179,7 +179,7 @@ export default async function DashboardPage({
                       <p className="text-xs text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</p>
                     </div>
                     <span
-                      className={`font-mono text-[13px] font-semibold tabular-nums ${
+                      className={`shrink-0 font-mono text-[13px] font-semibold tabular-nums ${
                         income ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                       }`}
                     >

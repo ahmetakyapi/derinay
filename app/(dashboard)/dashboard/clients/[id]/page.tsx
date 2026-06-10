@@ -48,7 +48,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       </Link>
 
       {/* Başlık */}
-      <div className="glass mb-6 rounded-2xl p-6">
+      <div className="glass mb-6 rounded-2xl p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Avatar name={client.name} color={client.colorTag} size="lg" />

@@ -42,7 +42,7 @@ export default async function FinancesPage() {
             {txs.map((t) => {
               const inc = t.type === 'income'
               return (
-                <div key={t.id} className="flex items-center gap-4 px-4 py-3 sm:px-5">
+                <div key={t.id} className="flex items-center gap-3 px-4 py-3 sm:gap-4 sm:px-5">
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                       inc ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/12 text-rose-600 dark:text-rose-400'
@@ -59,7 +59,7 @@ export default async function FinancesPage() {
                   <span className="hidden text-xs text-slate-500 dark:text-slate-400 sm:block">
                     {formatDateShort(t.date)}
                   </span>
-                  <span className={`w-28 text-right font-mono text-[13px] font-semibold tabular-nums ${inc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                  <span className={`shrink-0 text-right font-mono text-[13px] font-semibold tabular-nums sm:w-28 ${inc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                     {inc ? '+' : '−'}{formatTRY(t.amount)}
                   </span>
                   <DeleteButton action={deleteTransaction.bind(null, t.id)} />
