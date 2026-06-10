@@ -1,11 +1,13 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Wallet, StickyNote } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Wallet, StickyNote, CalendarDays, Crown, Hash } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { PersonalCalendar } from '@/components/personal/PersonalCalendar'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { personalCategoryIcon } from '@/components/personal/categoryIcon'
 import { getPersonalMonth } from '@/lib/queries'
 import { formatTRY, formatMonth, monthKey, formatDateShort } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 export default async function PersonalPage({
   searchParams,
@@ -18,43 +20,98 @@ export default async function PersonalPage({
   const monthDate = new Date(year, month, 1)
   const prev = monthKey(new Date(year, month - 1, 1))
   const next = monthKey(new Date(year, month + 1, 1))
-  const todayKey = (() => {
-    const d = new Date()
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-  })()
+  const now = new Date()
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  const isCurrentMonth = monthKey(monthDate) === monthKey(now)
+
+  // Özet: günlük ortalama (cari ayda geçen gün, geçmiş ayda ay uzunluğu) + zirve kategori
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const elapsedDays = isCurrentMonth ? now.getDate() : daysInMonth
+  const dailyAvg = data.total / Math.max(elapsedDays, 1)
+  const topCategory = data.categoryBreakdown[0] ?? null
+
+  const summary = [
+    {
+      label: 'Bu ay toplam',
+      value: formatTRY(data.total),
+      icon: Wallet,
+      tone: 'text-rose-600 dark:text-rose-400',
+      bg: 'bg-rose-500/10',
+      hint: `${data.items.length} harcama`,
+    },
+    {
+      label: 'Günlük ortalama',
+      value: formatTRY(dailyAvg),
+      icon: CalendarDays,
+      tone: 'text-indigo-600 dark:text-indigo-400',
+      bg: 'bg-indigo-500/10',
+      hint: `${elapsedDays} gün üzerinden`,
+    },
+    {
+      label: 'Zirve kategori',
+      value: topCategory ? topCategory.category : '—',
+      icon: Crown,
+      tone: 'text-amber-600 dark:text-amber-400',
+      bg: 'bg-amber-500/10',
+      hint: topCategory ? formatTRY(topCategory.amount, { compact: true }) : 'henüz veri yok',
+    },
+    {
+      label: 'Harcama günü',
+      value: String(Object.keys(data.byDay).length),
+      icon: Hash,
+      tone: 'text-sky-600 dark:text-sky-400',
+      bg: 'bg-sky-500/10',
+      hint: `${daysInMonth} günün içinde`,
+    },
+  ]
 
   return (
     <>
       <PageHeader
         title="Kişisel Harcamalar"
-        subtitle="İş dışı, kişisel günlük harcamaların — takvimden bir güne dokun ve ekle"
+        subtitle="İş dışı günlük harcamaların — takvimden bir güne dokun ve ekle"
+        action={
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/dashboard/personal?month=${prev}`}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              aria-label="Önceki ay"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Link>
+            <span className="min-w-[120px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white sm:min-w-[140px]">
+              {formatMonth(monthDate)}
+            </span>
+            <Link
+              href={`/dashboard/personal?month=${next}`}
+              className={cn(
+                'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300',
+                isCurrentMonth && 'pointer-events-none opacity-40',
+              )}
+              aria-label="Sonraki ay"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        }
       />
 
-      {/* Ay navigasyonu + toplam */}
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/dashboard/personal?month=${prev}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
-            aria-label="Önceki ay"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Link>
-          <span className="min-w-[120px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white sm:min-w-[140px]">
-            {formatMonth(monthDate)}
-          </span>
-          <Link
-            href={`/dashboard/personal?month=${next}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
-            aria-label="Sonraki ay"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-slate-500 dark:text-slate-400">Bu ay toplam</p>
-          <p className="font-display text-xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">{formatTRY(data.total)}</p>
-        </div>
+      {/* Özet şeridi */}
+      <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {summary.map((s) => (
+          <div key={s.label} className="glass rounded-2xl p-4">
+            <span className={cn('mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg', s.bg, s.tone)}>
+              <s.icon className="h-4 w-4" />
+            </span>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+              {s.label}
+            </p>
+            <p className={cn('mt-0.5 truncate font-display text-lg font-semibold tracking-tight', s.tone)} title={s.value}>
+              {s.value}
+            </p>
+            <p className="mt-0.5 text-[11px] text-slate-400">{s.hint}</p>
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -64,7 +121,9 @@ export default async function PersonalPage({
 
         <div className="space-y-5">
           <section className="glass rounded-2xl p-5">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Kategori dağılımı</h2>
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              Kategori dağılımı
+            </h2>
             {data.categoryBreakdown.length ? (
               <CategoryDonut data={data.categoryBreakdown} />
             ) : (
@@ -75,28 +134,39 @@ export default async function PersonalPage({
           {data.items.length > 0 && (
             <section className="glass rounded-2xl p-5">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Harcama detayları</h2>
+                <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+                  Harcama detayları
+                </h2>
                 <span className="text-xs text-slate-400">{data.items.length} harcama</span>
               </div>
               <ul className="max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
-                {data.items.map((it) => (
-                  <li key={it.id} className="flex items-start gap-3 rounded-xl border border-slate-500/10 p-3">
-                    <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                      <span className="text-[10px] font-bold leading-none">{formatDateShort(it.date).split(' ')[0]}</span>
-                      <span className="text-[9px] uppercase leading-tight">{formatDateShort(it.date).split(' ')[1]}</span>
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{it.category}</p>
-                      {it.description && (
-                        <p className="flex items-start gap-1 text-xs text-slate-500 dark:text-slate-400">
-                          <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-                          <span className="truncate">{it.description}</span>
-                        </p>
-                      )}
-                    </div>
-                    <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">−{formatTRY(it.amount)}</span>
-                  </li>
-                ))}
+                {data.items.map((it) => {
+                  const Icon = personalCategoryIcon(it.category)
+                  return (
+                    <li key={it.id} className="flex items-center gap-3 rounded-xl border border-slate-500/10 p-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
+                            {it.category}
+                          </p>
+                          <span className="shrink-0 text-[11px] text-slate-400">{formatDateShort(it.date)}</span>
+                        </div>
+                        {it.description && (
+                          <p className="mt-0.5 flex items-start gap-1 text-xs text-slate-500 dark:text-slate-400">
+                            <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                            <span className="truncate">{it.description}</span>
+                          </p>
+                        )}
+                      </div>
+                      <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                        −{formatTRY(it.amount)}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
             </section>
           )}
