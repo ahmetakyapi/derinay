@@ -20,6 +20,7 @@ import { NoteCard } from '@/components/clients/NoteCard'
 import { MoodTrail } from '@/components/clients/MoodTrail'
 import { NoteForm } from '@/components/forms/NoteForm'
 import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
+import { ReminderButton } from '@/components/clients/ReminderButton'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
@@ -61,6 +62,19 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 {client.email && <span className="inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {client.email}</span>}
                 {client.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {client.phone}</span>}
               </div>
+              {client.tags.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {client.tags.map((t) => (
+                    <Link
+                      key={t}
+                      href={`/dashboard/clients?tag=${encodeURIComponent(t)}`}
+                      className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 dark:text-indigo-300"
+                    >
+                      #{t}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -77,6 +91,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 startDate: String(client.startDate),
                 colorTag: client.colorTag,
                 avatarUrl: client.avatarUrl,
+                tags: client.tags,
               }}
             />
             <DeleteButton
@@ -158,6 +173,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span className="text-slate-700 dark:text-slate-200">{formatDateTime(s.date)}</span>
                     <span className="flex items-center gap-2">
+                      {s.status === 'scheduled' && (
+                        <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} />
+                      )}
                       <span className="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
                         {formatTRY(s.fee, { compact: true })}
                       </span>

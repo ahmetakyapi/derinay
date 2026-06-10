@@ -90,3 +90,23 @@ export async function updateSessionStatus(id: string, clientId: string, status: 
   revalidatePath(`/dashboard/clients/${clientId}`)
   return { ok: true }
 }
+
+/** Seansın tarihini/saatini değiştir (ajanda sürükle-bırak + modal) */
+export async function updateSessionTime(id: string, clientId: string | null, isoLocal: string) {
+  const d = new Date(isoLocal)
+  if (Number.isNaN(d.getTime())) return { ok: false, error: 'Geçersiz tarih' }
+  await db.update(sessions).set({ date: d }).where(eq(sessions.id, id))
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard')
+  if (clientId) revalidatePath(`/dashboard/clients/${clientId}`)
+  return { ok: true }
+}
+
+/** Seansı sil */
+export async function deleteSession(id: string, clientId: string | null) {
+  await db.delete(sessions).where(eq(sessions.id, id))
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard')
+  if (clientId) revalidatePath(`/dashboard/clients/${clientId}`)
+  return { ok: true }
+}

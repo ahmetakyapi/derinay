@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
   LineChart,
+  CalendarRange,
+  DatabaseBackup,
   Users,
   ArrowLeftRight,
   CalendarDays,
@@ -18,10 +20,12 @@ import {
   Moon,
   Menu,
   X,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { USER } from '@/lib/constants'
 import { PageTransition } from '@/components/dashboard/PageTransition'
+import { logoutAction } from '@/app/actions/auth'
 
 // Gruplu navigasyon — galeri katalogu gibi bölümlenmiş
 const NAV_GROUPS = [
@@ -29,6 +33,7 @@ const NAV_GROUPS = [
     label: 'Klinik',
     items: [
       { label: 'Genel Bakış', href: '/dashboard', icon: LayoutDashboard },
+      { label: 'Ajanda', href: '/dashboard/agenda', icon: CalendarRange },
       { label: 'Danışanlar', href: '/dashboard/clients', icon: Users },
     ],
   },
@@ -44,7 +49,10 @@ const NAV_GROUPS = [
   },
   {
     label: 'Yaşam',
-    items: [{ label: 'Kişisel', href: '/dashboard/personal', icon: CalendarDays }],
+    items: [
+      { label: 'Kişisel', href: '/dashboard/personal', icon: CalendarDays },
+      { label: 'Yedekleme', href: '/dashboard/backup', icon: DatabaseBackup },
+    ],
   },
 ]
 
@@ -153,7 +161,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
             </div>
           </div>
-          <ThemeToggle />
+          <div className="flex flex-col gap-1.5">
+            <ThemeToggle />
+            <form action={logoutAction}>
+              <button
+                type="submit"
+                aria-label="Çıkış yap"
+                title="Çıkış yap"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/50 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
 

@@ -12,7 +12,8 @@
 Amaç: gelir-gider, danışan, seans, fatura, ödeme, vergi ve kişisel harcamaları tek,
 sakin ve görsel bir arayüzde toplamak.
 
-- **Kullanan kişi**: Simay Ahi (tek terapist). Çok kullanıcı/giriş YOK (bkz. §9).
+- **Kullanan kişi**: Simay Ahi (tek terapist). **Tek kullanıcılı parola kilidi VAR** (next-auth v5
+  credentials, bkz. §9) — `APP_PASSWORD` + `AUTH_SECRET` env'leri zorunlu.
 - **Dil**: Tüm arayüz **Türkçe**. Para **₺ / tr-TR**. Tarihler Türkçe ay/gün adları.
 - **Marka**: Derinay, logo "D", fatura no öneki `DER-YYYY-NNN`.
 
@@ -79,7 +80,9 @@ app/
     layout.tsx                     # DashboardShell + force-dynamic
     dashboard/
       page.tsx                     # Genel Bakış: KPI + haftalık takvim + grafikler + son işlemler
-      clients/page.tsx             # Danışan listesi (kart grid)
+      agenda/page.tsx              # Ajanda: haftalık saat ızgarası (sürükle-bırak) + aylık görünüm
+      clients/page.tsx             # Danışan listesi (kart grid + arama + statü/etiket filtresi)
+      backup/page.tsx              # Yedekleme: CSV/JSON dışa aktarım kartları
       clients/[id]/page.tsx        # Danışan detayı: not/seans/ödeme/fatura/düzenle/sil
       finances/page.tsx            # Gelir & gider (scope=business)
       personal/page.tsx            # Kişisel harcamalar — gün bazlı takvim (scope=personal)
@@ -125,7 +128,8 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 - **clientNotes** — Seans Defteri: clientId→cascade, title, body, **kind**(session/observation/
   homework/important), **mood**(great/good/neutral/low/difficult — duygu izleği), **pinned**.
 - **transactions** — gelir/gider: `type`(income/expense), **`scope`(business/personal)**,
-  amount, category(serbest metin), description, date, clientId→set null.
+  amount, category(serbest metin), description, date, **`recurring`** (sabit kalem — 'sabit
+  giderleri kopyala' bunu önceki aydan kopyalar), clientId→set null.
 - **invoices** — fatura: number(unique), clientId→set null, issueDate, dueDate, subtotal,
   kdvRate, kdvAmount, total, `status`(draft/sent/paid/overdue), note.
 - **payments** — tahsilat: clientId→cascade, invoiceId→set null, amount, date,
@@ -203,8 +207,11 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 
 ## 9. Kararlar
 
-- **Auth yok** (tek terapist). İleride next-auth v5: `users` tablosu ve `.env` satırları hazır.
-- Mutasyon = Server Action; okuma = Server Component + queries. API route eklenmez.
+- **Auth: next-auth v5 credentials** — tek parola (`APP_PASSWORD`), JWT session, adapter yok.
+  `lib/auth.ts` middleware'de (edge) çalışır → **oraya asla `lib/db` import etme**.
+  Korunan yollar `middleware.ts` matcher'ında; `/login`, `/`, `/api/health` açık.
+- Mutasyon = Server Action; okuma = Server Component + queries. API route yalnızca iki istisna:
+  `app/api/auth` (NextAuth zorunlu) ve `app/api/export` (dosya indirme — CSV/JSON yedek).
 - Kişisel harcamalar `scope` ile ayrılır, ayrı tablo değil.
 - Kategoriler serbest metin (datalist önerili) — kullanıcı kendi kalemini yazabilir.
 - Fatura PDF'i tarayıcı yazdırma ile (`/invoices/[id]/print` + `@media print`), ekstra PDF kütüphanesi yok.
@@ -236,7 +243,8 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 
 - Repo: **github.com/ahmetakyapi/derinay** (private). `main`'e push → otomatik deploy (bağlıysa).
 - `vercel.json`: `framework: nextjs`, `regions: ["fra1"]` (Neon eu-central-1'e yakın).
-- Vercel env: `DATABASE_URL`, `NEXT_PUBLIC_APP_NAME=Derinay`, `NEXT_PUBLIC_APP_URL`.
+- Vercel env: `DATABASE_URL`, `AUTH_SECRET`, `APP_PASSWORD`, `NEXT_PUBLIC_APP_NAME=Derinay`,
+  `NEXT_PUBLIC_APP_URL`. **AUTH_SECRET/APP_PASSWORD eklenmeden deploy edilirse giriş çalışmaz.**
 - Şema/seed manueldir (deploy'da çalışmaz): gerektiğinde `db:push` / `db:seed`.
 - Commit dili **İngilizce** (kullanıcı tercihi), sonunda `Co-Authored-By` satırı.
 

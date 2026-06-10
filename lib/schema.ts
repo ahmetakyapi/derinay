@@ -71,6 +71,7 @@ export const transactions = pgTable('transactions', {
   category:    text('category').notNull(),
   description: text('description'),
   date:        date('date').notNull().defaultNow(),
+  recurring:   boolean('recurring').notNull().default(false), // her ay tekrarlanan sabit kalem (kira, abonelik)
   clientId:    uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
   createdAt:   timestamp('created_at').defaultNow().notNull(),
 })

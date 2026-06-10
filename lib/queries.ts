@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
+import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
@@ -147,10 +147,11 @@ export async function getDashboard(monthsBack = 6) {
 }
 
 // ─── Danışanlar ──────────────────────────────────────────────────────────────
-export async function listClients(opts?: { status?: ClientStatus; q?: string }) {
+export async function listClients(opts?: { status?: ClientStatus; q?: string; tag?: string }) {
   const filters = []
   if (opts?.status) filters.push(eq(clients.status, opts.status))
   if (opts?.q?.trim()) filters.push(ilike(clients.name, `%${opts.q.trim()}%`))
+  if (opts?.tag?.trim()) filters.push(arrayContains(clients.tags, [opts.tag.trim()]))
   const rows = await db
     .select()
     .from(clients)
@@ -549,5 +550,129 @@ export async function getYearAnalytics(year: number) {
     topClients,
     sessionStats,
     methodTotals,
+  }
+}
+
+// ─── Ajanda ──────────────────────────────────────────────────────────────────
+export type AgendaItem = {
+  id: string
+  clientId: string | null
+  clientName: string
+  clientPhone: string | null
+  colorTag: string
+  status: string
+  fee: number
+  durationMin: number
+  dateKey: string
+  /** Gece yarısından itibaren dakika (saat ızgarasında konum) */
+  startMin: number
+  time: string
+}
+
+function mondayOf(d: Date) {
+  const day = (d.getDay() + 6) % 7 // Pzt=0
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - day)
+}
+
+/** Haftalık ajanda — anchor (YYYY-MM-DD) hangi haftaysa o hafta */
+export async function getAgendaWeek(anchor?: string) {
+  const base = anchor ? new Date(`${anchor}T12:00:00`) : new Date()
+  const monday = mondayOf(base)
+  const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6, 23, 59, 59)
+
+  const rows = await db
+    .select({
+      id: sessions.id,
+      date: sessions.date,
+      durationMin: sessions.durationMin,
+      status: sessions.status,
+      fee: sessions.fee,
+      clientId: sessions.clientId,
+      clientName: clients.name,
+      clientPhone: clients.phone,
+      colorTag: clients.colorTag,
+    })
+    .from(sessions)
+    .leftJoin(clients, eq(sessions.clientId, clients.id))
+    .where(and(gte(sessions.date, monday), lte(sessions.date, sunday)))
+    .orderBy(sessions.date)
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)
+    return {
+      key: iso(d),
+      label: new Intl.DateTimeFormat('tr-TR', { weekday: 'short' }).format(d),
+      dayNum: d.getDate(),
+      items: [] as AgendaItem[],
+    }
+  })
+
+  for (const r of rows) {
+    const d = new Date(r.date)
+    const key = iso(d)
+    const slot = days.find((x) => x.key === key)
+    if (!slot) continue
+    slot.items.push({
+      id: r.id,
+      clientId: r.clientId,
+      clientName: r.clientName ?? '—',
+      clientPhone: r.clientPhone,
+      colorTag: r.colorTag ?? 'indigo',
+      status: r.status,
+      fee: num(r.fee),
+      durationMin: r.durationMin,
+      dateKey: key,
+      startMin: d.getHours() * 60 + d.getMinutes(),
+      time: new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' }).format(d),
+    })
+  }
+
+  const prevAnchor = iso(new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() - 7))
+  const nextAnchor = iso(new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 7))
+  return { days, todayKey: iso(new Date()), weekStart: iso(monday), prevAnchor, nextAnchor }
+}
+
+/** Aylık ajanda — gün → seans listesi */
+export async function getAgendaMonth(month?: string) {
+  const base = month ? new Date(Number(month.split('-')[0]), Number(month.split('-')[1]) - 1, 1) : new Date()
+  const start = new Date(base.getFullYear(), base.getMonth(), 1)
+  const end = new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59)
+
+  const rows = await db
+    .select({
+      id: sessions.id,
+      date: sessions.date,
+      status: sessions.status,
+      clientId: sessions.clientId,
+      clientName: clients.name,
+      colorTag: clients.colorTag,
+    })
+    .from(sessions)
+    .leftJoin(clients, eq(sessions.clientId, clients.id))
+    .where(and(gte(sessions.date, start), lte(sessions.date, end)))
+    .orderBy(sessions.date)
+
+  const byDay = new Map<string, { id: string; time: string; clientId: string | null; clientName: string; colorTag: string; status: string }[]>()
+  for (const r of rows) {
+    const d = new Date(r.date)
+    const key = iso(d)
+    const list = byDay.get(key) ?? []
+    list.push({
+      id: r.id,
+      time: new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' }).format(d),
+      clientId: r.clientId,
+      clientName: r.clientName ?? '—',
+      colorTag: r.colorTag ?? 'indigo',
+      status: r.status,
+    })
+    byDay.set(key, list)
+  }
+
+  return {
+    year: base.getFullYear(),
+    month: base.getMonth(),
+    byDay: Object.fromEntries(byDay),
+    todayKey: iso(new Date()),
+    total: rows.length,
   }
 }

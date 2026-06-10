@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { UserPlus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { AvatarPicker } from '@/components/forms/AvatarPicker'
+import { TagInput } from '@/components/forms/TagInput'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createClient } from '@/app/actions/clients'
 import { CLIENT_COLORS, CLIENT_STATUSES, CLIENT_STATUS_LABEL, type ClientColor, type ClientStatus } from '@/lib/constants'
@@ -16,6 +17,7 @@ export function NewClientDialog() {
   const [color, setColor] = useState<ClientColor>('indigo')
   const [avatar, setAvatar] = useState<string | null>(null)
   const [name, setName] = useState('')
+  const [tags, setTags] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
   const router = useRouter()
@@ -34,6 +36,7 @@ export function NewClientDialog() {
         startDate: String(fd.get('startDate') || ''),
         colorTag: color,
         avatarUrl: avatar,
+        tags,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setOpen(false)
@@ -83,6 +86,8 @@ export function NewClientDialog() {
           <Field label="Başlangıç tarihi">
             <Input name="startDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
           </Field>
+
+          <TagInput value={tags} onChange={setTags} />
 
           <div>
             <span className="field-label">Etiket rengi</span>

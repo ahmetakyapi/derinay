@@ -23,6 +23,7 @@ import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
 import { NewTransactionDialog } from '@/components/forms/NewTransactionDialog'
+import { CopyRecurringButton } from '@/components/forms/CopyRecurringButton'
 import { listTransactions, clientOptions, type TxRow } from '@/lib/queries'
 import { deleteTransaction } from '@/app/actions/transactions'
 import { formatTRY, monthKey, formatMonth, pctChange } from '@/lib/format'
@@ -110,7 +111,12 @@ export default async function FinancesPage({
       <PageHeader
         title="Gelir & Gider"
         subtitle="Kliniğin finansal hareketleri — ay ay, gün gün"
-        action={<NewTransactionDialog clients={clients} />}
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            <CopyRecurringButton month={month} />
+            <NewTransactionDialog clients={clients} />
+          </div>
+        }
       />
 
       {/* Ay navigasyonu + filtreler + arama */}

@@ -13,13 +13,14 @@ import { durationSince, formatTRY } from '@/lib/format'
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; status?: string }
+  searchParams: { q?: string; status?: string; tag?: string }
 }) {
   const q = searchParams.q?.trim() || undefined
+  const tag = searchParams.tag?.trim() || undefined
   const status = (CLIENT_STATUSES as readonly string[]).includes(searchParams.status ?? '')
     ? (searchParams.status as ClientStatus)
     : undefined
-  const clients = await listClients({ q, status })
+  const clients = await listClients({ q, status, tag })
 
   const statusHref = (st?: string) => {
     const p = new URLSearchParams()
@@ -75,6 +76,18 @@ export default async function ClientsPage({
         </form>
       </div>
 
+      {tag && (
+        <div className="mb-4 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+            #{tag}
+          </span>
+          etiketiyle filtreleniyor ·
+          <Link href="/dashboard/clients" className="text-xs font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
+            filtreyi temizle
+          </Link>
+        </div>
+      )}
+
       {clients.length ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {clients.map((c) => (
@@ -89,6 +102,19 @@ export default async function ClientsPage({
               </div>
               <h3 className="mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">{c.email || c.phone || '—'}</p>
+
+              {c.tags.length > 0 && (
+                <div className="mt-2.5 flex flex-wrap gap-1">
+                  {c.tags.slice(0, 3).map((t) => (
+                    <span key={t} className="rounded-full bg-indigo-500/8 px-2 py-0.5 text-[10px] font-semibold text-indigo-700/80 dark:bg-indigo-400/10 dark:text-indigo-300/90">
+                      #{t}
+                    </span>
+                  ))}
+                  {c.tags.length > 3 && (
+                    <span className="text-[10px] text-slate-400">+{c.tags.length - 3}</span>
+                  )}
+                </div>
+              )}
 
               <div className="mt-4 flex items-center justify-between">
                 <StatusBadge label={CLIENT_STATUS_LABEL[c.status]} tone={STATUS_TONE[c.status]} />

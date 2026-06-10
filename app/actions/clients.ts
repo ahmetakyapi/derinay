@@ -56,6 +56,7 @@ export async function updateClient(
     startDate?: string
     colorTag?: ClientColor
     avatarUrl?: string | null
+    tags?: string[]
   },
 ) {
   if (!input.name?.trim()) return { ok: false, error: 'İsim zorunlu' }
@@ -71,6 +72,7 @@ export async function updateClient(
       startDate: input.startDate || undefined,
       colorTag: input.colorTag,
       avatarUrl: input.avatarUrl ?? null,
+      tags: input.tags ?? [],
       updatedAt: new Date(),
     })
     .where(eq(clients.id, id))

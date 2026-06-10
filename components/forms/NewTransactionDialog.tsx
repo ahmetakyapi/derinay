@@ -34,6 +34,7 @@ export function NewTransactionDialog({
         description: String(fd.get('description') || ''),
         date: String(fd.get('date') || ''),
         clientId: (fd.get('clientId') as string) || null,
+        recurring: fd.get('recurring') === 'on',
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setOpen(false)
@@ -109,6 +110,19 @@ export function NewTransactionDialog({
           <Field label="Açıklama (opsiyonel)">
             <Textarea name="description" rows={2} placeholder="Kısa not…" />
           </Field>
+
+          {/* Sabit kalem — her ay tekrarlanır */}
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-500/15 px-3 py-2.5 text-sm text-slate-600 transition-colors hover:border-indigo-500/30 dark:text-slate-300">
+            <input
+              type="checkbox"
+              name="recurring"
+              className="h-4 w-4 rounded accent-indigo-600"
+            />
+            <span>
+              <span className="font-semibold">Her ay tekrarlanır</span>
+              <span className="block text-xs text-slate-400">kira, abonelik gibi sabit kalemler — tek tıkla sonraki aya kopyalanır</span>
+            </span>
+          </label>
 
           {error && <p className="text-sm text-rose-500">{error}</p>}
 
