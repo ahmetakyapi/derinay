@@ -46,7 +46,7 @@ export default function Home() {
             <motion.div variants={fadeUp} className="mb-6 flex justify-center">
               <span className="chip">
                 <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                Psikologlar için sakin finans yönetimi
+                Psikologların Sakin Çalışma Masası
               </span>
             </motion.div>
 
@@ -54,9 +54,9 @@ export default function Home() {
               variants={fadeUp}
               className="mb-6 font-display text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl"
             >
-              Pratiğini yönet,{' '}
+              Pratiğini Yönet,{' '}
               <span className="relative inline-block italic text-indigo-700 dark:text-indigo-300">
-                kafanı dinlendir
+                Kafanı Dinlendir
                 {/* El çizimi fırça vurgusu — çizilerek belirir */}
                 <svg
                   className="absolute -bottom-2 left-0 w-full text-amber-500/70"
@@ -209,13 +209,13 @@ export default function Home() {
               {[0, 1].map((copy) => (
                 <div key={copy} className="flex shrink-0 items-center gap-10">
                   {[
-                    'Danışan takibi',
+                    'Danışan Takibi',
                     'Seans Defteri',
                     'Duygu Takibi',
                     'Fatura & KDV',
-                    'Vergi özeti',
-                    'Analiz & PDF rapor',
-                    'Kişisel harcamalar',
+                    'Vergi Özeti',
+                    'Analiz & PDF Rapor',
+                    'Kişisel Harcamalar',
                   ].map((w) => (
                     <span key={w} className="flex items-center gap-10 whitespace-nowrap">
                       <span className="font-display text-lg italic text-slate-500/90 dark:text-slate-400">{w}</span>
@@ -241,7 +241,7 @@ export default function Home() {
               variants={fadeUp}
               className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
             >
-              Pratiğin için <span className="italic text-indigo-700 dark:text-indigo-300">her şey</span>
+              Pratiğin İçin <span className="italic text-indigo-700 dark:text-indigo-300">Her Şey</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
               Finanstan danışan takibine kadar tüm iş yükünü tek yerde topla.
@@ -320,7 +320,7 @@ export default function Home() {
               “
             </span>
             <h2 className="relative font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              Bugün <span className="italic">düzeni</span> kurmaya başla
+              Bugün <span className="italic">Düzeni</span> Kurmaya Başla
             </h2>
             <p className="relative mx-auto mt-3 max-w-md text-slate-500 dark:text-slate-300">
               Danışanlarını ekle, ilk faturanı kes ve grafiklerin dolmasını izle.
@@ -341,16 +341,16 @@ export default function Home() {
 }
 
 const FEATURES = [
-  { icon: Wallet, title: 'Gelir & gider takibi', desc: 'Kategori bazlı hareketler, aylık kırılım ve net kâr — tek bakışta.', accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' },
-  { icon: Users, title: 'Danışan yönetimi', desc: 'Danışan ekle, statü ve devam süresini izle, geçmişi tek yerde tut.', accent: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400' },
+  { icon: Wallet, title: 'Gelir & Gider Takibi', desc: 'Kategori bazlı hareketler, aylık kırılım ve net kâr — tek bakışta.', accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' },
+  { icon: Users, title: 'Danışan Yönetimi', desc: 'Danışan ekle, statü ve devam süresini izle, geçmişi tek yerde tut.', accent: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400' },
   { icon: StickyNote, title: 'Seans Defteri', desc: 'Tür ve duygu etiketli notlar; danışanın duygu izleği gözünün önünde.', accent: 'bg-violet-500/12 text-violet-600 dark:text-violet-400' },
   { icon: FileText, title: 'Fatura & KDV', desc: 'Tek tıkla fatura kes; KDV otomatik hesaplanır, statüyü takip et.', accent: 'bg-amber-500/12 text-amber-600 dark:text-amber-400' },
-  { icon: Landmark, title: 'Vergi göstergesi', desc: 'Toplanan KDV ve tahmini gelir vergisiyle ödenecek tutarı gör.', accent: 'bg-rose-500/12 text-rose-600 dark:text-rose-400' },
-  { icon: PieChart, title: 'Analiz & PDF rapor', desc: 'Yıllık akış, kümülatif birikim ve muhasebeci dostu PDF raporlar.', accent: 'bg-sky-500/12 text-sky-600 dark:text-sky-400' },
+  { icon: Landmark, title: 'Vergi Göstergesi', desc: 'Toplanan KDV ve tahmini gelir vergisiyle ödenecek tutarı gör.', accent: 'bg-rose-500/12 text-rose-600 dark:text-rose-400' },
+  { icon: PieChart, title: 'Analiz & PDF Rapor', desc: 'Yıllık akış, kümülatif birikim ve muhasebeci dostu PDF raporlar.', accent: 'bg-sky-500/12 text-sky-600 dark:text-sky-400' },
 ]
 
 const STEPS = [
-  { title: 'Danışanlarını ekle', desc: 'Birkaç saniyede danışan kartlarını oluştur, seans ücretlerini belirle.' },
-  { title: 'Gelir ve gideri gir', desc: 'Her hareketi kategorize et; faturaları kes, ödemeleri kaydet.' },
-  { title: 'Tabloyu izle', desc: 'Dashboard ve vergi sayfası senin yerine hesaplar ve görselleştirir.' },
+  { title: 'Danışanlarını Ekle', desc: 'Birkaç saniyede danışan kartlarını oluştur, seans ücretlerini belirle.' },
+  { title: 'Gelir ve Gideri Gir', desc: 'Her hareketi kategorize et; faturaları kes, ödemeleri kaydet.' },
+  { title: 'Tabloyu İzle', desc: 'Dashboard ve vergi sayfası senin yerine hesaplar ve görselleştirir.' },
 ]

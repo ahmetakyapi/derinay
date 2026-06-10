@@ -8,7 +8,7 @@ import { Sun, Moon, Menu, X } from 'lucide-react'
 
 const NAV_LINKS = [
   { label: 'Özellikler', href: '#features' },
-  { label: 'Nasıl çalışır', href: '#how' },
+  { label: 'Nasıl Çalışır', href: '#how' },
 ]
 
 export default function Header() {
