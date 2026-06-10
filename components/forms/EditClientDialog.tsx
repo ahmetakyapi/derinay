@@ -74,7 +74,7 @@ export function EditClientDialog({
         <Pencil className="h-4 w-4" />
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Danışanı düzenle">
+      <Modal open={open} onClose={() => setOpen(false)} title="Danışanı Düzenle">
         <form onSubmit={onSubmit} className="space-y-4">
           <AvatarPicker name={client.name} color={color} value={avatar} onChange={setAvatar} />
 
@@ -138,7 +138,7 @@ export function EditClientDialog({
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Değişiklikleri kaydet'}
+              {pending ? 'Kaydediliyor…' : 'Değişiklikleri Kaydet'}
             </button>
           </div>
         </form>

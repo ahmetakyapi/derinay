@@ -55,10 +55,10 @@ export function NewSessionDialog({
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-xl border border-slate-500/20 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-all hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
       >
-        <CalendarPlus className="h-3.5 w-3.5" /> Seans ekle
+        <CalendarPlus className="h-3.5 w-3.5" /> Seans Ekle
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni seans" description="Seansı planla veya geçmiş seans ekle">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Seans" description="Seansı planla veya geçmiş seans ekle">
         <form onSubmit={onSubmit} className="space-y-4">
           {!clientId && (
             <Field label="Danışan">
@@ -111,7 +111,7 @@ export function NewSessionDialog({
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Seansı kaydet'}
+              {pending ? 'Kaydediliyor…' : 'Seansı Kaydet'}
             </button>
           </div>
         </form>

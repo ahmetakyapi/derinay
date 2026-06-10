@@ -28,23 +28,26 @@ export async function createInvoice(input: {
   const { kdvAmount, total } = calcKdv(input.subtotal, rate)
   const number = await nextInvoiceNumber()
 
-  await db.insert(invoices).values({
-    number,
-    clientId: input.clientId || null,
-    subtotal: String(input.subtotal),
-    kdvRate: rate,
-    kdvAmount: String(kdvAmount),
-    total: String(total),
-    issueDate: input.issueDate || undefined,
-    dueDate: input.dueDate || null,
-    status: input.status ?? 'sent',
-    note: input.note || null,
-  })
+  const [created] = await db
+    .insert(invoices)
+    .values({
+      number,
+      clientId: input.clientId || null,
+      subtotal: String(input.subtotal),
+      kdvRate: rate,
+      kdvAmount: String(kdvAmount),
+      total: String(total),
+      issueDate: input.issueDate || undefined,
+      dueDate: input.dueDate || null,
+      status: input.status ?? 'sent',
+      note: input.note || null,
+    })
+    .returning({ id: invoices.id })
 
   revalidatePath('/dashboard/invoices')
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/taxes')
-  return { ok: true, number }
+  return { ok: true, number, id: created.id }
 }
 
 export async function updateInvoiceStatus(id: string, status: InvoiceStatus) {

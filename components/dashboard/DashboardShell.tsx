@@ -143,6 +143,14 @@ function ThemeToggle() {
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
 
+  // Esc ile mobil menüyü kapat (modallar kendi içinde hallediyor)
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
     <div className="min-h-screen">
       {/* Desktop sidebar */}

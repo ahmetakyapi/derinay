@@ -25,7 +25,7 @@ import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
-import { getClientDetail } from '@/lib/queries'
+import { getClientDetail, getReminderTemplate } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
 import {
   CLIENT_STATUS_LABEL,
@@ -36,7 +36,7 @@ import {
 import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
-  const data = await getClientDetail(params.id)
+  const [data, reminderTemplate] = await Promise.all([getClientDetail(params.id), getReminderTemplate()])
   if (!data) notFound()
   const { client, notes, sessions, payments, invoices, stats } = data
 
@@ -106,18 +106,18 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
       {/* İstatistikler */}
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Toplam tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" />
+        <Stat label="Toplam Tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" />
         <Stat label="Faturalanan" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" />
         <Stat label="Bakiye" value={formatTRY(stats.outstanding)} tone={stats.outstanding > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} />
-        <Stat label="Tamamlanan seans" value={String(stats.completedSessions)} tone="text-slate-900 dark:text-white" />
+        <Stat label="Tamamlanan Seans" value={String(stats.completedSessions)} tone="text-slate-900 dark:text-white" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
-          {/* Duygu izleği */}
+          {/* Duygu Takibi */}
           <section className="glass rounded-2xl p-5">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-              <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Duygu izleği
+              <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Duygu Takibi
             </h2>
             <MoodTrail
               entries={notes
@@ -174,7 +174,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <span className="text-slate-700 dark:text-slate-200">{formatDateTime(s.date)}</span>
                     <span className="flex items-center gap-2">
                       {s.status === 'scheduled' && (
-                        <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} />
+                        <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} template={reminderTemplate} />
                       )}
                       <span className="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
                         {formatTRY(s.fee, { compact: true })}

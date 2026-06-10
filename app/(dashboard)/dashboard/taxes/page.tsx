@@ -15,16 +15,16 @@ export default async function TaxesPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Radial özet */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu ay ödenecek</h2>
+          <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu Ay Ödenecek</h2>
           <TaxRadial kdv={current.kdvCollected} incomeTax={current.incomeTax} />
         </section>
 
         {/* Kırılım */}
         <section className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu ay kırılım</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu Ay Kırılım</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <TaxStat icon={Receipt} accent="text-indigo-600 bg-indigo-500/12 dark:text-indigo-400" label="Toplanan KDV" value={formatTRY(current.kdvCollected)} />
-            <TaxStat icon={TrendingUp} accent="text-amber-600 bg-amber-500/12 dark:text-amber-400" label="Gelir vergisi (tahmini)" value={formatTRY(current.incomeTax)} />
+            <TaxStat icon={TrendingUp} accent="text-amber-600 bg-amber-500/12 dark:text-amber-400" label="Gelir Vergisi (tahmini)" value={formatTRY(current.incomeTax)} />
             <TaxStat icon={Landmark} accent="text-rose-600 bg-rose-500/12 dark:text-rose-400" label="Toplam" value={formatTRY(current.totalDue)} />
           </div>
 
@@ -42,7 +42,7 @@ export default async function TaxesPage() {
       {/* Aylık tablo */}
       <section className="glass mt-6 overflow-hidden rounded-2xl">
         <h2 className="border-b border-slate-500/10 px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-          Aylık döküm
+          Aylık Döküm
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[600px] text-sm">

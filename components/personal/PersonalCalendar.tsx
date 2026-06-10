@@ -280,7 +280,7 @@ export function PersonalCalendar({
               disabled={pending}
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
             >
-              <Plus className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Harcama ekle'}
+              <Plus className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Harcama Ekle'}
             </button>
           </div>
         </form>

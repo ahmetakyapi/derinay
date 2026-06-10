@@ -6,7 +6,7 @@ import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { personalCategoryIcon } from '@/components/personal/categoryIcon'
 import { getPersonalMonth } from '@/lib/queries'
-import { formatTRY, formatMonth, monthKey, formatDateShort } from '@/lib/format'
+import { formatTRY, formatMonth, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export default async function PersonalPage({
@@ -32,7 +32,7 @@ export default async function PersonalPage({
 
   const summary = [
     {
-      label: 'Bu ay toplam',
+      label: 'Bu Ay Toplam',
       value: formatTRY(data.total),
       icon: Wallet,
       tone: 'text-rose-600 dark:text-rose-400',
@@ -40,7 +40,7 @@ export default async function PersonalPage({
       hint: `${data.items.length} harcama`,
     },
     {
-      label: 'Günlük ortalama',
+      label: 'Günlük Ortalama',
       value: formatTRY(dailyAvg),
       icon: CalendarDays,
       tone: 'text-indigo-600 dark:text-indigo-400',
@@ -48,7 +48,7 @@ export default async function PersonalPage({
       hint: `${elapsedDays} gün üzerinden`,
     },
     {
-      label: 'Zirve kategori',
+      label: 'En Çok Harcanan',
       value: topCategory ? topCategory.category : '—',
       icon: Crown,
       tone: 'text-amber-600 dark:text-amber-400',
@@ -56,7 +56,7 @@ export default async function PersonalPage({
       hint: topCategory ? formatTRY(topCategory.amount, { compact: true }) : 'henüz veri yok',
     },
     {
-      label: 'Harcama günü',
+      label: 'Harcama Günü',
       value: String(Object.keys(data.byDay).length),
       icon: Hash,
       tone: 'text-sky-600 dark:text-sky-400',
@@ -122,7 +122,7 @@ export default async function PersonalPage({
         <div className="space-y-5">
           <section className="glass rounded-2xl p-5">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-              Kategori dağılımı
+              Kategori Dağılımı
             </h2>
             {data.categoryBreakdown.length ? (
               <CategoryDonut data={data.categoryBreakdown} />
@@ -130,48 +130,84 @@ export default async function PersonalPage({
               <EmptyState icon={Wallet} title="Bu ay kişisel harcama yok" description="Takvimden bir güne dokunarak başla." />
             )}
           </section>
-
-          {data.items.length > 0 && (
-            <section className="glass rounded-2xl p-5">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-                  Harcama detayları
-                </h2>
-                <span className="text-xs text-slate-400">{data.items.length} harcama</span>
-              </div>
-              <ul className="max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
-                {data.items.map((it) => {
-                  const Icon = personalCategoryIcon(it.category)
-                  return (
-                    <li key={it.id} className="flex items-center gap-3 rounded-xl border border-slate-500/10 p-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
-                            {it.category}
-                          </p>
-                          <span className="shrink-0 text-[11px] text-slate-400">{formatDateShort(it.date)}</span>
-                        </div>
-                        {it.description && (
-                          <p className="mt-0.5 flex items-start gap-1 text-xs text-slate-500 dark:text-slate-400">
-                            <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-                            <span className="truncate">{it.description}</span>
-                          </p>
-                        )}
-                      </div>
-                      <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
-                        −{formatTRY(it.amount)}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            </section>
-          )}
         </div>
       </div>
+
+      {/* Aylık liste — gün gün, en altta ay toplamı */}
+      {data.items.length > 0 && (
+        <section className="glass mt-5 overflow-hidden rounded-2xl">
+          <header className="flex items-center justify-between border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              Ay Dökümü — Gün Gün
+            </h2>
+            <span className="text-xs text-slate-400">{data.items.length} harcama</span>
+          </header>
+
+          {(() => {
+            // Gün bazlı grupla (tarih azalan)
+            const byDate = new Map<string, typeof data.items>()
+            for (const it of data.items) {
+              const list = byDate.get(it.date) ?? []
+              list.push(it)
+              byDate.set(it.date, list)
+            }
+            const dayKeys = [...byDate.keys()].sort((a, b) => (a < b ? 1 : -1))
+            const dayLabel = (d: string) =>
+              new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date(d))
+
+            return dayKeys.map((day) => {
+              const rows = byDate.get(day)!
+              const dayTotal = rows.reduce((s, r) => s + r.amount, 0)
+              return (
+                <div key={day}>
+                  <div className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2 sm:px-5">
+                    <span className="text-xs font-bold capitalize tracking-wide text-slate-600 dark:text-slate-300">
+                      {dayLabel(day)}
+                    </span>
+                    <span className="font-mono text-xs font-semibold tabular-nums text-rose-600 dark:text-rose-400">
+                      −{formatTRY(dayTotal)}
+                    </span>
+                  </div>
+                  <ul className="divide-y divide-slate-500/10">
+                    {rows.map((it) => {
+                      const Icon = personalCategoryIcon(it.category)
+                      return (
+                        <li key={it.id} className="flex items-center gap-3 px-4 py-2.5 sm:px-5">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{it.category}</p>
+                            {it.description && (
+                              <p className="mt-0.5 flex items-start gap-1 truncate text-xs text-slate-500 dark:text-slate-400">
+                                <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                                <span className="truncate">{it.description}</span>
+                              </p>
+                            )}
+                          </div>
+                          <span className="shrink-0 font-mono text-[13px] font-semibold tabular-nums text-rose-600 dark:text-rose-400">
+                            −{formatTRY(it.amount)}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              )
+            })
+          })()}
+
+          {/* Ay toplamı */}
+          <footer className="flex items-center justify-between border-t-2 border-slate-500/15 bg-slate-500/[0.05] px-4 py-3.5 sm:px-5">
+            <span className="text-sm font-bold capitalize text-slate-800 dark:text-slate-100">
+              {formatMonth(monthDate)} Toplamı
+            </span>
+            <span className="font-display text-lg font-semibold tracking-tight text-rose-600 dark:text-rose-400">
+              −{formatTRY(data.total)}
+            </span>
+          </footer>
+        </section>
+      )}
     </>
   )
 }

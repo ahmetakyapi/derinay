@@ -1,10 +1,10 @@
 import 'server-only'
 import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
-import { clients, transactions, invoices, payments, sessions, clientNotes } from './schema'
+import { clients, transactions, invoices, payments, sessions, clientNotes, settings } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
-import type { ClientStatus, TxType, TxScope } from './constants'
+import { REMINDER_TEMPLATE_DEFAULT, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -489,7 +489,14 @@ export async function getYearAnalytics(year: number) {
   // Ortalama: cari yılda geçen aylar, geçmiş yılda 12 ay
   const now = new Date()
   const elapsed = year === now.getFullYear() ? now.getMonth() + 1 : year < now.getFullYear() ? 12 : 1
-  const bestMonth = months.reduce((a, b) => (b.net > a.net ? b : a), months[0])
+  const bestMonthRaw = months.reduce((a, b) => (b.net > a.net ? b : a), months[0])
+  const bestMonth = {
+    ...bestMonthRaw,
+    // Kısaltma değil tam ay adı ("Mar" değil "Mart")
+    fullLabel: new Intl.DateTimeFormat('tr-TR', { month: 'long' }).format(
+      new Date(year, Number(bestMonthRaw.key.split('-')[1]) - 1, 1),
+    ),
+  }
 
   // Kategori kırılımları (yıllık)
   const catSum = (type: TxType) => {
@@ -675,4 +682,10 @@ export async function getAgendaMonth(month?: string) {
     todayKey: iso(new Date()),
     total: rows.length,
   }
+}
+
+// ─── Ayarlar ─────────────────────────────────────────────────────────────────
+export async function getReminderTemplate(): Promise<string> {
+  const [row] = await db.select().from(settings).where(eq(settings.key, 'reminder_template'))
+  return row?.value ?? REMINDER_TEMPLATE_DEFAULT
 }

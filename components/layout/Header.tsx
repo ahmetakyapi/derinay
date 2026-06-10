@@ -73,7 +73,7 @@ export default function Header() {
               href="/dashboard"
               className="hidden rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 sm:inline-flex"
             >
-              Panele git
+              Panele Git
             </Link>
 
             <button
@@ -108,7 +108,7 @@ export default function Header() {
             onClick={() => setMenuOpen(false)}
             className="mt-2 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
           >
-            Panele git
+            Panele Git
           </Link>
         </motion.div>
       )}

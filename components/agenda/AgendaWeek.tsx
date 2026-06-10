@@ -31,7 +31,7 @@ const DOT: Record<string, string> = {
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-export function AgendaWeek({ days, todayKey }: { days: Day[]; todayKey: string }) {
+export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; todayKey: string; reminderTemplate: string }) {
   const [selected, setSelected] = useState<AgendaItem | null>(null)
   const [dragId, setDragId] = useState<string | null>(null)
   const [pending, start] = useTransition()
@@ -250,6 +250,7 @@ export function AgendaWeek({ days, todayKey }: { days: Day[]; todayKey: string }
                 clientName={selected.clientName}
                 phone={selected.clientPhone}
                 date={`${selected.dateKey}T${pad(Math.floor(selected.startMin / 60))}:${pad(selected.startMin % 60)}`}
+                template={reminderTemplate}
               />
               {selected.clientId && (
                 <Link

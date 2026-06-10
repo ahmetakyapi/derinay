@@ -91,14 +91,14 @@ export default function Home() {
                 href="/dashboard"
                 className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-600/40 active:scale-95"
               >
-                Panele git
+                Panele Git
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a
                 href="#features"
                 className="glass rounded-xl px-6 py-3 text-sm font-semibold text-slate-600 transition-all hover:text-slate-900 dark:text-slate-300 dark:hover:text-white active:scale-95"
               >
-                Özellikleri gör
+                Özellikleri Gör
               </a>
             </motion.div>
           </motion.div>
@@ -211,7 +211,7 @@ export default function Home() {
                   {[
                     'Danışan takibi',
                     'Seans Defteri',
-                    'Duygu izleği',
+                    'Duygu Takibi',
                     'Fatura & KDV',
                     'Vergi özeti',
                     'Analiz & PDF rapor',
@@ -329,7 +329,7 @@ export default function Home() {
               href="/dashboard"
               className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95"
             >
-              Panele git <ArrowRight className="h-4 w-4" />
+              Panele Git <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>
         </section>

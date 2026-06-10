@@ -22,7 +22,7 @@ export function MoodTrail({
   if (!entries.length) {
     return (
       <p className="py-3 text-center text-xs text-slate-400">
-        Not eklerken duygu seçersen danışanın izleği burada belirir.
+        Not eklerken duygu seçersen danışanın seyri burada görünür.
       </p>
     )
   }

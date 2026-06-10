@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { AgendaWeek } from '@/components/agenda/AgendaWeek'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
-import { getAgendaWeek, getAgendaMonth, clientOptions } from '@/lib/queries'
+import { getAgendaWeek, getAgendaMonth, clientOptions, getReminderTemplate } from '@/lib/queries'
 import { formatDateShort, formatMonth, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -20,7 +20,7 @@ export default async function AgendaPage({
   searchParams: { view?: string; date?: string; month?: string }
 }) {
   const view = searchParams.view === 'month' ? 'month' : 'week'
-  const clients = await clientOptions()
+  const [clients, reminderTemplate] = await Promise.all([clientOptions(), getReminderTemplate()])
 
   /* ───────────────────────── Aylık görünüm ───────────────────────── */
   if (view === 'month') {
@@ -155,7 +155,7 @@ export default async function AgendaPage({
         }
       />
 
-      <AgendaWeek days={week.days} todayKey={week.todayKey} />
+      <AgendaWeek days={week.days} todayKey={week.todayKey} reminderTemplate={reminderTemplate} />
     </>
   )
 }

@@ -181,8 +181,8 @@ export default async function FinancesPage({
 
       {/* Ay özeti */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <SummaryCard label="Ay geliri" value={income} change={pctChange(income, prevIncome)} tone="income" />
-        <SummaryCard label="Ay gideri" value={expense} change={pctChange(expense, prevExpense)} tone="expense" />
+        <SummaryCard label="Ay Geliri" value={income} change={pctChange(income, prevIncome)} tone="income" />
+        <SummaryCard label="Ay Gideri" value={expense} change={pctChange(expense, prevExpense)} tone="expense" />
         <SummaryCard label="Net" value={income - expense} change={pctChange(income - expense, prevIncome - prevExpense)} tone="net" />
       </div>
 

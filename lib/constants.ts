@@ -188,6 +188,11 @@ export const BUSINESS = {
   email: '[ornek@mail.com]',
 } as const
 
+// ─── Hatırlatma mesajı şablonu ───────────────────────────────────────────────
+// Yer tutucular: {ad} = danışanın adı, {tarih} = seans tarihi+saati, {terapist} = terapist adı
+export const REMINDER_TEMPLATE_DEFAULT =
+  'Merhaba {ad} 🌿 {tarih} saatindeki seansımızı hatırlatmak isterim. Görüşmek üzere! — {terapist}'
+
 // Uygulamayı kullanan kişi
 export const USER = {
   firstName: 'Simay',

@@ -11,7 +11,7 @@ import { PAYMENT_METHODS, PAYMENT_METHOD_LABEL, type PaymentMethod } from '@/lib
 export function NewPaymentDialog({
   clients,
   fixedClientId,
-  label = 'Ödeme ekle',
+  label = 'Ödeme Ekle',
 }: {
   clients: { id: string; name: string }[]
   fixedClientId?: string
@@ -49,7 +49,7 @@ export function NewPaymentDialog({
         <Plus className="h-4 w-4" /> {label}
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni ödeme" description="Danışandan alınan tahsilatı kaydet">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Ödeme" description="Danışandan alınan tahsilatı kaydet">
         <form onSubmit={onSubmit} className="space-y-4">
           {!fixedClientId && (
             <Field label="Danışan">
@@ -90,7 +90,7 @@ export function NewPaymentDialog({
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Ödemeyi kaydet'}
+              {pending ? 'Kaydediliyor…' : 'Ödemeyi Kaydet'}
             </button>
           </div>
         </form>

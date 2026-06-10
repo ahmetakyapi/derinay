@@ -97,7 +97,7 @@ export default async function AnalyticsPage({
               target="_blank"
               className="ml-1 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500"
             >
-              <FileDown className="h-4 w-4" /> PDF rapor
+              <FileDown className="h-4 w-4" /> PDF Rapor
             </Link>
           </div>
         }
@@ -106,27 +106,27 @@ export default async function AnalyticsPage({
       {/* Yıllık KPI'lar */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label={`${year} geliri`}
+          label={`${year} Geliri`}
           value={formatTRY(a.totals.income)}
           icon={<TrendingUp className="h-5 w-5" />}
           accent="emerald"
         />
         <StatCard
-          label={`${year} gideri`}
+          label={`${year} Gideri`}
           value={formatTRY(a.totals.expense)}
           icon={<TrendingDown className="h-5 w-5" />}
           accent="rose"
         />
         <StatCard
-          label="Net kâr"
+          label="Net Kâr"
           value={formatTRY(a.totals.net)}
           icon={<Wallet className="h-5 w-5" />}
           accent="indigo"
           hint={`ort. aylık ${formatTRY(a.totals.avgMonthlyNet, { compact: true })}`}
         />
         <StatCard
-          label="En iyi ay"
-          value={a.bestMonth.net > 0 ? a.bestMonth.label : '—'}
+          label="En İyi Ay"
+          value={a.bestMonth.net > 0 ? a.bestMonth.fullLabel : '—'}
           icon={<Sparkles className="h-5 w-5" />}
           accent="amber"
           hint={a.bestMonth.net > 0 ? `${formatTRY(a.bestMonth.net, { compact: true })} net` : 'henüz veri yok'}
@@ -137,7 +137,7 @@ export default async function AnalyticsPage({
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <SectionTitle>12 aylık gelir & gider</SectionTitle>
+            <SectionTitle>12 Aylık Gelir & Gider</SectionTitle>
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Gelir</span>
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-rose-500" /> Gider</span>
@@ -147,7 +147,7 @@ export default async function AnalyticsPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">Seans istatistikleri</SectionTitle>
+          <SectionTitle className="mb-4">Seans İstatistikleri</SectionTitle>
           <div className="mb-4 flex items-end justify-between">
             <div>
               <p className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -159,7 +159,7 @@ export default async function AnalyticsPage({
               <p className="font-display text-xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">
                 %{noShowPct}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">no-show</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">gelmedi</p>
             </div>
           </div>
           <div className="space-y-2.5">
@@ -195,11 +195,11 @@ export default async function AnalyticsPage({
       {/* Aylık net + kümülatif birikim */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">Aylık net</SectionTitle>
+          <SectionTitle className="mb-4">Aylık Net</SectionTitle>
           <MonthlyBar data={a.months} />
         </section>
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">Yıl boyu birikim</SectionTitle>
+          <SectionTitle className="mb-4">Yıl Boyu Birikim</SectionTitle>
           <CumulativeArea data={a.cumulative} />
         </section>
       </div>
@@ -207,7 +207,7 @@ export default async function AnalyticsPage({
       {/* Kategoriler + danışanlar + yöntemler */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">Gider kategorileri ({year})</SectionTitle>
+          <SectionTitle className="mb-4">Gider Kategorileri ({year})</SectionTitle>
           {a.expenseByCategory.length ? (
             <CategoryDonut data={a.expenseByCategory} />
           ) : (
@@ -216,7 +216,7 @@ export default async function AnalyticsPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">En çok gelir getiren danışanlar</SectionTitle>
+          <SectionTitle className="mb-4">En Çok Gelir Getiren Danışanlar</SectionTitle>
           {a.topClients.length ? (
             <ul className="space-y-3.5">
               {a.topClients.map((c) => (
@@ -249,7 +249,7 @@ export default async function AnalyticsPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <SectionTitle className="mb-4">Tahsilat yöntemleri</SectionTitle>
+          <SectionTitle className="mb-4">Tahsilat Yöntemleri</SectionTitle>
           <ul className="space-y-3.5">
             {a.methodTotals.map((m) => {
               const Icon = METHOD_ICON[m.method]
@@ -277,7 +277,7 @@ export default async function AnalyticsPage({
           </ul>
 
           <div className="mt-5 border-t border-slate-500/10 pt-4">
-            <SectionTitle className="mb-3">Gelir kategorileri</SectionTitle>
+            <SectionTitle className="mb-3">Gelir Kategorileri</SectionTitle>
             {a.incomeByCategory.length ? (
               <ul className="space-y-2">
                 {a.incomeByCategory.slice(0, 4).map((c) => (

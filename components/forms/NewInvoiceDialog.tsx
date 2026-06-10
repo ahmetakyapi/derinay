@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { FilePlus } from 'lucide-react'
+import { FilePlus, Download, Check } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createInvoice } from '@/app/actions/invoices'
@@ -13,13 +13,14 @@ import { INVOICE_STATUSES, INVOICE_STATUS_LABEL, TAX, type InvoiceStatus } from 
 export function NewInvoiceDialog({
   clients,
   fixedClientId,
-  label = 'Fatura kes',
+  label = 'Fatura Kes',
 }: {
   clients: { id: string; name: string }[]
   fixedClientId?: string
   label?: string
 }) {
   const [open, setOpen] = useState(false)
+  const [previewId, setPreviewId] = useState<string | null>(null)
   const [subtotal, setSubtotal] = useState(0)
   const [kdvRate, setKdvRate] = useState<number>(TAX.KDV_RATE)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +45,8 @@ export function NewInvoiceDialog({
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setOpen(false)
       setSubtotal(0)
+      // Önce önizleme — isterse oradan PDF indirir
+      if (res.id) setPreviewId(res.id)
       router.refresh()
     })
   }
@@ -57,7 +60,7 @@ export function NewInvoiceDialog({
         <FilePlus className="h-4 w-4" /> {label}
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni fatura" description="KDV otomatik hesaplanır">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Fatura" description="KDV otomatik hesaplanır">
         <form onSubmit={onSubmit} className="space-y-4">
           {!fixedClientId && (
             <Field label="Danışan">
@@ -132,6 +135,43 @@ export function NewInvoiceDialog({
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Fatura önizleme — oluşturduktan hemen sonra */}
+      <Modal
+        open={previewId !== null}
+        onClose={() => setPreviewId(null)}
+        title="Fatura Hazır"
+        description="Önizle — istersen PDF olarak kaydet"
+      >
+        {previewId && (
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-slate-500/15 bg-white">
+              <iframe
+                src={`/invoices/${previewId}/print`}
+                title="Fatura önizleme"
+                className="h-[55vh] w-full"
+              />
+            </div>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setPreviewId(null)}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              >
+                <Check className="h-4 w-4" /> Tamam
+              </button>
+              <a
+                href={`/invoices/${previewId}/print?auto=1`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500"
+              >
+                <Download className="h-4 w-4" /> PDF Olarak Kaydet
+              </a>
+            </div>
+          </div>
+        )}
       </Modal>
     </>
   )

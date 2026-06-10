@@ -50,10 +50,10 @@ export function NewClientDialog() {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500"
       >
-        <UserPlus className="h-4 w-4" /> Danışan ekle
+        <UserPlus className="h-4 w-4" /> Danışan Ekle
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni danışan" description="Danışan bilgilerini girin">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Danışan" description="Danışan bilgilerini girin">
         <form onSubmit={onSubmit} className="space-y-4">
           <AvatarPicker name={name} color={color} value={avatar} onChange={setAvatar} />
 
@@ -117,7 +117,7 @@ export function NewClientDialog() {
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Danışanı ekle'}
+              {pending ? 'Kaydediliyor…' : 'Danışanı Ekle'}
             </button>
           </div>
         </form>

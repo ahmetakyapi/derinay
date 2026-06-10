@@ -1,7 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { Copy, Check, MessageCircle } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { Copy, Check, MessageCircle, Save, Send } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
+import { Textarea } from '@/components/ui/Field'
+import { saveReminderTemplate } from '@/app/actions/settings'
 import { USER } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -13,7 +17,8 @@ function waPhone(phone: string): string {
   return `90${digits}`
 }
 
-function reminderText(clientName: string, date: Date): string {
+/** Şablondaki yer tutucuları doldur: {ad}, {tarih}, {terapist} */
+function resolve(template: string, clientName: string, date: Date): string {
   const firstName = clientName.trim().split(/\s+/)[0]
   const when = new Intl.DateTimeFormat('tr-TR', {
     day: 'numeric',
@@ -22,65 +27,141 @@ function reminderText(clientName: string, date: Date): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
-  return `Merhaba ${firstName} 🌿 ${when} saatindeki seansımızı hatırlatmak isterim. Görüşmek üzere! — ${USER.fullName}`
+  return template
+    .replaceAll('{ad}', firstName)
+    .replaceAll('{tarih}', when)
+    .replaceAll('{terapist}', USER.fullName)
 }
 
 /**
- * Seans hatırlatma — şablon mesajı panoya kopyalar; telefon varsa
- * WhatsApp'ı hazır mesajla açar.
+ * Seans hatırlatma — şablon Neon'da tutulur (settings tablosu), buradan
+ * düzenlenip kaydedilebilir; mesaj kopyalanır veya WhatsApp'ta açılır.
  */
 export function ReminderButton({
   clientName,
   phone,
   date,
+  template,
   className,
 }: {
   clientName: string
   phone: string | null
   date: string | Date
+  template: string
   className?: string
 }) {
+  const [open, setOpen] = useState(false)
+  const [draft, setDraft] = useState(template)
   const [copied, setCopied] = useState(false)
-  const text = reminderText(clientName, new Date(date))
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [pending, start] = useTransition()
+  const router = useRouter()
+
+  const message = resolve(draft, clientName, new Date(date))
+  const dirty = draft !== template
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(message)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      window.prompt('Mesajı kopyala:', text)
+      window.prompt('Mesajı kopyala:', message)
     }
   }
 
+  function saveTemplate() {
+    setError(null)
+    start(async () => {
+      const res = await saveReminderTemplate(draft)
+      if (!res.ok) return setError(res.error ?? 'Kaydedilemedi')
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+      router.refresh()
+    })
+  }
+
   return (
-    <span className={cn('inline-flex items-center gap-1', className)}>
+    <>
       <button
         type="button"
-        onClick={copy}
-        aria-label="Hatırlatma mesajını kopyala"
-        title={copied ? 'Kopyalandı!' : 'Hatırlatma mesajını kopyala'}
+        onClick={() => {
+          setDraft(template)
+          setOpen(true)
+        }}
+        aria-label="Seans hatırlatması gönder"
+        title="Seans hatırlatması gönder"
         className={cn(
-          'flex h-7 w-7 items-center justify-center rounded-lg transition-colors',
-          copied
-            ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
-            : 'text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300',
+          'flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400',
+          className,
         )}
       >
-        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+        <Send className="h-3.5 w-3.5" />
       </button>
-      {phone && (
-        <a
-          href={`https://wa.me/${waPhone(phone)}?text=${encodeURIComponent(text)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="WhatsApp ile hatırlat"
-          title="WhatsApp ile hatırlat"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400"
-        >
-          <MessageCircle className="h-3.5 w-3.5" />
-        </a>
-      )}
-    </span>
+
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Seans Hatırlatması"
+        description={`${clientName} · mesajı düzenleyebilir, şablon olarak kaydedebilirsin`}
+      >
+        <div className="space-y-4">
+          <div>
+            <span className="field-label">
+              Mesaj şablonu{' '}
+              <span className="font-normal text-slate-400">
+                — {'{ad}'}, {'{tarih}'}, {'{terapist}'} otomatik dolar
+              </span>
+            </span>
+            <Textarea rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} />
+            {dirty && (
+              <button
+                type="button"
+                onClick={saveTemplate}
+                disabled={pending}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-500/25 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 disabled:opacity-60 dark:text-slate-300 dark:hover:text-indigo-300"
+              >
+                {saved ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Save className="h-3.5 w-3.5" />}
+                {saved ? 'Şablon kaydedildi' : pending ? 'Kaydediliyor…' : 'Şablon Olarak Kaydet'}
+              </button>
+            )}
+            {error && <p className="mt-1.5 text-xs text-rose-500">{error}</p>}
+          </div>
+
+          {/* Önizleme */}
+          <div className="note-paper rounded-xl p-3.5">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Önizleme</p>
+            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-200">{message}</p>
+          </div>
+
+          <div className="flex flex-wrap justify-end gap-2">
+            <button
+              type="button"
+              onClick={copy}
+              className={cn(
+                'inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all',
+                copied
+                  ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  : 'border-slate-500/25 text-slate-600 hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300',
+              )}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied ? 'Kopyalandı' : 'Kopyala'}
+            </button>
+            {phone && (
+              <a
+                href={`https://wa.me/${waPhone(phone)}?text=${encodeURIComponent(message)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp&apos;ta Aç
+              </a>
+            )}
+          </div>
+        </div>
+      </Modal>
+    </>
   )
 }

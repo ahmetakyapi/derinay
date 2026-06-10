@@ -104,6 +104,13 @@ export const payments = pgTable('payments', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Settings (anahtar-değer — ör. hatırlatma mesajı şablonu) ────────────────
+export const settings = pgTable('settings', {
+  key:       text('key').primaryKey(),
+  value:     text('value').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
 // ─── Tip çıkarımı ───────────────────────────────────────────────────────────
 export type User           = typeof users.$inferSelect
 export type Client         = typeof clients.$inferSelect
@@ -117,4 +124,5 @@ export type NewTransaction = typeof transactions.$inferInsert
 export type Invoice        = typeof invoices.$inferSelect
 export type NewInvoice     = typeof invoices.$inferInsert
 export type Payment        = typeof payments.$inferSelect
+export type Setting        = typeof settings.$inferSelect
 export type NewPayment     = typeof payments.$inferInsert

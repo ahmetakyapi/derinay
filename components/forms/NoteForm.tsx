@@ -107,7 +107,7 @@ export function NoteForm({ clientId }: { clientId: string }) {
           disabled={pending}
           className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
         >
-          <Feather className="h-4 w-4" /> {pending ? 'Yazılıyor…' : 'Deftere yaz'}
+          <Feather className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Not Ekle'}
         </button>
       </div>
     </form>

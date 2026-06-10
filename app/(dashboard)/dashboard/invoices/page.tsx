@@ -69,7 +69,14 @@ export default async function InvoicesPage() {
           <div className="divide-y divide-slate-500/10">
             {invoices.map((i) => (
               // Mobil: iki satır (kimlik+tutar / kontroller) · sm+: tek satır
-              <div key={i.id} className="relative flex flex-col gap-2.5 py-3.5 pl-5 pr-4 sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5">
+              <div
+                key={i.id}
+                className={cn(
+                  'relative flex flex-col gap-2.5 py-3.5 pl-5 pr-4 sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5',
+                  i.status === 'overdue' && 'bg-rose-500/[0.05]',
+                  i.status === 'paid' && 'bg-emerald-500/[0.03]',
+                )}
+              >
                 {/* Statü aksan çubuğu */}
                 <span className={cn('absolute inset-y-3 left-0 w-1 rounded-r-full', STATUS_BAR[i.status])} />
 
@@ -86,7 +93,12 @@ export default async function InvoicesPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white sm:hidden">
+                  <span className={cn(
+                    'shrink-0 font-mono text-[13px] font-bold tabular-nums sm:hidden',
+                    i.status === 'paid' ? 'text-emerald-600 dark:text-emerald-400'
+                      : i.status === 'overdue' ? 'text-rose-600 dark:text-rose-400'
+                      : 'text-slate-900 dark:text-white',
+                  )}>
                     {formatTRY(i.total)}
                   </span>
                 </div>
@@ -96,7 +108,12 @@ export default async function InvoicesPage() {
                   <span className="block">KDV %{i.kdvRate} · {formatTRY(i.kdvAmount, { compact: true })}</span>
                 </div>
 
-                <span className="hidden w-28 shrink-0 text-right font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white sm:block">
+                <span className={cn(
+                  'hidden w-28 shrink-0 text-right font-mono text-sm font-bold tabular-nums sm:block',
+                  i.status === 'paid' ? 'text-emerald-600 dark:text-emerald-400'
+                    : i.status === 'overdue' ? 'text-rose-600 dark:text-rose-400'
+                    : 'text-slate-900 dark:text-white',
+                )}>
                   {formatTRY(i.total)}
                 </span>
 

@@ -38,7 +38,7 @@ export default function BackupPage() {
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-            Tam yedek (JSON)
+            Tam Yedek (JSON)
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Tüm tabloların eksiksiz kopyası — danışanlar, seanslar, notlar, finans, faturalar, ödemeler

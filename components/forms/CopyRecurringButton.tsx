@@ -37,7 +37,7 @@ export function CopyRecurringButton({ month }: { month: string }) {
       ) : (
         <>
           <RefreshCcw className={pending ? 'h-3.5 w-3.5 animate-spin' : 'h-3.5 w-3.5'} />
-          {pending ? 'Kopyalanıyor…' : 'Sabit giderleri kopyala'}
+          {pending ? 'Kopyalanıyor…' : 'Sabit Giderleri Kopyala'}
         </>
       )}
     </button>

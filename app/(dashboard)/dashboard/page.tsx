@@ -43,7 +43,7 @@ export default async function DashboardPage({
   const k = d.kpis
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
-  const weekTitle = weekOffset === 0 ? 'Bu haftanın seansları' : 'Haftalık seanslar'
+  const weekTitle = weekOffset === 0 ? 'Bu Haftanın Seansları' : 'Haftalık Seanslar'
   const quote = quoteOfTheDay()
 
   return (
@@ -58,7 +58,7 @@ export default async function DashboardPage({
               href="/dashboard/finances"
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500"
             >
-              <Plus className="h-4 w-4" /> Yeni işlem
+              <Plus className="h-4 w-4" /> Yeni İşlem
             </Link>
           </div>
         }
@@ -95,7 +95,7 @@ export default async function DashboardPage({
       {/* KPI kartları */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Aylık gelir"
+          label="Aylık Gelir"
           value={formatTRY(k.income)}
           icon={<TrendingUp className="h-5 w-5" />}
           accent="emerald"
@@ -103,7 +103,7 @@ export default async function DashboardPage({
           hint="geçen aya göre"
         />
         <StatCard
-          label="Aylık gider"
+          label="Aylık Gider"
           value={formatTRY(k.expense)}
           icon={<TrendingDown className="h-5 w-5" />}
           accent="rose"
@@ -111,7 +111,7 @@ export default async function DashboardPage({
           hint="geçen aya göre"
         />
         <StatCard
-          label="Net kâr"
+          label="Net Kâr"
           value={formatTRY(k.net)}
           icon={<Wallet className="h-5 w-5" />}
           accent="indigo"
@@ -119,7 +119,7 @@ export default async function DashboardPage({
           hint="geçen aya göre"
         />
         <StatCard
-          label="Ödenecek vergi"
+          label="Ödenecek Vergi"
           value={formatTRY(k.taxDue)}
           icon={<Landmark className="h-5 w-5" />}
           accent="amber"
@@ -169,7 +169,7 @@ export default async function DashboardPage({
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gelir & Gider akışı</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gelir & Gider Akışı</h2>
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" /> Gelir
@@ -183,7 +183,7 @@ export default async function DashboardPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gider kategorileri</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gider Kategorileri</h2>
           {d.categoryBreakdown.length ? (
             <CategoryDonut data={d.categoryBreakdown} />
           ) : (
@@ -194,13 +194,13 @@ export default async function DashboardPage({
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Aylık net</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Aylık Net</h2>
           <MonthlyBar data={d.trend} />
         </section>
 
         {/* Son işlemler */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Son işlemler</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Son İşlemler</h2>
           {d.recent.length ? (
             <ul className="space-y-3">
               {d.recent.map((t) => {
@@ -241,7 +241,7 @@ export default async function DashboardPage({
       {/* Bekleyen tahsilat — kim ne kadar borçlu */}
       <section className="glass mt-6 rounded-2xl p-5">
         <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-          <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen tahsilat
+          <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
         </h2>
         {out.balances.length ? (
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
