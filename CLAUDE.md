@@ -161,7 +161,8 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   - KPI: `<StatCard label value icon={<Icon/>} accent change hint />` — `icon` **ReactNode**, lucide bileşeni DEĞİL (bkz §10)
   - Durum etiketi: `<StatusBadge label tone />` (tone: emerald/amber/slate/sky/red/indigo/violet) — `STATUS_TONE[...]` ile eşle
   - Avatar: `<Avatar name color size />`
-  - Modal: `<Modal open onClose title description>` + form
+  - Modal: `<Modal open onClose title description>` + form — **portal ile document.body'ye render edilir**
+    (backdrop-filter'lı .glass atalar fixed'i hapseder; modalı asla portalsız render etme)
   - Form alanları: `<Field label><Input/Select/Textarea/></Field>`
   - Silme: `<DeleteButton action={fn.bind(null,id)} redirectTo? confirmText? />`
   - Boş durum: `<EmptyState icon title description action />`

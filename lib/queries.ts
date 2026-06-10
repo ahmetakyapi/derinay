@@ -147,11 +147,14 @@ export async function getDashboard(monthsBack = 6) {
 }
 
 // ─── Danışanlar ──────────────────────────────────────────────────────────────
-export async function listClients(opts?: { status?: ClientStatus }) {
+export async function listClients(opts?: { status?: ClientStatus; q?: string }) {
+  const filters = []
+  if (opts?.status) filters.push(eq(clients.status, opts.status))
+  if (opts?.q?.trim()) filters.push(ilike(clients.name, `%${opts.q.trim()}%`))
   const rows = await db
     .select()
     .from(clients)
-    .where(opts?.status ? eq(clients.status, opts.status) : undefined)
+    .where(filters.length ? and(...filters) : undefined)
     .orderBy(desc(clients.createdAt))
   return rows.map((c) => ({ ...c, sessionFee: num(c.sessionFee) }))
 }
@@ -264,10 +267,44 @@ export async function listPayments() {
   return rows.map((p) => ({ ...p, amount: num(p.amount) }))
 }
 
-// Form select'leri için hafif danışan listesi
+// Form select'leri için hafif danışan listesi (sessionFee → seans ücretini otomatik doldurmak için)
 export async function clientOptions() {
-  const rows = await db.select({ id: clients.id, name: clients.name }).from(clients).orderBy(clients.name)
-  return rows
+  const rows = await db
+    .select({ id: clients.id, name: clients.name, sessionFee: clients.sessionFee })
+    .from(clients)
+    .orderBy(clients.name)
+  return rows.map((r) => ({ ...r, sessionFee: num(r.sessionFee) }))
+}
+
+// ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
+export async function getOutstandingBalances() {
+  const [clientRows, invs, pays] = await Promise.all([
+    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl }).from(clients),
+    db.select().from(invoices),
+    db.select().from(payments),
+  ])
+
+  const invoiced = new Map<string, number>()
+  invs
+    .filter((i) => i.clientId && i.status !== 'draft')
+    .forEach((i) => invoiced.set(i.clientId!, (invoiced.get(i.clientId!) ?? 0) + num(i.total)))
+  const paid = new Map<string, number>()
+  pays.forEach((p) => paid.set(p.clientId, (paid.get(p.clientId) ?? 0) + num(p.amount)))
+
+  const today = iso(new Date())
+  const overdue = invs.filter(
+    (i) => i.status === 'overdue' || (i.status === 'sent' && i.dueDate !== null && i.dueDate < today),
+  )
+
+  return {
+    balances: clientRows
+      .map((c) => ({ ...c, outstanding: (invoiced.get(c.id) ?? 0) - (paid.get(c.id) ?? 0) }))
+      .filter((c) => c.outstanding > 0.005)
+      .sort((a, b) => b.outstanding - a.outstanding)
+      .slice(0, 6),
+    overdueCount: overdue.length,
+    overdueTotal: overdue.reduce((s, i) => s + num(i.total), 0),
+  }
 }
 
 // ─── Kişisel harcamalar (gün bazlı takvim) ───────────────────────────────────

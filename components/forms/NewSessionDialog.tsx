@@ -11,12 +11,17 @@ import { SESSION_STATUSES, SESSION_STATUS_LABEL, type SessionStatus } from '@/li
 export function NewSessionDialog({
   clientId,
   defaultFee = 0,
+  clients = [],
 }: {
-  clientId: string
+  /** Sabit danışan (danışan detayından açılırsa) */
+  clientId?: string
   defaultFee?: number
+  /** clientId yoksa seçim listesi (dashboard'dan hızlı seans eklemek için) */
+  clients?: { id: string; name: string; sessionFee: number }[]
 }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fee, setFee] = useState<number>(defaultFee)
   const [pending, start] = useTransition()
   const router = useRouter()
 
@@ -24,9 +29,10 @@ export function NewSessionDialog({
     e.preventDefault()
     setError(null)
     const fd = new FormData(e.currentTarget)
+    const targetClientId = clientId ?? String(fd.get('clientId') || '')
     start(async () => {
       const res = await createSession({
-        clientId,
+        clientId: targetClientId,
         date: String(fd.get('date')),
         durationMin: Number(fd.get('durationMin') || 50),
         fee: Number(fd.get('fee') || 0),
@@ -54,6 +60,25 @@ export function NewSessionDialog({
 
       <Modal open={open} onClose={() => setOpen(false)} title="Yeni seans" description="Seansı planla veya geçmiş seans ekle">
         <form onSubmit={onSubmit} className="space-y-4">
+          {!clientId && (
+            <Field label="Danışan">
+              <Select
+                name="clientId"
+                required
+                defaultValue=""
+                onChange={(e) => {
+                  const c = clients.find((x) => x.id === e.target.value)
+                  if (c) setFee(c.sessionFee) // danışanın seans ücretini otomatik getir
+                }}
+              >
+                <option value="" disabled>Seçin…</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </Select>
+            </Field>
+          )}
+
           <Field label="Tarih & saat">
             <Input name="date" type="datetime-local" required defaultValue={nowLocal} />
           </Field>
@@ -63,7 +88,7 @@ export function NewSessionDialog({
               <Input name="durationMin" type="number" min="0" defaultValue={50} />
             </Field>
             <Field label="Ücret (₺)">
-              <Input name="fee" type="number" step="0.01" min="0" defaultValue={defaultFee} />
+              <Input name="fee" type="number" step="0.01" min="0" value={fee} onChange={(e) => setFee(Number(e.target.value))} />
             </Field>
           </div>
 

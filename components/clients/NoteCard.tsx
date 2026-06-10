@@ -1,13 +1,16 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Pin, Trash2 } from 'lucide-react'
+import { Pin, Trash2, Pencil, Check, X } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { togglePinNote, deleteNote } from '@/app/actions/notes'
+import { Input, Textarea } from '@/components/ui/Field'
+import { togglePinNote, deleteNote, updateNote } from '@/app/actions/notes'
 import {
+  NOTE_KINDS,
   NOTE_KIND_LABEL,
   NOTE_KIND_TONE,
+  MOODS,
   MOOD_LABEL,
   MOOD_BG,
   type NoteKind,
@@ -29,9 +32,14 @@ export type NoteCardData = {
 
 /**
  * Seans Defteri kartı — çizgili kâğıt, tür rozeti, duygu noktası, altın raptiye.
+ * Kalem ile satır içi düzenlenebilir.
  */
 export function NoteCard({ note }: { note: NoteCardData }) {
   const [pending, start] = useTransition()
+  const [editing, setEditing] = useState(false)
+  const [kind, setKind] = useState<NoteKind>(note.kind)
+  const [mood, setMood] = useState<Mood | null>(note.mood)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   function onPin() {
@@ -47,6 +55,85 @@ export function NoteCard({ note }: { note: NoteCardData }) {
       await deleteNote(note.id, note.clientId)
       router.refresh()
     })
+  }
+
+  function onSave(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+    const fd = new FormData(e.currentTarget)
+    start(async () => {
+      const res = await updateNote(note.id, note.clientId, {
+        title: String(fd.get('title') || ''),
+        body: String(fd.get('body') || ''),
+        kind,
+        mood,
+      })
+      if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
+      setEditing(false)
+      router.refresh()
+    })
+  }
+
+  if (editing) {
+    return (
+      <form onSubmit={onSave} className="note-paper relative space-y-3 rounded-xl p-4 ring-1 ring-indigo-500/30">
+        <div className="flex flex-wrap gap-1.5">
+          {NOTE_KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setKind(k)}
+              className={cn(
+                'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
+                kind === k
+                  ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
+                  : 'border-slate-500/20 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
+              )}
+            >
+              {NOTE_KIND_LABEL[k]}
+            </button>
+          ))}
+        </div>
+        <Input name="title" defaultValue={note.title ?? ''} placeholder="Başlık (opsiyonel)" />
+        <Textarea name="body" rows={4} required defaultValue={note.body} />
+        <div className="flex items-center gap-1.5">
+          <span className="mr-1 text-xs font-semibold text-slate-500 dark:text-slate-400">Duygu:</span>
+          {MOODS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMood(mood === m ? null : m)}
+              title={MOOD_LABEL[m]}
+              aria-label={MOOD_LABEL[m]}
+              className={cn(
+                'h-5 w-5 rounded-full transition-all',
+                MOOD_BG[m],
+                mood === m
+                  ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-1 ring-offset-[var(--bg)] dark:ring-white/70'
+                  : 'opacity-45 hover:opacity-90',
+              )}
+            />
+          ))}
+        </div>
+        {error && <p className="text-xs text-rose-500">{error}</p>}
+        <div className="flex justify-end gap-1.5">
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          >
+            <X className="h-3.5 w-3.5" /> Vazgeç
+          </button>
+          <button
+            type="submit"
+            disabled={pending}
+            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
+          >
+            <Check className="h-3.5 w-3.5" /> {pending ? 'Kaydediliyor…' : 'Kaydet'}
+          </button>
+        </div>
+      </form>
+    )
   }
 
   return (
@@ -71,7 +158,15 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             {MOOD_LABEL[note.mood]}
           </span>
         )}
-        <span className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <button
+            onClick={() => setEditing(true)}
+            disabled={pending}
+            aria-label="Düzenle"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
           <button
             onClick={onPin}
             disabled={pending}

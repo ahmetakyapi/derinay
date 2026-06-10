@@ -1,16 +1,33 @@
 import Link from 'next/link'
-import { Users, ChevronRight } from 'lucide-react'
+import { Users, ChevronRight, Search } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { NewClientDialog } from '@/components/forms/NewClientDialog'
 import { listClients } from '@/lib/queries'
-import { CLIENT_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
+import { CLIENT_STATUS_LABEL, STATUS_TONE, CLIENT_STATUSES, type ClientStatus } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { durationSince, formatTRY } from '@/lib/format'
 
-export default async function ClientsPage() {
-  const clients = await listClients()
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: { q?: string; status?: string }
+}) {
+  const q = searchParams.q?.trim() || undefined
+  const status = (CLIENT_STATUSES as readonly string[]).includes(searchParams.status ?? '')
+    ? (searchParams.status as ClientStatus)
+    : undefined
+  const clients = await listClients({ q, status })
+
+  const statusHref = (st?: string) => {
+    const p = new URLSearchParams()
+    if (st) p.set('status', st)
+    if (q) p.set('q', q)
+    const qs = p.toString()
+    return `/dashboard/clients${qs ? `?${qs}` : ''}`
+  }
 
   return (
     <>
@@ -19,6 +36,44 @@ export default async function ClientsPage() {
         subtitle={`${clients.length} kayıtlı danışan`}
         action={<NewClientDialog />}
       />
+
+      {/* Statü filtresi + arama */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-1 rounded-xl border border-slate-500/15 p-1">
+          <Link
+            href={statusHref()}
+            className={cn(
+              'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
+              !status ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+            )}
+          >
+            Tümü
+          </Link>
+          {CLIENT_STATUSES.map((st) => (
+            <Link
+              key={st}
+              href={statusHref(st)}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
+                status === st ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+              )}
+            >
+              {CLIENT_STATUS_LABEL[st]}
+            </Link>
+          ))}
+        </div>
+        <form action="/dashboard/clients" className="relative ml-auto w-full sm:w-56">
+          {status && <input type="hidden" name="status" value={status} />}
+          <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="Danışan ara…"
+            className="field !py-2 !pl-9 text-sm"
+          />
+        </form>
+      </div>
 
       {clients.length ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,8 +104,8 @@ export default async function ClientsPage() {
       ) : (
         <EmptyState
           icon={Users}
-          title="Henüz danışan yok"
-          description="İlk danışanını ekleyerek başla."
+          title={q || status ? 'Eşleşen danışan yok' : 'Henüz danışan yok'}
+          description={q || status ? 'Filtreyi temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
         />
       )}
     </>

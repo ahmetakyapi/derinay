@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { modalBackdrop, modalPanel } from '@/lib/variants'
@@ -29,7 +30,12 @@ export function Modal({
     }
   }, [open, onClose])
 
-  return (
+  // Portal — modal her zaman document.body'ye render edilir. Aksi halde
+  // backdrop-filter'lı .glass ataları fixed konumu hapseder (popup kartın
+  // içinde/arkasında kalır — bilinen CSS containing-block tuzağı).
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -64,6 +70,7 @@ export function Modal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

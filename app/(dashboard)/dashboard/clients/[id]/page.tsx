@@ -9,7 +9,6 @@ import {
   Receipt,
   CreditCard,
   CheckCircle2,
-  Wallet,
   Printer,
   HeartPulse,
 } from 'lucide-react'
@@ -20,6 +19,7 @@ import { DeleteButton } from '@/components/ui/DeleteButton'
 import { NoteCard } from '@/components/clients/NoteCard'
 import { MoodTrail } from '@/components/clients/MoodTrail'
 import { NoteForm } from '@/components/forms/NoteForm'
+import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
@@ -28,7 +28,6 @@ import { getClientDetail } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
 import {
   CLIENT_STATUS_LABEL,
-  SESSION_STATUS_LABEL,
   INVOICE_STATUS_LABEL,
   PAYMENT_METHOD_LABEL,
   STATUS_TONE,
@@ -155,12 +154,14 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             </div>
             {sessions.length ? (
               <ul className="space-y-2.5">
-                {sessions.slice(0, 6).map((s) => (
-                  <li key={s.id} className="flex items-center justify-between text-sm">
+                {sessions.slice(0, 8).map((s) => (
+                  <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span className="text-slate-700 dark:text-slate-200">{formatDateTime(s.date)}</span>
-                    <span className="flex items-center gap-3">
-                      <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
-                      <span className="text-slate-500 dark:text-slate-400">{formatTRY(s.fee, { compact: true })}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                        {formatTRY(s.fee, { compact: true })}
+                      </span>
+                      <SessionStatusSelect id={s.id} clientId={client.id} value={s.status} />
                     </span>
                   </li>
                 ))}

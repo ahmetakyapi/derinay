@@ -28,6 +28,26 @@ export async function createNote(input: {
   return { ok: true }
 }
 
+/** Not içeriğini güncelle */
+export async function updateNote(
+  id: string,
+  clientId: string,
+  input: { title?: string; body: string; kind?: NoteKind; mood?: Mood | null },
+) {
+  if (!input.body?.trim()) return { ok: false, error: 'Not boş olamaz' }
+  await db
+    .update(clientNotes)
+    .set({
+      title: input.title || null,
+      body: input.body.trim(),
+      kind: input.kind,
+      mood: input.mood ?? null,
+    })
+    .where(eq(clientNotes.id, id))
+  revalidatePath(`/dashboard/clients/${clientId}`)
+  return { ok: true }
+}
+
 /** Notu sabitle / sabitlemeyi kaldır */
 export async function togglePinNote(id: string, clientId: string, pinned: boolean) {
   await db.update(clientNotes).set({ pinned }).where(eq(clientNotes.id, id))
