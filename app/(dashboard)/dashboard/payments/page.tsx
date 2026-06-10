@@ -40,8 +40,7 @@ export default async function PaymentsPage() {
 
       {/* Yöntem kırılımı + toplam */}
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div className="glass relative overflow-hidden rounded-2xl p-4">
-          <span className="absolute left-4 top-0 h-[3px] w-10 rounded-b-full bg-gradient-to-r from-emerald-500/80 via-emerald-500/30 to-transparent" />
+        <div className="glass rounded-2xl p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
             Toplam Tahsilat
           </p>

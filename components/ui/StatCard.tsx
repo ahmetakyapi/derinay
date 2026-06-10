@@ -7,30 +7,25 @@ import { fadeUp } from '@/lib/variants'
 
 type Accent = 'emerald' | 'rose' | 'indigo' | 'amber' | 'sky'
 
-const ACCENTS: Record<Accent, { icon: string; bar: string; glow: string }> = {
+const ACCENTS: Record<Accent, { icon: string; glow: string }> = {
   emerald: {
     icon: 'text-emerald-600 bg-emerald-500/12 dark:text-emerald-400',
-    bar: 'from-emerald-500/80 via-emerald-500/30',
     glow: 'before:bg-emerald-500/10',
   },
   rose: {
     icon: 'text-rose-600 bg-rose-500/12 dark:text-rose-400',
-    bar: 'from-rose-500/80 via-rose-500/30',
     glow: 'before:bg-rose-500/10',
   },
   indigo: {
     icon: 'text-indigo-600 bg-indigo-500/12 dark:text-indigo-400',
-    bar: 'from-indigo-500/80 via-indigo-500/30',
     glow: 'before:bg-indigo-500/10',
   },
   amber: {
     icon: 'text-amber-600 bg-amber-500/12 dark:text-amber-400',
-    bar: 'from-amber-500/80 via-amber-500/30',
     glow: 'before:bg-amber-500/10',
   },
   sky: {
     icon: 'text-sky-600 bg-sky-500/12 dark:text-sky-400',
-    bar: 'from-sky-500/80 via-sky-500/30',
     glow: 'before:bg-sky-500/10',
   },
 }
@@ -64,14 +59,6 @@ export function StatCard({
         a.glow,
       )}
     >
-      {/* Üst aksan çizgisi — galeri etiketi hissi */}
-      <span
-        className={cn(
-          'absolute left-5 top-0 h-[3px] w-12 rounded-b-full bg-gradient-to-r to-transparent transition-all duration-500 group-hover:w-20',
-          a.bar,
-        )}
-      />
-
       <div className="relative z-10 flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">

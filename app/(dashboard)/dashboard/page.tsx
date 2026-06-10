@@ -18,7 +18,6 @@ import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Avatar } from '@/components/ui/Avatar'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { BreathingCard } from '@/components/ui/BreathingCard'
-import { BranchArt } from '@/components/art/BranchArt'
 import { StatCard } from '@/components/ui/StatCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
@@ -49,12 +48,7 @@ export default async function DashboardPage({
   const quote = quoteOfTheDay()
 
   return (
-    <div className="relative">
-      {/* Okaliptüs dalı — sayfa açılınca mürekkeple çizilir */}
-      <div className="pointer-events-none absolute right-2 top-2 hidden opacity-70 lg:block" aria-hidden>
-        <BranchArt className="h-40 w-28" />
-      </div>
-
+    <>
       <PageHeader
         title={`${greetingNow()}, ${USER.firstName}`}
         subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
@@ -278,6 +272,6 @@ export default async function DashboardPage({
 
       <BreathingCard />
       </div>
-    </div>
+    </>
   )
 }

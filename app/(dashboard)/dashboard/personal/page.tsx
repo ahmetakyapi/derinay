@@ -138,7 +138,7 @@ export default async function PersonalPage({
         <section className="glass mt-5 overflow-hidden rounded-2xl">
           <header className="flex items-center justify-between border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
             <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-              Ay Dökümü — Gün Gün
+              Aylık Harcama
             </h2>
             <span className="text-xs text-slate-400">{data.items.length} harcama</span>
           </header>

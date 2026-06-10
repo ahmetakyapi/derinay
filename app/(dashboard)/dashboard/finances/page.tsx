@@ -282,15 +282,7 @@ function SummaryCard({
   const goodChange = tone === 'expense' ? !positive : positive
 
   return (
-    <div className="glass relative overflow-hidden rounded-2xl p-5">
-      <span
-        className={cn(
-          'absolute left-5 top-0 h-[3px] w-10 rounded-b-full bg-gradient-to-r to-transparent',
-          tone === 'income' && 'from-emerald-500/80 via-emerald-500/30',
-          tone === 'expense' && 'from-rose-500/80 via-rose-500/30',
-          tone === 'net' && 'from-indigo-500/80 via-indigo-500/30',
-        )}
-      />
+    <div className="glass rounded-2xl p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{label}</p>
       <div className="mt-2 flex flex-wrap items-baseline gap-2">
         <p className={cn('font-display text-2xl font-semibold tracking-tight', valueCls)}>{formatTRY(value)}</p>

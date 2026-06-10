@@ -35,7 +35,6 @@ export default async function TaxesPage() {
       icon: Receipt,
       tone: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-500/10',
-      bar: 'from-amber-500/80 via-amber-500/30',
       hint: 'taslak hariç faturalardan',
     },
     {
@@ -44,7 +43,6 @@ export default async function TaxesPage() {
       icon: TrendingUp,
       tone: 'text-rose-600 dark:text-rose-400',
       bg: 'bg-rose-500/10',
-      bar: 'from-rose-500/80 via-rose-500/30',
       hint: `net kârın %${TAX.INCOME_TAX_ESTIMATE_RATE}'si (tahmini)`,
     },
     {
@@ -53,7 +51,6 @@ export default async function TaxesPage() {
       icon: Landmark,
       tone: 'text-indigo-700 dark:text-indigo-300',
       bg: 'bg-indigo-500/10',
-      bar: 'from-indigo-500/80 via-indigo-500/30',
       hint: 'bu ay ödenecek',
     },
   ]
@@ -106,7 +103,6 @@ export default async function TaxesPage() {
           <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-3">
             {breakdown.map((b) => (
               <div key={b.label} className="glass relative flex flex-col overflow-hidden rounded-2xl p-5">
-                <span className={cn('absolute left-5 top-0 h-[3px] w-12 rounded-b-full bg-gradient-to-r to-transparent', b.bar)} />
                 <span className={cn('mb-3 flex h-10 w-10 items-center justify-center rounded-xl', b.bg, b.tone)}>
                   <b.icon className="h-5 w-5" />
                 </span>
@@ -120,13 +116,18 @@ export default async function TaxesPage() {
               </div>
             ))}
 
-            <div className="flex items-start gap-2.5 rounded-2xl border border-slate-500/15 bg-slate-500/[0.04] p-4 sm:col-span-3">
-              <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-              <p className="font-display text-xs italic leading-relaxed text-slate-500 dark:text-slate-400">
-                Gelir vergisi, net kâr üzerinden %{TAX.INCOME_TAX_ESTIMATE_RATE} ile yapılan
-                basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV, taslak dışındaki
-                faturalardan hesaplanır.
-              </p>
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-4 sm:col-span-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                <Info className="h-4 w-4" />
+              </span>
+              <div className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
+                <p className="mb-0.5 font-semibold text-slate-800 dark:text-slate-100">Tahmini hesaplama</p>
+                <p>
+                  Gelir vergisi, net kâr üzerinden <strong>%{TAX.INCOME_TAX_ESTIMATE_RATE}</strong> ile
+                  hesaplanan basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV, taslak
+                  dışındaki faturalardan toplanır.
+                </p>
+              </div>
             </div>
           </div>
         </section>

@@ -10,7 +10,8 @@ import { formatTRY } from '@/lib/format'
 import { CHART } from '@/lib/palette'
 
 /**
- * Ödenecek vergi içindeki KDV oranını gösteren radial gösterge.
+ * Bu ay ödenecek vergi göstergesi — altın halka KDV payını gösterir,
+ * merkezde tam tutar (kısaltmasız) Fraunces ile.
  */
 export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }) {
   const total = kdv + incomeTax
@@ -18,11 +19,11 @@ export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }
   const data = [{ name: 'KDV', value: pct, fill: CHART.gold }]
 
   return (
-    <div className="relative h-[180px] w-full">
+    <div className="relative h-[210px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RadialBarChart
-          innerRadius="72%"
-          outerRadius="100%"
+          innerRadius="78%"
+          outerRadius="96%"
           data={data}
           startAngle={90}
           endAngle={-270}
@@ -31,12 +32,18 @@ export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }
           <RadialBar background={{ fill: CHART.track }} dataKey="value" cornerRadius={999} />
         </RadialBarChart>
       </ResponsiveContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[11px] text-slate-500 dark:text-slate-400">Ödenecek toplam</span>
-        <span className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          {formatTRY(total, { compact: true })}
+
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1">
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+          Ödenecek Toplam
         </span>
-        <span className="mt-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">%{pct} KDV</span>
+        <span className="max-w-[150px] text-center font-display text-[1.45rem] font-semibold leading-tight tracking-tight text-slate-900 dark:text-white">
+          {formatTRY(total)}
+        </span>
+        <span className="mt-0.5 inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+          %{pct} KDV
+        </span>
       </div>
     </div>
   )
