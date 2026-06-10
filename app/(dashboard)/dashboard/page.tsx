@@ -17,6 +17,8 @@ import {
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Avatar } from '@/components/ui/Avatar'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
+import { BreathingCard } from '@/components/ui/BreathingCard'
+import { BranchArt } from '@/components/art/BranchArt'
 import { StatCard } from '@/components/ui/StatCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
@@ -47,7 +49,12 @@ export default async function DashboardPage({
   const quote = quoteOfTheDay()
 
   return (
-    <>
+    <div className="relative">
+      {/* Okaliptüs dalı — sayfa açılınca mürekkeple çizilir */}
+      <div className="pointer-events-none absolute right-2 top-2 hidden opacity-70 lg:block" aria-hidden>
+        <BranchArt className="h-40 w-28" />
+      </div>
+
       <PageHeader
         title={`${greetingNow()}, ${USER.firstName}`}
         subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
@@ -238,13 +245,14 @@ export default async function DashboardPage({
         </section>
       </div>
 
-      {/* Bekleyen tahsilat — kim ne kadar borçlu */}
-      <section className="glass mt-6 rounded-2xl p-5">
+      {/* Bekleyen tahsilat + Nefes Köşesi */}
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section className="glass rounded-2xl p-5 lg:col-span-2">
         <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
           <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
         </h2>
         {out.balances.length ? (
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
             {out.balances.map((b) => (
               <Link
                 key={b.id}
@@ -267,6 +275,9 @@ export default async function DashboardPage({
           </p>
         )}
       </section>
-    </>
+
+      <BreathingCard />
+      </div>
+    </div>
   )
 }

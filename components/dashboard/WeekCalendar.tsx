@@ -35,8 +35,9 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
               <span className={cn('text-[11px] font-semibold uppercase', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
                 {d.label}
               </span>
-              <span className={cn('text-sm font-bold', isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300')}>
+              <span className={cn('relative text-sm font-bold', isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300')}>
                 {d.dayNum}
+                {isToday && <span className="absolute -right-2 top-0 h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />}
               </span>
             </div>
 

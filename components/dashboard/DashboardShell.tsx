@@ -159,7 +159,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <Brand />
         </div>
         <NavList />
-        <div className="mt-auto flex items-center justify-between gap-2 rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+        <div className="mt-auto">
+          {/* Galeri ayracı */}
+          <div className="mb-3 flex items-center gap-3 px-2" aria-hidden>
+            <span className="h-px flex-1 bg-slate-500/15" />
+            <span className="text-[10px] text-amber-500/70">✦</span>
+            <span className="h-px flex-1 bg-slate-500/15" />
+          </div>
+        <div className="flex items-center justify-between gap-2 rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
               SA
@@ -182,6 +189,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </button>
             </form>
           </div>
+        </div>
         </div>
       </aside>
 

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { AuthError } from 'next-auth'
 import { Lock, ArrowRight } from 'lucide-react'
 import { signIn, auth } from '@/lib/auth'
+import { BranchArt } from '@/components/art/BranchArt'
 import { USER } from '@/lib/constants'
 
 export const metadata = { title: 'Giriş' }
@@ -38,6 +39,7 @@ export default async function LoginPage({
         <span className="absolute -right-8 top-1/2 hidden -translate-y-1/2 select-none font-display text-[22rem] font-semibold italic leading-none text-slate-900/[0.04] dark:text-white/[0.04] lg:block">
           D
         </span>
+        <BranchArt className="absolute bottom-10 left-10 hidden h-44 w-32 opacity-80 md:block" delay={0.8} />
       </div>
 
       <div className="surface relative w-full max-w-sm rounded-3xl p-8 shadow-2xl">
