@@ -8,6 +8,42 @@ type Slice = { category: string; amount: number }
 
 const MAX_ROWS = 6
 
+/** Kâğıt stilinde özel tooltip — kategori + tam tutar + pay */
+function DonutTooltip({
+  active,
+  payload,
+  total,
+}: {
+  active?: boolean
+  payload?: { name?: string; value?: number; payload?: { fill?: string } }[]
+  total: number
+}) {
+  if (!active || !payload?.length) return null
+  const item = payload[0]
+  const value = Number(item.value ?? 0)
+  const pct = total ? Math.round((value / total) * 100) : 0
+
+  return (
+    <div
+      className="max-w-[220px] rounded-xl border px-3 py-2.5 text-xs shadow-xl backdrop-blur-md"
+      style={{
+        background: 'rgba(var(--paper), 0.97)',
+        borderColor: 'rgba(var(--line), 0.16)',
+        color: 'var(--ink)',
+      }}
+    >
+      <p className="mb-1 flex items-center gap-1.5 font-semibold">
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.payload?.fill }} />
+        <span className="min-w-0 truncate">{item.name}</span>
+      </p>
+      <p className="flex items-baseline justify-between gap-3">
+        <span className="font-mono font-bold tabular-nums">{formatTRY(value)}</span>
+        <span className="text-slate-400">%{pct}</span>
+      </p>
+    </div>
+  )
+}
+
 /**
  * Kategori donut'u — dar kartlarda da okunur: halka üstte,
  * lejant altta tam genişlik satırlar (isim + % + tutar).
@@ -38,7 +74,10 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
                 <Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(v: number, n) => [formatTRY(v), n as string]} />
+            <Tooltip
+              content={<DonutTooltip total={total} />}
+              wrapperStyle={{ zIndex: 20, outline: 'none' }}
+            />
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
