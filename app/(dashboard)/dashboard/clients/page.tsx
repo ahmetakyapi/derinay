@@ -29,7 +29,7 @@ export default async function ClientsPage() {
               className="glass group rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="flex items-start justify-between">
-                <Avatar name={c.name} color={c.colorTag} size="lg" />
+                <Avatar name={c.name} color={c.colorTag} src={c.avatarUrl} size="lg" />
                 <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
               </div>
               <h3 className="mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>

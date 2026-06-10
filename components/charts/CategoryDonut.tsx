@@ -40,15 +40,17 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
         </div>
       </div>
 
-      <ul className="w-full space-y-2">
+      <ul className="w-full min-w-0 space-y-2">
         {data.slice(0, 6).map((d, i) => (
-          <li key={d.category} className="flex items-center gap-2.5 text-sm">
+          <li key={d.category} className="flex min-w-0 items-center gap-2.5 text-sm">
             <span
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ background: CHART_SERIES[i % CHART_SERIES.length] }}
             />
-            <span className="flex-1 truncate text-slate-600 dark:text-slate-300">{d.category}</span>
-            <span className="font-mono text-[13px] font-semibold tabular-nums text-slate-900 dark:text-white">
+            <span className="min-w-0 flex-1 truncate text-slate-600 dark:text-slate-300" title={d.category}>
+              {d.category}
+            </span>
+            <span className="shrink-0 whitespace-nowrap font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
               {formatTRY(d.amount, { compact: true })}
             </span>
           </li>

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, numeric, date } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid, integer, numeric, date, boolean } from 'drizzle-orm/pg-core'
 import type {
   ClientStatus,
   SessionStatus,
@@ -6,6 +6,8 @@ import type {
   TxScope,
   InvoiceStatus,
   PaymentMethod,
+  NoteKind,
+  Mood,
 } from './constants'
 
 // ─── Users (ileride auth için — şimdilik kullanılmıyor) ─────────────────────
@@ -29,6 +31,7 @@ export const clients = pgTable('clients', {
   startDate:  date('start_date').notNull().defaultNow(),
   sessionFee: numeric('session_fee', { precision: 12, scale: 2 }).notNull().default('0'),
   colorTag:   text('color_tag').notNull().default('indigo'), // avatar/etiket rengi
+  avatarUrl:  text('avatar_url'), // küçük data-URI fotoğraf (istemcide ~128px'e küçültülür)
   tags:       text('tags').array().notNull().default([]),
   notes:      text('notes'), // kısa özet (detaylı notlar clientNotes'ta)
   createdAt:  timestamp('created_at').defaultNow().notNull(),
@@ -53,6 +56,9 @@ export const clientNotes = pgTable('client_notes', {
   clientId:  uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
   title:     text('title'),
   body:      text('body').notNull(),
+  kind:      text('kind').$type<NoteKind>().notNull().default('session'),   // seans/gözlem/ödev/önemli
+  mood:      text('mood').$type<Mood>(),                                    // danışanın seans duygu durumu
+  pinned:    boolean('pinned').notNull().default(false),                    // sabitlenmiş not
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

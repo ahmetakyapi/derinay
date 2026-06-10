@@ -21,6 +21,9 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    // lib'de tanımlı sınıf haritaları (CLIENT_COLOR_BG, STATUS_TONE vb.) JIT'in
+    // görmesi için ŞART — yoksa avatar gradientleri üretilmez (görünmez avatar bug'ı).
+    './lib/**/*.{js,ts,jsx,tsx}',
   ],
   darkMode: 'class',
   theme: {

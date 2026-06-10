@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserPlus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { AvatarPicker } from '@/components/forms/AvatarPicker'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createClient } from '@/app/actions/clients'
 import { CLIENT_COLORS, CLIENT_STATUSES, CLIENT_STATUS_LABEL, type ClientColor, type ClientStatus } from '@/lib/constants'
@@ -13,6 +14,8 @@ import { cn } from '@/lib/utils'
 export function NewClientDialog() {
   const [open, setOpen] = useState(false)
   const [color, setColor] = useState<ClientColor>('indigo')
+  const [avatar, setAvatar] = useState<string | null>(null)
+  const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
   const router = useRouter()
@@ -30,6 +33,7 @@ export function NewClientDialog() {
         sessionFee: Number(fd.get('sessionFee') || 0),
         startDate: String(fd.get('startDate') || ''),
         colorTag: color,
+        avatarUrl: avatar,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setOpen(false)
@@ -48,8 +52,10 @@ export function NewClientDialog() {
 
       <Modal open={open} onClose={() => setOpen(false)} title="Yeni danışan" description="Danışan bilgilerini girin">
         <form onSubmit={onSubmit} className="space-y-4">
+          <AvatarPicker name={name} color={color} value={avatar} onChange={setAvatar} />
+
           <Field label="Ad Soyad">
-            <Input name="name" required placeholder="Ayşe Yılmaz" />
+            <Input name="name" required placeholder="Ayşe Yılmaz" value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -90,7 +96,9 @@ export function NewClientDialog() {
                   className={cn(
                     'h-8 w-8 rounded-lg bg-gradient-to-br transition-all',
                     CLIENT_COLOR_BG[c],
-                    color === c ? 'ring-2 ring-offset-2 ring-offset-transparent ring-white/60 scale-110' : 'opacity-70 hover:opacity-100',
+                    color === c
+                      ? 'scale-110 ring-2 ring-slate-900/60 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
+                      : 'opacity-70 hover:opacity-100',
                   )}
                 />
               ))}

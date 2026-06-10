@@ -22,6 +22,7 @@ import { MonthlyBar } from '@/components/charts/MonthlyBar'
 import { getDashboard, getWeekSessions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
 import { USER } from '@/lib/constants'
+import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
 
 export default async function DashboardPage({
   searchParams,
@@ -34,11 +35,12 @@ export default async function DashboardPage({
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
   const weekTitle = weekOffset === 0 ? 'Bu haftanın seansları' : 'Haftalık seanslar'
+  const quote = quoteOfTheDay()
 
   return (
     <>
       <PageHeader
-        title={`Merhaba, ${USER.firstName} 👋`}
+        title={`${greetingNow()}, ${USER.firstName}`}
         subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
         action={
           <Link
@@ -49,6 +51,14 @@ export default async function DashboardPage({
           </Link>
         }
       />
+
+      {/* Günün sözü — sükûnet dokunuşu */}
+      <p className="-mt-3 mb-6 font-display text-sm italic leading-relaxed text-slate-500 dark:text-slate-400">
+        <span className="mr-1 font-semibold text-amber-500">“</span>
+        {quote.text}
+        <span className="ml-1 font-semibold text-amber-500">”</span>
+        <span className="ml-2 text-xs not-italic text-slate-400">— {quote.author}</span>
+      </p>
 
       {/* KPI kartları */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

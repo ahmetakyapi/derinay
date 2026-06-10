@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, desc, eq, gte, lte } from 'drizzle-orm'
+import { and, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
@@ -34,6 +34,7 @@ export async function listTransactions(opts?: {
   month?: string // YYYY-MM
   type?: TxType
   scope?: TxScope
+  q?: string // kategori/açıklama araması
 }): Promise<TxRow[]> {
   const filters = []
   if (opts?.type) filters.push(eq(transactions.type, opts.type))
@@ -42,6 +43,10 @@ export async function listTransactions(opts?: {
     const [y, m] = opts.month.split('-').map(Number)
     filters.push(gte(transactions.date, iso(new Date(y, m - 1, 1))))
     filters.push(lte(transactions.date, iso(new Date(y, m, 0))))
+  }
+  if (opts?.q?.trim()) {
+    const term = `%${opts.q.trim()}%`
+    filters.push(or(ilike(transactions.category, term), ilike(transactions.description, term))!)
   }
   const rows = await db
     .select({
@@ -156,7 +161,7 @@ export async function getClientDetail(id: string) {
   if (!client) return null
 
   const [notes, sess, pays, invs, txs] = await Promise.all([
-    db.select().from(clientNotes).where(eq(clientNotes.clientId, id)).orderBy(desc(clientNotes.createdAt)),
+    db.select().from(clientNotes).where(eq(clientNotes.clientId, id)).orderBy(desc(clientNotes.pinned), desc(clientNotes.createdAt)),
     db.select().from(sessions).where(eq(sessions.clientId, id)).orderBy(desc(sessions.date)),
     db.select().from(payments).where(eq(payments.clientId, id)).orderBy(desc(payments.date)),
     db.select().from(invoices).where(eq(invoices.clientId, id)).orderBy(desc(invoices.issueDate)),
@@ -193,6 +198,8 @@ export async function listInvoices() {
       status: invoices.status,
       clientId: invoices.clientId,
       clientName: clients.name,
+      clientAvatar: clients.avatarUrl,
+      clientColor: clients.colorTag,
     })
     .from(invoices)
     .leftJoin(clients, eq(invoices.clientId, clients.id))
@@ -247,6 +254,8 @@ export async function listPayments() {
       note: payments.note,
       clientId: payments.clientId,
       clientName: clients.name,
+      clientAvatar: clients.avatarUrl,
+      clientColor: clients.colorTag,
       invoiceId: payments.invoiceId,
     })
     .from(payments)
@@ -392,4 +401,116 @@ export async function getTaxOverview(monthsBack = 6) {
 
   const current = months[months.length - 1]
   return { months, current }
+}
+
+// ─── Yıllık analiz ───────────────────────────────────────────────────────────
+export async function getYearAnalytics(year: number) {
+  const start = `${year}-01-01`
+  const end = `${year}-12-31`
+  const yearStart = new Date(year, 0, 1)
+  const yearEnd = new Date(year, 11, 31, 23, 59, 59)
+
+  const [txs, invs, sess, pays] = await Promise.all([
+    db
+      .select({
+        id: transactions.id,
+        type: transactions.type,
+        amount: transactions.amount,
+        category: transactions.category,
+        date: transactions.date,
+        clientId: transactions.clientId,
+        clientName: clients.name,
+        clientColor: clients.colorTag,
+        clientAvatar: clients.avatarUrl,
+      })
+      .from(transactions)
+      .leftJoin(clients, eq(transactions.clientId, clients.id))
+      .where(and(eq(transactions.scope, 'business'), gte(transactions.date, start), lte(transactions.date, end))),
+    db.select().from(invoices).where(and(gte(invoices.issueDate, start), lte(invoices.issueDate, end))),
+    db.select().from(sessions).where(and(gte(sessions.date, yearStart), lte(sessions.date, yearEnd))),
+    db.select().from(payments).where(and(gte(payments.date, start), lte(payments.date, end))),
+  ])
+
+  // 12 aylık seri + kümülatif net
+  const months = Array.from({ length: 12 }, (_, m) => {
+    const k = `${year}-${String(m + 1).padStart(2, '0')}`
+    const income = txs.filter((t) => t.type === 'income' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
+    const expense = txs.filter((t) => t.type === 'expense' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
+    const kdv = invs.filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k)).reduce((s, i) => s + num(i.kdvAmount), 0)
+    const tax = taxSummary({ income, expense, kdvCollected: kdv })
+    return { key: k, label: monthKeyToLabel(k), income, expense, net: income - expense, kdv, incomeTax: tax.incomeTax, totalDue: tax.totalDue }
+  })
+  let running = 0
+  const cumulative = months.map((m) => ({ label: m.label, value: (running += m.net) }))
+
+  const totalIncome = months.reduce((s, m) => s + m.income, 0)
+  const totalExpense = months.reduce((s, m) => s + m.expense, 0)
+  const totalKdv = months.reduce((s, m) => s + m.kdv, 0)
+  const totalTax = months.reduce((s, m) => s + m.totalDue, 0)
+
+  // Ortalama: cari yılda geçen aylar, geçmiş yılda 12 ay
+  const now = new Date()
+  const elapsed = year === now.getFullYear() ? now.getMonth() + 1 : year < now.getFullYear() ? 12 : 1
+  const bestMonth = months.reduce((a, b) => (b.net > a.net ? b : a), months[0])
+
+  // Kategori kırılımları (yıllık)
+  const catSum = (type: TxType) => {
+    const map = new Map<string, number>()
+    txs.filter((t) => t.type === type).forEach((t) => map.set(t.category, (map.get(t.category) ?? 0) + num(t.amount)))
+    return [...map.entries()].map(([category, amount]) => ({ category, amount })).sort((a, b) => b.amount - a.amount)
+  }
+
+  // En çok gelir getiren danışanlar
+  const clientMap = new Map<string, { name: string; color: string; avatar: string | null; amount: number }>()
+  txs
+    .filter((t) => t.type === 'income' && t.clientId)
+    .forEach((t) => {
+      const cur = clientMap.get(t.clientId!) ?? { name: t.clientName ?? '—', color: t.clientColor ?? 'indigo', avatar: t.clientAvatar ?? null, amount: 0 }
+      cur.amount += num(t.amount)
+      clientMap.set(t.clientId!, cur)
+    })
+  const topClients = [...clientMap.entries()]
+    .map(([id, v]) => ({ id, ...v }))
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 6)
+
+  // Seans istatistikleri
+  const sessionStats = {
+    total: sess.length,
+    completed: sess.filter((s) => s.status === 'completed').length,
+    scheduled: sess.filter((s) => s.status === 'scheduled').length,
+    cancelled: sess.filter((s) => s.status === 'cancelled').length,
+    noShow: sess.filter((s) => s.status === 'no_show').length,
+    avgFee: (() => {
+      const done = sess.filter((s) => s.status === 'completed')
+      return done.length ? done.reduce((sum, s) => sum + num(s.fee), 0) / done.length : 0
+    })(),
+  }
+
+  // Ödeme yöntemi kırılımı
+  const methodTotals = (['cash', 'card', 'transfer'] as const).map((m) => ({
+    method: m,
+    amount: pays.filter((p) => p.method === m).reduce((s, p) => s + num(p.amount), 0),
+    count: pays.filter((p) => p.method === m).length,
+  }))
+
+  return {
+    year,
+    months,
+    cumulative,
+    totals: {
+      income: totalIncome,
+      expense: totalExpense,
+      net: totalIncome - totalExpense,
+      kdv: totalKdv,
+      tax: totalTax,
+      avgMonthlyNet: (totalIncome - totalExpense) / elapsed,
+    },
+    bestMonth,
+    expenseByCategory: catSum('expense'),
+    incomeByCategory: catSum('income'),
+    topClients,
+    sessionStats,
+    methodTotals,
+  }
 }

@@ -53,6 +53,51 @@ export const STATUS_TONE: Record<string, 'emerald' | 'amber' | 'slate' | 'sky' |
   draft: 'slate', sent: 'sky', paid: 'emerald', overdue: 'red',
 }
 
+// ─── Seans Defteri: not türleri & duygu skalası ──────────────────────────────
+
+export const NOTE_KINDS = ['session', 'observation', 'homework', 'important'] as const
+export type NoteKind = (typeof NOTE_KINDS)[number]
+
+export const NOTE_KIND_LABEL: Record<NoteKind, string> = {
+  session:     'Seans notu',
+  observation: 'Gözlem',
+  homework:    'Ödev',
+  important:   'Önemli',
+}
+
+export const NOTE_KIND_TONE: Record<NoteKind, 'indigo' | 'sky' | 'amber' | 'red'> = {
+  session: 'indigo', observation: 'sky', homework: 'amber', important: 'red',
+}
+
+/** Danışanın seanstaki duygu durumu — 5'li skala (duygu izleği bunu kullanır) */
+export const MOODS = ['great', 'good', 'neutral', 'low', 'difficult'] as const
+export type Mood = (typeof MOODS)[number]
+
+export const MOOD_LABEL: Record<Mood, string> = {
+  great:     'Çok iyi',
+  good:      'İyi',
+  neutral:   'Nötr',
+  low:       'Düşük',
+  difficult: 'Zorlu',
+}
+
+// Tam yazılmış Tailwind sınıfları (JIT) — duygu noktaları
+export const MOOD_BG: Record<Mood, string> = {
+  great:     'bg-emerald-500',
+  good:      'bg-teal-400',
+  neutral:   'bg-amber-400',
+  low:       'bg-sky-500',
+  difficult: 'bg-rose-500',
+}
+
+export const MOOD_RING: Record<Mood, string> = {
+  great:     'ring-emerald-500/40',
+  good:      'ring-teal-400/40',
+  neutral:   'ring-amber-400/40',
+  low:       'ring-sky-500/40',
+  difficult: 'ring-rose-500/40',
+}
+
 // ─── Kategoriler ─────────────────────────────────────────────────────────────
 
 export const INCOME_CATEGORIES = [

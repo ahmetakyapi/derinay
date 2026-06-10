@@ -4,10 +4,16 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { clientNotes, sessions } from '@/lib/schema'
-import type { SessionStatus } from '@/lib/constants'
+import type { SessionStatus, NoteKind, Mood } from '@/lib/constants'
 
 // ─── Danışan notları ─────────────────────────────────────────────────────────
-export async function createNote(input: { clientId: string; title?: string; body: string }) {
+export async function createNote(input: {
+  clientId: string
+  title?: string
+  body: string
+  kind?: NoteKind
+  mood?: Mood | null
+}) {
   if (!input.clientId) return { ok: false, error: 'Danışan bulunamadı' }
   if (!input.body?.trim()) return { ok: false, error: 'Not boş olamaz' }
 
@@ -15,8 +21,17 @@ export async function createNote(input: { clientId: string; title?: string; body
     clientId: input.clientId,
     title: input.title || null,
     body: input.body.trim(),
+    kind: input.kind ?? 'session',
+    mood: input.mood ?? null,
   })
   revalidatePath(`/dashboard/clients/${input.clientId}`)
+  return { ok: true }
+}
+
+/** Notu sabitle / sabitlemeyi kaldır */
+export async function togglePinNote(id: string, clientId: string, pinned: boolean) {
+  await db.update(clientNotes).set({ pinned }).where(eq(clientNotes.id, id))
+  revalidatePath(`/dashboard/clients/${clientId}`)
   return { ok: true }
 }
 

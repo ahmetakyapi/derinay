@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
+  LineChart,
   Users,
   ArrowLeftRight,
   CalendarDays,
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
     label: 'Finans',
     items: [
       { label: 'Gelir & Gider', href: '/dashboard/finances', icon: ArrowLeftRight },
+      { label: 'Analiz', href: '/dashboard/analytics', icon: LineChart },
       { label: 'Faturalar', href: '/dashboard/invoices', icon: FileText },
       { label: 'Ödemeler', href: '/dashboard/payments', icon: CreditCard },
       { label: 'Vergiler', href: '/dashboard/taxes', icon: Landmark },

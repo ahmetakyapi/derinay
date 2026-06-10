@@ -97,10 +97,18 @@ async function main() {
         })
       }
     }
-    // 1-2 not
-    const noteCount = 1 + Math.floor(Math.random() * 2)
+    // 2-4 not — Seans Defteri: tür + duygu + ara sıra sabitlenmiş
+    const KINDS = ['session', 'session', 'observation', 'homework', 'important'] as const
+    const MOOD_POOL = ['great', 'good', 'good', 'neutral', 'low', 'difficult'] as const
+    const noteCount = 2 + Math.floor(Math.random() * 3)
     for (let n = 0; n < noteCount; n++) {
-      noteRows.push({ clientId: c.id, body: pick(NOTES) })
+      noteRows.push({
+        clientId: c.id,
+        body: pick(NOTES),
+        kind: pick([...KINDS]),
+        mood: Math.random() < 0.8 ? pick([...MOOD_POOL]) : null,
+        pinned: n === 0 && Math.random() < 0.3,
+      })
     }
   }
 

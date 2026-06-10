@@ -87,6 +87,7 @@ app/
       payments/page.tsx            # Ödemeler
       taxes/page.tsx               # Vergi özeti (KDV + gelir vergisi tahmini)
   invoices/[id]/print/page.tsx     # Yazdırılabilir fatura (PDF) — dashboard kabuğu DIŞINDA
+  reports/[year]/print/page.tsx    # Yıllık finans raporu (PDF) — muhasebeci formatı
   actions/                         # clients, transactions, invoices, payments, notes (+sessions)
 lib/
   schema.ts        # Drizzle tablolar + tip çıkarımı
@@ -95,13 +96,15 @@ lib/
   finance.ts       # calcKdv, estimateIncomeTax, taxSummary
   palette.ts       # Chart renkleri (CHART, CHART_SERIES) — Atölye paleti
   format.ts        # formatTRY, formatDate*, monthKey, durationSince, initials, pctChange
+  quotes.ts        # Günün sözü (gün-deterministik) + greetingNow (Europe/Istanbul)
   db.ts            # lazy Drizzle/Neon proxy
   utils.ts         # cn()
   variants.ts      # Framer Motion varyantları + EASE
 components/
   dashboard/       # DashboardShell (sidebar/topbar/drawer), PageHeader, PageTransition, WeekCalendar
-  charts/          # AreaTrendChart, CategoryDonut, MonthlyBar, TaxRadial ('use client')
-  forms/           # New*Dialog, EditClientDialog, NoteForm, InvoiceStatusSelect
+  clients/         # NoteCard (Seans Defteri kartı), MoodTrail (duygu izleği)
+  charts/          # AreaTrendChart, CategoryDonut, MonthlyBar, TaxRadial, CumulativeArea ('use client')
+  forms/           # New*Dialog, EditClientDialog, NoteForm (tür+duygu), AvatarPicker, InvoiceStatusSelect
   ui/              # GlassCard, Button, Chip, Modal, Field(Input/Select/Textarea), StatCard,
                    # StatusBadge, Avatar, EmptyState, DeleteButton
   invoice/         # PrintButton
@@ -116,10 +119,11 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 
 - **users** — auth için rezerve (şu an kullanılmıyor).
 - **clients** — danışan: name, email, phone, `status`(active/paused/completed), startDate,
-  sessionFee, colorTag, tags[], notes.
+  sessionFee, colorTag, **avatarUrl** (istemcide ~192px'e küçültülmüş data-URI foto), tags[], notes.
 - **sessions** — seans: clientId→cascade, date(timestamp), durationMin, `status`
   (scheduled/completed/cancelled/no_show), fee.
-- **clientNotes** — danışan notu: clientId→cascade, title, body.
+- **clientNotes** — Seans Defteri: clientId→cascade, title, body, **kind**(session/observation/
+  homework/important), **mood**(great/good/neutral/low/difficult — duygu izleği), **pinned**.
 - **transactions** — gelir/gider: `type`(income/expense), **`scope`(business/personal)**,
   amount, category(serbest metin), description, date, clientId→set null.
 - **invoices** — fatura: number(unique), clientId→set null, issueDate, dueDate, subtotal,
@@ -220,6 +224,10 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 8. Server Component'e `'use client'`/Framer Motion/Recharts koyma; ayır.
 9. drizzle-kit `.env.local`'i okumaz → `drizzle.config.ts` başında `dotenv` ile yüklenir.
 10. Hardcoded renk/magic number yok; token + named constant kullan.
+11. **tailwind.config `content` listesinde `./lib/**` OLMALI** — `CLIENT_COLOR_BG`, `MOOD_BG` gibi
+    sınıf haritaları lib'de; listeden çıkarsa o sınıflar üretilmez (görünmez avatar bug'ı).
+12. PDF = tarayıcı print: fatura `/invoices/[id]/print`, yıllık rapor `/reports/[year]/print`
+    (`?auto=1` otomatik diyalog). Yeni rapor eklerken bu deseni kopyala.
 
 ---
 

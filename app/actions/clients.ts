@@ -14,6 +14,7 @@ export async function createClient(input: {
   sessionFee?: number
   startDate?: string
   colorTag?: ClientColor
+  avatarUrl?: string | null
   tags?: string[]
   notes?: string
 }) {
@@ -27,6 +28,7 @@ export async function createClient(input: {
     sessionFee: String(input.sessionFee ?? 0),
     startDate: input.startDate || undefined,
     colorTag: input.colorTag ?? 'indigo',
+    avatarUrl: input.avatarUrl || null,
     tags: input.tags ?? [],
     notes: input.notes || null,
   })
@@ -53,6 +55,7 @@ export async function updateClient(
     sessionFee?: number
     startDate?: string
     colorTag?: ClientColor
+    avatarUrl?: string | null
   },
 ) {
   if (!input.name?.trim()) return { ok: false, error: 'İsim zorunlu' }
@@ -67,6 +70,7 @@ export async function updateClient(
       sessionFee: input.sessionFee !== undefined ? String(input.sessionFee) : undefined,
       startDate: input.startDate || undefined,
       colorTag: input.colorTag,
+      avatarUrl: input.avatarUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(clients.id, id))

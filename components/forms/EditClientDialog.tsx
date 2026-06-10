@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Pencil } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { AvatarPicker } from '@/components/forms/AvatarPicker'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { updateClient } from '@/app/actions/clients'
 import {
@@ -28,10 +29,12 @@ export function EditClientDialog({
     sessionFee: number
     startDate: string
     colorTag: string
+    avatarUrl: string | null
   }
 }) {
   const [open, setOpen] = useState(false)
   const [color, setColor] = useState<ClientColor>((client.colorTag as ClientColor) ?? 'indigo')
+  const [avatar, setAvatar] = useState<string | null>(client.avatarUrl)
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
   const router = useRouter()
@@ -49,6 +52,7 @@ export function EditClientDialog({
         sessionFee: Number(fd.get('sessionFee') || 0),
         startDate: String(fd.get('startDate') || ''),
         colorTag: color,
+        avatarUrl: avatar,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setOpen(false)
@@ -68,6 +72,8 @@ export function EditClientDialog({
 
       <Modal open={open} onClose={() => setOpen(false)} title="Danışanı düzenle">
         <form onSubmit={onSubmit} className="space-y-4">
+          <AvatarPicker name={client.name} color={color} value={avatar} onChange={setAvatar} />
+
           <Field label="Ad Soyad">
             <Input name="name" required defaultValue={client.name} />
           </Field>
@@ -110,7 +116,9 @@ export function EditClientDialog({
                   className={cn(
                     'h-8 w-8 rounded-lg bg-gradient-to-br transition-all',
                     CLIENT_COLOR_BG[c],
-                    color === c ? 'scale-110 ring-2 ring-white/60' : 'opacity-70 hover:opacity-100',
+                    color === c
+                      ? 'scale-110 ring-2 ring-slate-900/60 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
+                      : 'opacity-70 hover:opacity-100',
                   )}
                 />
               ))}

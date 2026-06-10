@@ -11,11 +11,14 @@ import {
   CheckCircle2,
   Wallet,
   Printer,
+  HeartPulse,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
+import { NoteCard } from '@/components/clients/NoteCard'
+import { MoodTrail } from '@/components/clients/MoodTrail'
 import { NoteForm } from '@/components/forms/NoteForm'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
@@ -23,7 +26,6 @@ import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
-import { deleteNote } from '@/app/actions/notes'
 import {
   CLIENT_STATUS_LABEL,
   SESSION_STATUS_LABEL,
@@ -51,7 +53,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       <div className="glass mb-6 rounded-2xl p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <Avatar name={client.name} color={client.colorTag} size="lg" />
+            <Avatar name={client.name} color={client.colorTag} src={client.avatarUrl} size="lg" />
             <div>
               <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{client.name}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
@@ -75,6 +77,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 sessionFee: client.sessionFee,
                 startDate: String(client.startDate),
                 colorTag: client.colorTag,
+                avatarUrl: client.avatarUrl,
               }}
             />
             <DeleteButton
@@ -96,31 +99,50 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Notlar */}
-        <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-            <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Notlar
-          </h2>
-          <NoteForm clientId={client.id} />
-          <div className="mt-5 space-y-3">
-            {notes.length ? (
-              notes.map((n) => (
-                <div key={n.id} className="group rounded-xl border border-slate-500/10 p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      {n.title && <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{n.title}</p>}
-                      <p className="whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">{n.body}</p>
-                    </div>
-                    <DeleteButton action={deleteNote.bind(null, n.id, client.id)} />
-                  </div>
-                  <p className="mt-2 text-[11px] text-slate-400">{formatDateTime(n.createdAt)}</p>
-                </div>
-              ))
-            ) : (
-              <p className="py-6 text-center text-sm text-slate-400">Henüz not yok.</p>
-            )}
-          </div>
-        </section>
+        <div className="space-y-6">
+          {/* Duygu izleği */}
+          <section className="glass rounded-2xl p-5">
+            <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Duygu izleği
+            </h2>
+            <MoodTrail
+              entries={notes
+                .filter((n): n is typeof n & { mood: NonNullable<(typeof n)['mood']> } => n.mood !== null)
+                .map((n) => ({ mood: n.mood, date: String(n.createdAt) }))}
+            />
+          </section>
+
+          {/* Seans Defteri */}
+          <section className="glass rounded-2xl p-5">
+            <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri
+            </h2>
+            <NoteForm clientId={client.id} />
+            <div className="mt-5 space-y-3">
+              {notes.length ? (
+                notes.map((n) => (
+                  <NoteCard
+                    key={n.id}
+                    note={{
+                      id: n.id,
+                      clientId: client.id,
+                      title: n.title,
+                      body: n.body,
+                      kind: n.kind,
+                      mood: n.mood,
+                      pinned: n.pinned,
+                      createdAt: String(n.createdAt),
+                    }}
+                  />
+                ))
+              ) : (
+                <p className="py-6 text-center font-display text-sm italic text-slate-400">
+                  Defterin ilk sayfası seni bekliyor.
+                </p>
+              )}
+            </div>
+          </section>
+        </div>
 
         <div className="space-y-6">
           {/* Seanslar */}
