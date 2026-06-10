@@ -14,9 +14,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 hover:shadow-indigo-500/40',
-  ghost:   'glass text-slate-300 hover:text-white',
-  outline: 'border border-slate-600/60 text-slate-300 hover:border-indigo-500/60 hover:text-indigo-300',
+  primary: 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 hover:shadow-indigo-600/35',
+  ghost:   'glass text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+  outline: 'border border-slate-500/30 text-slate-600 hover:border-indigo-500/60 hover:text-indigo-600 dark:border-slate-600/60 dark:text-slate-300 dark:hover:text-indigo-300',
 }
 
 const sizes: Record<Size, string> = {

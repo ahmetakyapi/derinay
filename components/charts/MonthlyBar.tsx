@@ -11,9 +11,7 @@ import {
   YAxis,
 } from 'recharts'
 import { formatTRY } from '@/lib/format'
-
-const AXIS = 'rgba(148,163,184,0.75)'
-const GRID = 'rgba(148,163,184,0.14)'
+import { CHART } from '@/lib/palette'
 
 type Point = { label: string; net: number }
 
@@ -21,10 +19,10 @@ export function MonthlyBar({ data }: { data: Point[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" tick={{ fill: AXIS, fontSize: 12 }} axisLine={false} tickLine={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} vertical={false} />
+        <XAxis dataKey="label" tick={{ fill: CHART.axis, fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis
-          tick={{ fill: AXIS, fontSize: 12 }}
+          tick={{ fill: CHART.axis, fontSize: 12 }}
           axisLine={false}
           tickLine={false}
           width={56}
@@ -32,11 +30,11 @@ export function MonthlyBar({ data }: { data: Point[] }) {
         />
         <Tooltip
           formatter={(v: number) => [formatTRY(v), 'Net']}
-          cursor={{ fill: 'rgba(148,163,184,0.08)' }}
+          cursor={{ fill: CHART.track }}
         />
         <Bar dataKey="net" radius={[6, 6, 0, 0]} maxBarSize={42}>
           {data.map((d, i) => (
-            <Cell key={i} fill={d.net >= 0 ? '#6366f1' : '#f43f5e'} />
+            <Cell key={i} fill={d.net >= 0 ? CHART.primary : CHART.expense} />
           ))}
         </Bar>
       </BarChart>

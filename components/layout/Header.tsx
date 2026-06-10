@@ -24,7 +24,8 @@ export default function Header() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const isDark = mounted ? resolvedTheme === 'dark' : true
+  // Varsayılan tema artık light — mount öncesi de light varsay
+  const isDark = mounted ? resolvedTheme === 'dark' : false
 
   return (
     <>
@@ -36,10 +37,12 @@ export default function Header() {
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <Link href="/" className="group flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-blue-500 to-emerald-400 shadow-lg shadow-indigo-500/20 transition-shadow group-hover:shadow-indigo-500/40">
-                <span className="text-sm font-extrabold tracking-tight text-white">D</span>
+              {/* Mürekkep damgası — serif monogram + altın nokta */}
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-300 group-hover:rotate-3 dark:bg-slate-50">
+                <span className="font-display text-base font-semibold italic text-amber-50 dark:text-slate-900">D</span>
+                <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
               </div>
-              <span className="text-base font-bold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-500 dark:text-slate-100 dark:group-hover:text-indigo-400">
+              <span className="font-display text-lg font-semibold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-300">
                 Derinay
               </span>
             </Link>
@@ -76,7 +79,7 @@ export default function Header() {
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Menü"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition-colors hover:text-slate-100 md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 md:hidden"
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>

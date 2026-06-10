@@ -35,7 +35,7 @@ export default async function PersonalPage({
         <div className="flex items-center gap-2">
           <Link
             href={`/dashboard/personal?month=${prev}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             aria-label="Önceki ay"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -45,7 +45,7 @@ export default async function PersonalPage({
           </span>
           <Link
             href={`/dashboard/personal?month=${next}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             aria-label="Sonraki ay"
           >
             <ChevronRight className="h-4 w-4" />
@@ -53,7 +53,7 @@ export default async function PersonalPage({
         </div>
         <div className="text-right">
           <p className="text-xs text-slate-500 dark:text-slate-400">Bu ay toplam</p>
-          <p className="text-lg font-extrabold text-rose-500">{formatTRY(data.total)}</p>
+          <p className="font-display text-xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">{formatTRY(data.total)}</p>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export default async function PersonalPage({
 
         <div className="space-y-5">
           <section className="glass rounded-2xl p-5">
-            <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Kategori dağılımı</h2>
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Kategori dağılımı</h2>
             {data.categoryBreakdown.length ? (
               <CategoryDonut data={data.categoryBreakdown} />
             ) : (
@@ -75,13 +75,13 @@ export default async function PersonalPage({
           {data.items.length > 0 && (
             <section className="glass rounded-2xl p-5">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white">Harcama detayları</h2>
+                <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Harcama detayları</h2>
                 <span className="text-xs text-slate-400">{data.items.length} harcama</span>
               </div>
               <ul className="max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
                 {data.items.map((it) => (
                   <li key={it.id} className="flex items-start gap-3 rounded-xl border border-slate-500/10 p-3">
-                    <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
+                    <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
                       <span className="text-[10px] font-bold leading-none">{formatDateShort(it.date).split(' ')[0]}</span>
                       <span className="text-[9px] uppercase leading-tight">{formatDateShort(it.date).split(' ')[1]}</span>
                     </span>
@@ -94,7 +94,7 @@ export default async function PersonalPage({
                         </p>
                       )}
                     </div>
-                    <span className="shrink-0 text-sm font-bold text-rose-500">−{formatTRY(it.amount)}</span>
+                    <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">−{formatTRY(it.amount)}</span>
                   </li>
                 ))}
               </ul>

@@ -37,10 +37,11 @@ export default async function InvoicePrintPage({
         <div className="flex items-start justify-between border-b border-slate-200 pb-8">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-blue-500 to-emerald-400">
-                <span className="text-base font-extrabold text-white">D</span>
+              {/* Mürekkep damgası — uygulama markasıyla aynı kimlik */}
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
+                <span className="font-display text-lg font-semibold italic text-amber-50">D</span>
               </div>
-              <span className="text-2xl font-extrabold tracking-tight">{BUSINESS.name}</span>
+              <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>
             <div className="mt-3 text-xs leading-relaxed text-slate-500">
               <p className="font-semibold text-slate-700">{BUSINESS.owner}</p>

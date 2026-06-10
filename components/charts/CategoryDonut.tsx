@@ -2,8 +2,7 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { formatTRY } from '@/lib/format'
-
-const COLORS = ['#6366f1', '#10b981', '#22d3ee', '#f59e0b', '#f43f5e', '#a78bfa', '#2dd4bf', '#fb7185', '#38bdf8']
+import { CHART_SERIES } from '@/lib/palette'
 
 type Slice = { category: string; amount: number }
 
@@ -27,7 +26,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
               stroke="none"
             >
               {data.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                <Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
               ))}
             </Pie>
             <Tooltip formatter={(v: number, n) => [formatTRY(v), n as string]} />
@@ -35,7 +34,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Toplam</span>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">
+          <span className="font-display text-base font-semibold text-slate-900 dark:text-white">
             {formatTRY(total, { compact: true })}
           </span>
         </div>
@@ -46,10 +45,10 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
           <li key={d.category} className="flex items-center gap-2.5 text-sm">
             <span
               className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ background: COLORS[i % COLORS.length] }}
+              style={{ background: CHART_SERIES[i % CHART_SERIES.length] }}
             />
             <span className="flex-1 truncate text-slate-600 dark:text-slate-300">{d.category}</span>
-            <span className="font-semibold text-slate-900 dark:text-white">
+            <span className="font-mono text-[13px] font-semibold tabular-nums text-slate-900 dark:text-white">
               {formatTRY(d.amount, { compact: true })}
             </span>
           </li>

@@ -24,15 +24,15 @@ export default async function FinancesPage() {
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="glass rounded-2xl p-5">
           <p className="text-xs text-slate-500 dark:text-slate-400">Toplam gelir</p>
-          <p className="mt-1 text-xl font-extrabold text-emerald-500">{formatTRY(income)}</p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{formatTRY(income)}</p>
         </div>
         <div className="glass rounded-2xl p-5">
           <p className="text-xs text-slate-500 dark:text-slate-400">Toplam gider</p>
-          <p className="mt-1 text-xl font-extrabold text-rose-500">{formatTRY(expense)}</p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">{formatTRY(expense)}</p>
         </div>
         <div className="glass rounded-2xl p-5">
           <p className="text-xs text-slate-500 dark:text-slate-400">Net</p>
-          <p className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatTRY(income - expense)}</p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{formatTRY(income - expense)}</p>
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export default async function FinancesPage() {
                 <div key={t.id} className="flex items-center gap-4 px-4 py-3 sm:px-5">
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                      inc ? 'bg-emerald-500/12 text-emerald-500' : 'bg-rose-500/12 text-rose-500'
+                      inc ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/12 text-rose-600 dark:text-rose-400'
                     }`}
                   >
                     {inc ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
@@ -59,7 +59,7 @@ export default async function FinancesPage() {
                   <span className="hidden text-xs text-slate-500 dark:text-slate-400 sm:block">
                     {formatDateShort(t.date)}
                   </span>
-                  <span className={`w-28 text-right text-sm font-semibold ${inc ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  <span className={`w-28 text-right font-mono text-[13px] font-semibold tabular-nums ${inc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                     {inc ? '+' : '−'}{formatTRY(t.amount)}
                   </span>
                   <DeleteButton action={deleteTransaction.bind(null, t.id)} />

@@ -7,12 +7,32 @@ import { fadeUp } from '@/lib/variants'
 
 type Accent = 'emerald' | 'rose' | 'indigo' | 'amber' | 'sky'
 
-const ACCENTS: Record<Accent, { icon: string; glow: string }> = {
-  emerald: { icon: 'text-emerald-500 bg-emerald-500/12', glow: 'before:bg-emerald-500/10' },
-  rose:    { icon: 'text-rose-500 bg-rose-500/12',       glow: 'before:bg-rose-500/10' },
-  indigo:  { icon: 'text-indigo-400 bg-indigo-500/12',   glow: 'before:bg-indigo-500/10' },
-  amber:   { icon: 'text-amber-500 bg-amber-500/12',     glow: 'before:bg-amber-500/10' },
-  sky:     { icon: 'text-sky-500 bg-sky-500/12',         glow: 'before:bg-sky-500/10' },
+const ACCENTS: Record<Accent, { icon: string; bar: string; glow: string }> = {
+  emerald: {
+    icon: 'text-emerald-600 bg-emerald-500/12 dark:text-emerald-400',
+    bar: 'from-emerald-500/80 via-emerald-500/30',
+    glow: 'before:bg-emerald-500/10',
+  },
+  rose: {
+    icon: 'text-rose-600 bg-rose-500/12 dark:text-rose-400',
+    bar: 'from-rose-500/80 via-rose-500/30',
+    glow: 'before:bg-rose-500/10',
+  },
+  indigo: {
+    icon: 'text-indigo-600 bg-indigo-500/12 dark:text-indigo-400',
+    bar: 'from-indigo-500/80 via-indigo-500/30',
+    glow: 'before:bg-indigo-500/10',
+  },
+  amber: {
+    icon: 'text-amber-600 bg-amber-500/12 dark:text-amber-400',
+    bar: 'from-amber-500/80 via-amber-500/30',
+    glow: 'before:bg-amber-500/10',
+  },
+  sky: {
+    icon: 'text-sky-600 bg-sky-500/12 dark:text-sky-400',
+    bar: 'from-sky-500/80 via-sky-500/30',
+    glow: 'before:bg-sky-500/10',
+  },
 }
 
 export function StatCard({
@@ -39,15 +59,25 @@ export function StatCard({
       initial="hidden"
       animate="visible"
       className={cn(
-        'glass relative overflow-hidden rounded-2xl p-5',
+        'glass group relative overflow-hidden rounded-2xl p-5',
         'before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:h-28 before:w-28 before:rounded-full before:blur-2xl before:content-[""]',
         a.glow,
       )}
     >
+      {/* Üst aksan çizgisi — galeri etiketi hissi */}
+      <span
+        className={cn(
+          'absolute left-5 top-0 h-[3px] w-12 rounded-b-full bg-gradient-to-r to-transparent transition-all duration-500 group-hover:w-20',
+          a.bar,
+        )}
+      />
+
       <div className="relative z-10 flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+            {label}
+          </p>
+          <p className="mt-2 font-display text-[1.7rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white">
             {value}
           </p>
         </div>
@@ -57,12 +87,14 @@ export function StatCard({
       </div>
 
       {(change !== undefined && change !== null) || hint ? (
-        <div className="relative z-10 mt-3 flex items-center gap-2 text-xs">
+        <div className="relative z-10 mt-3.5 flex items-center gap-2 text-xs">
           {change !== undefined && change !== null && (
             <span
               className={cn(
-                'inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-semibold',
-                positive ? 'bg-emerald-500/12 text-emerald-500' : 'bg-rose-500/12 text-rose-500',
+                'inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-mono font-semibold tabular-nums',
+                positive
+                  ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-rose-500/12 text-rose-600 dark:text-rose-400',
               )}
             >
               {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}

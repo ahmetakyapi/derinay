@@ -26,11 +26,11 @@ export default async function InvoicesPage() {
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="glass rounded-2xl p-5">
           <p className="text-xs text-slate-500 dark:text-slate-400">Toplam faturalanan</p>
-          <p className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatTRY(totalBilled)}</p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{formatTRY(totalBilled)}</p>
         </div>
         <div className="glass rounded-2xl p-5">
           <p className="text-xs text-slate-500 dark:text-slate-400">Toplanan KDV</p>
-          <p className="mt-1 text-xl font-extrabold text-indigo-400">{formatTRY(totalKdv)}</p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-amber-600 dark:text-amber-400">{formatTRY(totalKdv)}</p>
         </div>
       </div>
 
@@ -49,13 +49,13 @@ export default async function InvoicesPage() {
                   <span className="block">Net {formatTRY(i.subtotal, { compact: true })}</span>
                   <span className="block">KDV %{i.kdvRate}</span>
                 </div>
-                <span className="w-28 text-right text-sm font-bold text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
+                <span className="w-28 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
                 <InvoiceStatusSelect id={i.id} value={i.status} />
                 <Link
                   href={`/invoices/${i.id}/print`}
                   target="_blank"
                   aria-label="PDF / Yazdır"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-400"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
                 >
                   <Printer className="h-4 w-4" />
                 </Link>

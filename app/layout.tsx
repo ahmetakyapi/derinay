@@ -1,5 +1,5 @@
-import type { Metadata } from 'next'
-import { Manrope, IBM_Plex_Mono } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Manrope, IBM_Plex_Mono, Fraunces } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
@@ -18,6 +18,14 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+// Display serif — başlıklar ve büyük rakamlar için sanatsal tipografi
+const fraunces = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
   title: {
     default: 'Derinay — Psikologlar için finans & danışan takibi',
@@ -27,6 +35,13 @@ export const metadata: Metadata = {
     'Psikologlar için gelir-gider, fatura, vergi ve danışan takibini tek panelde toplayan sakin ve şık finans yönetimi.',
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f2e9' },
+    { media: '(prefers-color-scheme: dark)', color: '#04070d' },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -34,9 +49,14 @@ export default function RootLayout({
 }) {
   return (
     // suppressHydrationWarning — next-themes için zorunlu (mistakes.md #1)
-    <html lang="tr" suppressHydrationWarning className={`${manrope.variable} ${ibmPlexMono.variable}`}>
+    <html
+      lang="tr"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}
+    >
       <body className={manrope.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>

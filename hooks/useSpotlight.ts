@@ -10,7 +10,7 @@ import { useMotionTemplate, useMotionValue } from 'framer-motion'
  * const spotlight = useSpotlight()
  * <motion.div style={{ background: spotlight }} />
  */
-export function useSpotlight(radius = 620, color = 'rgba(96,165,250,0.07)') {
+export function useSpotlight(radius = 620, color = 'rgba(63,124,114,0.08)') {
   const mx = useMotionValue(-600)
   const my = useMotionValue(-600)
 

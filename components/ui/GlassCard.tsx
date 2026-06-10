@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useRef, useCallback } from 'react'
@@ -36,7 +38,8 @@ export function GlassCard({ children, className, tilt = false, glow = false }: G
 
   const shineX = useTransform(mouseX, [0, 1], ['0%', '100%'])
   const shineY = useTransform(mouseY, [0, 1], ['0%', '100%'])
-  const shine  = useMotionTemplate`radial-gradient(400px circle at ${shineX} ${shineY}, rgba(99,102,241,0.12), rgba(139,92,246,0.06), transparent 70%)`
+  // Çam + altın parlama — holografik vurgu (Atölye paleti)
+  const shine  = useMotionTemplate`radial-gradient(400px circle at ${shineX} ${shineY}, rgba(63,124,114,0.12), rgba(179,137,46,0.07), transparent 70%)`
 
   return (
     <motion.div

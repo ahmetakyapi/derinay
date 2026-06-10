@@ -26,13 +26,13 @@ export default async function ClientsPage() {
             <Link
               key={c.id}
               href={`/dashboard/clients/${c.id}`}
-              className="glass group rounded-2xl p-5 transition-transform hover:-translate-y-0.5"
+              className="glass group rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="flex items-start justify-between">
                 <Avatar name={c.name} color={c.colorTag} size="lg" />
                 <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
               </div>
-              <h3 className="mt-3 truncate font-bold text-slate-900 dark:text-white">{c.name}</h3>
+              <h3 className="mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">{c.email || c.phone || '—'}</p>
 
               <div className="mt-4 flex items-center justify-between">
@@ -41,7 +41,7 @@ export default async function ClientsPage() {
               </div>
 
               <div className="mt-3 border-t border-slate-500/10 pt-3 text-xs text-slate-500 dark:text-slate-400">
-                Seans ücreti: <span className="font-semibold text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
+                Seans ücreti: <span className="font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
               </div>
             </Link>
           ))}

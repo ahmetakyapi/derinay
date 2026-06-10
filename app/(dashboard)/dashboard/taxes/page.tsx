@@ -15,17 +15,17 @@ export default async function TaxesPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Radial özet */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-2 text-sm font-bold text-slate-900 dark:text-white">Bu ay ödenecek</h2>
+          <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu ay ödenecek</h2>
           <TaxRadial kdv={current.kdvCollected} incomeTax={current.incomeTax} />
         </section>
 
         {/* Kırılım */}
         <section className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Bu ay kırılım</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Bu ay kırılım</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <TaxStat icon={Receipt} accent="text-indigo-400 bg-indigo-500/12" label="Toplanan KDV" value={formatTRY(current.kdvCollected)} />
-            <TaxStat icon={TrendingUp} accent="text-amber-500 bg-amber-500/12" label="Gelir vergisi (tahmini)" value={formatTRY(current.incomeTax)} />
-            <TaxStat icon={Landmark} accent="text-rose-500 bg-rose-500/12" label="Toplam" value={formatTRY(current.totalDue)} />
+            <TaxStat icon={Receipt} accent="text-indigo-600 bg-indigo-500/12 dark:text-indigo-400" label="Toplanan KDV" value={formatTRY(current.kdvCollected)} />
+            <TaxStat icon={TrendingUp} accent="text-amber-600 bg-amber-500/12 dark:text-amber-400" label="Gelir vergisi (tahmini)" value={formatTRY(current.incomeTax)} />
+            <TaxStat icon={Landmark} accent="text-rose-600 bg-rose-500/12 dark:text-rose-400" label="Toplam" value={formatTRY(current.totalDue)} />
           </div>
 
           <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-500/15 bg-slate-500/5 p-3 text-xs text-slate-500 dark:text-slate-400">
@@ -41,7 +41,7 @@ export default async function TaxesPage() {
 
       {/* Aylık tablo */}
       <section className="glass mt-6 overflow-hidden rounded-2xl">
-        <h2 className="border-b border-slate-500/10 px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">
+        <h2 className="border-b border-slate-500/10 px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
           Aylık döküm
         </h2>
         <div className="overflow-x-auto">
@@ -60,11 +60,11 @@ export default async function TaxesPage() {
               {months.map((m) => (
                 <tr key={m.key} className="text-slate-700 dark:text-slate-200">
                   <td className="px-5 py-3 font-medium capitalize">{m.label}</td>
-                  <td className="px-5 py-3 text-right text-emerald-500">{formatTRY(m.income, { compact: true })}</td>
-                  <td className="px-5 py-3 text-right text-rose-500">{formatTRY(m.expense, { compact: true })}</td>
-                  <td className="px-5 py-3 text-right">{formatTRY(m.kdvCollected, { compact: true })}</td>
-                  <td className="px-5 py-3 text-right">{formatTRY(m.incomeTax, { compact: true })}</td>
-                  <td className="px-5 py-3 text-right font-bold text-slate-900 dark:text-white">{formatTRY(m.totalDue, { compact: true })}</td>
+                  <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(m.income, { compact: true })}</td>
+                  <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(m.expense, { compact: true })}</td>
+                  <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvCollected, { compact: true })}</td>
+                  <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.incomeTax, { compact: true })}</td>
+                  <td className="px-5 py-3 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(m.totalDue, { compact: true })}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,7 +92,7 @@ function TaxStat({
         <Icon className="h-4 w-4" />
       </span>
       <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-extrabold text-slate-900 dark:text-white">{value}</p>
+      <p className="mt-1 font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">{value}</p>
     </div>
   )
 }

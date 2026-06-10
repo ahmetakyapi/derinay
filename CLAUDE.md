@@ -27,7 +27,7 @@ sakin ve görsel bir arayüzde toplamak.
 | Animasyon | Framer Motion 11 | GSAP yok. EASE = `[0.22,1,0.36,1]` |
 | Grafik | Recharts | `components/charts/` altında, hepsi `'use client'` |
 | DB | Neon Postgres + Drizzle ORM | `@neondatabase/serverless` (pg değil) |
-| Tema | next-themes | dark (glass) + light (terapötik pastel) |
+| Tema | next-themes | **light varsayılan** ("kâğıt galeri") + dark ("gece galerisi") — enableSystem kapalı |
 | İkonlar | lucide-react | |
 | Deploy | Vercel (bölge `fra1`) | GitHub: `ahmetakyapi/derinay` (private) |
 
@@ -93,6 +93,7 @@ lib/
   constants.ts     # Statüler, kategoriler, etiketler, renkler, BUSINESS/USER, TAX oranları
   queries.ts       # Tüm okuma fonksiyonları (server-only)
   finance.ts       # calcKdv, estimateIncomeTax, taxSummary
+  palette.ts       # Chart renkleri (CHART, CHART_SERIES) — Atölye paleti
   format.ts        # formatTRY, formatDate*, monthKey, durationSince, initials, pctChange
   db.ts            # lazy Drizzle/Neon proxy
   utils.ts         # cn()
@@ -133,11 +134,22 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 
 ---
 
-## 7. Tasarım Sistemi
+## 7. Tasarım Sistemi — "Atölye" (sanat galerisi estetiği)
 
-- **Tema kaynağı**: `~/dev-starter/knowledge/themes/ahmetakyapi.md`. Dark zemin `#04070d`,
-  light terapötik pastel (emerald/sage). Renkler `globals.css` değişkenleri + Tailwind ile;
-  **hardcoded hex yok**.
+- **Kimlik**: Sanata önem veren kullanıcı için galeri/atölye estetiği. **Light varsayılan**:
+  sıcak fildişi kâğıt (`#f6f2e9`) + suluboya yıkamaları (çam/altın/kil/pus) + grain dokusu.
+  Dark: aynı paletin "gece galerisi" hali, zemin `#04070d`.
+- **Palet (tailwind.config.ts'te remap — sınıf adları aynı, değerler Derinay paleti)**:
+  `slate`→mürekkep (sıcak nötr), `indigo`→çam/petrol (birincil), `emerald`→adaçayı (gelir),
+  `rose`→terracotta (gider), `amber`→okra altını (vergi/vurgu), `sky`→pus mavisi,
+  `violet`→erik, `teal`/`cyan`→okaliptüs/su. **Default Tailwind `blue/purple/orange/pink`
+  KULLANMA** — remap edilmediler, paletle çatışır.
+- **Tipografi**: Başlık/büyük rakam = **Fraunces** (`font-display`, italic vurgular);
+  gövde = Manrope; tutar/tablo rakamı = IBM Plex Mono + `tabular-nums`. Bölüm başlıkları
+  galeri etiketi stili: `text-xs font-bold uppercase tracking-[0.12em]`.
+- **Chart renkleri**: `lib/palette.ts` (`CHART`, `CHART_SERIES`) — chart bileşenine hex yazma.
+- Renkler `globals.css` CSS değişkenleri (`--pine/--sage/--gold/--clay/--mist`, `--paper/--line`)
+  + Tailwind ile; **hardcoded hex yok**.
 - **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
   `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
 - **Bileşen envanteri** (önce bunları kullan, yenisini yazma):
@@ -152,6 +164,9 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   - Grafik: `AreaTrendChart / CategoryDonut / MonthlyBar / TaxRadial`
 - **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel…) + `EASE`.
   Rotalar arası geçiş `PageTransition` ile otomatik.
+- **Marka**: mürekkep damgası — `bg-slate-900` kare + Fraunces italic "D" + altın nokta
+  (Shell, Header ve fatura print'te aynı kimlik).
+- **Navigasyon**: `DashboardShell` içinde `NAV_GROUPS` (Klinik / Finans / Yaşam) — düz `NAV` dizisi değil.
 - **İmleç**: özel cursor YOK — normal mouse. Tekrar ekleme.
 
 ---

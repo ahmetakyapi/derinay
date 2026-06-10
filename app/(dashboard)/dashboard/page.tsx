@@ -88,8 +88,8 @@ export default async function DashboardPage({
       {/* Haftalık seans takvimi */}
       <section className="glass mt-6 rounded-2xl p-5">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-            <CalendarDays className="h-4 w-4 text-indigo-400" /> {weekTitle}
+          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <CalendarDays className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> {weekTitle}
           </h2>
           <div className="flex items-center gap-2">
             <span className="mr-1 text-xs font-medium text-slate-500 dark:text-slate-400">{weekRange}</span>
@@ -97,7 +97,7 @@ export default async function DashboardPage({
               href={`/dashboard?week=${weekOffset - 1}`}
               scroll={false}
               aria-label="Önceki hafta"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronLeft className="h-4 w-4" />
             </Link>
@@ -105,7 +105,7 @@ export default async function DashboardPage({
               <Link
                 href="/dashboard"
                 scroll={false}
-                className="rounded-lg border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+                className="rounded-lg border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
               >
                 Bugün
               </Link>
@@ -114,7 +114,7 @@ export default async function DashboardPage({
               href={`/dashboard?week=${weekOffset + 1}`}
               scroll={false}
               aria-label="Sonraki hafta"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronRight className="h-4 w-4" />
             </Link>
@@ -127,7 +127,7 @@ export default async function DashboardPage({
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Gelir & Gider akışı</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gelir & Gider akışı</h2>
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" /> Gelir
@@ -141,7 +141,7 @@ export default async function DashboardPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Gider kategorileri</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gider kategorileri</h2>
           {d.categoryBreakdown.length ? (
             <CategoryDonut data={d.categoryBreakdown} />
           ) : (
@@ -152,13 +152,13 @@ export default async function DashboardPage({
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Aylık net</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Aylık net</h2>
           <MonthlyBar data={d.trend} />
         </section>
 
         {/* Son işlemler */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">Son işlemler</h2>
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Son işlemler</h2>
           {d.recent.length ? (
             <ul className="space-y-3">
               {d.recent.map((t) => {
@@ -167,7 +167,7 @@ export default async function DashboardPage({
                   <li key={t.id} className="flex items-center gap-3">
                     <span
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                        income ? 'bg-emerald-500/12 text-emerald-500' : 'bg-rose-500/12 text-rose-500'
+                        income ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/12 text-rose-600 dark:text-rose-400'
                       }`}
                     >
                       {income ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
@@ -179,8 +179,8 @@ export default async function DashboardPage({
                       <p className="text-xs text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</p>
                     </div>
                     <span
-                      className={`text-sm font-semibold ${
-                        income ? 'text-emerald-500' : 'text-rose-500'
+                      className={`font-mono text-[13px] font-semibold tabular-nums ${
+                        income ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                       }`}
                     >
                       {income ? '+' : '−'}

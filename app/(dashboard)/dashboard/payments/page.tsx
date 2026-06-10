@@ -31,7 +31,7 @@ export default async function PaymentsPage() {
                 <div className="min-w-0 flex-1">
                   <Link
                     href={p.clientId ? `/dashboard/clients/${p.clientId}` : '#'}
-                    className="truncate text-sm font-medium text-slate-800 hover:text-indigo-400 dark:text-slate-100"
+                    className="truncate text-sm font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
                   >
                     {p.clientName ?? 'Silinmiş danışan'}
                   </Link>
@@ -40,7 +40,7 @@ export default async function PaymentsPage() {
                     {p.note ? ` · ${p.note}` : ''}
                   </p>
                 </div>
-                <span className="text-sm font-semibold text-emerald-500">+{formatTRY(p.amount)}</span>
+                <span className="font-mono text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">+{formatTRY(p.amount)}</span>
                 <DeleteButton action={deletePayment.bind(null, p.id)} />
               </div>
             ))}

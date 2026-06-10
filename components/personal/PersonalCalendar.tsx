@@ -100,7 +100,7 @@ export function PersonalCalendar({
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span className={cn('text-xs font-bold', isToday ? 'text-indigo-400' : 'text-slate-500 dark:text-slate-300')}>
+                  <span className={cn('text-xs font-bold', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-300')}>
                     {day}
                   </span>
                   {data && (
@@ -116,7 +116,7 @@ export function PersonalCalendar({
                     {data.items.slice(0, 3).map((it) => (
                       <span
                         key={it.id}
-                        className="flex items-center gap-1 truncate rounded-md bg-white/50 px-1.5 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-500/10 dark:bg-white/[0.04] dark:text-slate-300"
+                        className="flex items-center gap-1 truncate rounded-md bg-white/60 px-1.5 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-500/10 dark:bg-white/[0.04] dark:text-slate-300"
                         title={it.description ? `${it.category} — ${it.description}` : it.category}
                       >
                         {it.description && <StickyNote className="h-2.5 w-2.5 shrink-0 text-amber-500" />}
@@ -166,12 +166,12 @@ export function PersonalCalendar({
                     </p>
                   )}
                 </div>
-                <span className="shrink-0 text-sm font-bold text-rose-500">−{formatTRY(it.amount)}</span>
+                <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">−{formatTRY(it.amount)}</span>
                 <button
                   onClick={() => removeExpense(it.id)}
                   disabled={pending}
                   aria-label="Sil"
-                  className="shrink-0 text-slate-400 transition-colors hover:text-rose-500"
+                  className="shrink-0 text-slate-400 transition-colors hover:text-rose-600 dark:hover:text-rose-400"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

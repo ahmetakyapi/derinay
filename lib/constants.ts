@@ -115,15 +115,16 @@ export const CLIENT_COLORS = [
 export type ClientColor = (typeof CLIENT_COLORS)[number]
 
 // Tailwind sınıf eşlemesi (avatar arka planı için — JIT'in görmesi adına tam yazıldı)
+// Yalnızca Atölye paletine remap edilmiş aileler kullanılır (blue/purple/orange/pink YOK).
 export const CLIENT_COLOR_BG: Record<string, string> = {
-  indigo:  'from-indigo-500 to-blue-500',
-  emerald: 'from-emerald-500 to-teal-500',
-  sky:     'from-sky-500 to-cyan-500',
-  violet:  'from-violet-500 to-purple-500',
-  amber:   'from-amber-500 to-orange-500',
-  rose:    'from-rose-500 to-pink-500',
-  teal:    'from-teal-500 to-emerald-500',
-  cyan:    'from-cyan-500 to-sky-500',
+  indigo:  'from-indigo-500 to-indigo-700',
+  emerald: 'from-emerald-500 to-teal-600',
+  sky:     'from-sky-500 to-sky-700',
+  violet:  'from-violet-500 to-violet-700',
+  amber:   'from-amber-500 to-rose-500',
+  rose:    'from-rose-500 to-rose-700',
+  teal:    'from-teal-500 to-emerald-600',
+  cyan:    'from-cyan-500 to-teal-600',
 }
 
 export const CURRENCY = 'TRY' as const

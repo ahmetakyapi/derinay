@@ -28,14 +28,14 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
             key={d.key}
             className={cn(
               'flex min-h-[120px] flex-col rounded-xl border p-2.5 transition-colors',
-              isToday ? 'border-indigo-500/40 bg-indigo-500/[0.06]' : 'border-slate-500/10',
+              isToday ? 'border-indigo-500/40 bg-indigo-500/[0.06] shadow-lg shadow-indigo-500/5' : 'border-slate-500/10',
             )}
           >
             <div className="mb-2 flex items-baseline justify-between">
-              <span className={cn('text-[11px] font-semibold uppercase', isToday ? 'text-indigo-400' : 'text-slate-400')}>
+              <span className={cn('text-[11px] font-semibold uppercase', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
                 {d.label}
               </span>
-              <span className={cn('text-sm font-bold', isToday ? 'text-indigo-400' : 'text-slate-600 dark:text-slate-300')}>
+              <span className={cn('text-sm font-bold', isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300')}>
                 {d.dayNum}
               </span>
             </div>
@@ -47,7 +47,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
                   const chip = (
                     <div
                       className={cn(
-                        'rounded-lg border border-slate-500/10 bg-white/40 px-2 py-1.5 transition-colors dark:bg-white/[0.03]',
+                        'rounded-lg border border-slate-500/10 bg-white/55 px-2 py-1.5 transition-colors dark:bg-white/[0.03]',
                         !dim && 'hover:border-indigo-500/30',
                         dim && 'opacity-50',
                       )}
