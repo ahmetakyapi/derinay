@@ -8,10 +8,13 @@ import {
   Search, LayoutDashboard, CalendarRange, Users, ArrowLeftRight, LineChart,
   FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft, ClipboardList,
 } from 'lucide-react'
+import { Avatar } from '@/components/ui/Avatar'
 import { EASE } from '@/lib/variants'
 import { cn } from '@/lib/utils'
 
+type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
 type Cmd = { label: string; href: string; group: string; icon: typeof Search; keywords?: string }
+type Entry = { key: string; label: string; href: string; group: string; icon: typeof Search; client: ClientLite | null }
 
 const COMMANDS: Cmd[] = [
   { label: 'Genel Bakış', href: '/dashboard', group: 'Klinik', icon: LayoutDashboard, keywords: 'ana sayfa dashboard özet' },
@@ -30,7 +33,7 @@ const COMMANDS: Cmd[] = [
 
 const trLower = (s: string) => s.toLocaleLowerCase('tr')
 
-export function CommandPalette() {
+export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
@@ -66,11 +69,20 @@ export function CommandPalette() {
     }
   }, [open])
 
-  const results = useMemo(() => {
+  const results = useMemo<Entry[]>(() => {
     const q = trLower(query.trim())
-    if (!q) return COMMANDS
-    return COMMANDS.filter((c) => trLower(c.label + ' ' + (c.keywords ?? '') + ' ' + c.group).includes(q))
-  }, [query])
+    const pages: Entry[] = (q
+      ? COMMANDS.filter((c) => trLower(c.label + ' ' + (c.keywords ?? '') + ' ' + c.group).includes(q))
+      : COMMANDS
+    ).map((c) => ({ key: c.href, label: c.label, href: c.href, group: c.group, icon: c.icon, client: null }))
+    const cl: Entry[] = q
+      ? clients
+          .filter((c) => trLower(c.name).includes(q))
+          .slice(0, 8)
+          .map((c) => ({ key: `c-${c.id}`, label: c.name, href: `/dashboard/clients/${c.id}`, group: 'Danışan', icon: Users, client: c }))
+      : []
+    return [...pages, ...cl]
+  }, [query, clients])
 
   useEffect(() => {
     if (active >= results.length) setActive(0)
@@ -115,7 +127,7 @@ export function CommandPalette() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onInputKey}
-                placeholder="Sayfa ara veya git…"
+                placeholder="Sayfa veya danışan ara…"
                 className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
               />
               <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 sm:block">ESC</kbd>
@@ -128,7 +140,7 @@ export function CommandPalette() {
               ) : (
                 results.map((r, i) => (
                   <button
-                    key={r.href}
+                    key={r.key}
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(r.href)}
                     className={cn(
@@ -136,13 +148,17 @@ export function CommandPalette() {
                       i === active ? 'bg-indigo-500/10' : 'hover:bg-slate-500/[0.05]',
                     )}
                   >
-                    <span className={cn(
-                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                      i === active ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300' : 'bg-slate-500/8 text-slate-500 dark:text-slate-400',
-                    )}>
-                      <r.icon className="h-4 w-4" />
-                    </span>
-                    <span className="flex-1 text-sm font-medium text-slate-800 dark:text-slate-100">{r.label}</span>
+                    {r.client ? (
+                      <Avatar name={r.client.name} color={r.client.colorTag} src={r.client.avatarUrl} size="sm" />
+                    ) : (
+                      <span className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                        i === active ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300' : 'bg-slate-500/8 text-slate-500 dark:text-slate-400',
+                      )}>
+                        <r.icon className="h-4 w-4" />
+                      </span>
+                    )}
+                    <span className="flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{r.label}</span>
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{r.group}</span>
                     {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-300" />}
                   </button>

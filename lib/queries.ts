@@ -327,6 +327,14 @@ export async function listPayments() {
 }
 
 // Form select'leri için hafif danışan listesi (sessionFee → seans ücretini otomatik doldurmak için)
+/** Komut paleti için hafif danışan listesi (ad + renk + avatar) */
+export async function clientSearchList() {
+  return db
+    .select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
+    .from(clients)
+    .orderBy(clients.name)
+}
+
 export async function clientOptions() {
   const rows = await db
     .select({ id: clients.id, name: clients.name, sessionFee: clients.sessionFee })
@@ -357,6 +365,67 @@ export async function getUpcomingBirthdays(daysAhead = 14) {
     .sort((a, b) => a.daysUntil - b.daysUntil)
 
   return upcoming
+}
+
+// ─── Dashboard hatırlatmaları (bugün + eksik not + biten paket + eski ölçüm) ──
+export async function getDashboardReminders() {
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const dkey = (d: Date | string) => iso(new Date(d))
+  const todayKey = dkey(now)
+  const since30 = dkey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30))
+
+  const [clientRows, sess, pkgs, scoreRows] = await Promise.all([
+    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl }).from(clients),
+    db.select({ id: sessions.id, clientId: sessions.clientId, date: sessions.date, status: sessions.status, note: sessions.note, fee: sessions.fee }).from(sessions),
+    db.select().from(sessionPackages).orderBy(desc(sessionPackages.purchaseDate)),
+    db.select({ clientId: clientScores.clientId, date: clientScores.date, label: clientScores.label }).from(clientScores),
+  ])
+  const cOf = (id: string | null) => clientRows.find((c) => c.id === id)
+
+  // Bugünkü seanslar (saate göre)
+  const todaySessions = sess
+    .filter((s) => dkey(s.date) === todayKey)
+    .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+    .map((s) => {
+      const d = new Date(s.date)
+      const c = cOf(s.clientId)
+      return { id: s.id, clientId: s.clientId, clientName: c?.name ?? '—', colorTag: c?.colorTag ?? 'indigo', avatarUrl: c?.avatarUrl ?? null, time: `${pad(d.getHours())}:${pad(d.getMinutes())}`, status: s.status }
+    })
+
+  // Tamamlanmış ama notu boş seanslar (son 30 gün)
+  const missingNotes = sess
+    .filter((s) => s.status === 'completed' && dkey(s.date) >= since30 && !(s.note && s.note.trim()))
+    .sort((a, b) => +new Date(b.date) - +new Date(a.date))
+    .map((s) => ({ id: s.id, clientId: s.clientId, clientName: cOf(s.clientId)?.name ?? '—', date: dkey(s.date) }))
+
+  // Biten/bitmek üzere paketler (her danışanın en güncel paketi, kalan ≤ 1)
+  const seen = new Set<string>()
+  const endingPackages: { clientId: string; clientName: string; remaining: number; total: number }[] = []
+  for (const p of pkgs) {
+    if (seen.has(p.clientId)) continue
+    seen.add(p.clientId)
+    const used = sess.filter(
+      (s) => s.clientId === p.clientId && s.status === 'completed' && dkey(s.date) >= String(p.purchaseDate).slice(0, 10),
+    ).length
+    const remaining = Math.max(p.totalSessions - used, 0)
+    if (remaining <= 1) endingPackages.push({ clientId: p.clientId, clientName: cOf(p.clientId)?.name ?? '—', remaining, total: p.totalSessions })
+  }
+
+  // Eskimiş ölçüm (ölçüm yapılmış ama son ölçüm 28+ gün önce)
+  const latestByClient = new Map<string, { date: string; label: string }>()
+  for (const s of scoreRows) {
+    const cur = latestByClient.get(s.clientId)
+    if (!cur || String(s.date) > cur.date) latestByClient.set(s.clientId, { date: String(s.date), label: s.label })
+  }
+  const staleScores: { clientId: string; clientName: string; daysSince: number; label: string }[] = []
+  for (const [clientId, info] of latestByClient) {
+    const daysSince = Math.round((+new Date(todayKey) - +new Date(info.date)) / 86_400_000)
+    if (daysSince >= 28) staleScores.push({ clientId, clientName: cOf(clientId)?.name ?? '—', daysSince, label: info.label })
+  }
+  staleScores.sort((a, b) => b.daysSince - a.daysSince)
+
+  return { todaySessions, missingNotes, endingPackages, staleScores }
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────

@@ -24,6 +24,8 @@ import {
   Menu,
   X,
   LogOut,
+  Eye,
+  EyeOff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { USER } from '@/lib/constants'
@@ -147,8 +149,11 @@ function ThemeToggle() {
   )
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
+
+export function DashboardShell({ children, clients = [] }: { children: React.ReactNode; clients?: ClientLite[] }) {
   const [open, setOpen] = useState(false)
+  const [privacy, setPrivacy] = useState(false)
 
   // Esc ile mobil menüyü kapat (modallar kendi içinde hallediyor)
   useEffect(() => {
@@ -157,6 +162,30 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [open])
+
+  // Gizlilik (odak) modu — son tercihi hatırla + ⌘/Ctrl+Shift+H kısayolu
+  useEffect(() => {
+    setPrivacy(localStorage.getItem('derinay:privacy') === '1')
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'h') {
+        e.preventDefault()
+        setPrivacy((v) => {
+          const next = !v
+          localStorage.setItem('derinay:privacy', next ? '1' : '0')
+          return next
+        })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const togglePrivacy = () =>
+    setPrivacy((v) => {
+      const next = !v
+      localStorage.setItem('derinay:privacy', next ? '1' : '0')
+      return next
+    })
 
   return (
     <div className="min-h-screen">
@@ -193,6 +222,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
+            <button
+              onClick={togglePrivacy}
+              aria-label="Gizlilik modu"
+              title="Gizlilik modu (⌘⇧H)"
+              className={cn(
+                'flex h-9 w-9 items-center justify-center rounded-xl border transition-all',
+                privacy
+                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  : 'border-slate-500/20 text-slate-500 hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400',
+              )}
+            >
+              {privacy ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
             <ThemeToggle />
             <form action={logoutAction}>
               <button
@@ -219,6 +261,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400"
           >
             <Search className="h-5 w-5" />
+          </button>
+          <button
+            onClick={togglePrivacy}
+            aria-label="Gizlilik modu"
+            className={cn('flex h-9 w-9 items-center justify-center rounded-xl', privacy ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400')}
+          >
+            {privacy ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </button>
           <ThemeToggle />
           <button
@@ -265,14 +314,26 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <CommandPalette />
+      <CommandPalette clients={clients} />
 
       {/* Content */}
       <main className="lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-          <PageTransition>{children}</PageTransition>
+          <div className={cn('transition-[filter] duration-300', privacy && 'pointer-events-none select-none blur-[7px]')}>
+            <PageTransition>{children}</PageTransition>
+          </div>
         </div>
       </main>
+
+      {/* Gizlilik modu göstergesi — her zaman net, geri açmak için */}
+      {privacy && (
+        <button
+          onClick={togglePrivacy}
+          className="surface fixed bottom-5 left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300"
+        >
+          <EyeOff className="h-4 w-4" /> Gizlilik modu açık — göstermek için dokun
+        </button>
+      )}
     </div>
   )
 }

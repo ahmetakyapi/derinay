@@ -10,7 +10,11 @@ import {
   ArrowDownRight,
   Users,
   CalendarDays,
+  CalendarClock,
   Cake,
+  StickyNote,
+  Package,
+  Activity,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -24,9 +28,10 @@ import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
 import { AreaTrendChart } from '@/components/charts/AreaTrendChart'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { MonthlyBar } from '@/components/charts/MonthlyBar'
-import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, clientOptions } from '@/lib/queries'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, clientOptions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
-import { USER } from '@/lib/constants'
+import { USER, SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
 
 export default async function DashboardPage({
@@ -35,13 +40,15 @@ export default async function DashboardPage({
   searchParams: { week?: string }
 }) {
   const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
-  const [d, week, out, birthdays, clients] = await Promise.all([
+  const [d, week, out, birthdays, rem, clients] = await Promise.all([
     getDashboard(),
     getWeekSessions(weekOffset),
     getOutstandingBalances(),
     getUpcomingBirthdays(),
+    getDashboardReminders(),
     clientOptions(),
   ])
+  const reminderCount = rem.missingNotes.length + rem.endingPackages.length + rem.staleScores.length
   const k = d.kpis
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
@@ -183,6 +190,87 @@ export default async function DashboardPage({
         </div>
         <WeekCalendar days={week.days} todayKey={week.todayKey} />
       </section>
+
+      {/* Bugün + Hatırlatmalar */}
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Bugünkü program */}
+        <section className="glass rounded-2xl p-5">
+          <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <CalendarClock className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Bugün
+          </h2>
+          {rem.todaySessions.length ? (
+            <ul className="space-y-2">
+              {rem.todaySessions.map((s) => (
+                <li key={s.id}>
+                  <Link
+                    href={s.clientId ? `/dashboard/clients/${s.clientId}` : '#'}
+                    className="group flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-indigo-500/40"
+                  >
+                    <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
+                    <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{s.clientName}</span>
+                    <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="py-6 text-center font-display text-sm italic text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
+          )}
+        </section>
+
+        {/* Hatırlatmalar */}
+        <section className="glass rounded-2xl p-5">
+          <h2 className="mb-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <span className="flex items-center gap-2"><Activity className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Hatırlatmalar</span>
+            {reminderCount > 0 && (
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">{reminderCount}</span>
+            )}
+          </h2>
+          {reminderCount ? (
+            <ul className="space-y-2">
+              {rem.missingNotes.length > 0 && (
+                <li>
+                  <Link href={`/dashboard/clients/${rem.missingNotes[0].clientId}`} className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-amber-500/40">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400"><StickyNote className="h-4 w-4" /></span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.missingNotes.length} seansın notu eksik</p>
+                      <p className="truncate text-xs text-slate-400">{[...new Set(rem.missingNotes.map((m) => m.clientName))].slice(0, 3).join(', ')}</p>
+                    </div>
+                    <span className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400">→</span>
+                  </Link>
+                </li>
+              )}
+              {rem.endingPackages.length > 0 && (
+                <li>
+                  <Link href={`/dashboard/clients/${rem.endingPackages[0].clientId}`} className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-rose-500/40">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400"><Package className="h-4 w-4" /></span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.endingPackages.length} danışanın paketi bitiyor</p>
+                      <p className="truncate text-xs text-slate-400">{rem.endingPackages.slice(0, 3).map((p) => `${p.clientName} (${p.remaining})`).join(', ')}</p>
+                    </div>
+                    <span className="shrink-0 text-xs font-semibold text-rose-600 dark:text-rose-400">→</span>
+                  </Link>
+                </li>
+              )}
+              {rem.staleScores.length > 0 && (
+                <li>
+                  <Link href={`/dashboard/clients/${rem.staleScores[0].clientId}`} className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-emerald-500/40">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><Activity className="h-4 w-4" /></span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.staleScores.length} danışanda ölçüm zamanı</p>
+                      <p className="truncate text-xs text-slate-400">{rem.staleScores.slice(0, 3).map((s) => `${s.clientName} (${s.daysSince}g)`).join(', ')}</p>
+                    </div>
+                    <span className="shrink-0 text-xs font-semibold text-emerald-600 dark:text-emerald-400">→</span>
+                  </Link>
+                </li>
+              )}
+            </ul>
+          ) : (
+            <p className="py-6 text-center font-display text-sm italic text-slate-400">Her şey güncel — defter temiz ✨</p>
+          )}
+        </section>
+      </div>
 
       {/* Grafikler */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
