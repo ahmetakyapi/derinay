@@ -145,6 +145,8 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   purchaseDate, note. Kullanım = satın alma tarihinden sonra **tamamlanan** seans sayısı
   (`getClientDetail.activePackage` = en güncel paket + used/remaining). `recordIncome` ile
   ücret işletme geliri olarak da yazılabilir.
+- **clientScores** — ilerleme ölçümü: clientId→cascade, label(ölçek adı), value, scaleMax(ops.),
+  date, note. Danışan detayında en güncel ölçeğin zaman serisi `ScoreTrend` ile grafiklenir.
 - **settings** — anahtar-değer: `reminder_template` (hatırlatma) ve `business` (işletme/makbuz
   kimliği JSON). `getBusinessInfo()` varsayılan `BUSINESS` üstüne uygular; Ayarlar sayfasından düzenlenir.
 

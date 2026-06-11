@@ -13,6 +13,7 @@ import {
   Printer,
   HeartPulse,
   Package,
+  Activity,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -27,10 +28,13 @@ import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { NewPackageDialog } from '@/components/forms/NewPackageDialog'
+import { NewScoreDialog } from '@/components/forms/NewScoreDialog'
+import { ScoreTrend } from '@/components/clients/ScoreTrend'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderTemplate } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
 import { deletePackage } from '@/app/actions/packages'
+import { deleteScore } from '@/app/actions/scores'
 import {
   CLIENT_STATUS_LABEL,
   INVOICE_STATUS_LABEL,
@@ -43,10 +47,23 @@ import { cn } from '@/lib/utils'
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   const [data, reminderTemplate] = await Promise.all([getClientDetail(params.id), getReminderTemplate()])
   if (!data) notFound()
-  const { client, notes, sessions, payments, invoices, stats, activePackage } = data
+  const { client, notes, sessions, payments, invoices, stats, activePackage, scores } = data
   const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
   const pkgLow = activePackage ? activePackage.remaining > 0 && activePackage.remaining <= 2 : false
   const pkgDone = activePackage ? activePackage.remaining === 0 : false
+
+  // İlerleme ölçümü: en güncel ölçeğin zaman serisi (karışık etiketleri ayrı tut)
+  const scoreLabel = scores.length ? scores[scores.length - 1].label : null
+  const scoreSeries = scoreLabel
+    ? scores
+        .filter((s) => s.label === scoreLabel)
+        .map((s) => ({
+          label: new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' }).format(new Date(s.date)),
+          value: s.value,
+        }))
+    : []
+  const scoreMax = scoreLabel ? scores.find((s) => s.label === scoreLabel && s.scaleMax)?.scaleMax ?? null : null
+  const recentScores = [...scores].reverse().slice(0, 6)
 
   return (
     <>
@@ -205,6 +222,43 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 .filter((n): n is typeof n & { mood: NonNullable<(typeof n)['mood']> } => n.mood !== null)
                 .map((n) => ({ mood: n.mood, date: String(n.createdAt) }))}
             />
+          </section>
+
+          {/* İlerleme Ölçümü — ölçek puanı eğrisi */}
+          <section className="glass rounded-2xl p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+                <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" /> İlerleme Ölçümü
+              </h2>
+              <NewScoreDialog clientId={client.id} lastLabel={scoreLabel ?? undefined} />
+            </div>
+
+            {scores.length ? (
+              <>
+                {scoreSeries.length >= 2 && (
+                  <>
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{scoreLabel}</p>
+                    <ScoreTrend data={scoreSeries} max={scoreMax} />
+                  </>
+                )}
+                <ul className="mt-3 space-y-1.5 border-t border-slate-500/10 pt-3">
+                  {recentScores.map((s) => (
+                    <li key={s.id} className="flex items-center gap-3 text-sm">
+                      <span className="font-mono text-[13px] font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                        {s.value}{s.scaleMax ? <span className="text-slate-400">/{s.scaleMax}</span> : null}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-slate-600 dark:text-slate-300">{s.label}</span>
+                      <span className="shrink-0 text-xs text-slate-400">{formatDate(s.date)}</span>
+                      <DeleteButton action={deleteScore.bind(null, s.id, client.id)} className="h-7 w-7" />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="py-3 text-sm text-slate-400">
+                Henüz ölçüm yok. Bir ölçek puanı ekleyerek danışanın ilerlemesini grafikle izle.
+              </p>
+            )}
           </section>
 
           {/* Seans Defteri */}

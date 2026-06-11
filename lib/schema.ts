@@ -118,6 +118,18 @@ export const sessionPackages = pgTable('session_packages', {
   createdAt:     timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Client scores (ilerleme ölçümü — ölçek puanları) ────────────────────────
+export const clientScores = pgTable('client_scores', {
+  id:        uuid('id').primaryKey().defaultRandom(),
+  clientId:  uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
+  label:     text('label').notNull(),                          // ölçek adı (İyilik hali, BDI…)
+  value:     numeric('value', { precision: 7, scale: 2 }).notNull(),
+  scaleMax:  integer('scale_max'),                             // ölçek üst sınırı (opsiyonel — 10, 63…)
+  date:      date('date').notNull().defaultNow(),
+  note:      text('note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 // ─── Waitlist (bekleme listesi — yeni danışan başvuruları) ───────────────────
 export const waitlist = pgTable('waitlist', {
   id:        uuid('id').primaryKey().defaultRandom(),
@@ -156,3 +168,5 @@ export type Waitlist       = typeof waitlist.$inferSelect
 export type NewWaitlist    = typeof waitlist.$inferInsert
 export type SessionPackage = typeof sessionPackages.$inferSelect
 export type NewSessionPackage = typeof sessionPackages.$inferInsert
+export type ClientScore    = typeof clientScores.$inferSelect
+export type NewClientScore = typeof clientScores.$inferInsert
