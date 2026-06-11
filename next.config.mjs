@@ -6,6 +6,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
     ],
   },
+  experimental: {
+    serverActions: {
+      // Yedek geri yükleme (JSON, avatar data-URI'leriyle) için yükseltildi
+      bodySizeLimit: '16mb',
+    },
+  },
 }
 
 export default nextConfig

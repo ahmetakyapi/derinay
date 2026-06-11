@@ -14,6 +14,9 @@ import {
   ClipboardList,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
+import { RestoreCard } from '@/components/backup/RestoreCard'
+import { getLastBackup } from '@/lib/queries'
+import { cn } from '@/lib/utils'
 
 const CSV_EXPORTS = [
   { type: 'clients', label: 'Danışanlar', desc: 'İsim, iletişim, statü, ücret, etiketler', icon: Users, tone: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-500/10' },
@@ -28,12 +31,32 @@ const CSV_EXPORTS = [
   { type: 'waitlist', label: 'Bekleme Listesi', desc: 'Başvuru adayları ve kaynakları', icon: ClipboardList, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
 ] as const
 
-export default function BackupPage() {
+export default async function BackupPage() {
+  const lastBackup = await getLastBackup()
   return (
     <>
       <PageHeader
         title="Yedekleme"
         subtitle="Verilerin senin — istediğin an indir, güvende hisset"
+        action={
+          <span
+            className={cn(
+              'inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold',
+              lastBackup.daysAgo === null
+                ? 'bg-rose-500/12 text-rose-700 dark:text-rose-300'
+                : lastBackup.daysAgo >= 14
+                  ? 'bg-amber-500/12 text-amber-700 dark:text-amber-300'
+                  : 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300',
+            )}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {lastBackup.daysAgo === null
+              ? 'Henüz tam yedek alınmadı'
+              : lastBackup.daysAgo === 0
+                ? 'Son yedek: bugün'
+                : `Son yedek: ${lastBackup.daysAgo} gün önce`}
+          </span>
+        }
       />
 
       {/* Tam yedek */}
@@ -79,6 +102,14 @@ export default function BackupPage() {
             <Download className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-indigo-500 dark:text-slate-600 dark:group-hover:text-indigo-400" />
           </a>
         ))}
+      </div>
+
+      {/* Geri yükleme — tehlikeli bölge */}
+      <div className="mt-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          Geri Yükleme
+        </h2>
+        <RestoreCard />
       </div>
 
       <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-slate-500/15 bg-slate-500/[0.04] p-4 text-xs text-slate-500 dark:text-slate-400">

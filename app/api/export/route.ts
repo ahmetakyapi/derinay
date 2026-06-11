@@ -164,6 +164,13 @@ export async function GET(req: Request) {
   }
 
   // Tam JSON yedek — TÜM tablolar (yeni tablo eklenince buraya da ekle)
+  // Son yedek zamanını kaydet (dashboard "yedek eskidi" hatırlatması bunu okur)
+  const nowIso = new Date().toISOString()
+  await db
+    .insert(settings)
+    .values({ key: 'last_backup_at', value: nowIso, updatedAt: new Date() })
+    .onConflictDoUpdate({ target: settings.key, set: { value: nowIso, updatedAt: new Date() } })
+
   const [c, se, n, t, i, pa, pk, sc, doc, wl, st] = await Promise.all([
     db.select().from(clients),
     db.select().from(sessions),

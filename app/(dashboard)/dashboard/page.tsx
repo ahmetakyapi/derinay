@@ -16,6 +16,7 @@ import {
   Package,
   Activity,
   ShieldAlert,
+  DatabaseBackup,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -50,7 +51,11 @@ export default async function DashboardPage({
     clientOptions(),
   ])
   const reminderCount =
-    rem.missingNotes.length + rem.endingPackages.length + rem.staleScores.length + rem.missingConsent.length
+    rem.missingNotes.length +
+    rem.endingPackages.length +
+    rem.staleScores.length +
+    rem.missingConsent.length +
+    (rem.backupStale ? 1 : 0)
   const k = d.kpis
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
@@ -276,6 +281,20 @@ export default async function DashboardPage({
                       <p className="sensitive truncate text-xs text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-sky-600 dark:text-sky-400">→</span>
+                  </Link>
+                </li>
+              )}
+              {rem.backupStale && (
+                <li>
+                  <Link href="/dashboard/backup" className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-violet-500/40">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400"><DatabaseBackup className="h-4 w-4" /></span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Yedek alma zamanı</p>
+                      <p className="truncate text-xs text-slate-400">
+                        {rem.backupStale.daysAgo === null ? 'henüz hiç tam yedek alınmadı' : `son yedek ${rem.backupStale.daysAgo} gün önce`}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-xs font-semibold text-violet-600 dark:text-violet-400">→</span>
                   </Link>
                 </li>
               )}

@@ -29,6 +29,7 @@ import { MoodTrail } from '@/components/clients/MoodTrail'
 import { NoteForm } from '@/components/forms/NoteForm'
 import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
 import { ReminderButton } from '@/components/clients/ReminderButton'
+import { DeleteClientButton } from '@/components/clients/DeleteClientButton'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
@@ -38,7 +39,6 @@ import { ScoreTrend } from '@/components/clients/ScoreTrend'
 import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderTemplate, getTaxSettings } from '@/lib/queries'
-import { deleteClient } from '@/app/actions/clients'
 import { deletePackage } from '@/app/actions/packages'
 import { deleteScore } from '@/app/actions/scores'
 import { deleteDocument } from '@/app/actions/documents'
@@ -143,12 +143,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 tags: client.tags,
               }}
             />
-            <DeleteButton
-              action={deleteClient.bind(null, client.id)}
-              redirectTo="/dashboard/clients"
-              confirmText={`${client.name} ve tüm kayıtları silinecek. Emin misiniz?`}
-              className="h-10 w-10 border border-slate-500/20"
-            />
+            <DeleteClientButton clientId={client.id} clientName={client.name} />
           </div>
         </div>
       </div>

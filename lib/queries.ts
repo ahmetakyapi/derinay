@@ -445,7 +445,11 @@ export async function getDashboardReminders() {
     .filter((c) => c.status === 'active' && !c.consentGiven)
     .map((c) => ({ clientId: c.id, clientName: c.name }))
 
-  return { todaySessions, missingNotes, endingPackages, staleScores, missingConsent }
+  // Yedek eskidi mi? (hiç yoksa veya 14+ gün geçtiyse uyar)
+  const backup = await getLastBackup()
+  const backupStale = backup.daysAgo === null || backup.daysAgo >= 14 ? backup : null
+
+  return { todaySessions, missingNotes, endingPackages, staleScores, missingConsent, backupStale }
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
@@ -873,6 +877,16 @@ export async function getReminderTemplate(): Promise<string> {
 export async function listWaitlist() {
   const rows = await db.select().from(waitlist).orderBy(desc(waitlist.priority), desc(waitlist.createdAt))
   return rows.map((r) => ({ ...r, createdAt: String(r.createdAt) }))
+}
+
+// ─── Son yedek zamanı (export route'u yazar) ─────────────────────────────────
+export async function getLastBackup(): Promise<{ at: string | null; daysAgo: number | null }> {
+  const [row] = await db.select().from(settings).where(eq(settings.key, 'last_backup_at'))
+  if (!row?.value) return { at: null, daysAgo: null }
+  const d = new Date(row.value)
+  if (Number.isNaN(d.getTime())) return { at: null, daysAgo: null }
+  const daysAgo = Math.floor((Date.now() - d.getTime()) / 86_400_000)
+  return { at: row.value, daysAgo }
 }
 
 // ─── Vergi oranları (Ayarlar'dan düzenlenebilir) ─────────────────────────────

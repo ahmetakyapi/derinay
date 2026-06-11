@@ -237,6 +237,12 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 - **Gizlilik modu**: `html.privacy` + `.sensitive` (globals.css) — yalnızca kimlik alanları bulanır.
   İsim/iletişim render eden yeni bileşene `sensitive` sınıfı ekle (Avatar otomatik).
 - Kişisel harcamalar `scope` ile ayrılır, ayrı tablo değil.
+- **Veri güvenliği**: (1) Tam yedek `/api/export?type=json` → `last_backup_at` settings'e yazılır;
+  14+ gün geçince dashboard hatırlatır. (2) **Geri yükleme** `app/actions/restore.ts` —
+  tüm delete+insert'ler tek `db.batch()` (Neon tek transaction, ya hep ya hiç); UI'da
+  "GERİ YÜKLE" yazarak onay. Yeni tablo eklenince export + restore + seed temizliğine ekle.
+  (3) Seed dolu DB'de `--force` olmadan ÇALIŞMAZ. (4) Danışan silme isim yazarak onaylanır
+  (`DeleteClientButton`). serverActions bodySizeLimit 16mb (yedek yükleme için).
 - Kategoriler serbest metin (datalist önerili) — kullanıcı kendi kalemini yazabilir.
 - Fatura PDF'i tarayıcı yazdırma ile (`/invoices/[id]/print` + `@media print`), ekstra PDF kütüphanesi yok.
 

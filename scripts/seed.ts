@@ -50,6 +50,17 @@ const NOTES = [
 ]
 
 async function main() {
+  // ── GÜVENLİK KİLİDİ ──────────────────────────────────────────────────────
+  // Seed TÜM verileri siler. Gerçek veri varken yanlışlıkla çalıştırmayı önle:
+  // dolu veritabanında yalnızca `npm run db:seed -- --force` ile çalışır.
+  const existing = await db.select({ id: clients.id }).from(clients).limit(1)
+  if (existing.length > 0 && !process.argv.includes('--force')) {
+    console.error('✗ Veritabanı boş değil — seed TÜM verileri siler!')
+    console.error('  Gerçekten istiyorsan önce yedek al (Yedekleme sayfası), sonra:')
+    console.error('  npm run db:seed -- --force')
+    process.exit(1)
+  }
+
   console.log('→ Mevcut veriler temizleniyor…')
   await db.delete(payments)
   await db.delete(invoices)
