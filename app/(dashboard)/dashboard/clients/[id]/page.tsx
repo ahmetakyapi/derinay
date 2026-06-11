@@ -36,6 +36,7 @@ import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { NewPackageDialog } from '@/components/forms/NewPackageDialog'
 import { NewScoreDialog } from '@/components/forms/NewScoreDialog'
 import { ScoreTrend } from '@/components/clients/ScoreTrend'
+import { GoalsCard } from '@/components/clients/GoalsCard'
 import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderTemplate, getTaxSettings } from '@/lib/queries'
@@ -54,7 +55,7 @@ import { cn } from '@/lib/utils'
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   const [data, reminderTemplate, taxRates] = await Promise.all([getClientDetail(params.id), getReminderTemplate(), getTaxSettings()])
   if (!data) notFound()
-  const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents } = data
+  const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents, goals } = data
   const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
   const pkgLow = activePackage ? activePackage.remaining > 0 && activePackage.remaining <= 2 : false
   const pkgDone = activePackage ? activePackage.remaining === 0 : false
@@ -235,6 +236,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 .map((n) => ({ mood: n.mood, date: String(n.createdAt) }))}
             />
           </section>
+
+          {/* Tedavi Hedefleri — hafif tedavi planı */}
+          <GoalsCard clientId={client.id} goals={goals} />
 
           {/* İlerleme Ölçümü — ölçek puanı eğrisi */}
           <section className="glass rounded-2xl p-5">

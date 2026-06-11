@@ -2,25 +2,28 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Building2, MessageSquareText, Landmark, Loader2 } from 'lucide-react'
+import { Check, Building2, MessageSquareText, Landmark, Target, Loader2 } from 'lucide-react'
 import { Field, Input, Textarea } from '@/components/ui/Field'
-import { saveBusinessInfo, saveReminderTemplate, saveTaxSettings } from '@/app/actions/settings'
+import { saveBusinessInfo, saveReminderTemplate, saveTaxSettings, saveIncomeGoal } from '@/app/actions/settings'
 import type { BusinessInfo } from '@/lib/constants'
 import type { TaxSettings } from '@/lib/queries'
 
-type Saved = 'business' | 'reminder' | 'tax' | null
+type Saved = 'business' | 'reminder' | 'tax' | 'goal' | null
 
 export function SettingsForm({
   business,
   reminderTemplate,
   taxSettings,
+  incomeGoal,
 }: {
   business: BusinessInfo
   reminderTemplate: string
   taxSettings: TaxSettings
+  incomeGoal: number
 }) {
   const [b, setB] = useState<BusinessInfo>(business)
   const [tax, setTax] = useState<TaxSettings>(taxSettings)
+  const [goal, setGoal] = useState(incomeGoal)
   const [tpl, setTpl] = useState(reminderTemplate)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<Saved>(null)
@@ -68,6 +71,18 @@ export function SettingsForm({
 
   const setRate = (k: keyof TaxSettings) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setTax((prev) => ({ ...prev, [k]: Number(e.target.value) }))
+
+  function saveGoal(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    start(async () => {
+      const res = await saveIncomeGoal(goal)
+      if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
+      setSaved('goal')
+      router.refresh()
+      setTimeout(() => setSaved(null), 2500)
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -144,6 +159,39 @@ export function SettingsForm({
 
         <div className="mt-5 flex items-center justify-end gap-3">
           {saved === 'tax' && (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+              <Check className="h-4 w-4" /> Kaydedildi
+            </span>
+          )}
+          <button
+            type="submit"
+            disabled={pending}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
+          >
+            {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+            Kaydet
+          </button>
+        </div>
+      </form>
+
+      {/* Aylık gelir hedefi — dashboard ilerleme bandı */}
+      <form onSubmit={saveGoal} className="glass rounded-2xl p-5 sm:p-6">
+        <div className="mb-5 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+            <Target className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Aylık Gelir Hedefi</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Genel Bakış&apos;ta ilerleme çubuğu olarak görünür — 0 bırakırsan kapalı</p>
+          </div>
+        </div>
+
+        <Field label="Hedef (₺ / ay)">
+          <Input type="number" min="0" step="500" value={goal || ''} onChange={(e) => setGoal(Number(e.target.value) || 0)} placeholder="örn. 60000" />
+        </Field>
+
+        <div className="mt-5 flex items-center justify-end gap-3">
+          {saved === 'goal' && (
             <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
               <Check className="h-4 w-4" /> Kaydedildi
             </span>

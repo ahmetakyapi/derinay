@@ -49,8 +49,14 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
   const [dragId, setDragId] = useState<string | null>(null)
   const [hoverDay, setHoverDay] = useState<string | null>(null) // sürükleme hedefi vurgusu
   const [nowMin, setNowMin] = useState<number | null>(null) // canlı "şu an" çizgisi (mount sonrası)
+  const [conflict, setConflict] = useState<string | null>(null) // çakışma uyarısı (geçici)
   const [pending, start] = useTransition()
   const router = useRouter()
+
+  function showConflict(msg: string) {
+    setConflict(msg)
+    setTimeout(() => setConflict(null), 4500)
+  }
 
   useEffect(() => {
     const tick = () => {
@@ -66,7 +72,8 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
     const clamped = Math.max(DAY_START, Math.min(DAY_END - SNAP, minutes))
     const isoLocal = `${dayKey}T${pad(Math.floor(clamped / 60))}:${pad(clamped % 60)}`
     start(async () => {
-      await updateSessionTime(item.id, item.clientId, isoLocal)
+      const res = await updateSessionTime(item.id, item.clientId, isoLocal)
+      if (!res.ok && res.error) showConflict(res.error)
       router.refresh()
     })
   }
@@ -89,7 +96,8 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
     const fd = new FormData(e.currentTarget)
     const isoLocal = String(fd.get('when'))
     start(async () => {
-      await updateSessionTime(selected.id, selected.clientId, isoLocal)
+      const res = await updateSessionTime(selected.id, selected.clientId, isoLocal)
+      if (!res.ok && res.error) showConflict(res.error)
       setSelected(null)
       router.refresh()
     })
@@ -302,6 +310,14 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
           </section>
         ))}
       </div>
+
+      {/* Çakışma uyarısı — geçici pil */}
+      {conflict && (
+        <div className="surface fixed bottom-5 left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300">
+          <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-rose-500" />
+          {conflict}
+        </div>
+      )}
 
       {/* ── Seans detay modalı ── */}
       <Modal

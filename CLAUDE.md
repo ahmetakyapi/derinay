@@ -149,10 +149,17 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   date, note. Danışan detayında en güncel ölçeğin zaman serisi `ScoreTrend` ile grafiklenir.
 - **clientDocuments** — belge referansı: clientId→cascade, name, type, **url**, note. Dosya saklanmaz;
   KVKK gereği yalnızca kullanıcının kendi deposundaki (Drive/iCloud) bağlantısı tutulur.
+- **clientGoals** — tedavi hedefleri: clientId→cascade, title, `status`(active/achieved/paused),
+  note, achievedAt. Danışan detayında `GoalsCard` (ekle/tamamla/duraklat + ilerleme çubuğu).
 - **settings** — anahtar-değer: `reminder_template` (hatırlatma), `business` (işletme/makbuz
   kimliği JSON) ve `tax` (vergi oranları JSON — kdvRate/stopajRate/incomeTaxRate).
   `getBusinessInfo()` / `getTaxSettings()` varsayılanların üstüne uygular; Ayarlar sayfasından düzenlenir.
-  Vergi hesapları (`taxSummary`) ve makbuz varsayılanları bu oranları okur.
+  Vergi hesapları (`taxSummary`) ve makbuz varsayılanları bu oranları okur. Ayrıca `income_goal`
+  (aylık gelir hedefi — dashboard ilerleme bandı) ve `last_backup_at` anahtarları da burada.
+- **Otomatik vade**: `listInvoices`/`getDashboard` çağrılırken vadesi geçen 'sent' makbuzlar
+  idempotent şekilde 'overdue' yapılır (`autoMarkOverdue`).
+- **Çakışma kontrolü**: `createSession`/`updateSessionTime` üst üste binen seansı engeller
+  (`findConflict` — iptal/gelmedi hariç); ajandada geçici pil ile gösterilir.
 
 ### `scope` kuralı (ÖNEMLİ)
 `business` = kliniğin finansı (dashboard, finances, taxes burayı sayar).

@@ -16,14 +16,32 @@ import {
 } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
+// Yapılandırılmış not şablonları — piyasadaki EHR'lerin (SOAP vb.) hafif hâli
+const NOTE_TEMPLATES: { label: string; body: string }[] = [
+  {
+    label: 'SOAP',
+    body: 'S — Öznel (danışanın aktardığı):\n\nO — Gözlem:\n\nA — Değerlendirme:\n\nP — Plan:\n',
+  },
+  {
+    label: 'İlk Görüşme',
+    body: 'Başvuru nedeni:\n\nÖykü / arka plan:\n\nGözlem:\n\nHedefler:\n\nPlan:\n',
+  },
+  {
+    label: 'BDT',
+    body: 'Gündem:\n\nOtomatik düşünce / yeniden yapılandırma:\n\nBeceri / teknik çalışması:\n\nEv ödevi:\n',
+  },
+]
+
 /**
  * Seans Defteri giriş formu — not türü, duygu durumu, başlık ve gövde.
+ * Şablon çipleri gövdeyi yapılandırılmış iskeletle doldurur.
  */
 export function NoteForm({ clientId }: { clientId: string }) {
   const [pending, start] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [kind, setKind] = useState<NoteKind>('session')
   const [mood, setMood] = useState<Mood | null>(null)
+  const [body, setBody] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
 
@@ -35,12 +53,13 @@ export function NoteForm({ clientId }: { clientId: string }) {
       const res = await createNote({
         clientId,
         title: String(fd.get('title') || ''),
-        body: String(fd.get('body') || ''),
+        body,
         kind,
         mood,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       formRef.current?.reset()
+      setBody('')
       setMood(null)
       setKind('session')
       router.refresh()
@@ -69,7 +88,32 @@ export function NoteForm({ clientId }: { clientId: string }) {
       </div>
 
       <Input name="title" placeholder="Başlık (opsiyonel)" />
-      <Textarea name="body" rows={3} required placeholder="Bugünün notu…" />
+      <Textarea
+        name="body"
+        rows={body.includes('\n') ? 7 : 3}
+        required
+        placeholder="Bugünün notu…"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+      />
+
+      {/* Şablonlar — yapılandırılmış not iskeletleri */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Şablon:</span>
+        {NOTE_TEMPLATES.map((t) => (
+          <button
+            key={t.label}
+            type="button"
+            onClick={() => {
+              if (body.trim() && !window.confirm('Mevcut not şablonla değiştirilsin mi?')) return
+              setBody(t.body)
+            }}
+            className="rounded-full border border-slate-500/20 px-2.5 py-1 text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
       {/* Duygu durumu — 5'li skala */}
       <div className="flex flex-wrap items-center gap-2">

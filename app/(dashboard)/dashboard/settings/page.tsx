@@ -2,15 +2,16 @@ import Link from 'next/link'
 import { DatabaseBackup, Info } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SettingsForm } from '@/components/forms/SettingsForm'
-import { getBusinessInfo, getReminderTemplate, getTaxSettings } from '@/lib/queries'
+import { getBusinessInfo, getReminderTemplate, getTaxSettings, getIncomeGoal } from '@/lib/queries'
 
 export const metadata = { title: 'Ayarlar' }
 
 export default async function SettingsPage() {
-  const [business, reminderTemplate, taxSettings] = await Promise.all([
+  const [business, reminderTemplate, taxSettings, incomeGoal] = await Promise.all([
     getBusinessInfo(),
     getReminderTemplate(),
     getTaxSettings(),
+    getIncomeGoal(),
   ])
 
   return (
@@ -21,7 +22,7 @@ export default async function SettingsPage() {
       />
 
       <div className="mx-auto max-w-3xl">
-        <SettingsForm business={business} reminderTemplate={reminderTemplate} taxSettings={taxSettings} />
+        <SettingsForm business={business} reminderTemplate={reminderTemplate} taxSettings={taxSettings} incomeGoal={incomeGoal} />
 
         {/* Veri yönetimi */}
         <div className="glass mt-6 rounded-2xl p-5 sm:p-6">

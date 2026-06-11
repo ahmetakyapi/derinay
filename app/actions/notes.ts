@@ -1,11 +1,52 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { eq } from 'drizzle-orm'
+import { and, eq, gte, lte, ne, notInArray } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { clientNotes, sessions } from '@/lib/schema'
+import { clientNotes, sessions, clients } from '@/lib/schema'
 import { revalidateSessions } from '@/lib/revalidate'
 import type { SessionStatus, NoteKind, Mood } from '@/lib/constants'
+
+// ─── Çakışma kontrolü ────────────────────────────────────────────────────────
+/**
+ * Verilen aralıklarla çakışan (iptal/gelmedi hariç) ilk seansı döner.
+ * `excludeId` taşıma sırasında seansın kendisiyle çakışmasını önler.
+ */
+async function findConflict(
+  slots: { start: Date; durationMin: number }[],
+  excludeId?: string,
+): Promise<string | null> {
+  if (!slots.length) return null
+  const windowStart = new Date(Math.min(...slots.map((s) => s.start.getTime())) - 4 * 3600_000)
+  const windowEnd = new Date(Math.max(...slots.map((s) => s.start.getTime())) + 28 * 3600_000)
+
+  const existing = await db
+    .select({ id: sessions.id, date: sessions.date, durationMin: sessions.durationMin, clientId: sessions.clientId, clientName: clients.name })
+    .from(sessions)
+    .leftJoin(clients, eq(sessions.clientId, clients.id))
+    .where(and(
+      gte(sessions.date, windowStart),
+      lte(sessions.date, windowEnd),
+      notInArray(sessions.status, ['cancelled', 'no_show']),
+      ...(excludeId ? [ne(sessions.id, excludeId)] : []),
+    ))
+
+  for (const slot of slots) {
+    const aStart = slot.start.getTime()
+    const aEnd = aStart + slot.durationMin * 60_000
+    for (const e of existing) {
+      const bStart = new Date(e.date).getTime()
+      const bEnd = bStart + e.durationMin * 60_000
+      if (aStart < bEnd && bStart < aEnd) {
+        const when = new Intl.DateTimeFormat('tr-TR', {
+          day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+        }).format(new Date(e.date))
+        return `Çakışma: ${when} — ${e.clientName ?? 'mevcut seans'} ile üst üste biniyor`
+      }
+    }
+  }
+  return null
+}
 
 // ─── Danışan notları ─────────────────────────────────────────────────────────
 export async function createNote(input: {
@@ -96,6 +137,12 @@ export async function createSession(input: {
     }
   })
 
+  // Çakışma kontrolü — yalnızca planlanan/tamamlanan seanslarla
+  if ((input.status ?? 'scheduled') !== 'cancelled') {
+    const conflict = await findConflict(rows.map((r) => ({ start: r.date, durationMin: r.durationMin })))
+    if (conflict) return { ok: false, error: conflict }
+  }
+
   await db.insert(sessions).values(rows)
   revalidateSessions(input.clientId)
   return { ok: true, count: rows.length }
@@ -112,6 +159,11 @@ export async function updateSessionStatus(id: string, clientId: string, status: 
 export async function updateSessionTime(id: string, clientId: string | null, isoLocal: string) {
   const d = new Date(isoLocal)
   if (Number.isNaN(d.getTime())) return { ok: false, error: 'Geçersiz tarih' }
+
+  const [cur] = await db.select({ durationMin: sessions.durationMin }).from(sessions).where(eq(sessions.id, id))
+  const conflict = await findConflict([{ start: d, durationMin: cur?.durationMin ?? 50 }], id)
+  if (conflict) return { ok: false, error: conflict }
+
   await db.update(sessions).set({ date: d }).where(eq(sessions.id, id))
   revalidateSessions(clientId)
   return { ok: true }

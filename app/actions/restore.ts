@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import {
   clients, sessions, clientNotes, transactions, invoices, payments,
-  sessionPackages, clientScores, clientDocuments, waitlist, settings,
+  sessionPackages, clientScores, clientDocuments, clientGoals, waitlist, settings,
 } from '@/lib/schema'
 
 /**
@@ -64,6 +64,7 @@ export async function restoreBackup(formData: FormData) {
     sessionPackages: ts(arr('sessionPackages')),
     clientScores: ts(arr('clientScores')),
     clientDocuments: ts(arr('clientDocuments')),
+    clientGoals: ts(arr('clientGoals'), ['achievedAt']),
     waitlist: ts(arr('waitlist')),
     settings: ts(arr('settings')),
   }
@@ -79,6 +80,7 @@ export async function restoreBackup(formData: FormData) {
     db.delete(sessionPackages),
     db.delete(clientScores),
     db.delete(clientDocuments),
+    db.delete(clientGoals),
     db.delete(waitlist),
     db.delete(clients),
     db.delete(settings),
@@ -92,6 +94,7 @@ export async function restoreBackup(formData: FormData) {
   if (rows.sessionPackages.length) statements.push(db.insert(sessionPackages).values(rows.sessionPackages as never))
   if (rows.clientScores.length) statements.push(db.insert(clientScores).values(rows.clientScores as never))
   if (rows.clientDocuments.length) statements.push(db.insert(clientDocuments).values(rows.clientDocuments as never))
+  if (rows.clientGoals.length) statements.push(db.insert(clientGoals).values(rows.clientGoals as never))
   if (rows.waitlist.length) statements.push(db.insert(waitlist).values(rows.waitlist as never))
   if (rows.settings.length) statements.push(db.insert(settings).values(rows.settings as never))
 

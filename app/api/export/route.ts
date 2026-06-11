@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import {
   clients, sessions, clientNotes, transactions, invoices, payments,
-  sessionPackages, clientScores, clientDocuments, waitlist, settings,
+  sessionPackages, clientScores, clientDocuments, clientGoals, waitlist, settings,
 } from '@/lib/schema'
 
 export const dynamic = 'force-dynamic'
@@ -150,6 +150,17 @@ export async function GET(req: Request) {
     ]))
   }
 
+  if (type === 'goals') {
+    const rows = await db.select().from(clientGoals)
+    return csvResponse('hedefler', toCsv(rows as unknown as Row[], [
+      { key: 'title', label: 'Hedef' },
+      { key: 'status', label: 'Durum' },
+      { key: 'note', label: 'Not' },
+      { key: 'createdAt', label: 'Eklendi' },
+      { key: 'achievedAt', label: 'Tamamlandı' },
+    ]))
+  }
+
   if (type === 'waitlist') {
     const rows = await db.select().from(waitlist)
     return csvResponse('bekleme-listesi', toCsv(rows as unknown as Row[], [
@@ -171,7 +182,7 @@ export async function GET(req: Request) {
     .values({ key: 'last_backup_at', value: nowIso, updatedAt: new Date() })
     .onConflictDoUpdate({ target: settings.key, set: { value: nowIso, updatedAt: new Date() } })
 
-  const [c, se, n, t, i, pa, pk, sc, doc, wl, st] = await Promise.all([
+  const [c, se, n, t, i, pa, pk, sc, doc, gl, wl, st] = await Promise.all([
     db.select().from(clients),
     db.select().from(sessions),
     db.select().from(clientNotes),
@@ -181,6 +192,7 @@ export async function GET(req: Request) {
     db.select().from(sessionPackages),
     db.select().from(clientScores),
     db.select().from(clientDocuments),
+    db.select().from(clientGoals),
     db.select().from(waitlist),
     db.select().from(settings),
   ])
@@ -189,7 +201,7 @@ export async function GET(req: Request) {
       {
         exportedAt: new Date().toISOString(),
         clients: c, sessions: se, notes: n, transactions: t, invoices: i, payments: pa,
-        sessionPackages: pk, clientScores: sc, clientDocuments: doc, waitlist: wl, settings: st,
+        sessionPackages: pk, clientScores: sc, clientDocuments: doc, clientGoals: gl, waitlist: wl, settings: st,
       },
       null,
       2,

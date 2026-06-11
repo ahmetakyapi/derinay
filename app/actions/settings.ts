@@ -31,6 +31,19 @@ export async function saveTaxSettings(input: { kdvRate: number; stopajRate: numb
   return { ok: true }
 }
 
+/** Aylık gelir hedefini kaydet (0 = kapalı) — dashboard ilerleme bandı okur */
+export async function saveIncomeGoal(value: number) {
+  if (!Number.isFinite(value) || value < 0) return { ok: false, error: 'Geçersiz tutar' }
+  const v = String(Math.round(value))
+  await db
+    .insert(settings)
+    .values({ key: 'income_goal', value: v, updatedAt: new Date() })
+    .onConflictDoUpdate({ target: settings.key, set: { value: v, updatedAt: new Date() } })
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/settings')
+  return { ok: true }
+}
+
 /** İşletme/makbuz kimliğini kaydet (settings tablosunda 'business' JSON anahtarı) */
 export async function saveBusinessInfo(input: Partial<BusinessInfo>) {
   if (!input.name?.trim()) return { ok: false, error: 'İşletme adı boş olamaz' }

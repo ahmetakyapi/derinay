@@ -7,7 +7,7 @@ import { calcMakbuz } from '../lib/finance'
 import * as schema from '../lib/schema'
 import {
   clients, sessions, clientNotes, transactions, invoices, payments,
-  sessionPackages, clientScores, clientDocuments, waitlist,
+  sessionPackages, clientScores, clientDocuments, clientGoals, waitlist,
 } from '../lib/schema'
 
 if (!process.env.DATABASE_URL) {
@@ -70,6 +70,7 @@ async function main() {
   await db.delete(sessionPackages)
   await db.delete(clientScores)
   await db.delete(clientDocuments)
+  await db.delete(clientGoals)
   await db.delete(waitlist)
   await db.delete(clients)
 
@@ -295,6 +296,32 @@ async function main() {
     note: i === 0 ? 'İlk görüşmede imzalandı' : null,
   }))
   await db.insert(clientDocuments).values(docRows)
+
+  // ─── Tedavi hedefleri ──────────────────────────────────────────────────────
+  console.log('→ Tedavi hedefleri ekleniyor…')
+  const GOAL_POOL = [
+    'Uyku düzenini iyileştirmek',
+    'Haftada 3 gün nefes egzersizi yapmak',
+    'Sosyal ortamlarda kaygıyı yönetebilmek',
+    'Sınır koyma becerisini geliştirmek',
+    'Günlük tutma alışkanlığı kazanmak',
+    'Aile içi iletişimi güçlendirmek',
+  ]
+  const goalRows: (typeof clientGoals.$inferInsert)[] = []
+  for (const c of activeClients.slice(0, 5)) {
+    const count = 2 + Math.floor(Math.random() * 2)
+    const picked = [...GOAL_POOL].sort(() => Math.random() - 0.5).slice(0, count)
+    picked.forEach((title, idx) => {
+      const achieved = idx === 0 && Math.random() < 0.5
+      goalRows.push({
+        clientId: c.id,
+        title,
+        status: achieved ? 'achieved' : 'active',
+        achievedAt: achieved ? monthsAgo(0, 10) : null,
+      })
+    })
+  }
+  await db.insert(clientGoals).values(goalRows)
 
   // ─── Bekleme listesi ───────────────────────────────────────────────────────
   console.log('→ Bekleme listesi ekleniyor…')

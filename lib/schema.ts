@@ -130,6 +130,17 @@ export const clientDocuments = pgTable('client_documents', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Client goals (tedavi hedefleri — hafif tedavi planı) ────────────────────
+export const clientGoals = pgTable('client_goals', {
+  id:         uuid('id').primaryKey().defaultRandom(),
+  clientId:   uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
+  title:      text('title').notNull(),
+  status:     text('status').$type<'active' | 'achieved' | 'paused'>().notNull().default('active'),
+  note:       text('note'),
+  createdAt:  timestamp('created_at').defaultNow().notNull(),
+  achievedAt: timestamp('achieved_at'), // tamamlanma anı (status='achieved' olunca)
+})
+
 // ─── Client scores (ilerleme ölçümü — ölçek puanları) ────────────────────────
 export const clientScores = pgTable('client_scores', {
   id:        uuid('id').primaryKey().defaultRandom(),
@@ -184,3 +195,5 @@ export type ClientScore    = typeof clientScores.$inferSelect
 export type NewClientScore = typeof clientScores.$inferInsert
 export type ClientDocument = typeof clientDocuments.$inferSelect
 export type NewClientDocument = typeof clientDocuments.$inferInsert
+export type ClientGoal     = typeof clientGoals.$inferSelect
+export type NewClientGoal  = typeof clientGoals.$inferInsert

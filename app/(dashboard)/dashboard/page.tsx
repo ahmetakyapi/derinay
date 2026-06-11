@@ -31,7 +31,8 @@ import { AreaTrendChart } from '@/components/charts/AreaTrendChart'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { MonthlyBar } from '@/components/charts/MonthlyBar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, clientOptions } from '@/lib/queries'
+import { ReminderButton } from '@/components/clients/ReminderButton'
+import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, getReminderTemplate, getIncomeGoal, clientOptions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
 import { USER, SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
@@ -42,14 +43,17 @@ export default async function DashboardPage({
   searchParams: { week?: string }
 }) {
   const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
-  const [d, week, out, birthdays, rem, clients] = await Promise.all([
+  const [d, week, out, birthdays, rem, reminderTemplate, incomeGoal, clients] = await Promise.all([
     getDashboard(),
     getWeekSessions(weekOffset),
     getOutstandingBalances(),
     getUpcomingBirthdays(),
     getDashboardReminders(),
+    getReminderTemplate(),
+    getIncomeGoal(),
     clientOptions(),
   ])
+  const goalPct = incomeGoal > 0 ? Math.min(Math.round((d.kpis.income / incomeGoal) * 100), 100) : 0
   const reminderCount =
     rem.missingNotes.length +
     rem.endingPackages.length +
@@ -160,6 +164,39 @@ export default async function DashboardPage({
         />
       </div>
 
+      {/* Aylık gelir hedefi — ilerleme bandı */}
+      {incomeGoal > 0 && (
+        <div className="glass mt-4 rounded-2xl px-5 py-4">
+          <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+            <span className="font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+              Aylık Hedef
+            </span>
+            <span className="font-mono tabular-nums text-slate-600 dark:text-slate-300">
+              <span className={goalPct >= 100 ? 'font-bold text-emerald-600 dark:text-emerald-400' : 'font-bold text-slate-900 dark:text-white'}>
+                {formatTRY(k.income, { compact: true })}
+              </span>
+              {' / '}{formatTRY(incomeGoal, { compact: true })}
+              <span className={`ml-2 font-bold ${goalPct >= 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'}`}>%{goalPct}</span>
+            </span>
+          </div>
+          <div className="h-2.5 overflow-hidden rounded-full bg-slate-500/10">
+            <div
+              className={`h-full rounded-full transition-[width] duration-700 ${
+                goalPct >= 100
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-400'
+                  : 'bg-gradient-to-r from-indigo-500 via-indigo-400 to-amber-400'
+              }`}
+              style={{ width: `${goalPct}%` }}
+            />
+          </div>
+          {goalPct >= 100 && (
+            <p className="mt-2 font-display text-xs italic text-emerald-600 dark:text-emerald-400">
+              Hedef tamamlandı — harika bir ay ✨
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Haftalık seans takvimi */}
       <section className="glass mt-6 rounded-2xl p-5">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -208,21 +245,42 @@ export default async function DashboardPage({
           {rem.todaySessions.length ? (
             <ul className="space-y-2">
               {rem.todaySessions.map((s) => (
-                <li key={s.id}>
+                <li key={s.id} className="group flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-indigo-500/40">
+                  <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
+                  <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
                   <Link
                     href={s.clientId ? `/dashboard/clients/${s.clientId}` : '#'}
-                    className="group flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-indigo-500/40"
+                    className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
                   >
-                    <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
-                    <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
-                    <span className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{s.clientName}</span>
-                    <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
+                    {s.clientName}
                   </Link>
+                  {s.status === 'scheduled' && (
+                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
+                  )}
+                  <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
                 </li>
               ))}
             </ul>
           ) : (
             <p className="py-6 text-center font-display text-sm italic text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
+          )}
+
+          {/* Yarın — tek tık WhatsApp hatırlatması (no-show kıran ritüel) */}
+          {rem.tomorrowSessions.length > 0 && (
+            <div className="mt-4 border-t border-slate-500/10 pt-3.5">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                Yarın · hatırlatma gönder
+              </p>
+              <ul className="space-y-1.5">
+                {rem.tomorrowSessions.map((s) => (
+                  <li key={s.id} className="flex items-center gap-2.5 rounded-lg px-1.5 py-1">
+                    <span className="w-10 shrink-0 font-mono text-[11px] font-bold text-slate-400">{s.time}</span>
+                    <span className="sensitive min-w-0 flex-1 truncate text-[13px] text-slate-600 dark:text-slate-300">{s.clientName}</span>
+                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </section>
 

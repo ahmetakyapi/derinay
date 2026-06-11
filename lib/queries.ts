@@ -1,7 +1,7 @@
 import 'server-only'
-import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
+import { and, arrayContains, desc, eq, gte, ilike, lt, lte, or } from 'drizzle-orm'
 import { db } from './db'
-import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments } from './schema'
+import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
 import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
@@ -69,6 +69,7 @@ export async function listTransactions(opts?: {
 
 // ─── Dashboard istatistikleri ────────────────────────────────────────────────
 export async function getDashboard(monthsBack = 6) {
+  await autoMarkOverdue() // vade geçtiyse uyarı bandı güncel olsun
   const [allTx, allInvoices, clientRows, taxRates] = await Promise.all([
     // Dashboard = iş (business) genel görünümü; kişisel harcamalar hariç
     db.select().from(transactions).where(eq(transactions.scope, 'business')).orderBy(desc(transactions.date)),
@@ -179,7 +180,7 @@ export async function getClientDetail(id: string) {
   const [client] = await db.select().from(clients).where(eq(clients.id, id))
   if (!client) return null
 
-  const [notes, sess, pays, invs, txs, pkgs, scoreRows, docRows] = await Promise.all([
+  const [notes, sess, pays, invs, txs, pkgs, scoreRows, docRows, goalRows] = await Promise.all([
     db.select().from(clientNotes).where(eq(clientNotes.clientId, id)).orderBy(desc(clientNotes.pinned), desc(clientNotes.createdAt)),
     db.select().from(sessions).where(eq(sessions.clientId, id)).orderBy(desc(sessions.date)),
     db.select().from(payments).where(eq(payments.clientId, id)).orderBy(desc(payments.date)),
@@ -188,6 +189,7 @@ export async function getClientDetail(id: string) {
     db.select().from(sessionPackages).where(eq(sessionPackages.clientId, id)).orderBy(desc(sessionPackages.purchaseDate)),
     db.select().from(clientScores).where(eq(clientScores.clientId, id)).orderBy(clientScores.date),
     db.select().from(clientDocuments).where(eq(clientDocuments.clientId, id)).orderBy(desc(clientDocuments.createdAt)),
+    db.select().from(clientGoals).where(eq(clientGoals.clientId, id)).orderBy(clientGoals.createdAt),
   ])
 
   const totalPaid = pays.reduce((s, p) => s + num(p.amount), 0)
@@ -232,6 +234,13 @@ export async function getClientDetail(id: string) {
       note: s.note,
     })),
     documents: docRows.map((d) => ({ id: d.id, name: d.name, type: d.type, url: d.url, note: d.note })),
+    goals: goalRows.map((g) => ({
+      id: g.id,
+      title: g.title,
+      status: g.status,
+      note: g.note,
+      achievedAt: g.achievedAt ? String(g.achievedAt) : null,
+    })),
     stats: { totalPaid, totalInvoiced, completedSessions, noShowSessions, cancelledSessions, outstanding: totalInvoiced - totalPaid },
   }
 }
@@ -256,7 +265,17 @@ export async function getAttendanceStats(monthsBack = 12) {
 }
 
 // ─── Faturalar ───────────────────────────────────────────────────────────────
+
+/** Vadesi geçen 'sent' makbuzları otomatik 'overdue' yapar — okuma sırasında, idempotent */
+async function autoMarkOverdue() {
+  await db
+    .update(invoices)
+    .set({ status: 'overdue' })
+    .where(and(eq(invoices.status, 'sent'), lt(invoices.dueDate, iso(new Date()))))
+}
+
 export async function listInvoices() {
+  await autoMarkOverdue()
   const rows = await db
     .select({
       id: invoices.id,
@@ -388,25 +407,40 @@ export async function getDashboardReminders() {
   const pad = (n: number) => String(n).padStart(2, '0')
   const dkey = (d: Date | string) => iso(new Date(d))
   const todayKey = dkey(now)
+  const tomorrowKey = dkey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1))
   const since30 = dkey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30))
 
   const [clientRows, sess, pkgs, scoreRows] = await Promise.all([
-    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl, status: clients.status, consentGiven: clients.consentGiven }).from(clients),
+    db.select({ id: clients.id, name: clients.name, phone: clients.phone, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl, status: clients.status, consentGiven: clients.consentGiven }).from(clients),
     db.select({ id: sessions.id, clientId: sessions.clientId, date: sessions.date, status: sessions.status, note: sessions.note, fee: sessions.fee }).from(sessions),
     db.select().from(sessionPackages).orderBy(desc(sessionPackages.purchaseDate)),
     db.select({ clientId: clientScores.clientId, date: clientScores.date, label: clientScores.label }).from(clientScores),
   ])
   const cOf = (id: string | null) => clientRows.find((c) => c.id === id)
 
-  // Bugünkü seanslar (saate göre)
-  const todaySessions = sess
-    .filter((s) => dkey(s.date) === todayKey)
-    .sort((a, b) => +new Date(a.date) - +new Date(b.date))
-    .map((s) => {
-      const d = new Date(s.date)
-      const c = cOf(s.clientId)
-      return { id: s.id, clientId: s.clientId, clientName: c?.name ?? '—', colorTag: c?.colorTag ?? 'indigo', avatarUrl: c?.avatarUrl ?? null, time: `${pad(d.getHours())}:${pad(d.getMinutes())}`, status: s.status }
-    })
+  const mapSession = (s: (typeof sess)[number]) => {
+    const d = new Date(s.date)
+    const c = cOf(s.clientId)
+    return {
+      id: s.id,
+      clientId: s.clientId,
+      clientName: c?.name ?? '—',
+      clientPhone: c?.phone ?? null,
+      colorTag: c?.colorTag ?? 'indigo',
+      avatarUrl: c?.avatarUrl ?? null,
+      time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+      dateIso: d.toISOString(),
+      status: s.status,
+    }
+  }
+  const byTime = (a: { dateIso: string }, b: { dateIso: string }) => +new Date(a.dateIso) - +new Date(b.dateIso)
+
+  // Bugünkü seanslar (saate göre) + yarınki planlı seanslar (hatırlatma için)
+  const todaySessions = sess.filter((s) => dkey(s.date) === todayKey).map(mapSession).sort(byTime)
+  const tomorrowSessions = sess
+    .filter((s) => s.status === 'scheduled' && dkey(s.date) === tomorrowKey)
+    .map(mapSession)
+    .sort(byTime)
 
   // Tamamlanmış ama notu boş seanslar (son 30 gün)
   const missingNotes = sess
@@ -449,7 +483,7 @@ export async function getDashboardReminders() {
   const backup = await getLastBackup()
   const backupStale = backup.daysAgo === null || backup.daysAgo >= 14 ? backup : null
 
-  return { todaySessions, missingNotes, endingPackages, staleScores, missingConsent, backupStale }
+  return { todaySessions, tomorrowSessions, missingNotes, endingPackages, staleScores, missingConsent, backupStale }
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
@@ -887,6 +921,13 @@ export async function getLastBackup(): Promise<{ at: string | null; daysAgo: num
   if (Number.isNaN(d.getTime())) return { at: null, daysAgo: null }
   const daysAgo = Math.floor((Date.now() - d.getTime()) / 86_400_000)
   return { at: row.value, daysAgo }
+}
+
+// ─── Aylık gelir hedefi (0 = kapalı) ─────────────────────────────────────────
+export async function getIncomeGoal(): Promise<number> {
+  const [row] = await db.select().from(settings).where(eq(settings.key, 'income_goal'))
+  const n = Number(row?.value ?? 0)
+  return Number.isFinite(n) && n > 0 ? n : 0
 }
 
 // ─── Vergi oranları (Ayarlar'dan düzenlenebilir) ─────────────────────────────
