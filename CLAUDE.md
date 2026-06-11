@@ -124,7 +124,7 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 
 - **users** — auth için rezerve (şu an kullanılmıyor).
 - **clients** — danışan: name, email, phone, `status`(active/paused/completed), startDate,
-  **birthDate** (opsiyonel — doğum günü hatırlatması), sessionFee, colorTag,
+  **birthDate** (opsiyonel — doğum günü hatırlatması), **consentGiven** (KVKK onam), sessionFee, colorTag,
   **avatarUrl** (istemcide ~192px'e küçültülmüş data-URI foto), tags[], notes.
 - **sessions** — seans: clientId→cascade, date(timestamp), durationMin, `status`
   (scheduled/completed/cancelled/no_show), fee.

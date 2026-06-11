@@ -15,6 +15,7 @@ export async function createClient(input: {
   startDate?: string
   birthDate?: string | null
   colorTag?: ClientColor
+  consentGiven?: boolean
   avatarUrl?: string | null
   tags?: string[]
   notes?: string
@@ -30,6 +31,7 @@ export async function createClient(input: {
     startDate: input.startDate || undefined,
     birthDate: input.birthDate || null,
     colorTag: input.colorTag ?? 'indigo',
+    consentGiven: input.consentGiven ?? false,
     avatarUrl: input.avatarUrl || null,
     tags: input.tags ?? [],
     notes: input.notes || null,
@@ -58,6 +60,7 @@ export async function updateClient(
     startDate?: string
     birthDate?: string | null
     colorTag?: ClientColor
+    consentGiven?: boolean
     avatarUrl?: string | null
     tags?: string[]
   },
@@ -75,6 +78,7 @@ export async function updateClient(
       startDate: input.startDate || undefined,
       birthDate: input.birthDate || null,
       colorTag: input.colorTag,
+      consentGiven: input.consentGiven ?? false,
       avatarUrl: input.avatarUrl ?? null,
       tags: input.tags ?? [],
       updatedAt: new Date(),

@@ -36,6 +36,7 @@ export function NewClientDialog() {
         startDate: String(fd.get('startDate') || ''),
         birthDate: String(fd.get('birthDate') || ''),
         colorTag: color,
+        consentGiven: fd.get('consentGiven') === 'on',
         avatarUrl: avatar,
         tags,
       })
@@ -115,6 +116,14 @@ export function NewClientDialog() {
               ))}
             </div>
           </div>
+
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-500/15 px-3 py-2.5 text-sm text-slate-600 transition-colors hover:border-indigo-500/30 dark:text-slate-300">
+            <input type="checkbox" name="consentGiven" className="h-4 w-4 rounded accent-indigo-600" />
+            <span>
+              <span className="font-semibold">KVKK aydınlatma / onam alındı</span>
+              <span className="block text-xs text-slate-400">danışan onayını kayda geç</span>
+            </span>
+          </label>
 
           {error && <p className="text-sm text-rose-500">{error}</p>}
 

@@ -376,7 +376,7 @@ export async function getDashboardReminders() {
   const since30 = dkey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30))
 
   const [clientRows, sess, pkgs, scoreRows] = await Promise.all([
-    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl }).from(clients),
+    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl, status: clients.status, consentGiven: clients.consentGiven }).from(clients),
     db.select({ id: sessions.id, clientId: sessions.clientId, date: sessions.date, status: sessions.status, note: sessions.note, fee: sessions.fee }).from(sessions),
     db.select().from(sessionPackages).orderBy(desc(sessionPackages.purchaseDate)),
     db.select({ clientId: clientScores.clientId, date: clientScores.date, label: clientScores.label }).from(clientScores),
@@ -425,7 +425,12 @@ export async function getDashboardReminders() {
   }
   staleScores.sort((a, b) => b.daysSince - a.daysSince)
 
-  return { todaySessions, missingNotes, endingPackages, staleScores }
+  // Onam/KVKK eksik aktif danışanlar
+  const missingConsent = clientRows
+    .filter((c) => c.status === 'active' && !c.consentGiven)
+    .map((c) => ({ clientId: c.id, clientName: c.name }))
+
+  return { todaySessions, missingNotes, endingPackages, staleScores, missingConsent }
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────

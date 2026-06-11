@@ -32,6 +32,7 @@ export const clients = pgTable('clients', {
   birthDate:  date('birth_date'), // doğum günü hatırlatması (opsiyonel)
   sessionFee: numeric('session_fee', { precision: 12, scale: 2 }).notNull().default('0'),
   colorTag:   text('color_tag').notNull().default('indigo'), // avatar/etiket rengi
+  consentGiven: boolean('consent_given').notNull().default(false), // KVKK aydınlatma/onam alındı mı
   avatarUrl:  text('avatar_url'), // küçük data-URI fotoğraf (istemcide ~128px'e küçültülür)
   tags:       text('tags').array().notNull().default([]),
   notes:      text('notes'), // kısa özet (detaylı notlar clientNotes'ta)

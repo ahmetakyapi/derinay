@@ -17,6 +17,8 @@ import {
   Paperclip,
   ExternalLink,
   FileText as FileIcon,
+  ShieldCheck,
+  ShieldAlert,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -88,6 +90,15 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{client.name}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
+                {client.consentGiven ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                    <ShieldCheck className="h-3 w-3" /> Onam alındı
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                    <ShieldAlert className="h-3 w-3" /> Onam eksik
+                  </span>
+                )}
                 <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5" /> {durationSince(client.startDate)} ({formatDate(client.startDate)})</span>
                 {client.birthDate && (
                   <span className="inline-flex items-center gap-1">
@@ -127,6 +138,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 startDate: String(client.startDate),
                 birthDate: client.birthDate ? String(client.birthDate) : null,
                 colorTag: client.colorTag,
+                consentGiven: client.consentGiven,
                 avatarUrl: client.avatarUrl,
                 tags: client.tags,
               }}
