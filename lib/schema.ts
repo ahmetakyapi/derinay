@@ -56,6 +56,7 @@ export const sessions = pgTable('sessions', {
 export const clientNotes = pgTable('client_notes', {
   id:        uuid('id').primaryKey().defaultRandom(),
   clientId:  uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
+  goalId:    uuid('goal_id').references(() => clientGoals.id, { onDelete: 'set null' }), // notu hedefe bağla
   title:     text('title'),
   body:      text('body').notNull(),
   kind:      text('kind').$type<NoteKind>().notNull().default('session'),   // seans/gözlem/ödev/önemli

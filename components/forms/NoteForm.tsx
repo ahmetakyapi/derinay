@@ -36,11 +36,19 @@ const NOTE_TEMPLATES: { label: string; body: string }[] = [
  * Seans Defteri giriş formu — not türü, duygu durumu, başlık ve gövde.
  * Şablon çipleri gövdeyi yapılandırılmış iskeletle doldurur.
  */
-export function NoteForm({ clientId }: { clientId: string }) {
+export function NoteForm({
+  clientId,
+  goals = [],
+}: {
+  clientId: string
+  /** Aktif tedavi hedefleri — not bir hedefe bağlanabilir */
+  goals?: { id: string; title: string }[]
+}) {
   const [pending, start] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [kind, setKind] = useState<NoteKind>('session')
   const [mood, setMood] = useState<Mood | null>(null)
+  const [goalId, setGoalId] = useState<string | null>(null)
   const [body, setBody] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
@@ -56,11 +64,13 @@ export function NoteForm({ clientId }: { clientId: string }) {
         body,
         kind,
         mood,
+        goalId,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       formRef.current?.reset()
       setBody('')
       setMood(null)
+      setGoalId(null)
       setKind('session')
       router.refresh()
     })
@@ -114,6 +124,28 @@ export function NoteForm({ clientId }: { clientId: string }) {
           </button>
         ))}
       </div>
+
+      {/* Hedefe bağla — aktif tedavi hedefleri */}
+      {goals.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Hedef:</span>
+          {goals.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => setGoalId(goalId === g.id ? null : g.id)}
+              className={cn(
+                'max-w-[220px] truncate rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
+                goalId === g.id
+                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                  : 'border-slate-500/20 text-slate-500 hover:border-amber-500/40 hover:text-amber-600 dark:text-slate-400',
+              )}
+            >
+              🎯 {g.title}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Duygu durumu — 5'li skala */}
       <div className="flex flex-wrap items-center gap-2">

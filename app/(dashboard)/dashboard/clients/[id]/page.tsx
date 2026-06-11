@@ -126,6 +126,15 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/clients/${client.id}/print`}
+              target="_blank"
+              aria-label="Danışan dosyasını yazdır"
+              title="Danışan Dosyası (PDF)"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+            >
+              <Printer className="h-4 w-4" />
+            </Link>
             <NewPaymentDialog clients={[]} fixedClientId={client.id} />
             <NewInvoiceDialog clients={[]} fixedClientId={client.id} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />
             <EditClientDialog
@@ -282,7 +291,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
               <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri
             </h2>
-            <NoteForm clientId={client.id} />
+            <NoteForm clientId={client.id} goals={goals.filter((g) => g.status === 'active').map((g) => ({ id: g.id, title: g.title }))} />
             <div className="mt-5 space-y-3">
               {notes.length ? (
                 notes.map((n) => (
@@ -297,6 +306,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                       mood: n.mood,
                       pinned: n.pinned,
                       createdAt: String(n.createdAt),
+                      goalId: n.goalId,
+                      goalTitle: n.goalId ? goals.find((g) => g.id === n.goalId)?.title ?? null : null,
                     }}
                   />
                 ))

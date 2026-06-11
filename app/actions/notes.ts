@@ -55,12 +55,14 @@ export async function createNote(input: {
   body: string
   kind?: NoteKind
   mood?: Mood | null
+  goalId?: string | null
 }) {
   if (!input.clientId) return { ok: false, error: 'Danışan bulunamadı' }
   if (!input.body?.trim()) return { ok: false, error: 'Not boş olamaz' }
 
   await db.insert(clientNotes).values({
     clientId: input.clientId,
+    goalId: input.goalId || null,
     title: input.title || null,
     body: input.body.trim(),
     kind: input.kind ?? 'session',
@@ -74,7 +76,7 @@ export async function createNote(input: {
 export async function updateNote(
   id: string,
   clientId: string,
-  input: { title?: string; body: string; kind?: NoteKind; mood?: Mood | null },
+  input: { title?: string; body: string; kind?: NoteKind; mood?: Mood | null; goalId?: string | null },
 ) {
   if (!input.body?.trim()) return { ok: false, error: 'Not boş olamaz' }
   await db
@@ -84,6 +86,7 @@ export async function updateNote(
       body: input.body.trim(),
       kind: input.kind,
       mood: input.mood ?? null,
+      goalId: input.goalId ?? null,
     })
     .where(eq(clientNotes.id, id))
   revalidatePath(`/dashboard/clients/${clientId}`)

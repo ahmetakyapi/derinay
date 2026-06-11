@@ -230,23 +230,27 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                     onDragEnd={() => setDragId(null)}
                     onClick={() => setSelected(it)}
                     className={cn(
-                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border px-1.5 py-1 text-left shadow-sm backdrop-blur-sm transition-all hover:shadow-md active:cursor-grabbing',
-                      t.bg, t.border,
+                      // NOT: backdrop-blur kullanma — .glass (backdrop-filter) içinde iç içe
+                      // backdrop blur, Chrome/Safari'de metinde smear/bulanıklık glitch'i yapar.
+                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm transition-all hover:shadow-md active:cursor-grabbing',
+                      t.border,
                       dim && 'opacity-45',
                       dragId === it.id && 'opacity-30',
                       pending && 'pointer-events-none',
                     )}
                     style={{ top, height }}
                   >
+                    {/* Renk tonu — opak kâğıt üstünde yarı saydam katman */}
+                    <span aria-hidden className={cn('pointer-events-none absolute inset-0', t.bg)} />
                     <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', t.bar)} />
-                    <div className="flex items-center gap-1 pl-1.5">
+                    <div className="relative flex items-center gap-1 pl-1.5">
                       <span className={cn('font-mono text-[10px] font-bold', t.text)}>{it.time}</span>
                       {height >= 56 && (
                         <span className="text-[9px] font-medium text-slate-400">· {it.durationMin}dk</span>
                       )}
                       <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
                     </div>
-                    <p className={cn('sensitive truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
+                    <p className={cn('sensitive relative truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                       {it.clientName}
                     </p>
                   </div>

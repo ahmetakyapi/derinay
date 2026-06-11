@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { PrintButton } from '@/components/invoice/PrintButton'
+import { BloomMark } from '@/components/brand/BloomMark'
 import { getYearAnalytics, getBusinessInfo } from '@/lib/queries'
 import { PAYMENT_METHOD_LABEL } from '@/lib/constants'
 import { formatTRY } from '@/lib/format'
@@ -42,7 +43,7 @@ export default async function ReportPrintPage({
           <div>
             <div className="flex items-center gap-2.5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
-                <span className="font-display text-lg font-semibold italic text-amber-50">D</span>
+                <BloomMark className="h-[22px] w-[22px] text-amber-50" />
               </div>
               <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>

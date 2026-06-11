@@ -28,6 +28,9 @@ export type NoteCardData = {
   mood: Mood | null
   pinned: boolean
   createdAt: string
+  goalId: string | null
+  /** Bağlı hedefin başlığı (sayfada çözülür) */
+  goalTitle?: string | null
 }
 
 /**
@@ -67,6 +70,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
         body: String(fd.get('body') || ''),
         kind,
         mood,
+        goalId: note.goalId, // hedef bağlantısını koru
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       setEditing(false)
@@ -156,6 +160,14 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
             <span className={cn('h-2.5 w-2.5 rounded-full', MOOD_BG[note.mood])} />
             {MOOD_LABEL[note.mood]}
+          </span>
+        )}
+        {note.goalTitle && (
+          <span
+            title={`Hedef: ${note.goalTitle}`}
+            className="inline-flex max-w-[180px] items-center gap-1 truncate rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+          >
+            🎯 <span className="truncate">{note.goalTitle}</span>
           </span>
         )}
         <span className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
