@@ -93,7 +93,7 @@ app/
       settings/page.tsx            # Ayarlar: işletme/makbuz kimliği + hatırlatma şablonu (settings tablosu)
   invoices/[id]/print/page.tsx     # Yazdırılabilir Serbest Meslek Makbuzu (PDF) — dashboard kabuğu DIŞINDA
   reports/[year]/print/page.tsx    # Yıllık finans raporu (PDF) — muhasebeci formatı
-  actions/                         # clients, transactions, invoices, payments, notes (+sessions), settings, waitlist
+  actions/                         # clients, transactions, invoices, payments, notes (+sessions), settings, waitlist, packages
 lib/
   schema.ts        # Drizzle tablolar + tip çıkarımı
   constants.ts     # Statüler, kategoriler, etiketler, renkler, BUSINESS/USER, TAX oranları
@@ -141,6 +141,10 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   `method`(cash/card/transfer), note.
 - **waitlist** — bekleme listesi: name, phone, email, source, `priority`(normal/high), note.
   Tek tıkla danışana çevrilir (`convertWaitlist` → clients'a taşır, kaydı siler).
+- **sessionPackages** — ön ödemeli seans paketi: clientId→cascade, totalSessions, pricePaid,
+  purchaseDate, note. Kullanım = satın alma tarihinden sonra **tamamlanan** seans sayısı
+  (`getClientDetail.activePackage` = en güncel paket + used/remaining). `recordIncome` ile
+  ücret işletme geliri olarak da yazılabilir.
 - **settings** — anahtar-değer: `reminder_template` (hatırlatma) ve `business` (işletme/makbuz
   kimliği JSON). `getBusinessInfo()` varsayılan `BUSINESS` üstüne uygular; Ayarlar sayfasından düzenlenir.
 

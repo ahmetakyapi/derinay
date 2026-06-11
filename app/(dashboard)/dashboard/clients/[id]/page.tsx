@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Printer,
   HeartPulse,
+  Package,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -25,9 +26,11 @@ import { ReminderButton } from '@/components/clients/ReminderButton'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
+import { NewPackageDialog } from '@/components/forms/NewPackageDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderTemplate } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
+import { deletePackage } from '@/app/actions/packages'
 import {
   CLIENT_STATUS_LABEL,
   INVOICE_STATUS_LABEL,
@@ -35,11 +38,15 @@ import {
   STATUS_TONE,
 } from '@/lib/constants'
 import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   const [data, reminderTemplate] = await Promise.all([getClientDetail(params.id), getReminderTemplate()])
   if (!data) notFound()
-  const { client, notes, sessions, payments, invoices, stats } = data
+  const { client, notes, sessions, payments, invoices, stats, activePackage } = data
+  const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
+  const pkgLow = activePackage ? activePackage.remaining > 0 && activePackage.remaining <= 2 : false
+  const pkgDone = activePackage ? activePackage.remaining === 0 : false
 
   return (
     <>
@@ -128,6 +135,63 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           }
         />
       </div>
+
+      {/* Seans Paketi — ön ödemeli kullanım takibi */}
+      <section className="glass mb-6 rounded-2xl p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <Package className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Paketi
+          </h2>
+          <div className="flex items-center gap-2">
+            <NewPackageDialog
+              clientId={client.id}
+              defaultPrice={client.sessionFee}
+              label={activePackage ? 'Yeni Paket' : 'Paket Ekle'}
+            />
+            {activePackage && (
+              <DeleteButton action={deletePackage.bind(null, activePackage.id, client.id)} confirmText="Paket kaydı silinecek." />
+            )}
+          </div>
+        </div>
+
+        {activePackage ? (
+          <div>
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <p className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                <span className={cn(pkgDone ? 'text-rose-600 dark:text-rose-400' : pkgLow ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400')}>
+                  {activePackage.remaining}
+                </span>
+                <span className="text-base font-medium text-slate-400"> / {activePackage.totalSessions} seans kaldı</span>
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {activePackage.used} kullanıldı
+                {activePackage.pricePaid > 0 && <> · {formatTRY(activePackage.pricePaid)}</>}
+              </p>
+            </div>
+            <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-500/10">
+              <div
+                className={cn('h-full rounded-full transition-[width] duration-700', pkgDone ? 'bg-rose-500' : pkgLow ? 'bg-amber-500' : 'bg-emerald-500')}
+                style={{ width: `${pkgPct}%` }}
+              />
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span>{new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(activePackage.purchaseDate))} tarihli</span>
+              {(pkgLow || pkgDone) && (
+                <span className={cn('font-semibold', pkgDone ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400')}>
+                  {pkgDone ? 'Paket tamamlandı — yenile' : 'Paket bitmek üzere'}
+                </span>
+              )}
+            </div>
+            {activePackage.note && (
+              <p className="mt-2 text-xs italic text-slate-500 dark:text-slate-400">{activePackage.note}</p>
+            )}
+          </div>
+        ) : (
+          <p className="py-2 text-sm text-slate-400">
+            Aktif paket yok. Ön ödemeli bir paket eklersen tamamlanan seanslar otomatik düşülür.
+          </p>
+        )}
+      </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">

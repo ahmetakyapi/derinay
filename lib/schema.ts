@@ -107,6 +107,17 @@ export const payments = pgTable('payments', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Session packages (ön ödemeli seans paketi) ─────────────────────────────
+export const sessionPackages = pgTable('session_packages', {
+  id:            uuid('id').primaryKey().defaultRandom(),
+  clientId:      uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
+  totalSessions: integer('total_sessions').notNull(),                          // pakette kaç seans
+  pricePaid:     numeric('price_paid', { precision: 12, scale: 2 }).notNull().default('0'),
+  purchaseDate:  date('purchase_date').notNull().defaultNow(),
+  note:          text('note'),
+  createdAt:     timestamp('created_at').defaultNow().notNull(),
+})
+
 // ─── Waitlist (bekleme listesi — yeni danışan başvuruları) ───────────────────
 export const waitlist = pgTable('waitlist', {
   id:        uuid('id').primaryKey().defaultRandom(),
@@ -143,3 +154,5 @@ export type Setting        = typeof settings.$inferSelect
 export type NewPayment     = typeof payments.$inferInsert
 export type Waitlist       = typeof waitlist.$inferSelect
 export type NewWaitlist    = typeof waitlist.$inferInsert
+export type SessionPackage = typeof sessionPackages.$inferSelect
+export type NewSessionPackage = typeof sessionPackages.$inferInsert

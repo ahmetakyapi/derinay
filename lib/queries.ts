@@ -1,7 +1,7 @@
 import 'server-only'
 import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
-import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist } from './schema'
+import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
 import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
@@ -164,12 +164,13 @@ export async function getClientDetail(id: string) {
   const [client] = await db.select().from(clients).where(eq(clients.id, id))
   if (!client) return null
 
-  const [notes, sess, pays, invs, txs] = await Promise.all([
+  const [notes, sess, pays, invs, txs, pkgs] = await Promise.all([
     db.select().from(clientNotes).where(eq(clientNotes.clientId, id)).orderBy(desc(clientNotes.pinned), desc(clientNotes.createdAt)),
     db.select().from(sessions).where(eq(sessions.clientId, id)).orderBy(desc(sessions.date)),
     db.select().from(payments).where(eq(payments.clientId, id)).orderBy(desc(payments.date)),
     db.select().from(invoices).where(eq(invoices.clientId, id)).orderBy(desc(invoices.issueDate)),
     db.select().from(transactions).where(eq(transactions.clientId, id)).orderBy(desc(transactions.date)),
+    db.select().from(sessionPackages).where(eq(sessionPackages.clientId, id)).orderBy(desc(sessionPackages.purchaseDate)),
   ])
 
   const totalPaid = pays.reduce((s, p) => s + num(p.amount), 0)
@@ -178,6 +179,25 @@ export async function getClientDetail(id: string) {
   const noShowSessions = sess.filter((s) => s.status === 'no_show').length
   const cancelledSessions = sess.filter((s) => s.status === 'cancelled').length
 
+  // Aktif paket = en güncel paket; kullanım = satın alma tarihinden sonra tamamlanan seanslar
+  const latest = pkgs[0]
+  const activePackage = latest
+    ? (() => {
+        const used = sess.filter(
+          (s) => s.status === 'completed' && String(s.date).slice(0, 10) >= String(latest.purchaseDate).slice(0, 10),
+        ).length
+        return {
+          id: latest.id,
+          totalSessions: latest.totalSessions,
+          pricePaid: num(latest.pricePaid),
+          purchaseDate: String(latest.purchaseDate),
+          note: latest.note,
+          used: Math.min(used, latest.totalSessions),
+          remaining: Math.max(latest.totalSessions - used, 0),
+        }
+      })()
+    : null
+
   return {
     client: { ...client, sessionFee: num(client.sessionFee) },
     notes,
@@ -185,6 +205,7 @@ export async function getClientDetail(id: string) {
     payments: pays.map((p) => ({ ...p, amount: num(p.amount) })),
     invoices: invs.map((i) => ({ ...i, total: num(i.total), subtotal: num(i.subtotal), kdvAmount: num(i.kdvAmount) })),
     transactions: txs.map((t) => ({ ...t, amount: num(t.amount) })),
+    activePackage,
     stats: { totalPaid, totalInvoiced, completedSessions, noShowSessions, cancelledSessions, outstanding: totalInvoiced - totalPaid },
   }
 }
