@@ -47,6 +47,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; todayKey: string; reminderTemplate: string }) {
   const [selected, setSelected] = useState<AgendaItem | null>(null)
   const [dragId, setDragId] = useState<string | null>(null)
+  const [hoverDay, setHoverDay] = useState<string | null>(null) // sürükleme hedefi vurgusu
   const [nowMin, setNowMin] = useState<number | null>(null) // canlı "şu an" çizgisi (mount sonrası)
   const [pending, start] = useTransition()
   const router = useRouter()
@@ -72,6 +73,7 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
 
   function onDrop(e: React.DragEvent<HTMLDivElement>, dayKey: string) {
     e.preventDefault()
+    setHoverDay(null)
     const id = e.dataTransfer.getData('text/plain')
     const item = days.flatMap((d) => d.items).find((x) => x.id === id)
     if (!item) return
@@ -112,25 +114,39 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
         {/* Gün başlıkları */}
         <div className="grid grid-cols-[56px_repeat(7,1fr)] border-b border-slate-500/10">
           <div />
-          {days.map((d) => (
-            <div
-              key={d.key}
-              className={cn(
-                'border-l border-slate-500/10 px-2 py-2.5 text-center',
-                d.key === todayKey && 'bg-indigo-500/[0.06]',
-              )}
-            >
-              <span className={cn('text-[10px] font-bold uppercase tracking-wide', d.key === todayKey ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
-                {d.label}
-              </span>
-              <span className={cn('ml-1.5 text-sm font-bold', d.key === todayKey ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-200')}>
-                {d.dayNum}
-              </span>
-              {d.items.length > 0 && (
-                <span className="mt-0.5 block text-[10px] font-medium text-slate-400">{d.items.length} seans</span>
-              )}
-            </div>
-          ))}
+          {days.map((d, di) => {
+            const isToday = d.key === todayKey
+            const isWeekend = di >= 5
+            return (
+              <div
+                key={d.key}
+                className={cn(
+                  'border-l border-slate-500/10 px-2 py-2.5 text-center',
+                  isToday && 'bg-indigo-500/[0.07]',
+                  !isToday && isWeekend && 'bg-slate-500/[0.03]',
+                )}
+              >
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className={cn('text-[10px] font-bold uppercase tracking-wide', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
+                    {d.label}
+                  </span>
+                  <span
+                    className={cn(
+                      'text-sm font-bold',
+                      isToday
+                        ? 'flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs text-white shadow-sm shadow-indigo-600/30'
+                        : 'text-slate-700 dark:text-slate-200',
+                    )}
+                  >
+                    {d.dayNum}
+                  </span>
+                </div>
+                <span className={cn('mt-0.5 block text-[10px] font-medium', d.items.length ? 'text-slate-400' : 'text-transparent')}>
+                  {d.items.length ? `${d.items.length} seans` : '·'}
+                </span>
+              </div>
+            )
+          })}
         </div>
 
         <div className="grid grid-cols-[56px_repeat(7,1fr)]">
@@ -148,14 +164,22 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
           </div>
 
           {/* Gün kolonları */}
-          {days.map((d) => (
+          {days.map((d, di) => (
             <div
               key={d.key}
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => {
+                e.preventDefault()
+                if (hoverDay !== d.key) setHoverDay(d.key)
+              }}
+              onDragLeave={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) setHoverDay(null)
+              }}
               onDrop={(e) => onDrop(e, d.key)}
               className={cn(
-                'relative border-l border-slate-500/10',
+                'relative border-l border-slate-500/10 transition-colors',
                 d.key === todayKey && 'bg-indigo-500/[0.04]',
+                d.key !== todayKey && di >= 5 && 'bg-slate-500/[0.025]',
+                dragId && hoverDay === d.key && 'bg-indigo-500/[0.09] ring-1 ring-inset ring-indigo-500/30',
               )}
               style={{ height: SPAN }}
             >
@@ -209,9 +233,12 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                     <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', t.bar)} />
                     <div className="flex items-center gap-1 pl-1.5">
                       <span className={cn('font-mono text-[10px] font-bold', t.text)}>{it.time}</span>
+                      {height >= 56 && (
+                        <span className="text-[9px] font-medium text-slate-400">· {it.durationMin}dk</span>
+                      )}
                       <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
                     </div>
-                    <p className={cn('truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
+                    <p className={cn('sensitive truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                       {it.clientName}
                     </p>
                   </div>
@@ -221,9 +248,14 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
           ))}
         </div>
 
-        <p className="border-t border-slate-500/10 px-4 py-2 text-[11px] text-slate-400">
-          Seansı sürükleyerek gün/saat değiştir · tıklayarak detayını aç
-        </p>
+        <div className="flex items-center justify-between border-t border-slate-500/10 px-4 py-2 text-[11px] text-slate-400">
+          <span className="inline-flex items-center gap-1.5">
+            <GripVertical className="h-3 w-3" /> Seansı sürükleyerek gün/saat değiştir · tıklayarak detayını aç
+          </span>
+          <span className="hidden items-center gap-1.5 sm:inline-flex">
+            <Clock className="h-3 w-3 text-rose-500/70" /> kırmızı çizgi = şu an
+          </span>
+        </div>
       </div>
 
       {/* ── Mobil: gün gün liste ── */}
@@ -255,7 +287,7 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                       >
                         <span className={cn('h-2 w-2 shrink-0 rounded-full', DOT[it.colorTag] ?? DOT.indigo)} />
                         <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">{it.time}</span>
-                        <span className={cn('min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', dim && 'line-through')}>
+                        <span className={cn('sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                           {it.clientName}
                         </span>
                         <StatusBadge label={SESSION_STATUS_LABEL[it.status as SessionStatus]} tone={STATUS_TONE[it.status]} />

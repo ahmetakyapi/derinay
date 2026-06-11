@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { and, eq, gte, lte } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { transactions } from '@/lib/schema'
+import { revalidateFinance } from '@/lib/revalidate'
 import type { TxType, TxScope } from '@/lib/constants'
 
 export async function createTransaction(input: {
@@ -30,18 +31,15 @@ export async function createTransaction(input: {
     recurring: input.recurring ?? false,
   })
 
-  revalidatePath('/dashboard/finances')
+  revalidateFinance()
   revalidatePath('/dashboard/personal')
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/taxes')
   return { ok: true }
 }
 
 export async function deleteTransaction(id: string) {
   await db.delete(transactions).where(eq(transactions.id, id))
-  revalidatePath('/dashboard/finances')
+  revalidateFinance()
   revalidatePath('/dashboard/personal')
-  revalidatePath('/dashboard')
   return { ok: true }
 }
 
@@ -91,7 +89,6 @@ export async function copyRecurring(targetMonth: string) {
     copied++
   }
 
-  revalidatePath('/dashboard/finances')
-  revalidatePath('/dashboard')
+  revalidateFinance()
   return { ok: true, copied }
 }

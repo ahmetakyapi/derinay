@@ -149,8 +149,10 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   date, note. Danışan detayında en güncel ölçeğin zaman serisi `ScoreTrend` ile grafiklenir.
 - **clientDocuments** — belge referansı: clientId→cascade, name, type, **url**, note. Dosya saklanmaz;
   KVKK gereği yalnızca kullanıcının kendi deposundaki (Drive/iCloud) bağlantısı tutulur.
-- **settings** — anahtar-değer: `reminder_template` (hatırlatma) ve `business` (işletme/makbuz
-  kimliği JSON). `getBusinessInfo()` varsayılan `BUSINESS` üstüne uygular; Ayarlar sayfasından düzenlenir.
+- **settings** — anahtar-değer: `reminder_template` (hatırlatma), `business` (işletme/makbuz
+  kimliği JSON) ve `tax` (vergi oranları JSON — kdvRate/stopajRate/incomeTaxRate).
+  `getBusinessInfo()` / `getTaxSettings()` varsayılanların üstüne uygular; Ayarlar sayfasından düzenlenir.
+  Vergi hesapları (`taxSummary`) ve makbuz varsayılanları bu oranları okur.
 
 ### `scope` kuralı (ÖNEMLİ)
 `business` = kliniğin finansı (dashboard, finances, taxes burayı sayar).
@@ -229,6 +231,11 @@ Tipik akış (örnek: yeni bir varlık/sekme):
   Korunan yollar `middleware.ts` matcher'ında; `/login`, `/`, `/api/health` açık.
 - Mutasyon = Server Action; okuma = Server Component + queries. API route yalnızca iki istisna:
   `app/api/auth` (NextAuth zorunlu) ve `app/api/export` (dosya indirme — CSV/JSON yedek).
+- **Tazeleme**: her action `lib/revalidate.ts` yardımcılarını kullanır — `revalidateFinance()`
+  (KPI/grafik/vergi sayfaları), `revalidateSessions(clientId?)` (takvim/devam/paket),
+  `revalidateClients()` (liste + detaylar + ⌘K listesi, layout-level). Yeni sayfa → ilgili gruba ekle.
+- **Gizlilik modu**: `html.privacy` + `.sensitive` (globals.css) — yalnızca kimlik alanları bulanır.
+  İsim/iletişim render eden yeni bileşene `sensitive` sınıfı ekle (Avatar otomatik).
 - Kişisel harcamalar `scope` ile ayrılır, ayrı tablo değil.
 - Kategoriler serbest metin (datalist önerili) — kullanıcı kendi kalemini yazabilir.
 - Fatura PDF'i tarayıcı yazdırma ile (`/invoices/[id]/print` + `@media print`), ekstra PDF kütüphanesi yok.

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { clientNotes, sessions } from '@/lib/schema'
+import { revalidateSessions } from '@/lib/revalidate'
 import type { SessionStatus, NoteKind, Mood } from '@/lib/constants'
 
 // ─── Danışan notları ─────────────────────────────────────────────────────────
@@ -96,15 +97,14 @@ export async function createSession(input: {
   })
 
   await db.insert(sessions).values(rows)
-  revalidatePath(`/dashboard/clients/${input.clientId}`)
-  revalidatePath('/dashboard/agenda')
-  revalidatePath('/dashboard')
+  revalidateSessions(input.clientId)
   return { ok: true, count: rows.length }
 }
 
 export async function updateSessionStatus(id: string, clientId: string, status: SessionStatus) {
+  // Statü değişimi devam istatistiğini, paket kullanımını ve hatırlatmaları etkiler
   await db.update(sessions).set({ status }).where(eq(sessions.id, id))
-  revalidatePath(`/dashboard/clients/${clientId}`)
+  revalidateSessions(clientId)
   return { ok: true }
 }
 
@@ -113,17 +113,13 @@ export async function updateSessionTime(id: string, clientId: string | null, iso
   const d = new Date(isoLocal)
   if (Number.isNaN(d.getTime())) return { ok: false, error: 'Geçersiz tarih' }
   await db.update(sessions).set({ date: d }).where(eq(sessions.id, id))
-  revalidatePath('/dashboard/agenda')
-  revalidatePath('/dashboard')
-  if (clientId) revalidatePath(`/dashboard/clients/${clientId}`)
+  revalidateSessions(clientId)
   return { ok: true }
 }
 
 /** Seansı sil */
 export async function deleteSession(id: string, clientId: string | null) {
   await db.delete(sessions).where(eq(sessions.id, id))
-  revalidatePath('/dashboard/agenda')
-  revalidatePath('/dashboard')
-  if (clientId) revalidatePath(`/dashboard/clients/${clientId}`)
+  revalidateSessions(clientId)
   return { ok: true }
 }

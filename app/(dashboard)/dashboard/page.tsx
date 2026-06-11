@@ -106,7 +106,7 @@ export default async function DashboardPage({
                 className="group inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-[var(--bg)]/40 py-1 pl-1 pr-3 transition-colors hover:border-amber-500/50"
               >
                 <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
+                <span className="sensitive text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
                 <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
                   {b.daysUntil === 0 ? 'bugün 🎂' : b.daysUntil === 1 ? 'yarın' : `${b.daysUntil}g`}
                 </span>
@@ -210,7 +210,7 @@ export default async function DashboardPage({
                   >
                     <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
                     <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{s.clientName}</span>
+                    <span className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{s.clientName}</span>
                     <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
                   </Link>
                 </li>
@@ -237,7 +237,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400"><StickyNote className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.missingNotes.length} seansın notu eksik</p>
-                      <p className="truncate text-xs text-slate-400">{[...new Set(rem.missingNotes.map((m) => m.clientName))].slice(0, 3).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-400">{[...new Set(rem.missingNotes.map((m) => m.clientName))].slice(0, 3).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400">→</span>
                   </Link>
@@ -249,7 +249,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400"><Package className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.endingPackages.length} danışanın paketi bitiyor</p>
-                      <p className="truncate text-xs text-slate-400">{rem.endingPackages.slice(0, 3).map((p) => `${p.clientName} (${p.remaining})`).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-400">{rem.endingPackages.slice(0, 3).map((p) => `${p.clientName} (${p.remaining})`).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-rose-600 dark:text-rose-400">→</span>
                   </Link>
@@ -261,7 +261,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><Activity className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.staleScores.length} danışanda ölçüm zamanı</p>
-                      <p className="truncate text-xs text-slate-400">{rem.staleScores.slice(0, 3).map((s) => `${s.clientName} (${s.daysSince}g)`).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-400">{rem.staleScores.slice(0, 3).map((s) => `${s.clientName} (${s.daysSince}g)`).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-emerald-600 dark:text-emerald-400">→</span>
                   </Link>
@@ -273,7 +273,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400"><ShieldAlert className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.missingConsent.length} danışanda onam eksik</p>
-                      <p className="truncate text-xs text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-sky-600 dark:text-sky-400">→</span>
                   </Link>
@@ -373,7 +373,7 @@ export default async function DashboardPage({
                 className="group flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-amber-500/40"
               >
                 <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-amber-700 dark:text-slate-200 dark:group-hover:text-amber-300">
+                <span className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-amber-700 dark:text-slate-200 dark:group-hover:text-amber-300">
                   {b.name}
                 </span>
                 <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">

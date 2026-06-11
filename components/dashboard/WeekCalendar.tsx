@@ -57,7 +57,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
                         <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', DOT[s.colorTag] ?? DOT.indigo)} />
                         <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-200">{s.time}</span>
                       </div>
-                      <p className={cn('mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300', dim && 'line-through')}>
+                      <p className={cn('sensitive mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300', dim && 'line-through')}>
                         {s.clientName}
                       </p>
                     </div>

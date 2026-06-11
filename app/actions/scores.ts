@@ -26,11 +26,13 @@ export async function addScore(input: {
     note: input.note || null,
   })
   revalidatePath(`/dashboard/clients/${input.clientId}`)
+  revalidatePath('/dashboard') // hatırlatmalar (ölçüm zamanı)
   return { ok: true }
 }
 
 export async function deleteScore(id: string, clientId: string) {
   await db.delete(clientScores).where(eq(clientScores.id, id))
   revalidatePath(`/dashboard/clients/${clientId}`)
+  revalidatePath('/dashboard')
   return { ok: true }
 }

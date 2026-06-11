@@ -7,7 +7,7 @@ import { Avatar } from '@/components/ui/Avatar'
 import { BloomArt } from '@/components/art/BloomArt'
 import { NewInvoiceDialog } from '@/components/forms/NewInvoiceDialog'
 import { InvoiceStatusSelect } from '@/components/forms/InvoiceStatusSelect'
-import { listInvoices, clientOptions } from '@/lib/queries'
+import { listInvoices, clientOptions, getTaxSettings } from '@/lib/queries'
 import { deleteInvoice } from '@/app/actions/invoices'
 import { formatTRY, formatDate } from '@/lib/format'
 import type { InvoiceStatus } from '@/lib/constants'
@@ -24,7 +24,7 @@ const STATUS_META: Record<InvoiceStatus, { label: string; icon: typeof CircleChe
 const STATUS_ORDER: InvoiceStatus[] = ['paid', 'sent', 'draft', 'overdue']
 
 export default async function InvoicesPage() {
-  const [invoices, clients] = await Promise.all([listInvoices(), clientOptions()])
+  const [invoices, clients, taxRates] = await Promise.all([listInvoices(), clientOptions(), getTaxSettings()])
 
   const totalKdv = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.kdvAmount, 0)
   const totalStopaj = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.stopajAmount, 0)
@@ -41,7 +41,7 @@ export default async function InvoicesPage() {
       <PageHeader
         title="Makbuzlar"
         subtitle={`${invoices.length} makbuz · ${formatTRY(totalBilled, { compact: true })} tahsil · ${formatTRY(totalKdv, { compact: true })} KDV${totalStopaj > 0 ? ` · ${formatTRY(totalStopaj, { compact: true })} stopaj` : ''}`}
-        action={<NewInvoiceDialog clients={clients} />}
+        action={<NewInvoiceDialog clients={clients} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />}
       />
 
       {/* Tahsilat durumu — galeri yazıtı şeridi */}
@@ -124,7 +124,7 @@ export default async function InvoicesPage() {
                       <div className="flex min-w-0 items-center gap-3">
                         <Avatar name={i.clientName ?? 'Genel'} color={i.clientColor ?? 'indigo'} src={i.clientAvatar} size="sm" />
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
+                          <p className="sensitive truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
                             {i.clientName ?? 'Genel'}
                           </p>
                           <p className="truncate font-mono text-[11px] text-slate-500 dark:text-slate-400">

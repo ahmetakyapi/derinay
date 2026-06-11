@@ -83,6 +83,16 @@ body::after {
 }
 html.dark body::after { opacity: 0.05; }
 
+/* ─── Gizlilik modu — yalnızca kimlik alanları bulanır ──────────────────────
+   DashboardShell <html> köküne .privacy ekler; .sensitive işaretli alanlar
+   (isim, avatar, iletişim) bulanır. Tutar/grafik gibi anonim veriler net kalır. */
+.sensitive { transition: filter 0.25s ease; }
+html.privacy .sensitive {
+  filter: blur(7px);
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Display tipografi — Fraunces optik incelikleri */
 .font-display {
   font-optical-sizing: auto;

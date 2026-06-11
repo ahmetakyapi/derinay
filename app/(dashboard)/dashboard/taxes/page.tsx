@@ -5,11 +5,10 @@ import { TaxRadial } from '@/components/charts/TaxRadial'
 import { TaxBars } from '@/components/charts/TaxBars'
 import { getTaxOverview } from '@/lib/queries'
 import { formatTRY } from '@/lib/format'
-import { TAX } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 export default async function TaxesPage() {
-  const { months, current } = await getTaxOverview()
+  const { months, current, taxRates } = await getTaxOverview()
   const year = new Date().getFullYear()
 
   // Tam ay adı (kısaltma değil) + dönem toplamları
@@ -43,7 +42,7 @@ export default async function TaxesPage() {
       icon: TrendingUp,
       tone: 'text-rose-600 dark:text-rose-400',
       bg: 'bg-rose-500/10',
-      hint: `net kârın %${TAX.INCOME_TAX_ESTIMATE_RATE}'si (tahmini)`,
+      hint: `net kârın %${taxRates.incomeTaxRate}'i (tahmini)`,
     },
     {
       label: 'Toplam Yük',
@@ -133,9 +132,9 @@ export default async function TaxesPage() {
               <div className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
                 <p className="mb-0.5 font-semibold text-slate-800 dark:text-slate-100">Tahmini hesaplama</p>
                 <p>
-                  Gelir vergisi, net kâr üzerinden <strong>%{TAX.INCOME_TAX_ESTIMATE_RATE}</strong> ile
+                  Gelir vergisi, net kâr üzerinden <strong>%{taxRates.incomeTaxRate}</strong> ile
                   hesaplanan basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV, taslak
-                  dışındaki faturalardan toplanır.
+                  dışındaki makbuzlardan toplanır. Oranları <strong>Ayarlar</strong>&apos;dan değiştirebilirsin.
                 </p>
               </div>
             </div>

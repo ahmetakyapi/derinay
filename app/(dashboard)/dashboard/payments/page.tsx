@@ -102,7 +102,7 @@ export default async function PaymentsPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={p.clientId ? `/dashboard/clients/${p.clientId}` : '#'}
-                        className="truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
+                        className="sensitive truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
                       >
                         {p.clientName ?? 'Silinmiş danışan'}
                       </Link>

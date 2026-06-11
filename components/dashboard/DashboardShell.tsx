@@ -180,6 +180,12 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  // Kök sınıf — yalnızca .sensitive işaretli alanlar bulanır (globals.css)
+  useEffect(() => {
+    document.documentElement.classList.toggle('privacy', privacy)
+    return () => document.documentElement.classList.remove('privacy')
+  }, [privacy])
+
   const togglePrivacy = () =>
     setPrivacy((v) => {
       const next = !v
@@ -319,19 +325,17 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
       {/* Content */}
       <main className="lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-          <div className={cn('transition-[filter] duration-300', privacy && 'pointer-events-none select-none blur-[7px]')}>
-            <PageTransition>{children}</PageTransition>
-          </div>
+          <PageTransition>{children}</PageTransition>
         </div>
       </main>
 
-      {/* Gizlilik modu göstergesi — her zaman net, geri açmak için */}
+      {/* Gizlilik modu göstergesi — kimlikler gizliyken geri açmak için */}
       {privacy && (
         <button
           onClick={togglePrivacy}
           className="surface fixed bottom-5 left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300"
         >
-          <EyeOff className="h-4 w-4" /> Gizlilik modu açık — göstermek için dokun
+          <EyeOff className="h-4 w-4" /> Gizlilik açık — kimlikler gizli
         </button>
       )}
     </div>

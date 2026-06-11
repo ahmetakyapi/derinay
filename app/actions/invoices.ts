@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { count, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/schema'
+import { revalidateFinance } from '@/lib/revalidate'
 import { calcMakbuz } from '@/lib/finance'
 import { TAX, type InvoiceStatus } from '@/lib/constants'
 
@@ -48,21 +49,25 @@ export async function createInvoice(input: {
     })
     .returning({ id: invoices.id })
 
-  revalidatePath('/dashboard/invoices')
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/taxes')
+  revalidateFinance()
+  if (input.clientId) revalidatePath(`/dashboard/clients/${input.clientId}`)
   return { ok: true, number, id: created.id }
 }
 
 export async function updateInvoiceStatus(id: string, status: InvoiceStatus) {
-  await db.update(invoices).set({ status }).where(eq(invoices.id, id))
-  revalidatePath('/dashboard/invoices')
-  revalidatePath('/dashboard/taxes')
+  const [row] = await db
+    .update(invoices)
+    .set({ status })
+    .where(eq(invoices.id, id))
+    .returning({ clientId: invoices.clientId })
+  revalidateFinance()
+  if (row?.clientId) revalidatePath(`/dashboard/clients/${row.clientId}`)
   return { ok: true }
 }
 
 export async function deleteInvoice(id: string) {
-  await db.delete(invoices).where(eq(invoices.id, id))
-  revalidatePath('/dashboard/invoices')
+  const [row] = await db.delete(invoices).where(eq(invoices.id, id)).returning({ clientId: invoices.clientId })
+  revalidateFinance()
+  if (row?.clientId) revalidatePath(`/dashboard/clients/${row.clientId}`)
   return { ok: true }
 }

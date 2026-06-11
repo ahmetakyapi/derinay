@@ -1,9 +1,9 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { clients } from '@/lib/schema'
+import { revalidateClients } from '@/lib/revalidate'
 import type { ClientStatus, ClientColor } from '@/lib/constants'
 
 export async function createClient(input: {
@@ -37,15 +37,13 @@ export async function createClient(input: {
     notes: input.notes || null,
   })
 
-  revalidatePath('/dashboard/clients')
-  revalidatePath('/dashboard')
+  revalidateClients()
   return { ok: true }
 }
 
 export async function updateClientStatus(id: string, status: ClientStatus) {
   await db.update(clients).set({ status, updatedAt: new Date() }).where(eq(clients.id, id))
-  revalidatePath('/dashboard/clients')
-  revalidatePath(`/dashboard/clients/${id}`)
+  revalidateClients()
   return { ok: true }
 }
 
@@ -85,14 +83,12 @@ export async function updateClient(
     })
     .where(eq(clients.id, id))
 
-  revalidatePath('/dashboard/clients')
-  revalidatePath(`/dashboard/clients/${id}`)
+  revalidateClients()
   return { ok: true }
 }
 
 export async function deleteClient(id: string) {
   await db.delete(clients).where(eq(clients.id, id))
-  revalidatePath('/dashboard/clients')
-  revalidatePath('/dashboard')
+  revalidateClients()
   return { ok: true }
 }

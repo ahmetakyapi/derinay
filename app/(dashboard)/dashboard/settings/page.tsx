@@ -2,22 +2,26 @@ import Link from 'next/link'
 import { DatabaseBackup, Info } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SettingsForm } from '@/components/forms/SettingsForm'
-import { getBusinessInfo, getReminderTemplate } from '@/lib/queries'
+import { getBusinessInfo, getReminderTemplate, getTaxSettings } from '@/lib/queries'
 
 export const metadata = { title: 'Ayarlar' }
 
 export default async function SettingsPage() {
-  const [business, reminderTemplate] = await Promise.all([getBusinessInfo(), getReminderTemplate()])
+  const [business, reminderTemplate, taxSettings] = await Promise.all([
+    getBusinessInfo(),
+    getReminderTemplate(),
+    getTaxSettings(),
+  ])
 
   return (
     <>
       <PageHeader
         title="Ayarlar"
-        subtitle="İşletme kimliğin, hatırlatma şablonun ve veri yönetimi"
+        subtitle="İşletme kimliğin, vergi oranların, hatırlatma şablonun ve veri yönetimi"
       />
 
       <div className="mx-auto max-w-3xl">
-        <SettingsForm business={business} reminderTemplate={reminderTemplate} />
+        <SettingsForm business={business} reminderTemplate={reminderTemplate} taxSettings={taxSettings} />
 
         {/* Veri yönetimi */}
         <div className="glass mt-6 rounded-2xl p-5 sm:p-6">

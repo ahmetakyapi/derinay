@@ -50,7 +50,7 @@ export default async function LoginPage({
             <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
           </div>
           <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-            Tekrar hoş geldin
+            Tekrar Hoş Geldin
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {USER.fullName} · {USER.title}

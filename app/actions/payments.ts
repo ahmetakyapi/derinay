@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { payments } from '@/lib/schema'
+import { revalidateFinance } from '@/lib/revalidate'
 import type { PaymentMethod } from '@/lib/constants'
 
 export async function createPayment(input: {
@@ -26,15 +27,16 @@ export async function createPayment(input: {
     note: input.note || null,
   })
 
-  revalidatePath('/dashboard/payments')
-  revalidatePath('/dashboard')
+  revalidateFinance()
   revalidatePath(`/dashboard/clients/${input.clientId}`)
   return { ok: true }
 }
 
 export async function deletePayment(id: string) {
+  // Bakiyesi değişen danışanın detayı da tazelensin
+  const [row] = await db.select({ clientId: payments.clientId }).from(payments).where(eq(payments.id, id))
   await db.delete(payments).where(eq(payments.id, id))
-  revalidatePath('/dashboard/payments')
-  revalidatePath('/dashboard')
+  revalidateFinance()
+  if (row?.clientId) revalidatePath(`/dashboard/clients/${row.clientId}`)
   return { ok: true }
 }

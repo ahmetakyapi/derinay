@@ -37,7 +37,7 @@ import { NewScoreDialog } from '@/components/forms/NewScoreDialog'
 import { ScoreTrend } from '@/components/clients/ScoreTrend'
 import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
-import { getClientDetail, getReminderTemplate } from '@/lib/queries'
+import { getClientDetail, getReminderTemplate, getTaxSettings } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
 import { deletePackage } from '@/app/actions/packages'
 import { deleteScore } from '@/app/actions/scores'
@@ -52,7 +52,7 @@ import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/form
 import { cn } from '@/lib/utils'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
-  const [data, reminderTemplate] = await Promise.all([getClientDetail(params.id), getReminderTemplate()])
+  const [data, reminderTemplate, taxRates] = await Promise.all([getClientDetail(params.id), getReminderTemplate(), getTaxSettings()])
   if (!data) notFound()
   const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents } = data
   const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
@@ -87,7 +87,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           <div className="flex items-center gap-4">
             <Avatar name={client.name} color={client.colorTag} src={client.avatarUrl} size="lg" />
             <div>
-              <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{client.name}</h1>
+              <h1 className="sensitive font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{client.name}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
                 {client.consentGiven ? (
@@ -106,8 +106,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     {new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' }).format(new Date(client.birthDate))}
                   </span>
                 )}
-                {client.email && <span className="inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {client.email}</span>}
-                {client.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {client.phone}</span>}
+                {client.email && <span className="sensitive inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {client.email}</span>}
+                {client.phone && <span className="sensitive inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {client.phone}</span>}
               </div>
               {client.tags.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -126,7 +126,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <NewPaymentDialog clients={[]} fixedClientId={client.id} />
-            <NewInvoiceDialog clients={[]} fixedClientId={client.id} />
+            <NewInvoiceDialog clients={[]} fixedClientId={client.id} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />
             <EditClientDialog
               client={{
                 id: client.id,

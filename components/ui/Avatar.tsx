@@ -32,7 +32,7 @@ export function Avatar({
         src={src}
         alt={name}
         className={cn(
-          'inline-block shrink-0 rounded-xl object-cover shadow-lg shadow-black/10 ring-1 ring-slate-900/10 dark:ring-white/10',
+          'sensitive inline-block shrink-0 rounded-xl object-cover shadow-lg shadow-black/10 ring-1 ring-slate-900/10 dark:ring-white/10',
           sizes[size],
           className,
         )}
@@ -43,7 +43,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br font-bold text-white shadow-lg shadow-black/10',
+        'sensitive inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br font-bold text-white shadow-lg shadow-black/10',
         CLIENT_COLOR_BG[color] ?? CLIENT_COLOR_BG.indigo,
         sizes[size],
         className,

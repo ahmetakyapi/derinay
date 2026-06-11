@@ -158,7 +158,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                         <r.icon className="h-4 w-4" />
                       </span>
                     )}
-                    <span className="flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">{r.label}</span>
+                    <span className={cn('flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', r.client && 'sensitive')}>{r.label}</span>
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{r.group}</span>
                     {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-300" />}
                   </button>

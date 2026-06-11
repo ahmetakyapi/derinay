@@ -2,21 +2,25 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Building2, MessageSquareText, Loader2 } from 'lucide-react'
+import { Check, Building2, MessageSquareText, Landmark, Loader2 } from 'lucide-react'
 import { Field, Input, Textarea } from '@/components/ui/Field'
-import { saveBusinessInfo, saveReminderTemplate } from '@/app/actions/settings'
+import { saveBusinessInfo, saveReminderTemplate, saveTaxSettings } from '@/app/actions/settings'
 import type { BusinessInfo } from '@/lib/constants'
+import type { TaxSettings } from '@/lib/queries'
 
-type Saved = 'business' | 'reminder' | null
+type Saved = 'business' | 'reminder' | 'tax' | null
 
 export function SettingsForm({
   business,
   reminderTemplate,
+  taxSettings,
 }: {
   business: BusinessInfo
   reminderTemplate: string
+  taxSettings: TaxSettings
 }) {
   const [b, setB] = useState<BusinessInfo>(business)
+  const [tax, setTax] = useState<TaxSettings>(taxSettings)
   const [tpl, setTpl] = useState(reminderTemplate)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<Saved>(null)
@@ -50,6 +54,21 @@ export function SettingsForm({
     })
   }
 
+  function saveTax(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    start(async () => {
+      const res = await saveTaxSettings(tax)
+      if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
+      setSaved('tax')
+      router.refresh()
+      setTimeout(() => setSaved(null), 2500)
+    })
+  }
+
+  const setRate = (k: keyof TaxSettings) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTax((prev) => ({ ...prev, [k]: Number(e.target.value) }))
+
   return (
     <div className="space-y-6">
       {/* İşletme kimliği — makbuz/fatura başlığı */}
@@ -80,6 +99,51 @@ export function SettingsForm({
 
         <div className="mt-5 flex items-center justify-end gap-3">
           {saved === 'business' && (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+              <Check className="h-4 w-4" /> Kaydedildi
+            </span>
+          )}
+          <button
+            type="submit"
+            disabled={pending}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
+          >
+            {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+            Kaydet
+          </button>
+        </div>
+      </form>
+
+      {/* Vergi oranları — tüm hesaplamaları besler */}
+      <form onSubmit={saveTax} className="glass rounded-2xl p-5 sm:p-6">
+        <div className="mb-5 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/12 text-amber-600 dark:text-amber-400">
+            <Landmark className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Vergi Oranları</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Makbuz varsayılanları ve vergi tahminleri bu oranlarla hesaplanır</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+          <Field label="KDV oranı (%)">
+            <Input type="number" min="0" max="60" step="1" value={tax.kdvRate} onChange={setRate('kdvRate')} required />
+          </Field>
+          <Field label="Stopaj / tevkifat (%)">
+            <Input type="number" min="0" max="60" step="1" value={tax.stopajRate} onChange={setRate('stopajRate')} required />
+          </Field>
+          <Field label="Gelir vergisi tahmini (%)">
+            <Input type="number" min="0" max="60" step="1" value={tax.incomeTaxRate} onChange={setRate('incomeTaxRate')} required />
+          </Field>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+          KDV ve stopaj yeni makbuzun varsayılanı olur (makbuz kesilirken değiştirilebilir).
+          Gelir vergisi oranı, panel ve Vergiler sayfasındaki tahmini anında günceller.
+        </p>
+
+        <div className="mt-5 flex items-center justify-end gap-3">
+          {saved === 'tax' && (
             <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
               <Check className="h-4 w-4" /> Kaydedildi
             </span>

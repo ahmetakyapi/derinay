@@ -5,6 +5,32 @@ import { db } from '@/lib/db'
 import { settings } from '@/lib/schema'
 import { BUSINESS, type BusinessInfo } from '@/lib/constants'
 
+/** Vergi oranlarını kaydet (settings 'tax' anahtarı) — tüm hesaplamalar bunu okur */
+export async function saveTaxSettings(input: { kdvRate: number; stopajRate: number; incomeTaxRate: number }) {
+  const rates = [input.kdvRate, input.stopajRate, input.incomeTaxRate]
+  if (rates.some((r) => !Number.isFinite(r) || r < 0 || r > 60)) {
+    return { ok: false, error: 'Oranlar 0–60 arasında olmalı' }
+  }
+
+  const value = JSON.stringify({
+    kdvRate: Math.round(input.kdvRate),
+    stopajRate: Math.round(input.stopajRate),
+    incomeTaxRate: Math.round(input.incomeTaxRate),
+  })
+  await db
+    .insert(settings)
+    .values({ key: 'tax', value, updatedAt: new Date() })
+    .onConflictDoUpdate({ target: settings.key, set: { value, updatedAt: new Date() } })
+
+  // Vergi oranı her hesabı etkiler — geniş tazeleme
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/taxes')
+  revalidatePath('/dashboard/invoices')
+  revalidatePath('/dashboard/analytics')
+  revalidatePath('/dashboard/settings')
+  return { ok: true }
+}
+
 /** İşletme/makbuz kimliğini kaydet (settings tablosunda 'business' JSON anahtarı) */
 export async function saveBusinessInfo(input: Partial<BusinessInfo>) {
   if (!input.name?.trim()) return { ok: false, error: 'İşletme adı boş olamaz' }

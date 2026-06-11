@@ -43,7 +43,7 @@ export default async function WaitlistPage() {
                     <Avatar name={e.name} color={high ? 'amber' : 'indigo'} size="sm" />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{e.name}</p>
+                        <p className="sensitive truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{e.name}</p>
                         {high && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
                             <Sparkles className="h-3 w-3" /> Öncelik
@@ -51,8 +51,8 @@ export default async function WaitlistPage() {
                         )}
                       </div>
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-slate-500 dark:text-slate-400">
-                        {e.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {e.phone}</span>}
-                        {e.email && <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {e.email}</span>}
+                        {e.phone && <span className="sensitive inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {e.phone}</span>}
+                        {e.email && <span className="sensitive inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {e.email}</span>}
                         {e.source && <span className="inline-flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> {e.source}</span>}
                         <span className="text-slate-400">· {formatDate(e.createdAt)}</span>
                       </p>

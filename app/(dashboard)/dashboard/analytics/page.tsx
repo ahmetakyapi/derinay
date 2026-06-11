@@ -239,7 +239,7 @@ export default async function AnalyticsPage({
                     <Avatar name={c.name} color={c.color} src={c.avatar} size="sm" />
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600 dark:text-slate-200 dark:group-hover:text-indigo-300">
+                        <span className="sensitive truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600 dark:text-slate-200 dark:group-hover:text-indigo-300">
                           {c.name}
                         </span>
                         <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">

@@ -29,12 +29,13 @@ export function netProfit(income: number, expense: number) {
 
 /**
  * Basitleştirilmiş gelir vergisi tahmini.
- * Net kâr (pozitifse) üzerinden sabit oranla — gerçek beyan değil, gösterge.
+ * Net kâr (pozitifse) üzerinden orana göre — gerçek beyan değil, gösterge.
+ * Oran Ayarlar'dan değiştirilebilir (settings 'tax' anahtarı).
  */
-export function estimateIncomeTax(income: number, expense: number) {
+export function estimateIncomeTax(income: number, expense: number, rate: number = TAX.INCOME_TAX_ESTIMATE_RATE) {
   const profit = netProfit(income, expense)
   if (profit <= 0) return 0
-  return Math.round(profit * (TAX.INCOME_TAX_ESTIMATE_RATE / 100) * 100) / 100
+  return round2(profit * (rate / 100))
 }
 
 /** Dönem vergi özeti */
@@ -42,11 +43,12 @@ export function taxSummary(args: {
   income: number
   expense: number
   kdvCollected: number
+  incomeTaxRate?: number
 }) {
-  const incomeTax = estimateIncomeTax(args.income, args.expense)
+  const incomeTax = estimateIncomeTax(args.income, args.expense, args.incomeTaxRate)
   return {
     kdvCollected: args.kdvCollected,
     incomeTax,
-    totalDue: Math.round((args.kdvCollected + incomeTax) * 100) / 100,
+    totalDue: round2(args.kdvCollected + incomeTax),
   }
 }

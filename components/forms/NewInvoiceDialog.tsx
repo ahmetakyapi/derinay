@@ -14,16 +14,21 @@ export function NewInvoiceDialog({
   clients,
   fixedClientId,
   label = 'Makbuz Kes',
+  defaultKdvRate = TAX.KDV_RATE,
+  defaultStopajRate = TAX.STOPAJ_RATE,
 }: {
   clients: { id: string; name: string }[]
   fixedClientId?: string
   label?: string
+  /** Ayarlar'daki vergi oranları — makbuzun başlangıç değerleri */
+  defaultKdvRate?: number
+  defaultStopajRate?: number
 }) {
   const [open, setOpen] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [subtotal, setSubtotal] = useState(0)
-  const [kdvRate, setKdvRate] = useState<number>(TAX.KDV_RATE)
-  const [stopajRate, setStopajRate] = useState<number>(TAX.STOPAJ_RATE)
+  const [kdvRate, setKdvRate] = useState<number>(defaultKdvRate)
+  const [stopajRate, setStopajRate] = useState<number>(defaultStopajRate)
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
   const router = useRouter()
@@ -90,14 +95,14 @@ export function NewInvoiceDialog({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="KDV oranı (%)">
               <Select value={kdvRate} onChange={(e) => setKdvRate(Number(e.target.value))}>
-                {[0, 1, 10, 20].map((r) => (
+                {[...new Set([0, 1, 10, 20, defaultKdvRate])].sort((a, b) => a - b).map((r) => (
                   <option key={r} value={r}>%{r}</option>
                 ))}
               </Select>
             </Field>
             <Field label="Stopaj / tevkifat (%)">
               <Select value={stopajRate} onChange={(e) => setStopajRate(Number(e.target.value))}>
-                {[0, 20].map((r) => (
+                {[...new Set([0, 20, defaultStopajRate])].sort((a, b) => a - b).map((r) => (
                   <option key={r} value={r}>{r === 0 ? 'Yok' : `%${r}`}</option>
                 ))}
               </Select>

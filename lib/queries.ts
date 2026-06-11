@@ -4,7 +4,7 @@ import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
-import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
+import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -69,11 +69,12 @@ export async function listTransactions(opts?: {
 
 // ─── Dashboard istatistikleri ────────────────────────────────────────────────
 export async function getDashboard(monthsBack = 6) {
-  const [allTx, allInvoices, clientRows] = await Promise.all([
+  const [allTx, allInvoices, clientRows, taxRates] = await Promise.all([
     // Dashboard = iş (business) genel görünümü; kişisel harcamalar hariç
     db.select().from(transactions).where(eq(transactions.scope, 'business')).orderBy(desc(transactions.date)),
     db.select().from(invoices),
     db.select().from(clients),
+    getTaxSettings(),
   ])
 
   const now = new Date()
@@ -96,7 +97,7 @@ export async function getDashboard(monthsBack = 6) {
     .filter((i) => i.status !== 'draft' && monthKey(i.issueDate) === cur)
     .reduce((s, i) => s + num(i.kdvAmount), 0)
 
-  const tax = taxSummary({ income: curIncome, expense: curExpense, kdvCollected })
+  const tax = taxSummary({ income: curIncome, expense: curExpense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate })
 
   // Aylık trend (son N ay)
   const trend: { key: string; label: string; income: number; expense: number; net: number }[] = []
@@ -587,9 +588,10 @@ export async function getWeekSessions(weekOffset = 0) {
 
 // ─── Vergi genel görünümü ────────────────────────────────────────────────────
 export async function getTaxOverview(monthsBack = 6) {
-  const [allTx, allInvoices] = await Promise.all([
+  const [allTx, allInvoices, taxRates] = await Promise.all([
     db.select().from(transactions).where(eq(transactions.scope, 'business')),
     db.select().from(invoices),
+    getTaxSettings(),
   ])
   const now = new Date()
   const months: {
@@ -605,12 +607,12 @@ export async function getTaxOverview(monthsBack = 6) {
     const monthInv = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k)
     const kdvCollected = monthInv.reduce((s, iv) => s + num(iv.kdvAmount), 0)
     const stopajWithheld = monthInv.reduce((s, iv) => s + num(iv.stopajAmount), 0)
-    const t = taxSummary({ income, expense, kdvCollected })
+    const t = taxSummary({ income, expense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate })
     months.push({ key: k, label: monthKeyToLabel(k), income, expense, stopajWithheld, ...t })
   }
 
   const current = months[months.length - 1]
-  return { months, current }
+  return { months, current, taxRates }
 }
 
 // ─── Yıllık analiz ───────────────────────────────────────────────────────────
@@ -640,6 +642,7 @@ export async function getYearAnalytics(year: number) {
     db.select().from(sessions).where(and(gte(sessions.date, yearStart), lte(sessions.date, yearEnd))),
     db.select().from(payments).where(and(gte(payments.date, start), lte(payments.date, end))),
   ])
+  const taxRates = await getTaxSettings()
 
   // 12 aylık seri + kümülatif net
   const months = Array.from({ length: 12 }, (_, m) => {
@@ -647,7 +650,7 @@ export async function getYearAnalytics(year: number) {
     const income = txs.filter((t) => t.type === 'income' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
     const expense = txs.filter((t) => t.type === 'expense' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
     const kdv = invs.filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k)).reduce((s, i) => s + num(i.kdvAmount), 0)
-    const tax = taxSummary({ income, expense, kdvCollected: kdv })
+    const tax = taxSummary({ income, expense, kdvCollected: kdv, incomeTaxRate: taxRates.incomeTaxRate })
     return { key: k, label: monthKeyToLabel(k), income, expense, net: income - expense, kdv, incomeTax: tax.incomeTax, totalDue: tax.totalDue }
   })
   let running = 0
@@ -870,6 +873,25 @@ export async function getReminderTemplate(): Promise<string> {
 export async function listWaitlist() {
   const rows = await db.select().from(waitlist).orderBy(desc(waitlist.priority), desc(waitlist.createdAt))
   return rows.map((r) => ({ ...r, createdAt: String(r.createdAt) }))
+}
+
+// ─── Vergi oranları (Ayarlar'dan düzenlenebilir) ─────────────────────────────
+export type TaxSettings = { kdvRate: number; stopajRate: number; incomeTaxRate: number }
+
+export async function getTaxSettings(): Promise<TaxSettings> {
+  const def: TaxSettings = {
+    kdvRate: TAX.KDV_RATE,
+    stopajRate: TAX.STOPAJ_RATE,
+    incomeTaxRate: TAX.INCOME_TAX_ESTIMATE_RATE,
+  }
+  const [row] = await db.select().from(settings).where(eq(settings.key, 'tax'))
+  if (!row?.value) return def
+  try {
+    const saved = JSON.parse(row.value) as Partial<TaxSettings>
+    return { ...def, ...saved }
+  } catch {
+    return def
+  }
 }
 
 /** İşletme/makbuz kimliği — varsayılanların üzerine settings'teki JSON'u uygular */

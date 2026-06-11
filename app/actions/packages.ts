@@ -42,11 +42,13 @@ export async function createPackage(input: {
   }
 
   revalidatePath(`/dashboard/clients/${input.clientId}`)
+  revalidatePath('/dashboard') // hatırlatmalar (biten paket)
   return { ok: true }
 }
 
 export async function deletePackage(id: string, clientId: string) {
   await db.delete(sessionPackages).where(eq(sessionPackages.id, id))
   revalidatePath(`/dashboard/clients/${clientId}`)
+  revalidatePath('/dashboard')
   return { ok: true }
 }

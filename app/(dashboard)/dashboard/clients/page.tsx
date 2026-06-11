@@ -107,8 +107,8 @@ export default async function ClientsPage({
                   <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
-              <h3 className="mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>
-              <p className="truncate text-xs text-slate-500 dark:text-slate-400">{c.email || c.phone || '—'}</p>
+              <h3 className="sensitive mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>
+              <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">{c.email || c.phone || '—'}</p>
 
               {c.tags.length > 0 && (
                 <div className="mt-2.5 flex flex-wrap gap-1">
