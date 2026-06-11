@@ -8,6 +8,10 @@ import {
   DatabaseBackup,
   Download,
   ShieldCheck,
+  Package,
+  Activity,
+  Paperclip,
+  ClipboardList,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 
@@ -16,8 +20,12 @@ const CSV_EXPORTS = [
   { type: 'sessions', label: 'Seanslar', desc: 'Tarih, süre, durum, ücret', icon: CalendarCheck2, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
   { type: 'notes', label: 'Seans Defteri', desc: 'Notlar, türler, duygu kayıtları', icon: StickyNote, tone: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-500/10' },
   { type: 'transactions', label: 'Gelir & Gider', desc: 'Tüm finansal hareketler', icon: ArrowLeftRight, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
-  { type: 'invoices', label: 'Faturalar', desc: 'Numara, KDV, tutar, durum', icon: FileText, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
+  { type: 'invoices', label: 'Makbuzlar', desc: 'Numara, brüt, stopaj, KDV, durum', icon: FileText, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
   { type: 'payments', label: 'Ödemeler', desc: 'Tahsilatlar ve yöntemler', icon: CreditCard, tone: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-500/10' },
+  { type: 'packages', label: 'Seans Paketleri', desc: 'Ön ödemeli paketler ve tutarlar', icon: Package, tone: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-500/10' },
+  { type: 'scores', label: 'İlerleme Ölçümleri', desc: 'Ölçek puanları ve tarihler', icon: Activity, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
+  { type: 'documents', label: 'Belge Bağlantıları', desc: 'Onam, test ve rapor referansları', icon: Paperclip, tone: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-500/10' },
+  { type: 'waitlist', label: 'Bekleme Listesi', desc: 'Başvuru adayları ve kaynakları', icon: ClipboardList, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
 ] as const
 
 export default function BackupPage() {
@@ -41,7 +49,8 @@ export default function BackupPage() {
             Tam Yedek (JSON)
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Tüm tabloların eksiksiz kopyası — danışanlar, seanslar, notlar, finans, faturalar, ödemeler
+            Tüm tabloların eksiksiz kopyası — danışanlar, seanslar, notlar, finans, makbuzlar, ödemeler,
+            paketler, ölçümler, belgeler, bekleme listesi ve ayarlar
           </p>
         </div>
         <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all group-hover:bg-indigo-500">

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Users, ChevronRight, Search } from 'lucide-react'
+import { Users, ChevronRight, Search, CalendarClock, ShieldAlert } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Avatar } from '@/components/ui/Avatar'
@@ -8,7 +8,7 @@ import { NewClientDialog } from '@/components/forms/NewClientDialog'
 import { listClients } from '@/lib/queries'
 import { CLIENT_STATUS_LABEL, STATUS_TONE, CLIENT_STATUSES, type ClientStatus } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { durationSince, formatTRY } from '@/lib/format'
+import { durationSince, formatTRY, formatDateTime } from '@/lib/format'
 
 export default async function ClientsPage({
   searchParams,
@@ -98,7 +98,14 @@ export default async function ClientsPage({
             >
               <div className="flex items-start justify-between">
                 <Avatar name={c.name} color={c.colorTag} src={c.avatarUrl} size="lg" />
-                <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                <div className="flex items-center gap-1.5">
+                  {!c.consentGiven && c.status === 'active' && (
+                    <span title="KVKK onamı eksik" className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-400">
+                      <ShieldAlert className="h-3.5 w-3.5" />
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                </div>
               </div>
               <h3 className="mt-3 truncate font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{c.name}</h3>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">{c.email || c.phone || '—'}</p>
@@ -121,8 +128,18 @@ export default async function ClientsPage({
                 <span className="text-xs text-slate-500 dark:text-slate-400">{durationSince(c.startDate)}</span>
               </div>
 
-              <div className="mt-3 border-t border-slate-500/10 pt-3 text-xs text-slate-500 dark:text-slate-400">
-                Seans ücreti: <span className="font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-500/10 pt-3 text-xs text-slate-500 dark:text-slate-400">
+                <span className="min-w-0 truncate">
+                  {c.nextSession ? (
+                    <span className="inline-flex items-center gap-1 font-medium text-indigo-600 dark:text-indigo-300">
+                      <CalendarClock className="h-3.5 w-3.5 shrink-0" />
+                      {formatDateTime(c.nextSession)}
+                    </span>
+                  ) : (
+                    <span className="text-slate-400">Planlı seans yok</span>
+                  )}
+                </span>
+                <span className="shrink-0 font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
               </div>
             </Link>
           ))}

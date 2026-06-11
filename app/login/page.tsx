@@ -2,8 +2,10 @@ import { redirect } from 'next/navigation'
 import { AuthError } from 'next-auth'
 import { Lock, ArrowRight } from 'lucide-react'
 import { signIn, auth } from '@/lib/auth'
-import { BranchArt } from '@/components/art/BranchArt'
+import { BloomArt } from '@/components/art/BloomArt'
+import { BloomMark } from '@/components/brand/BloomMark'
 import { USER } from '@/lib/constants'
+import { quoteOfTheDay } from '@/lib/quotes'
 
 export const metadata = { title: 'Giriş' }
 
@@ -32,21 +34,19 @@ export default async function LoginPage({
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
-      {/* Suluboya lekeleri */}
+      {/* Suluboya lekeleri + orkide filigranı */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
         <div className="absolute -right-20 bottom-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
-        <span className="absolute -right-8 top-1/2 hidden -translate-y-1/2 select-none font-display text-[22rem] font-semibold italic leading-none text-slate-900/[0.04] dark:text-white/[0.04] lg:block">
-          D
-        </span>
-        <BranchArt className="absolute bottom-10 left-10 hidden h-44 w-32 opacity-80 md:block" delay={0.8} />
+        <BloomMark className="absolute -right-20 top-1/2 hidden h-[28rem] w-[28rem] -translate-y-1/2 -rotate-12 text-slate-900/[0.04] dark:text-white/[0.04] lg:block" />
+        <BloomArt className="absolute bottom-10 left-10 hidden h-52 w-40 opacity-70 md:block" delay={0.8} />
       </div>
 
       <div className="surface relative w-full max-w-sm rounded-3xl p-8 shadow-2xl">
-        {/* Mürekkep damgası */}
+        {/* Mürekkep damgası — orkide */}
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
-            <span className="font-display text-2xl font-semibold italic text-amber-50 dark:text-slate-900">D</span>
+            <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
             <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
           </div>
           <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -90,7 +90,7 @@ export default async function LoginPage({
         </form>
 
         <p className="mt-6 text-center font-display text-xs italic text-slate-400">
-          &ldquo;En derin sular, en sakin akar.&rdquo;
+          &ldquo;{quoteOfTheDay().text}&rdquo;
         </p>
       </div>
     </main>

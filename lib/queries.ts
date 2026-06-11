@@ -152,12 +152,26 @@ export async function listClients(opts?: { status?: ClientStatus; q?: string; ta
   if (opts?.status) filters.push(eq(clients.status, opts.status))
   if (opts?.q?.trim()) filters.push(ilike(clients.name, `%${opts.q.trim()}%`))
   if (opts?.tag?.trim()) filters.push(arrayContains(clients.tags, [opts.tag.trim()]))
-  const rows = await db
-    .select()
-    .from(clients)
-    .where(filters.length ? and(...filters) : undefined)
-    .orderBy(desc(clients.createdAt))
-  return rows.map((c) => ({ ...c, sessionFee: num(c.sessionFee) }))
+  const [rows, upcoming] = await Promise.all([
+    db
+      .select()
+      .from(clients)
+      .where(filters.length ? and(...filters) : undefined)
+      .orderBy(desc(clients.createdAt)),
+    // Sıradaki planlı seans — kart üzerinde "sonraki seans" için
+    db
+      .select({ clientId: sessions.clientId, date: sessions.date })
+      .from(sessions)
+      .where(and(eq(sessions.status, 'scheduled'), gte(sessions.date, new Date())))
+      .orderBy(sessions.date),
+  ])
+  const nextByClient = new Map<string, Date>()
+  for (const s of upcoming) if (!nextByClient.has(s.clientId)) nextByClient.set(s.clientId, s.date)
+  return rows.map((c) => ({
+    ...c,
+    sessionFee: num(c.sessionFee),
+    nextSession: nextByClient.get(c.id) ? String(nextByClient.get(c.id)) : null,
+  }))
 }
 
 export async function getClientDetail(id: string) {

@@ -3,9 +3,12 @@ config({ path: '.env.local' })
 
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
-import { calcKdv } from '../lib/finance'
+import { calcMakbuz } from '../lib/finance'
 import * as schema from '../lib/schema'
-import { clients, sessions, clientNotes, transactions, invoices, payments } from '../lib/schema'
+import {
+  clients, sessions, clientNotes, transactions, invoices, payments,
+  sessionPackages, clientScores, clientDocuments, waitlist,
+} from '../lib/schema'
 
 if (!process.env.DATABASE_URL) {
   console.error('✗ DATABASE_URL bulunamadı. .env.local dosyasını doldurun.')
@@ -53,6 +56,10 @@ async function main() {
   await db.delete(transactions)
   await db.delete(clientNotes)
   await db.delete(sessions)
+  await db.delete(sessionPackages)
+  await db.delete(clientScores)
+  await db.delete(clientDocuments)
+  await db.delete(waitlist)
   await db.delete(clients)
 
   console.log('→ Danışanlar ekleniyor…')
@@ -65,6 +72,11 @@ async function main() {
         phone: '05' + Math.floor(100000000 + Math.random() * 899999999),
         status: c.status,
         startDate: isoDate(monthsAgo(c.since, 1)),
+        // Doğum günü — bir kısmı yakın günlerde (dashboard hatırlatması görünsün)
+        birthDate: Math.random() < 0.75
+          ? isoDate(new Date(1980 + Math.floor(Math.random() * 25), Math.random() < 0.3 ? now.getMonth() : Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)))
+          : null,
+        consentGiven: Math.random() < 0.8, // çoğunda onam alınmış, birkaçında eksik (hatırlatma görünsün)
         sessionFee: money(c.fee),
         colorTag: c.color,
         tags: pick([['EMDR'], ['BDT', 'Online'], ['Çift terapisi'], ['Online'], ['Şema terapi'], []]),
@@ -181,8 +193,8 @@ async function main() {
   await db.insert(clientNotes).values(noteRows)
   await db.insert(transactions).values(txRows)
 
-  // ─── Faturalar + ödemeler ──────────────────────────────────────────────────
-  console.log('→ Faturalar ve ödemeler ekleniyor…')
+  // ─── Makbuzlar + ödemeler ──────────────────────────────────────────────────
+  console.log('→ Makbuzlar ve ödemeler ekleniyor…')
   const invRows: (typeof invoices.$inferInsert)[] = []
   const payRows: (typeof payments.$inferInsert)[] = []
   let counter = 1
@@ -191,8 +203,9 @@ async function main() {
   const activeClients = inserted.filter((c) => c.status !== 'completed')
   for (let m = 3; m >= 0; m--) {
     for (const c of activeClients.slice(0, 5)) {
-      const subtotal = Number(c.fee) * (2 + Math.floor(Math.random() * 2))
-      const { kdvAmount, total } = calcKdv(subtotal, 20)
+      const brut = Number(c.fee) * (2 + Math.floor(Math.random() * 2))
+      const stopajRate = Math.random() < 0.7 ? 20 : 0 // çoğu makbuz stopajlı
+      const { kdvAmount, stopajAmount, total } = calcMakbuz(brut, 20, stopajRate)
       const issue = monthsAgo(m, 2)
       const status = (m === 0 ? pick(['sent', 'paid', 'overdue']) : 'paid') as schema.Invoice['status']
       const id = crypto.randomUUID()
@@ -202,9 +215,11 @@ async function main() {
         clientId: c.id,
         issueDate: isoDate(issue),
         dueDate: isoDate(monthsAgo(m, 16)),
-        subtotal: money(subtotal),
+        subtotal: money(brut),
         kdvRate: 20,
         kdvAmount: money(kdvAmount),
+        stopajRate,
+        stopajAmount: money(stopajAmount),
         total: money(total),
         status,
       })
@@ -215,7 +230,7 @@ async function main() {
           amount: money(total),
           date: isoDate(monthsAgo(m, 6)),
           method: pick(['cash', 'card', 'transfer']) as schema.Payment['method'],
-          note: 'Fatura tahsilatı',
+          note: 'Makbuz tahsilatı',
         })
       }
     }
@@ -224,9 +239,65 @@ async function main() {
   await db.insert(invoices).values(invRows)
   await db.insert(payments).values(payRows)
 
+  // ─── Seans paketleri (birkaç aktif danışanda) ──────────────────────────────
+  console.log('→ Seans paketleri ekleniyor…')
+  const pkgRows: (typeof sessionPackages.$inferInsert)[] = []
+  for (const c of activeClients.slice(0, 3)) {
+    const totalSessions = pick([8, 10, 12])
+    pkgRows.push({
+      clientId: c.id,
+      totalSessions,
+      pricePaid: money(Number(c.fee) * totalSessions * 0.9), // %10 paket indirimi
+      purchaseDate: isoDate(monthsAgo(1, 10)),
+      note: `${totalSessions} seanslık paket — %10 indirimli`,
+    })
+  }
+  await db.insert(sessionPackages).values(pkgRows)
+
+  // ─── İlerleme ölçümleri (ölçek puanı serisi) ───────────────────────────────
+  console.log('→ İlerleme ölçümleri ekleniyor…')
+  const scoreRows: (typeof clientScores.$inferInsert)[] = []
+  for (const c of activeClients.slice(0, 4)) {
+    const scale = pick(['İyilik hali', 'Anksiyete', 'Uyku kalitesi'])
+    const improving = scale === 'İyilik hali' || scale === 'Uyku kalitesi'
+    let v = improving ? 4 : 8
+    for (let m = 4; m >= 0; m--) {
+      v += (improving ? 1 : -1) * (Math.random() < 0.75 ? 1 : 0) // dalgalı ama iyileşen seyir
+      scoreRows.push({
+        clientId: c.id,
+        label: scale,
+        value: money(Math.max(1, Math.min(10, v + (Math.random() - 0.5)))),
+        scaleMax: 10,
+        date: isoDate(monthsAgo(m, 20)),
+      })
+    }
+  }
+  await db.insert(clientScores).values(scoreRows)
+
+  // ─── Belge bağlantıları ────────────────────────────────────────────────────
+  console.log('→ Belge bağlantıları ekleniyor…')
+  const docRows: (typeof clientDocuments.$inferInsert)[] = activeClients.slice(0, 3).map((c, i) => ({
+    clientId: c.id,
+    name: pick(['Onam formu', 'Beck Depresyon Envanteri', 'Değerlendirme raporu']),
+    type: pick(['Onam formu', 'Test / Ölçek', 'Rapor']),
+    url: `https://drive.google.com/file/d/ornek-belge-${i + 1}`,
+    note: i === 0 ? 'İlk görüşmede imzalandı' : null,
+  }))
+  await db.insert(clientDocuments).values(docRows)
+
+  // ─── Bekleme listesi ───────────────────────────────────────────────────────
+  console.log('→ Bekleme listesi ekleniyor…')
+  const wlRows: (typeof waitlist.$inferInsert)[] = [
+    { name: 'Merve Aktaş', phone: '0532 111 22 33', source: 'Instagram', priority: 'high', note: 'Kaygı yakınması — hafta içi akşam uygun' },
+    { name: 'Oğuz Yıldırım', email: 'oguz.y@mail.com', source: 'Tavsiye', priority: 'normal', note: 'Çift terapisi talebi' },
+    { name: 'İrem Doğan', phone: '0541 444 55 66', source: 'Google', priority: 'normal', note: null },
+  ]
+  await db.insert(waitlist).values(wlRows)
+
   console.log('✓ Seed tamamlandı:')
   console.log(`  ${inserted.length} danışan, ${sessRows.length} seans, ${noteRows.length} not`)
-  console.log(`  ${txRows.length} işlem, ${invRows.length} fatura, ${payRows.length} ödeme`)
+  console.log(`  ${txRows.length} işlem, ${invRows.length} makbuz, ${payRows.length} ödeme`)
+  console.log(`  ${pkgRows.length} paket, ${scoreRows.length} ölçüm, ${docRows.length} belge, ${wlRows.length} bekleme kaydı`)
   process.exit(0)
 }
 

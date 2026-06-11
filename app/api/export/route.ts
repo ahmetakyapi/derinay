@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { clients, sessions, clientNotes, transactions, invoices, payments } from '@/lib/schema'
+import {
+  clients, sessions, clientNotes, transactions, invoices, payments,
+  sessionPackages, clientScores, clientDocuments, waitlist, settings,
+} from '@/lib/schema'
 
 export const dynamic = 'force-dynamic'
 
 /**
  * Veri dışa aktarımı — CSV (Excel TR uyumlu: BOM + noktalı virgül) ve tam JSON yedek.
  * Middleware + burada ikinci kez auth ile korunur.
- *   GET /api/export?type=clients|sessions|notes|transactions|invoices|payments|json
+ *   GET /api/export?type=clients|sessions|notes|transactions|invoices|payments
+ *                        |packages|scores|documents|waitlist|json
  */
 
 type Row = Record<string, unknown>
@@ -90,14 +94,16 @@ export async function GET(req: Request) {
 
   if (type === 'invoices') {
     const rows = await db.select().from(invoices)
-    return csvResponse('faturalar', toCsv(rows as unknown as Row[], [
-      { key: 'number', label: 'Fatura No' },
+    return csvResponse('makbuzlar', toCsv(rows as unknown as Row[], [
+      { key: 'number', label: 'Makbuz No' },
       { key: 'issueDate', label: 'Düzenleme' },
       { key: 'dueDate', label: 'Vade' },
-      { key: 'subtotal', label: 'Net' },
+      { key: 'subtotal', label: 'Brüt Ücret' },
+      { key: 'stopajRate', label: 'Stopaj %' },
+      { key: 'stopajAmount', label: 'Stopaj' },
       { key: 'kdvRate', label: 'KDV %' },
       { key: 'kdvAmount', label: 'KDV' },
-      { key: 'total', label: 'Toplam' },
+      { key: 'total', label: 'Tahsil Edilen' },
       { key: 'status', label: 'Durum' },
     ]))
   }
@@ -112,18 +118,72 @@ export async function GET(req: Request) {
     ]))
   }
 
-  // Tam JSON yedek — tüm tablolar
-  const [c, se, n, t, i, pa] = await Promise.all([
+  if (type === 'packages') {
+    const rows = await db.select().from(sessionPackages)
+    return csvResponse('paketler', toCsv(rows as unknown as Row[], [
+      { key: 'purchaseDate', label: 'Satın Alma' },
+      { key: 'totalSessions', label: 'Seans Sayısı' },
+      { key: 'pricePaid', label: 'Ödenen Tutar' },
+      { key: 'note', label: 'Not' },
+    ]))
+  }
+
+  if (type === 'scores') {
+    const rows = await db.select().from(clientScores)
+    return csvResponse('olcumler', toCsv(rows as unknown as Row[], [
+      { key: 'date', label: 'Tarih' },
+      { key: 'label', label: 'Ölçek' },
+      { key: 'value', label: 'Puan' },
+      { key: 'scaleMax', label: 'Üst Sınır' },
+      { key: 'note', label: 'Not' },
+    ]))
+  }
+
+  if (type === 'documents') {
+    const rows = await db.select().from(clientDocuments)
+    return csvResponse('belgeler', toCsv(rows as unknown as Row[], [
+      { key: 'name', label: 'Belge' },
+      { key: 'type', label: 'Tür' },
+      { key: 'url', label: 'Bağlantı' },
+      { key: 'note', label: 'Not' },
+      { key: 'createdAt', label: 'Eklendi' },
+    ]))
+  }
+
+  if (type === 'waitlist') {
+    const rows = await db.select().from(waitlist)
+    return csvResponse('bekleme-listesi', toCsv(rows as unknown as Row[], [
+      { key: 'name', label: 'Ad Soyad' },
+      { key: 'phone', label: 'Telefon' },
+      { key: 'email', label: 'E-posta' },
+      { key: 'source', label: 'Kaynak' },
+      { key: 'priority', label: 'Öncelik' },
+      { key: 'note', label: 'Not' },
+      { key: 'createdAt', label: 'Başvuru' },
+    ]))
+  }
+
+  // Tam JSON yedek — TÜM tablolar (yeni tablo eklenince buraya da ekle)
+  const [c, se, n, t, i, pa, pk, sc, doc, wl, st] = await Promise.all([
     db.select().from(clients),
     db.select().from(sessions),
     db.select().from(clientNotes),
     db.select().from(transactions),
     db.select().from(invoices),
     db.select().from(payments),
+    db.select().from(sessionPackages),
+    db.select().from(clientScores),
+    db.select().from(clientDocuments),
+    db.select().from(waitlist),
+    db.select().from(settings),
   ])
   return new NextResponse(
     JSON.stringify(
-      { exportedAt: new Date().toISOString(), clients: c, sessions: se, notes: n, transactions: t, invoices: i, payments: pa },
+      {
+        exportedAt: new Date().toISOString(),
+        clients: c, sessions: se, notes: n, transactions: t, invoices: i, payments: pa,
+        sessionPackages: pk, clientScores: sc, clientDocuments: doc, waitlist: wl, settings: st,
+      },
       null,
       2,
     ),

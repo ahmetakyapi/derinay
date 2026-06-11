@@ -83,8 +83,8 @@ export default function Home() {
               variants={fadeUp}
               className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-300 sm:text-lg"
             >
-              Gelir-gider, faturalar, KDV ve gelir vergisi, danışan notları ve ödemeler —
-              hepsi tek, huzurlu bir panelde. Danışanlarına odaklan, gerisini Derinay&apos;a bırak.
+              Gelir-gider, serbest meslek makbuzu, KDV-stopaj ve vergi takibi, danışan notları
+              ve ödemeler — hepsi tek, huzurlu bir panelde. Danışanlarına odaklan, gerisini Derinay&apos;a bırak.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-4">
@@ -213,9 +213,11 @@ export default function Home() {
                     'Danışan Takibi',
                     'Seans Defteri',
                     'Duygu Takibi',
-                    'Fatura & KDV',
+                    'Makbuz & Stopaj',
+                    'Seans Paketi',
                     'Vergi Özeti',
                     'Analiz & PDF Rapor',
+                    'Bekleme Listesi',
                     'Kişisel Harcamalar',
                   ].map((w) => (
                     <span key={w} className="flex items-center gap-10 whitespace-nowrap">
@@ -345,8 +347,8 @@ const FEATURES = [
   { icon: Wallet, title: 'Gelir & Gider Takibi', desc: 'Kategori bazlı hareketler, aylık kırılım ve net kâr — tek bakışta.', accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' },
   { icon: Users, title: 'Danışan Yönetimi', desc: 'Danışan ekle, statü ve devam süresini izle, geçmişi tek yerde tut.', accent: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400' },
   { icon: StickyNote, title: 'Seans Defteri', desc: 'Tür ve duygu etiketli notlar; danışanın duygu izleği gözünün önünde.', accent: 'bg-violet-500/12 text-violet-600 dark:text-violet-400' },
-  { icon: FileText, title: 'Fatura & KDV', desc: 'Tek tıkla fatura kes; KDV otomatik hesaplanır, statüyü takip et.', accent: 'bg-amber-500/12 text-amber-600 dark:text-amber-400' },
-  { icon: Landmark, title: 'Vergi Göstergesi', desc: 'Toplanan KDV ve tahmini gelir vergisiyle ödenecek tutarı gör.', accent: 'bg-rose-500/12 text-rose-600 dark:text-rose-400' },
+  { icon: FileText, title: 'Makbuz & Stopaj', desc: 'Tek tıkla serbest meslek makbuzu kes; KDV ve stopaj otomatik hesaplanır.', accent: 'bg-amber-500/12 text-amber-600 dark:text-amber-400' },
+  { icon: Landmark, title: 'Vergi Göstergesi', desc: 'Toplanan KDV, kesilen stopaj ve tahmini gelir vergisini tek bakışta gör.', accent: 'bg-rose-500/12 text-rose-600 dark:text-rose-400' },
   { icon: PieChart, title: 'Analiz & PDF Rapor', desc: 'Yıllık akış, kümülatif birikim ve muhasebeci dostu PDF raporlar.', accent: 'bg-sky-500/12 text-sky-600 dark:text-sky-400' },
 ]
 
