@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Menu, X } from 'lucide-react'
+import { BloomMark } from '@/components/brand/BloomMark'
 
 const NAV_LINKS = [
   { label: 'Özellikler', href: '#features' },
@@ -37,9 +38,9 @@ export default function Header() {
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <Link href="/" className="group flex items-center gap-2.5">
-              {/* Mürekkep damgası — serif monogram + altın nokta */}
+              {/* Mürekkep damgası — orkide işareti + altın nokta */}
               <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-300 group-hover:rotate-3 dark:bg-slate-50">
-                <span className="font-display text-base font-semibold italic text-amber-50 dark:text-slate-900">D</span>
+                <BloomMark className="h-5 w-5 text-amber-50 transition-transform duration-500 group-hover:rotate-[72deg] dark:text-slate-900" />
                 <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
               </div>
               <span className="font-display text-lg font-semibold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-300">

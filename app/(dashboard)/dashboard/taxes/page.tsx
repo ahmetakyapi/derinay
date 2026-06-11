@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Landmark, Receipt, TrendingUp, Info, FileDown } from 'lucide-react'
+import { Landmark, Receipt, TrendingUp, Info, FileDown, Scissors } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { TaxRadial } from '@/components/charts/TaxRadial'
 import { TaxBars } from '@/components/charts/TaxBars'
@@ -53,6 +53,16 @@ export default async function TaxesPage() {
       bg: 'bg-indigo-500/10',
       hint: 'bu ay ödenecek',
     },
+    ...(current.stopajWithheld > 0
+      ? [{
+          label: 'Kesilen Stopaj',
+          value: current.stopajWithheld,
+          icon: Scissors,
+          tone: 'text-emerald-600 dark:text-emerald-400',
+          bg: 'bg-emerald-500/10',
+          hint: 'yıllık gelir vergisinden mahsup',
+        }]
+      : []),
   ]
 
   return (

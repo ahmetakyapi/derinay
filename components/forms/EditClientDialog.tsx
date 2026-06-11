@@ -29,6 +29,7 @@ export function EditClientDialog({
     status: ClientStatus
     sessionFee: number
     startDate: string
+    birthDate: string | null
     colorTag: string
     avatarUrl: string | null
     tags: string[]
@@ -54,6 +55,7 @@ export function EditClientDialog({
         status: fd.get('status') as ClientStatus,
         sessionFee: Number(fd.get('sessionFee') || 0),
         startDate: String(fd.get('startDate') || ''),
+        birthDate: String(fd.get('birthDate') || ''),
         colorTag: color,
         avatarUrl: avatar,
         tags,
@@ -104,9 +106,14 @@ export function EditClientDialog({
             </Field>
           </div>
 
-          <Field label="Başlangıç tarihi">
-            <Input name="startDate" type="date" defaultValue={client.startDate.slice(0, 10)} />
-          </Field>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Başlangıç tarihi">
+              <Input name="startDate" type="date" defaultValue={client.startDate.slice(0, 10)} />
+            </Field>
+            <Field label="Doğum günü (opsiyonel)">
+              <Input name="birthDate" type="date" defaultValue={client.birthDate?.slice(0, 10) ?? ''} />
+            </Field>
+          </div>
 
           <TagInput value={tags} onChange={setTags} />
 

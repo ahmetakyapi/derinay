@@ -9,22 +9,22 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Users,
-  Plus,
   CalendarDays,
+  Cake,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Avatar } from '@/components/ui/Avatar'
-import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
-import { BreathingCard } from '@/components/ui/BreathingCard'
+import { QuickAddMenu } from '@/components/forms/QuickAddMenu'
+import { QuoteCard } from '@/components/dashboard/QuoteCard'
 import { StatCard } from '@/components/ui/StatCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
 import { AreaTrendChart } from '@/components/charts/AreaTrendChart'
 import { CategoryDonut } from '@/components/charts/CategoryDonut'
 import { MonthlyBar } from '@/components/charts/MonthlyBar'
-import { getDashboard, getWeekSessions, getOutstandingBalances, clientOptions } from '@/lib/queries'
+import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, clientOptions } from '@/lib/queries'
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
 import { USER } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
@@ -35,10 +35,11 @@ export default async function DashboardPage({
   searchParams: { week?: string }
 }) {
   const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
-  const [d, week, out, clients] = await Promise.all([
+  const [d, week, out, birthdays, clients] = await Promise.all([
     getDashboard(),
     getWeekSessions(weekOffset),
     getOutstandingBalances(),
+    getUpcomingBirthdays(),
     clientOptions(),
   ])
   const k = d.kpis
@@ -52,26 +53,8 @@ export default async function DashboardPage({
       <PageHeader
         title={`${greetingNow()}, ${USER.firstName}`}
         subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
-        action={
-          <div className="flex items-center gap-2">
-            <NewSessionDialog clients={clients} />
-            <Link
-              href="/dashboard/finances"
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500"
-            >
-              <Plus className="h-4 w-4" /> Yeni İşlem
-            </Link>
-          </div>
-        }
+        action={<QuickAddMenu clients={clients} />}
       />
-
-      {/* Günün sözü — sükûnet dokunuşu */}
-      <p className="-mt-3 mb-6 font-display text-sm italic leading-relaxed text-slate-500 dark:text-slate-400">
-        <span className="mr-1 font-semibold text-amber-500">“</span>
-        {quote.text}
-        <span className="ml-1 font-semibold text-amber-500">”</span>
-        <span className="ml-2 text-xs not-italic text-slate-400">— {quote.author}</span>
-      </p>
 
       {/* Gecikmiş fatura uyarısı */}
       {out.overdueCount > 0 && (
@@ -93,11 +76,40 @@ export default async function DashboardPage({
         </Link>
       )}
 
+      {/* Yaklaşan doğum günleri — sıcak hatırlatma */}
+      {birthdays.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] px-4 py-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+            <Cake className="h-4 w-4" />
+          </span>
+          <p className="text-sm text-slate-700 dark:text-slate-200">
+            <span className="font-bold">Yaklaşan doğum günü</span>
+            <span className="text-slate-500 dark:text-slate-400"> · küçük bir mesaj sevindirir</span>
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {birthdays.slice(0, 4).map((b) => (
+              <Link
+                key={b.id}
+                href={`/dashboard/clients/${b.id}`}
+                className="group inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-[var(--bg)]/40 py-1 pl-1 pr-3 transition-colors hover:border-amber-500/50"
+              >
+                <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
+                <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                  {b.daysUntil === 0 ? 'bugün 🎂' : b.daysUntil === 1 ? 'yarın' : `${b.daysUntil}g`}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* KPI kartları */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Aylık Gelir"
           value={formatTRY(k.income)}
+          animateTo={k.income}
           icon={<TrendingUp className="h-5 w-5" />}
           accent="emerald"
           change={pctChange(k.income, k.prevIncome)}
@@ -106,6 +118,7 @@ export default async function DashboardPage({
         <StatCard
           label="Aylık Gider"
           value={formatTRY(k.expense)}
+          animateTo={k.expense}
           icon={<TrendingDown className="h-5 w-5" />}
           accent="rose"
           change={pctChange(k.expense, k.prevExpense)}
@@ -114,6 +127,7 @@ export default async function DashboardPage({
         <StatCard
           label="Net Kâr"
           value={formatTRY(k.net)}
+          animateTo={k.net}
           icon={<Wallet className="h-5 w-5" />}
           accent="indigo"
           change={pctChange(k.net, k.prevNet)}
@@ -122,6 +136,7 @@ export default async function DashboardPage({
         <StatCard
           label="Ödenecek Vergi"
           value={formatTRY(k.taxDue)}
+          animateTo={k.taxDue}
           icon={<Landmark className="h-5 w-5" />}
           accent="amber"
           hint={`KDV ${formatTRY(d.tax.kdvCollected, { compact: true })} + gelir v.`}
@@ -239,7 +254,7 @@ export default async function DashboardPage({
         </section>
       </div>
 
-      {/* Bekleyen tahsilat + Nefes Köşesi */}
+      {/* Bekleyen tahsilat + Günün Sözü */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
       <section className="glass rounded-2xl p-5 lg:col-span-2">
         <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
@@ -270,7 +285,7 @@ export default async function DashboardPage({
         )}
       </section>
 
-      <BreathingCard />
+      <QuoteCard quote={quote} />
       </div>
     </>
   )

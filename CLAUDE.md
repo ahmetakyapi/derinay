@@ -82,16 +82,18 @@ app/
       page.tsx                     # Genel Bakış: KPI + haftalık takvim + grafikler + son işlemler
       agenda/page.tsx              # Ajanda: haftalık saat ızgarası (sürükle-bırak) + aylık görünüm
       clients/page.tsx             # Danışan listesi (kart grid + arama + statü/etiket filtresi)
+      waitlist/page.tsx            # Bekleme listesi (başvuru adayları → tek tıkla danışana çevir)
       backup/page.tsx              # Yedekleme: CSV/JSON dışa aktarım kartları
-      clients/[id]/page.tsx        # Danışan detayı: not/seans/ödeme/fatura/düzenle/sil
+      clients/[id]/page.tsx        # Danışan detayı: not/seans/ödeme/makbuz/düzenle/sil (+ doğum günü, no-show)
       finances/page.tsx            # Gelir & gider (scope=business)
       personal/page.tsx            # Kişisel harcamalar — gün bazlı takvim (scope=personal)
-      invoices/page.tsx            # Faturalar (+KDV, durum, PDF linki)
+      invoices/page.tsx            # Makbuzlar (Serbest Meslek Makbuzu — KDV + stopaj, durum, PDF)
       payments/page.tsx            # Ödemeler
-      taxes/page.tsx               # Vergi özeti (KDV + gelir vergisi tahmini)
-  invoices/[id]/print/page.tsx     # Yazdırılabilir fatura (PDF) — dashboard kabuğu DIŞINDA
+      taxes/page.tsx               # Vergi özeti (KDV + gelir vergisi tahmini + kesilen stopaj)
+      settings/page.tsx            # Ayarlar: işletme/makbuz kimliği + hatırlatma şablonu (settings tablosu)
+  invoices/[id]/print/page.tsx     # Yazdırılabilir Serbest Meslek Makbuzu (PDF) — dashboard kabuğu DIŞINDA
   reports/[year]/print/page.tsx    # Yıllık finans raporu (PDF) — muhasebeci formatı
-  actions/                         # clients, transactions, invoices, payments, notes (+sessions)
+  actions/                         # clients, transactions, invoices, payments, notes (+sessions), settings, waitlist
 lib/
   schema.ts        # Drizzle tablolar + tip çıkarımı
   constants.ts     # Statüler, kategoriler, etiketler, renkler, BUSINESS/USER, TAX oranları
@@ -122,7 +124,8 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 
 - **users** — auth için rezerve (şu an kullanılmıyor).
 - **clients** — danışan: name, email, phone, `status`(active/paused/completed), startDate,
-  sessionFee, colorTag, **avatarUrl** (istemcide ~192px'e küçültülmüş data-URI foto), tags[], notes.
+  **birthDate** (opsiyonel — doğum günü hatırlatması), sessionFee, colorTag,
+  **avatarUrl** (istemcide ~192px'e küçültülmüş data-URI foto), tags[], notes.
 - **sessions** — seans: clientId→cascade, date(timestamp), durationMin, `status`
   (scheduled/completed/cancelled/no_show), fee.
 - **clientNotes** — Seans Defteri: clientId→cascade, title, body, **kind**(session/observation/
@@ -130,10 +133,16 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 - **transactions** — gelir/gider: `type`(income/expense), **`scope`(business/personal)**,
   amount, category(serbest metin), description, date, **`recurring`** (sabit kalem — 'sabit
   giderleri kopyala' bunu önceki aydan kopyalar), clientId→set null.
-- **invoices** — fatura: number(unique), clientId→set null, issueDate, dueDate, subtotal,
-  kdvRate, kdvAmount, total, `status`(draft/sent/paid/overdue), note.
+- **invoices** — Serbest Meslek Makbuzu: number(unique), clientId→set null, issueDate, dueDate,
+  subtotal(=brüt ücret), kdvRate, kdvAmount, **stopajRate**, **stopajAmount** (gelir vergisi tevkifatı),
+  total(=brüt − stopaj + KDV = tahsil edilen), `status`(draft/sent/paid/overdue), note.
+  Hesap: `lib/finance.ts` → `calcMakbuz`. (UI'da "Makbuzlar" olarak geçer.)
 - **payments** — tahsilat: clientId→cascade, invoiceId→set null, amount, date,
   `method`(cash/card/transfer), note.
+- **waitlist** — bekleme listesi: name, phone, email, source, `priority`(normal/high), note.
+  Tek tıkla danışana çevrilir (`convertWaitlist` → clients'a taşır, kaydı siler).
+- **settings** — anahtar-değer: `reminder_template` (hatırlatma) ve `business` (işletme/makbuz
+  kimliği JSON). `getBusinessInfo()` varsayılan `BUSINESS` üstüne uygular; Ayarlar sayfasından düzenlenir.
 
 ### `scope` kuralı (ÖNEMLİ)
 `business` = kliniğin finansı (dashboard, finances, taxes burayı sayar).

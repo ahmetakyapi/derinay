@@ -150,6 +150,8 @@ export const TAX = {
   KDV_RATE: 20,
   /** Basitleştirilmiş gelir vergisi tahmin oranı (%) — net kâr üzerinden */
   INCOME_TAX_ESTIMATE_RATE: 20,
+  /** Serbest meslek makbuzu gelir vergisi stopaj (tevkifat) oranı (%) */
+  STOPAJ_RATE: 20,
 } as const
 
 // ─── Danışan etiket renkleri (avatar) ────────────────────────────────────────
@@ -175,9 +177,21 @@ export const CLIENT_COLOR_BG: Record<string, string> = {
 export const CURRENCY = 'TRY' as const
 export const LOCALE = 'tr-TR' as const
 
-// ─── İşletme bilgisi (fatura başlığı) ────────────────────────────────────────
-// Faturalarda görünen bilgiler — kendi bilgilerinle güncelle.
-export const BUSINESS = {
+// ─── İşletme bilgisi (fatura/makbuz başlığı) ─────────────────────────────────
+// Varsayılanlar — Ayarlar sayfasından düzenlenince settings tablosundan okunur.
+export type BusinessInfo = {
+  name: string
+  owner: string
+  title: string
+  taxOffice: string
+  taxId: string
+  address: string
+  phone: string
+  email: string
+  iban: string
+}
+
+export const BUSINESS: BusinessInfo = {
   name: 'Derinay',
   owner: 'Simay Ahi',
   title: 'Klinik Psikolog',
@@ -186,7 +200,8 @@ export const BUSINESS = {
   address: '[Adres satırı, İlçe / İl]',
   phone: '[05xx xxx xx xx]',
   email: '[ornek@mail.com]',
-} as const
+  iban: '',
+}
 
 // ─── Hatırlatma mesajı şablonu ───────────────────────────────────────────────
 // Yer tutucular: {ad} = danışanın adı, {tarih} = seans tarihi+saati, {terapist} = terapist adı

@@ -69,20 +69,37 @@ export async function createSession(input: {
   fee?: number
   status?: SessionStatus
   note?: string
+  /** Tekrarlayan seri: her kaç haftada bir (1=haftalık, 2=iki haftada) ve kaç adet */
+  repeat?: { everyWeeks: number; count: number }
 }) {
   if (!input.clientId) return { ok: false, error: 'Danışan bulunamadı' }
   if (!input.date) return { ok: false, error: 'Tarih zorunlu' }
 
-  await db.insert(sessions).values({
-    clientId: input.clientId,
-    date: new Date(input.date),
-    durationMin: input.durationMin ?? 50,
-    fee: String(input.fee ?? 0),
-    status: input.status ?? 'scheduled',
-    note: input.note || null,
+  const base = new Date(input.date)
+  if (Number.isNaN(base.getTime())) return { ok: false, error: 'Geçersiz tarih' }
+
+  // Tekrar yoksa tek seans; varsa haftalık/iki-haftalık seri (en çok 52)
+  const everyWeeks = input.repeat?.everyWeeks ?? 0
+  const count = everyWeeks > 0 ? Math.min(Math.max(input.repeat?.count ?? 1, 1), 52) : 1
+
+  const rows = Array.from({ length: count }, (_, i) => {
+    const d = new Date(base)
+    d.setDate(base.getDate() + i * 7 * everyWeeks)
+    return {
+      clientId: input.clientId,
+      date: d,
+      durationMin: input.durationMin ?? 50,
+      fee: String(input.fee ?? 0),
+      status: input.status ?? ('scheduled' as SessionStatus),
+      note: input.note || null,
+    }
   })
+
+  await db.insert(sessions).values(rows)
   revalidatePath(`/dashboard/clients/${input.clientId}`)
-  return { ok: true }
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard')
+  return { ok: true, count: rows.length }
 }
 
 export async function updateSessionStatus(id: string, clientId: string, status: SessionStatus) {

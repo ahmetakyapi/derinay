@@ -189,6 +189,20 @@ export default async function AnalyticsPage({
               </span>
             </span>
           </div>
+          {/* Gelir kaybı — iptal + gelmedi */}
+          {a.sessionStats.lostRevenue > 0 && (
+            <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-3 py-2.5">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400">
+                <TrendingDown className="h-3.5 w-3.5" />
+              </span>
+              <p className="min-w-0 flex-1 text-[11px] leading-tight text-slate-600 dark:text-slate-300">
+                İptal + gelmeyen seanslarda kaçan gelir
+              </p>
+              <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                {formatTRY(a.sessionStats.lostRevenue, { compact: true })}
+              </span>
+            </div>
+          )}
         </section>
       </div>
 

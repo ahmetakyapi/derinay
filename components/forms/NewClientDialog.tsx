@@ -34,6 +34,7 @@ export function NewClientDialog() {
         status: fd.get('status') as ClientStatus,
         sessionFee: Number(fd.get('sessionFee') || 0),
         startDate: String(fd.get('startDate') || ''),
+        birthDate: String(fd.get('birthDate') || ''),
         colorTag: color,
         avatarUrl: avatar,
         tags,
@@ -83,9 +84,14 @@ export function NewClientDialog() {
             </Field>
           </div>
 
-          <Field label="Başlangıç tarihi">
-            <Input name="startDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
-          </Field>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Başlangıç tarihi">
+              <Input name="startDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
+            </Field>
+            <Field label="Doğum günü (opsiyonel)">
+              <Input name="birthDate" type="date" />
+            </Field>
+          </div>
 
           <TagInput value={tags} onChange={setTags} />
 

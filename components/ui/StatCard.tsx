@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { fadeUp } from '@/lib/variants'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 
 type Accent = 'emerald' | 'rose' | 'indigo' | 'amber' | 'sky'
 
@@ -37,6 +38,8 @@ export function StatCard({
   accent = 'indigo',
   change,
   hint,
+  animateTo,
+  animateKind = 'currency',
 }: {
   label: string
   value: string
@@ -44,6 +47,9 @@ export function StatCard({
   accent?: Accent
   change?: number | null
   hint?: string
+  /** Verilirse büyük rakam 0'dan bu değere sayılır (value yine fallback) */
+  animateTo?: number
+  animateKind?: 'currency' | 'count'
 }) {
   const a = ACCENTS[accent]
   const positive = (change ?? 0) >= 0
@@ -65,7 +71,7 @@ export function StatCard({
             {label}
           </p>
           <p className="mt-2 font-display text-[1.7rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white">
-            {value}
+            {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
           </p>
         </div>
         <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl', a.icon)}>

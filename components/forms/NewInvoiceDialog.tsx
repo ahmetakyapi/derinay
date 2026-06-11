@@ -6,14 +6,14 @@ import { FilePlus, Download, Check } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createInvoice } from '@/app/actions/invoices'
-import { calcKdv } from '@/lib/finance'
+import { calcMakbuz } from '@/lib/finance'
 import { formatTRY } from '@/lib/format'
 import { INVOICE_STATUSES, INVOICE_STATUS_LABEL, TAX, type InvoiceStatus } from '@/lib/constants'
 
 export function NewInvoiceDialog({
   clients,
   fixedClientId,
-  label = 'Fatura Kes',
+  label = 'Makbuz Kes',
 }: {
   clients: { id: string; name: string }[]
   fixedClientId?: string
@@ -23,11 +23,12 @@ export function NewInvoiceDialog({
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [subtotal, setSubtotal] = useState(0)
   const [kdvRate, setKdvRate] = useState<number>(TAX.KDV_RATE)
+  const [stopajRate, setStopajRate] = useState<number>(TAX.STOPAJ_RATE)
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
   const router = useRouter()
 
-  const { kdvAmount, total } = calcKdv(subtotal || 0, kdvRate)
+  const { kdvAmount, stopajAmount, netUcret, total } = calcMakbuz(subtotal || 0, kdvRate, stopajRate)
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,6 +39,7 @@ export function NewInvoiceDialog({
         clientId: fixedClientId ?? ((fd.get('clientId') as string) || null),
         subtotal: Number(fd.get('subtotal')),
         kdvRate,
+        stopajRate,
         issueDate: String(fd.get('issueDate') || ''),
         dueDate: String(fd.get('dueDate') || ''),
         status: fd.get('status') as InvoiceStatus,
@@ -60,7 +62,7 @@ export function NewInvoiceDialog({
         <FilePlus className="h-4 w-4" /> {label}
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Fatura" description="KDV otomatik hesaplanır">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Makbuz" description="Serbest meslek makbuzu — KDV ve stopaj otomatik hesaplanır">
         <form onSubmit={onSubmit} className="space-y-4">
           {!fixedClientId && (
             <Field label="Danışan">
@@ -73,22 +75,30 @@ export function NewInvoiceDialog({
             </Field>
           )}
 
+          <Field label="Brüt ücret (₺)">
+            <Input
+              name="subtotal"
+              type="number"
+              step="0.01"
+              min="0"
+              required
+              placeholder="0,00"
+              onChange={(e) => setSubtotal(Number(e.target.value))}
+            />
+          </Field>
+
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Net tutar (₺)">
-              <Input
-                name="subtotal"
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                placeholder="0,00"
-                onChange={(e) => setSubtotal(Number(e.target.value))}
-              />
-            </Field>
             <Field label="KDV oranı (%)">
               <Select value={kdvRate} onChange={(e) => setKdvRate(Number(e.target.value))}>
                 {[0, 1, 10, 20].map((r) => (
                   <option key={r} value={r}>%{r}</option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="Stopaj / tevkifat (%)">
+              <Select value={stopajRate} onChange={(e) => setStopajRate(Number(e.target.value))}>
+                {[0, 20].map((r) => (
+                  <option key={r} value={r}>{r === 0 ? 'Yok' : `%${r}`}</option>
                 ))}
               </Select>
             </Field>
@@ -111,16 +121,24 @@ export function NewInvoiceDialog({
             </Select>
           </Field>
 
-          {/* Hesap özeti */}
+          {/* Makbuz hesap özeti */}
           <div className="rounded-xl border border-slate-500/15 bg-slate-500/5 p-3 text-sm">
             <div className="flex justify-between py-0.5 text-slate-500 dark:text-slate-400">
-              <span>Net tutar</span><span>{formatTRY(subtotal || 0)}</span>
+              <span>Brüt ücret</span><span className="font-mono tabular-nums">{formatTRY(subtotal || 0)}</span>
+            </div>
+            {stopajRate > 0 && (
+              <div className="flex justify-between py-0.5 text-rose-600 dark:text-rose-400">
+                <span>Gelir vergisi stopajı (%{stopajRate})</span><span className="font-mono tabular-nums">−{formatTRY(stopajAmount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between py-0.5 text-slate-500 dark:text-slate-400">
+              <span>Net ücret</span><span className="font-mono tabular-nums">{formatTRY(netUcret)}</span>
             </div>
             <div className="flex justify-between py-0.5 text-slate-500 dark:text-slate-400">
-              <span>KDV (%{kdvRate})</span><span>{formatTRY(kdvAmount)}</span>
+              <span>Hesaplanan KDV (%{kdvRate})</span><span className="font-mono tabular-nums">+{formatTRY(kdvAmount)}</span>
             </div>
             <div className="mt-1 flex justify-between border-t border-slate-500/15 pt-2 font-bold text-slate-900 dark:text-white">
-              <span>Toplam</span><span>{formatTRY(total)}</span>
+              <span>Tahsil edilecek</span><span className="font-mono tabular-nums">{formatTRY(total)}</span>
             </div>
           </div>
 
@@ -131,7 +149,7 @@ export function NewInvoiceDialog({
               İptal
             </button>
             <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Faturayı oluştur'}
+              {pending ? 'Kaydediliyor…' : 'Makbuzu oluştur'}
             </button>
           </div>
         </form>
@@ -141,7 +159,7 @@ export function NewInvoiceDialog({
       <Modal
         open={previewId !== null}
         onClose={() => setPreviewId(null)}
-        title="Fatura Hazır"
+        title="Makbuz Hazır"
         description="Önizle — istersen PDF olarak kaydet"
       >
         {previewId && (

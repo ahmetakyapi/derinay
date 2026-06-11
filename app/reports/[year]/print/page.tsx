@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { PrintButton } from '@/components/invoice/PrintButton'
-import { getYearAnalytics } from '@/lib/queries'
-import { BUSINESS, PAYMENT_METHOD_LABEL } from '@/lib/constants'
+import { getYearAnalytics, getBusinessInfo } from '@/lib/queries'
+import { PAYMENT_METHOD_LABEL } from '@/lib/constants'
 import { formatTRY } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -20,7 +20,7 @@ export default async function ReportPrintPage({
 }) {
   const year = Number(params.year)
   if (!Number.isInteger(year) || year < 2000 || year > 2100) notFound()
-  const a = await getYearAnalytics(year)
+  const [a, BUSINESS] = await Promise.all([getYearAnalytics(year), getBusinessInfo()])
 
   return (
     <div className="min-h-screen bg-slate-100 px-4 py-8 print:bg-white print:p-0">

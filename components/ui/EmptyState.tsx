@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
+import { BloomArt } from '@/components/art/BloomArt'
 
 export function EmptyState({
   icon: Icon,
@@ -12,15 +13,17 @@ export function EmptyState({
   action?: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-500/20 px-6 py-14 text-center">
-      <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-500/10 text-slate-400">
+    <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-slate-500/20 px-6 py-14 text-center">
+      {/* Soluk orkide dokunuşu */}
+      <BloomArt className="pointer-events-none absolute -bottom-6 -right-4 h-40 w-28 opacity-30" delay={0.3} />
+      <span className="relative mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-500/10 text-slate-400">
         <Icon className="h-6 w-6" />
       </span>
-      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</h3>
+      <h3 className="relative text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</h3>
       {description && (
-        <p className="mt-1 max-w-xs text-sm text-slate-500 dark:text-slate-400">{description}</p>
+        <p className="relative mt-1 max-w-xs text-sm text-slate-500 dark:text-slate-400">{description}</p>
       )}
-      {action && <div className="mt-5">{action}</div>}
+      {action && <div className="relative mt-5">{action}</div>}
     </div>
   )
 }

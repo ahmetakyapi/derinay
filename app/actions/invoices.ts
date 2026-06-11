@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { count, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/schema'
-import { calcKdv } from '@/lib/finance'
+import { calcMakbuz } from '@/lib/finance'
 import { TAX, type InvoiceStatus } from '@/lib/constants'
 
 async function nextInvoiceNumber() {
@@ -17,6 +17,7 @@ export async function createInvoice(input: {
   clientId?: string | null
   subtotal: number
   kdvRate?: number
+  stopajRate?: number
   issueDate?: string
   dueDate?: string
   status?: InvoiceStatus
@@ -25,7 +26,8 @@ export async function createInvoice(input: {
   if (!input.subtotal || input.subtotal <= 0) return { ok: false, error: 'Tutar geçersiz' }
 
   const rate = input.kdvRate ?? TAX.KDV_RATE
-  const { kdvAmount, total } = calcKdv(input.subtotal, rate)
+  const stopajRate = input.stopajRate ?? 0
+  const { kdvAmount, stopajAmount, total } = calcMakbuz(input.subtotal, rate, stopajRate)
   const number = await nextInvoiceNumber()
 
   const [created] = await db
@@ -36,6 +38,8 @@ export async function createInvoice(input: {
       subtotal: String(input.subtotal),
       kdvRate: rate,
       kdvAmount: String(kdvAmount),
+      stopajRate,
+      stopajAmount: String(stopajAmount),
       total: String(total),
       issueDate: input.issueDate || undefined,
       dueDate: input.dueDate || null,

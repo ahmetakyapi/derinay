@@ -119,18 +119,18 @@ export default async function PersonalPage({
           <PersonalCalendar year={year} month={month} byDay={data.byDay} todayKey={todayKey} />
         </div>
 
-        <div className="space-y-5">
-          <section className="glass rounded-2xl p-5">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-              Kategori Dağılımı
-            </h2>
-            {data.categoryBreakdown.length ? (
-              <CategoryDonut data={data.categoryBreakdown} />
-            ) : (
+        <section className="glass flex h-full flex-col rounded-2xl p-5">
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            Kategori Dağılımı
+          </h2>
+          {data.categoryBreakdown.length ? (
+            <CategoryDonut data={data.categoryBreakdown} />
+          ) : (
+            <div className="flex flex-1 items-center">
               <EmptyState icon={Wallet} title="Bu ay kişisel harcama yok" description="Takvimden bir güne dokunarak başla." />
-            )}
-          </section>
-        </div>
+            </div>
+          )}
+        </section>
       </div>
 
       {/* Aylık liste — gün gün, en altta ay toplamı */}

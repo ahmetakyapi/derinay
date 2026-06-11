@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { PrintButton } from '@/components/invoice/PrintButton'
-import { getInvoiceDetail } from '@/lib/queries'
-import { BUSINESS, INVOICE_STATUS_LABEL } from '@/lib/constants'
+import { BloomMark } from '@/components/brand/BloomMark'
+import { getInvoiceDetail, getBusinessInfo } from '@/lib/queries'
+import { INVOICE_STATUS_LABEL } from '@/lib/constants'
 import { formatTRY, formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -15,7 +16,7 @@ export default async function InvoicePrintPage({
   params: { id: string }
   searchParams: { auto?: string }
 }) {
-  const inv = await getInvoiceDetail(params.id)
+  const [inv, BUSINESS] = await Promise.all([getInvoiceDetail(params.id), getBusinessInfo()])
   if (!inv) notFound()
 
   return (
@@ -39,7 +40,7 @@ export default async function InvoicePrintPage({
             <div className="flex items-center gap-2.5">
               {/* Mürekkep damgası — uygulama markasıyla aynı kimlik */}
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
-                <span className="font-display text-lg font-semibold italic text-amber-50">D</span>
+                <BloomMark className="h-[22px] w-[22px] text-amber-50" />
               </div>
               <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>
@@ -52,7 +53,9 @@ export default async function InvoicePrintPage({
           </div>
 
           <div className="text-right">
-            <h1 className="text-xl font-extrabold uppercase tracking-wide text-slate-400">Fatura</h1>
+            <h1 className="text-base font-extrabold uppercase leading-tight tracking-wide text-slate-400">
+              Serbest Meslek<br />Makbuzu
+            </h1>
             <p className="mt-1 font-mono text-sm font-semibold">{inv.number}</p>
             <span className="mt-3 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
               {INVOICE_STATUS_LABEL[inv.status]}
@@ -101,23 +104,40 @@ export default async function InvoicePrintPage({
           </tbody>
         </table>
 
-        {/* Toplamlar */}
+        {/* Makbuz dökümü — brüt, stopaj, net, KDV, tahsil edilen */}
         <div className="mt-6 flex justify-end">
           <div className="w-full max-w-xs space-y-2 text-sm">
             <div className="flex justify-between text-slate-500">
-              <span>Ara toplam</span>
+              <span>Brüt ücret</span>
               <span>{formatTRY(inv.subtotal)}</span>
             </div>
+            {inv.stopajAmount > 0 && (
+              <div className="flex justify-between text-slate-500">
+                <span>Gelir vergisi stopajı (%{inv.stopajRate})</span>
+                <span>−{formatTRY(inv.stopajAmount)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-slate-500">
-              <span>KDV (%{inv.kdvRate})</span>
-              <span>{formatTRY(inv.kdvAmount)}</span>
+              <span>Net ücret</span>
+              <span>{formatTRY(inv.subtotal - inv.stopajAmount)}</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>Hesaplanan KDV (%{inv.kdvRate})</span>
+              <span>+{formatTRY(inv.kdvAmount)}</span>
             </div>
             <div className="flex justify-between border-t-2 border-slate-200 pt-3 text-base font-extrabold">
-              <span>Genel toplam</span>
+              <span>Tahsil edilen</span>
               <span>{formatTRY(inv.total)}</span>
             </div>
           </div>
         </div>
+
+        {/* IBAN (varsa) */}
+        {BUSINESS.iban && (
+          <div className="mt-8 rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-500">
+            <span className="font-semibold text-slate-600">Ödeme / IBAN:</span> {BUSINESS.iban}
+          </div>
+        )}
 
         {/* Alt bilgi */}
         <div className="mt-14 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">

@@ -5,6 +5,7 @@ import {
   Mail,
   Phone,
   CalendarClock,
+  Cake,
   StickyNote,
   Receipt,
   CreditCard,
@@ -59,6 +60,12 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
                 <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5" /> {durationSince(client.startDate)} ({formatDate(client.startDate)})</span>
+                {client.birthDate && (
+                  <span className="inline-flex items-center gap-1">
+                    <Cake className="h-3.5 w-3.5" />
+                    {new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' }).format(new Date(client.birthDate))}
+                  </span>
+                )}
                 {client.email && <span className="inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {client.email}</span>}
                 {client.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {client.phone}</span>}
               </div>
@@ -89,6 +96,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 status: client.status,
                 sessionFee: client.sessionFee,
                 startDate: String(client.startDate),
+                birthDate: client.birthDate ? String(client.birthDate) : null,
                 colorTag: client.colorTag,
                 avatarUrl: client.avatarUrl,
                 tags: client.tags,
@@ -109,7 +117,16 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         <Stat label="Toplam Tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" />
         <Stat label="Faturalanan" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" />
         <Stat label="Bakiye" value={formatTRY(stats.outstanding)} tone={stats.outstanding > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} />
-        <Stat label="Tamamlanan Seans" value={String(stats.completedSessions)} tone="text-slate-900 dark:text-white" />
+        <Stat
+          label="Tamamlanan Seans"
+          value={String(stats.completedSessions)}
+          tone="text-slate-900 dark:text-white"
+          sub={
+            stats.noShowSessions + stats.cancelledSessions > 0
+              ? `${stats.noShowSessions} gelmedi · ${stats.cancelledSessions} iptal`
+              : undefined
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -245,11 +262,12 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   )
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
+function Stat({ label, value, tone, sub }: { label: string; value: string; tone: string; sub?: string }) {
   return (
     <div className="glass rounded-2xl p-4">
       <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
       <p className={`mt-1 font-display text-xl font-semibold tracking-tight ${tone}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-[11px] font-medium text-rose-500/90 dark:text-rose-400/90">{sub}</p>}
     </div>
   )
 }

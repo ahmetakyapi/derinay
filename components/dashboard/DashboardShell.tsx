@@ -11,11 +11,14 @@ import {
   CalendarRange,
   DatabaseBackup,
   Users,
+  ClipboardList,
   ArrowLeftRight,
   CalendarDays,
   FileText,
   CreditCard,
   Landmark,
+  Settings,
+  Search,
   Sun,
   Moon,
   Menu,
@@ -24,7 +27,9 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { USER } from '@/lib/constants'
+import { BloomMark } from '@/components/brand/BloomMark'
 import { PageTransition } from '@/components/dashboard/PageTransition'
+import { CommandPalette } from '@/components/dashboard/CommandPalette'
 import { logoutAction } from '@/app/actions/auth'
 
 // Gruplu navigasyon — galeri katalogu gibi bölümlenmiş
@@ -35,6 +40,7 @@ const NAV_GROUPS = [
       { label: 'Genel Bakış', href: '/dashboard', icon: LayoutDashboard },
       { label: 'Ajanda', href: '/dashboard/agenda', icon: CalendarRange },
       { label: 'Danışanlar', href: '/dashboard/clients', icon: Users },
+      { label: 'Bekleme Listesi', href: '/dashboard/waitlist', icon: ClipboardList },
     ],
   },
   {
@@ -42,7 +48,7 @@ const NAV_GROUPS = [
     items: [
       { label: 'Gelir & Gider', href: '/dashboard/finances', icon: ArrowLeftRight },
       { label: 'Analiz', href: '/dashboard/analytics', icon: LineChart },
-      { label: 'Faturalar', href: '/dashboard/invoices', icon: FileText },
+      { label: 'Makbuzlar', href: '/dashboard/invoices', icon: FileText },
       { label: 'Ödemeler', href: '/dashboard/payments', icon: CreditCard },
       { label: 'Vergiler', href: '/dashboard/taxes', icon: Landmark },
     ],
@@ -52,6 +58,7 @@ const NAV_GROUPS = [
     items: [
       { label: 'Kişisel', href: '/dashboard/personal', icon: CalendarDays },
       { label: 'Yedekleme', href: '/dashboard/backup', icon: DatabaseBackup },
+      { label: 'Ayarlar', href: '/dashboard/settings', icon: Settings },
     ],
   },
 ]
@@ -59,9 +66,9 @@ const NAV_GROUPS = [
 function Brand() {
   return (
     <Link href="/dashboard" className="group flex items-center gap-3">
-      {/* Mürekkep damgası — serif monogram + altın nokta */}
+      {/* Mürekkep damgası — orkide işareti + altın nokta */}
       <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-300 group-hover:rotate-3 dark:bg-slate-50">
-        <span className="font-display text-lg font-semibold italic text-amber-50 dark:text-slate-900">D</span>
+        <BloomMark className="h-[22px] w-[22px] text-amber-50 transition-transform duration-500 group-hover:rotate-[72deg] dark:text-slate-900" />
         <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
       </div>
       <div className="leading-none">
@@ -155,9 +162,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       {/* Desktop sidebar */}
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 p-5 lg:flex">
-        <div className="mb-8">
+        <div className="mb-6">
           <Brand />
         </div>
+        {/* Komut paleti tetikleyici */}
+        <button
+          onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
+          className="mb-5 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-400 transition-colors hover:border-indigo-500/30 hover:text-slate-600 dark:hover:text-slate-300"
+        >
+          <Search className="h-4 w-4" />
+          <span className="flex-1 text-left">Ara…</span>
+          <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
+        </button>
         <NavList />
         <div className="mt-auto">
           {/* Galeri ayracı */}
@@ -197,6 +213,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between px-4 lg:hidden">
         <Brand />
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
+            aria-label="Ara"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400"
+          >
+            <Search className="h-5 w-5" />
+          </button>
           <ThemeToggle />
           <button
             onClick={() => setOpen(true)}
@@ -241,6 +264,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <CommandPalette />
 
       {/* Content */}
       <main className="lg:pl-64">

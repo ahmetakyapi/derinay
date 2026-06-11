@@ -12,11 +12,23 @@ import { cn } from '@/lib/utils'
 export function NewTransactionDialog({
   clients,
   defaultType = 'income',
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   clients: { id: string; name: string }[]
   defaultType?: TxType
+  /** Kontrollü mod — dışarıdan aç/kapat (hızlı ekle menüsü) */
+  open?: boolean
+  onOpenChange?: (v: boolean) => void
+  hideTrigger?: boolean
 }) {
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = (v: boolean) => {
+    onOpenChange?.(v)
+    setInternalOpen(v)
+  }
   const [type, setType] = useState<TxType>(defaultType)
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
@@ -44,12 +56,14 @@ export function NewTransactionDialog({
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500"
-      >
-        <Plus className="h-4 w-4" /> Yeni İşlem
-      </button>
+      {!hideTrigger && (
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500"
+        >
+          <Plus className="h-4 w-4" /> Yeni İşlem
+        </button>
+      )}
 
       <Modal open={open} onClose={() => setOpen(false)} title="Yeni İşlem" description="Gelir veya gider kaydı ekle">
         <form onSubmit={onSubmit} className="space-y-4">

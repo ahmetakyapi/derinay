@@ -15,6 +15,8 @@ import {
 import { useSpotlight } from '@/hooks/useSpotlight'
 import { fadeUp, staggerContainer, EASE } from '@/lib/variants'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { BloomMark } from '@/components/brand/BloomMark'
+import { BloomArt } from '@/components/art/BloomArt'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -34,10 +36,9 @@ export default function Home() {
           <div className="absolute -left-24 top-32 h-72 w-72 animate-float rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none" />
           <div className="absolute right-[-80px] top-64 h-80 w-80 animate-float-slow rounded-full bg-amber-500/10 blur-3xl motion-reduce:animate-none" />
           <div className="absolute bottom-40 left-1/3 h-64 w-64 rounded-full bg-rose-500/8 blur-3xl" />
-          {/* Dev serif filigran */}
-          <span className="absolute -right-10 top-[38%] hidden -translate-y-1/2 select-none font-display text-[26rem] font-semibold italic leading-none text-slate-900/[0.035] dark:text-white/[0.04] lg:block">
-            D
-          </span>
+          {/* Dev orkide filigranı */}
+          <BloomMark className="absolute -right-16 top-[38%] hidden h-[34rem] w-[34rem] -translate-y-1/2 -rotate-12 text-slate-900/[0.035] dark:text-white/[0.04] lg:block" />
+          <BloomArt className="absolute -left-8 bottom-24 hidden h-72 w-56 opacity-70 lg:block" delay={0.6} />
         </div>
 
         {/* Hero */}

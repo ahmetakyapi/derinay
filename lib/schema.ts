@@ -29,6 +29,7 @@ export const clients = pgTable('clients', {
   phone:      text('phone'),
   status:     text('status').$type<ClientStatus>().notNull().default('active'),
   startDate:  date('start_date').notNull().defaultNow(),
+  birthDate:  date('birth_date'), // doğum günü hatırlatması (opsiyonel)
   sessionFee: numeric('session_fee', { precision: 12, scale: 2 }).notNull().default('0'),
   colorTag:   text('color_tag').notNull().default('indigo'), // avatar/etiket rengi
   avatarUrl:  text('avatar_url'), // küçük data-URI fotoğraf (istemcide ~128px'e küçültülür)
@@ -83,10 +84,12 @@ export const invoices = pgTable('invoices', {
   clientId:   uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
   issueDate:  date('issue_date').notNull().defaultNow(),
   dueDate:    date('due_date'),
-  subtotal:   numeric('subtotal', { precision: 12, scale: 2 }).notNull(),
-  kdvRate:    integer('kdv_rate').notNull().default(20), // %
-  kdvAmount:  numeric('kdv_amount', { precision: 12, scale: 2 }).notNull(),
-  total:      numeric('total', { precision: 12, scale: 2 }).notNull(),
+  subtotal:    numeric('subtotal', { precision: 12, scale: 2 }).notNull(), // brüt ücret / matrah
+  kdvRate:     integer('kdv_rate').notNull().default(20), // %
+  kdvAmount:   numeric('kdv_amount', { precision: 12, scale: 2 }).notNull(),
+  stopajRate:  integer('stopaj_rate').notNull().default(0), // gelir vergisi tevkifatı % (SMM)
+  stopajAmount: numeric('stopaj_amount', { precision: 12, scale: 2 }).notNull().default('0'),
+  total:       numeric('total', { precision: 12, scale: 2 }).notNull(), // tahsil edilen = brüt − stopaj + KDV
   status:     text('status').$type<InvoiceStatus>().notNull().default('draft'),
   note:       text('note'),
   createdAt:  timestamp('created_at').defaultNow().notNull(),
@@ -100,6 +103,18 @@ export const payments = pgTable('payments', {
   amount:    numeric('amount', { precision: 12, scale: 2 }).notNull(),
   date:      date('date').notNull().defaultNow(),
   method:    text('method').$type<PaymentMethod>().notNull().default('transfer'),
+  note:      text('note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// ─── Waitlist (bekleme listesi — yeni danışan başvuruları) ───────────────────
+export const waitlist = pgTable('waitlist', {
+  id:        uuid('id').primaryKey().defaultRandom(),
+  name:      text('name').notNull(),
+  phone:     text('phone'),
+  email:     text('email'),
+  source:    text('source'),                                    // başvuru kaynağı (Instagram, tavsiye…)
+  priority:  text('priority').notNull().default('normal'),      // 'normal' | 'high'
   note:      text('note'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -126,3 +141,5 @@ export type NewInvoice     = typeof invoices.$inferInsert
 export type Payment        = typeof payments.$inferSelect
 export type Setting        = typeof settings.$inferSelect
 export type NewPayment     = typeof payments.$inferInsert
+export type Waitlist       = typeof waitlist.$inferSelect
+export type NewWaitlist    = typeof waitlist.$inferInsert

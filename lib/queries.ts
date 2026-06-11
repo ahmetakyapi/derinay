@@ -1,10 +1,10 @@
 import 'server-only'
 import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
-import { clients, transactions, invoices, payments, sessions, clientNotes, settings } from './schema'
+import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
-import { REMINDER_TEMPLATE_DEFAULT, type ClientStatus, type TxType, type TxScope } from './constants'
+import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -175,6 +175,8 @@ export async function getClientDetail(id: string) {
   const totalPaid = pays.reduce((s, p) => s + num(p.amount), 0)
   const totalInvoiced = invs.reduce((s, i) => s + num(i.total), 0)
   const completedSessions = sess.filter((s) => s.status === 'completed').length
+  const noShowSessions = sess.filter((s) => s.status === 'no_show').length
+  const cancelledSessions = sess.filter((s) => s.status === 'cancelled').length
 
   return {
     client: { ...client, sessionFee: num(client.sessionFee) },
@@ -183,8 +185,27 @@ export async function getClientDetail(id: string) {
     payments: pays.map((p) => ({ ...p, amount: num(p.amount) })),
     invoices: invs.map((i) => ({ ...i, total: num(i.total), subtotal: num(i.subtotal), kdvAmount: num(i.kdvAmount) })),
     transactions: txs.map((t) => ({ ...t, amount: num(t.amount) })),
-    stats: { totalPaid, totalInvoiced, completedSessions, outstanding: totalInvoiced - totalPaid },
+    stats: { totalPaid, totalInvoiced, completedSessions, noShowSessions, cancelledSessions, outstanding: totalInvoiced - totalPaid },
   }
+}
+
+// ─── Devam & no-show istatistiği (son N ay) ──────────────────────────────────
+export async function getAttendanceStats(monthsBack = 12) {
+  const now = new Date()
+  const since = new Date(now.getFullYear(), now.getMonth() - (monthsBack - 1), 1)
+  const rows = await db.select({ status: sessions.status, fee: sessions.fee, date: sessions.date }).from(sessions)
+
+  let completed = 0, cancelled = 0, noShow = 0, lostRevenue = 0
+  for (const r of rows) {
+    if (new Date(r.date) < since) continue
+    if (r.status === 'completed') completed++
+    else if (r.status === 'cancelled') { cancelled++; lostRevenue += num(r.fee) }
+    else if (r.status === 'no_show') { noShow++; lostRevenue += num(r.fee) }
+  }
+  const past = completed + cancelled + noShow
+  const attendanceRate = past > 0 ? Math.round((completed / past) * 100) : 100
+  const noShowRate = past > 0 ? Math.round((noShow / past) * 100) : 0
+  return { completed, cancelled, noShow, lostRevenue, attendanceRate, noShowRate, monthsBack }
 }
 
 // ─── Faturalar ───────────────────────────────────────────────────────────────
@@ -198,6 +219,7 @@ export async function listInvoices() {
       subtotal: invoices.subtotal,
       kdvRate: invoices.kdvRate,
       kdvAmount: invoices.kdvAmount,
+      stopajAmount: invoices.stopajAmount,
       total: invoices.total,
       status: invoices.status,
       clientId: invoices.clientId,
@@ -212,6 +234,7 @@ export async function listInvoices() {
     ...i,
     subtotal: num(i.subtotal),
     kdvAmount: num(i.kdvAmount),
+    stopajAmount: num(i.stopajAmount),
     total: num(i.total),
   }))
 }
@@ -227,6 +250,8 @@ export async function getInvoiceDetail(id: string) {
       subtotal: invoices.subtotal,
       kdvRate: invoices.kdvRate,
       kdvAmount: invoices.kdvAmount,
+      stopajRate: invoices.stopajRate,
+      stopajAmount: invoices.stopajAmount,
       total: invoices.total,
       status: invoices.status,
       note: invoices.note,
@@ -243,6 +268,7 @@ export async function getInvoiceDetail(id: string) {
     ...row,
     subtotal: num(row.subtotal),
     kdvAmount: num(row.kdvAmount),
+    stopajAmount: num(row.stopajAmount),
     total: num(row.total),
   }
 }
@@ -275,6 +301,30 @@ export async function clientOptions() {
     .from(clients)
     .orderBy(clients.name)
   return rows.map((r) => ({ ...r, sessionFee: num(r.sessionFee) }))
+}
+
+// ─── Yaklaşan doğum günleri (önümüzdeki N gün) ──────────────────────────────
+export async function getUpcomingBirthdays(daysAhead = 14) {
+  const rows = await db
+    .select({ id: clients.id, name: clients.name, birthDate: clients.birthDate, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
+    .from(clients)
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const upcoming = rows
+    .filter((r) => r.birthDate)
+    .map((r) => {
+      const [, mm, dd] = String(r.birthDate).split('-').map(Number)
+      let next = new Date(today.getFullYear(), mm - 1, dd)
+      if (next < today) next = new Date(today.getFullYear() + 1, mm - 1, dd)
+      const daysUntil = Math.round((next.getTime() - today.getTime()) / 86_400_000)
+      return { id: r.id, name: r.name, colorTag: r.colorTag, avatarUrl: r.avatarUrl, daysUntil, month: mm, day: dd }
+    })
+    .filter((r) => r.daysUntil <= daysAhead)
+    .sort((a, b) => a.daysUntil - b.daysUntil)
+
+  return upcoming
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
@@ -424,7 +474,7 @@ export async function getTaxOverview(monthsBack = 6) {
   const now = new Date()
   const months: {
     key: string; label: string; income: number; expense: number
-    kdvCollected: number; incomeTax: number; totalDue: number
+    kdvCollected: number; stopajWithheld: number; incomeTax: number; totalDue: number
   }[] = []
 
   for (let i = monthsBack - 1; i >= 0; i--) {
@@ -432,9 +482,11 @@ export async function getTaxOverview(monthsBack = 6) {
     const k = monthKey(d)
     const income = allTx.filter((t) => t.type === 'income' && monthKey(t.date) === k).reduce((s, t) => s + num(t.amount), 0)
     const expense = allTx.filter((t) => t.type === 'expense' && monthKey(t.date) === k).reduce((s, t) => s + num(t.amount), 0)
-    const kdvCollected = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k).reduce((s, iv) => s + num(iv.kdvAmount), 0)
+    const monthInv = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k)
+    const kdvCollected = monthInv.reduce((s, iv) => s + num(iv.kdvAmount), 0)
+    const stopajWithheld = monthInv.reduce((s, iv) => s + num(iv.stopajAmount), 0)
     const t = taxSummary({ income, expense, kdvCollected })
-    months.push({ key: k, label: monthKeyToLabel(k), income, expense, ...t })
+    months.push({ key: k, label: monthKeyToLabel(k), income, expense, stopajWithheld, ...t })
   }
 
   const current = months[months.length - 1]
@@ -530,6 +582,10 @@ export async function getYearAnalytics(year: number) {
       const done = sess.filter((s) => s.status === 'completed')
       return done.length ? done.reduce((sum, s) => sum + num(s.fee), 0) / done.length : 0
     })(),
+    // Gelmeyen + iptal seansların kaçırılan ücreti (gelir kaybı)
+    lostRevenue: sess
+      .filter((s) => s.status === 'no_show' || s.status === 'cancelled')
+      .reduce((sum, s) => sum + num(s.fee), 0),
   }
 
   // Ödeme yöntemi kırılımı
@@ -688,4 +744,22 @@ export async function getAgendaMonth(month?: string) {
 export async function getReminderTemplate(): Promise<string> {
   const [row] = await db.select().from(settings).where(eq(settings.key, 'reminder_template'))
   return row?.value ?? REMINDER_TEMPLATE_DEFAULT
+}
+
+// ─── Bekleme listesi ─────────────────────────────────────────────────────────
+export async function listWaitlist() {
+  const rows = await db.select().from(waitlist).orderBy(desc(waitlist.priority), desc(waitlist.createdAt))
+  return rows.map((r) => ({ ...r, createdAt: String(r.createdAt) }))
+}
+
+/** İşletme/makbuz kimliği — varsayılanların üzerine settings'teki JSON'u uygular */
+export async function getBusinessInfo(): Promise<BusinessInfo> {
+  const [row] = await db.select().from(settings).where(eq(settings.key, 'business'))
+  if (!row?.value) return BUSINESS
+  try {
+    const saved = JSON.parse(row.value) as Partial<BusinessInfo>
+    return { ...BUSINESS, ...saved }
+  } catch {
+    return BUSINESS
+  }
 }

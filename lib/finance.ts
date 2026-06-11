@@ -1,9 +1,25 @@
 import { TAX } from './constants'
 
+const round2 = (n: number) => Math.round(n * 100) / 100
+
 /** KDV hesabı — net tutar üzerinden */
 export function calcKdv(subtotal: number, rate: number = TAX.KDV_RATE) {
-  const kdvAmount = Math.round(subtotal * (rate / 100) * 100) / 100
-  return { kdvAmount, total: Math.round((subtotal + kdvAmount) * 100) / 100 }
+  const kdvAmount = round2(subtotal * (rate / 100))
+  return { kdvAmount, total: round2(subtotal + kdvAmount) }
+}
+
+/**
+ * Serbest Meslek Makbuzu hesabı.
+ * Brüt ücret üzerinden KDV eklenir, gelir vergisi stopajı (tevkifat) düşülür.
+ *   Net ücret      = brüt − stopaj
+ *   Tahsil edilen  = brüt − stopaj + KDV
+ */
+export function calcMakbuz(brut: number, kdvRate: number = TAX.KDV_RATE, stopajRate: number = TAX.STOPAJ_RATE) {
+  const kdvAmount = round2(brut * (kdvRate / 100))
+  const stopajAmount = round2(brut * (stopajRate / 100))
+  const netUcret = round2(brut - stopajAmount)
+  const total = round2(brut - stopajAmount + kdvAmount)
+  return { kdvAmount, stopajAmount, netUcret, total }
 }
 
 /** Net kâr = gelir - gider */

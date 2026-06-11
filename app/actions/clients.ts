@@ -13,6 +13,7 @@ export async function createClient(input: {
   status?: ClientStatus
   sessionFee?: number
   startDate?: string
+  birthDate?: string | null
   colorTag?: ClientColor
   avatarUrl?: string | null
   tags?: string[]
@@ -27,6 +28,7 @@ export async function createClient(input: {
     status: input.status ?? 'active',
     sessionFee: String(input.sessionFee ?? 0),
     startDate: input.startDate || undefined,
+    birthDate: input.birthDate || null,
     colorTag: input.colorTag ?? 'indigo',
     avatarUrl: input.avatarUrl || null,
     tags: input.tags ?? [],
@@ -54,6 +56,7 @@ export async function updateClient(
     status?: ClientStatus
     sessionFee?: number
     startDate?: string
+    birthDate?: string | null
     colorTag?: ClientColor
     avatarUrl?: string | null
     tags?: string[]
@@ -70,6 +73,7 @@ export async function updateClient(
       status: input.status,
       sessionFee: input.sessionFee !== undefined ? String(input.sessionFee) : undefined,
       startDate: input.startDate || undefined,
+      birthDate: input.birthDate || null,
       colorTag: input.colorTag,
       avatarUrl: input.avatarUrl ?? null,
       tags: input.tags ?? [],
