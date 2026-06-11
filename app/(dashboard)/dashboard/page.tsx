@@ -56,6 +56,9 @@ export default async function DashboardPage({
         action={<QuickAddMenu clients={clients} />}
       />
 
+      {/* Günün Sözü — üstte, vurgulu bant */}
+      <QuoteCard quote={quote} />
+
       {/* Gecikmiş fatura uyarısı */}
       {out.overdueCount > 0 && (
         <Link
@@ -254,14 +257,13 @@ export default async function DashboardPage({
         </section>
       </div>
 
-      {/* Bekleyen tahsilat + Günün Sözü */}
-      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-      <section className="glass rounded-2xl p-5 lg:col-span-2">
+      {/* Bekleyen tahsilat — tam genişlik */}
+      <section className="glass mt-6 rounded-2xl p-5">
         <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
           <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
         </h2>
         {out.balances.length ? (
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {out.balances.map((b) => (
               <Link
                 key={b.id}
@@ -284,9 +286,6 @@ export default async function DashboardPage({
           </p>
         )}
       </section>
-
-      <QuoteCard quote={quote} />
-      </div>
     </>
   )
 }

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Trash2, ExternalLink, GripVertical } from 'lucide-react'
+import { Trash2, ExternalLink, GripVertical, Clock } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Field, Input } from '@/components/ui/Field'
 import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
@@ -29,13 +29,37 @@ const DOT: Record<string, string> = {
   teal: 'bg-teal-500', cyan: 'bg-cyan-500',
 }
 
+// Seans bloğu — danışan rengine göre yumuşak tint (galeri etiketi)
+const TINT: Record<string, { bar: string; bg: string; border: string; text: string }> = {
+  indigo:  { bar: 'bg-indigo-500',  bg: 'bg-indigo-500/10',  border: 'border-indigo-500/25 hover:border-indigo-500/60',   text: 'text-indigo-700 dark:text-indigo-200' },
+  emerald: { bar: 'bg-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/25 hover:border-emerald-500/60', text: 'text-emerald-700 dark:text-emerald-200' },
+  sky:     { bar: 'bg-sky-500',     bg: 'bg-sky-500/10',     border: 'border-sky-500/25 hover:border-sky-500/60',         text: 'text-sky-700 dark:text-sky-200' },
+  violet:  { bar: 'bg-violet-500',  bg: 'bg-violet-500/10',  border: 'border-violet-500/25 hover:border-violet-500/60',   text: 'text-violet-700 dark:text-violet-200' },
+  amber:   { bar: 'bg-amber-500',   bg: 'bg-amber-500/10',   border: 'border-amber-500/25 hover:border-amber-500/60',     text: 'text-amber-700 dark:text-amber-200' },
+  rose:    { bar: 'bg-rose-500',    bg: 'bg-rose-500/10',    border: 'border-rose-500/25 hover:border-rose-500/60',       text: 'text-rose-700 dark:text-rose-200' },
+  teal:    { bar: 'bg-teal-500',    bg: 'bg-teal-500/10',    border: 'border-teal-500/25 hover:border-teal-500/60',       text: 'text-teal-700 dark:text-teal-200' },
+  cyan:    { bar: 'bg-cyan-500',    bg: 'bg-cyan-500/10',    border: 'border-cyan-500/25 hover:border-cyan-500/60',       text: 'text-cyan-700 dark:text-cyan-200' },
+}
+const tintOf = (c: string) => TINT[c] ?? TINT.indigo
+
 const pad = (n: number) => String(n).padStart(2, '0')
 
 export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; todayKey: string; reminderTemplate: string }) {
   const [selected, setSelected] = useState<AgendaItem | null>(null)
   const [dragId, setDragId] = useState<string | null>(null)
+  const [nowMin, setNowMin] = useState<number | null>(null) // canlı "şu an" çizgisi (mount sonrası)
   const [pending, start] = useTransition()
   const router = useRouter()
+
+  useEffect(() => {
+    const tick = () => {
+      const n = new Date()
+      setNowMin(n.getHours() * 60 + n.getMinutes())
+    }
+    tick()
+    const t = setInterval(tick, 60_000)
+    return () => clearInterval(t)
+  }, [])
 
   function move(item: { id: string; clientId: string | null }, dayKey: string, minutes: number) {
     const clamped = Math.max(DAY_START, Math.min(DAY_END - SNAP, minutes))
@@ -102,6 +126,9 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
               <span className={cn('ml-1.5 text-sm font-bold', d.key === todayKey ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-200')}>
                 {d.dayNum}
               </span>
+              {d.items.length > 0 && (
+                <span className="mt-0.5 block text-[10px] font-medium text-slate-400">{d.items.length} seans</span>
+              )}
             </div>
           ))}
         </div>
@@ -141,11 +168,24 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                 />
               ))}
 
-              {/* Seans blokları */}
+              {/* Şu an çizgisi — yalnızca bugünün kolonunda */}
+              {d.key === todayKey && nowMin !== null && nowMin >= DAY_START && nowMin <= DAY_END && (
+                <span
+                  className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
+                  style={{ top: nowMin - DAY_START }}
+                  aria-hidden
+                >
+                  <span className="-ml-1 h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_0_3px_rgba(187,96,62,0.25)]" />
+                  <span className="h-px flex-1 bg-rose-500/70" />
+                </span>
+              )}
+
+              {/* Seans blokları — danışan rengine göre tint */}
               {d.items.map((it) => {
                 const top = Math.max(0, it.startMin - DAY_START)
                 const height = Math.max(34, Math.min(it.durationMin, DAY_END - it.startMin))
                 const dim = it.status === 'cancelled' || it.status === 'no_show'
+                const t = tintOf(it.colorTag)
                 return (
                   <div
                     key={it.id}
@@ -158,18 +198,18 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                     onDragEnd={() => setDragId(null)}
                     onClick={() => setSelected(it)}
                     className={cn(
-                      'group absolute inset-x-1 cursor-grab overflow-hidden rounded-lg border px-1.5 py-1 text-left shadow-sm transition-all active:cursor-grabbing',
-                      'border-slate-500/15 bg-[rgba(var(--paper),0.95)] hover:border-indigo-500/50 hover:shadow-md',
+                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border px-1.5 py-1 text-left shadow-sm backdrop-blur-sm transition-all hover:shadow-md active:cursor-grabbing',
+                      t.bg, t.border,
                       dim && 'opacity-45',
                       dragId === it.id && 'opacity-30',
                       pending && 'pointer-events-none',
                     )}
                     style={{ top, height }}
                   >
-                    <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', DOT[it.colorTag] ?? DOT.indigo)} />
+                    <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', t.bar)} />
                     <div className="flex items-center gap-1 pl-1.5">
-                      <span className="font-mono text-[10px] font-bold text-slate-600 dark:text-slate-300">{it.time}</span>
-                      <GripVertical className="ml-auto h-3 w-3 shrink-0 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 dark:text-slate-600" />
+                      <span className={cn('font-mono text-[10px] font-bold', t.text)}>{it.time}</span>
+                      <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
                     </div>
                     <p className={cn('truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                       {it.clientName}

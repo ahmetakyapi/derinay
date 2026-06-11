@@ -161,14 +161,15 @@ export function NewInvoiceDialog({
         onClose={() => setPreviewId(null)}
         title="Makbuz Hazır"
         description="Önizle — istersen PDF olarak kaydet"
+        size="2xl"
       >
         {previewId && (
           <div className="space-y-4">
             <div className="overflow-hidden rounded-xl border border-slate-500/15 bg-white">
               <iframe
                 src={`/invoices/${previewId}/print`}
-                title="Fatura önizleme"
-                className="h-[55vh] w-full"
+                title="Makbuz önizleme"
+                className="h-[74vh] w-full"
               />
             </div>
             <div className="flex flex-wrap justify-end gap-2">

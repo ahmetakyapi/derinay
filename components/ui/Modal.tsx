@@ -6,18 +6,27 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { modalBackdrop, modalPanel } from '@/lib/variants'
 
+const SIZE_MAX: Record<'md' | 'lg' | 'xl' | '2xl', string> = {
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+  xl: 'max-w-3xl',
+  '2xl': 'max-w-5xl',
+}
+
 export function Modal({
   open,
   onClose,
   title,
   description,
   children,
+  size = 'md',
 }: {
   open: boolean
   onClose: () => void
   title: string
   description?: string
   children: React.ReactNode
+  size?: 'md' | 'lg' | 'xl' | '2xl'
 }) {
   useEffect(() => {
     if (!open) return
@@ -49,7 +58,7 @@ export function Modal({
           <motion.div
             variants={modalPanel}
             onClick={(e) => e.stopPropagation()}
-            className="surface my-8 w-full max-w-lg rounded-3xl p-5 shadow-2xl sm:p-6"
+            className={`surface my-8 w-full ${SIZE_MAX[size]} rounded-3xl p-5 shadow-2xl sm:p-6`}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>

@@ -3,37 +3,33 @@ import { BloomArt } from '@/components/art/BloomArt'
 import type { Quote } from '@/lib/quotes'
 
 /**
- * Günün Sözü — galeri duvarındaki bir yazıt gibi vurgulu kart.
- * Köşede soluk orkide dalı, büyük Fraunces italik söz, altın tırnak.
+ * Günün Sözü — sayfanın üstünde, galeri yazıtı gibi yatay bir bant.
+ * Sağda soluk orkide, solda altın tırnak, büyük Fraunces italik söz.
  */
 export function QuoteCard({ quote }: { quote: Quote }) {
   return (
-    <section className="glass relative h-full overflow-hidden rounded-2xl p-6 sm:p-7">
-      {/* Soluk orkide dokunuşu */}
-      <BloomArt className="pointer-events-none absolute -right-6 -top-4 h-48 w-36 opacity-50" delay={0.5} />
+    <section className="glass relative mb-6 overflow-hidden rounded-2xl px-5 py-5 sm:px-7">
+      {/* Soluk orkide dokunuşu — sağ kenar */}
+      <BloomArt className="pointer-events-none absolute -right-2 -top-6 hidden h-40 w-32 opacity-40 sm:block" delay={0.4} />
+      {/* Altın suluboya hâle — sol */}
+      <span aria-hidden className="pointer-events-none absolute -left-10 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-amber-500/10 blur-3xl" />
 
-      <div className="relative flex h-full flex-col">
-        <div className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-amber-600/90 dark:text-amber-400/90">
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/12">
-            <QuoteIcon className="h-3.5 w-3.5" />
-          </span>
-          Günün Sözü
-        </div>
-
-        <blockquote className="flex flex-1 flex-col">
-          <span aria-hidden className="-mb-4 font-display text-5xl italic leading-none text-amber-500/30">
-            &ldquo;
-          </span>
-          <p className="font-display text-xl italic leading-snug text-slate-800 dark:text-slate-100 sm:text-2xl">
-            {quote.text}
+      <div className="relative flex items-start gap-4 sm:items-center sm:gap-5">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/12 text-amber-600 dark:text-amber-400">
+          <QuoteIcon className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-600/90 dark:text-amber-400/90">
+            Günün Sözü
           </p>
-          <footer className="mt-4 flex items-center gap-2.5">
-            <span className="h-px w-7 bg-gradient-to-r from-amber-500/70 to-transparent" />
-            <cite className="text-sm font-semibold not-italic text-slate-500 dark:text-slate-400">
-              {quote.author}
-            </cite>
-          </footer>
-        </blockquote>
+          <blockquote className="font-display text-lg italic leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">
+            {quote.text}
+          </blockquote>
+          <p className="mt-1.5 flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span className="h-px w-6 bg-gradient-to-r from-amber-500/70 to-transparent" />
+            {quote.author}
+          </p>
+        </div>
       </div>
     </section>
   )

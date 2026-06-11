@@ -1,11 +1,29 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CalendarDays, Clock, Wallet, CalendarCheck2 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { AgendaWeek } from '@/components/agenda/AgendaWeek'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { getAgendaWeek, getAgendaMonth, clientOptions, getReminderTemplate } from '@/lib/queries'
-import { formatDateShort, formatMonth, monthKey } from '@/lib/format'
+import { formatDateShort, formatMonth, formatTRY, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
+
+// Ajanda özet şeridi — premium istatistik kartları
+function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?: string; icon: typeof Clock; tone: string; bg: string }[] }) {
+  return (
+    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {tiles.map((t) => (
+        <div key={t.label} className="glass rounded-2xl p-4">
+          <span className={cn('mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg', t.bg, t.tone)}>
+            <t.icon className="h-4 w-4" />
+          </span>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{t.label}</p>
+          <p className={cn('mt-0.5 font-display text-lg font-semibold tracking-tight', t.tone)}>{t.value}</p>
+          {t.hint && <p className="mt-0.5 text-[11px] text-slate-400">{t.hint}</p>}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 const WEEKDAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
 const DOT: Record<string, string> = {
@@ -37,6 +55,14 @@ export default async function AgendaPage({
     for (let d = 1; d <= daysInMonth; d++) cells.push(`${m.year}-${pad(m.month + 1)}-${pad(d)}`)
     while (cells.length % 7 !== 0) cells.push(null)
 
+    const filledDays = Object.keys(m.byDay).length
+    const avgPerFilled = filledDays ? m.total / filledDays : 0
+    const monthTiles = [
+      { label: 'Toplam Seans', value: String(m.total), hint: formatMonth(monthDate), icon: CalendarDays, tone: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-500/10' },
+      { label: 'Dolu Gün', value: String(filledDays), hint: `${daysInMonth} günde`, icon: CalendarCheck2, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
+      { label: 'Günde Ortalama', value: avgPerFilled.toFixed(1).replace('.', ','), hint: 'dolu günlerde', icon: Clock, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
+    ]
+
     return (
       <>
         <PageHeader
@@ -58,6 +84,8 @@ export default async function AgendaPage({
             </div>
           }
         />
+
+        <SummaryStrip tiles={monthTiles} />
 
         <div className="glass rounded-2xl p-3 sm:p-4">
           <div className="mb-2 grid grid-cols-7 gap-1 sm:gap-2">
@@ -128,8 +156,21 @@ export default async function AgendaPage({
   /* ───────────────────────── Haftalık görünüm ───────────────────────── */
   const week = await getAgendaWeek(searchParams.date)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
-  const total = week.days.reduce((s, d) => s + d.items.length, 0)
+  const items = week.days.flatMap((d) => d.items)
+  const total = items.length
   const isCurrentWeek = week.days.some((d) => d.key === week.todayKey)
+
+  // Özet: tamamlanan + planlanan üzerinden saat & beklenen gelir
+  const active = items.filter((i) => i.status === 'scheduled' || i.status === 'completed')
+  const completed = items.filter((i) => i.status === 'completed').length
+  const totalHours = active.reduce((s, i) => s + i.durationMin, 0) / 60
+  const expectedIncome = active.reduce((s, i) => s + i.fee, 0)
+  const weekTiles = [
+    { label: 'Toplam Seans', value: String(total), hint: weekRange, icon: CalendarDays, tone: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-500/10' },
+    { label: 'Planlanan Saat', value: `${totalHours.toFixed(1).replace('.', ',')} sa`, hint: 'tamamlanan + planlanan', icon: Clock, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
+    { label: 'Beklenen Gelir', value: formatTRY(expectedIncome, { compact: true }), hint: 'bu hafta', icon: Wallet, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
+    { label: 'Tamamlanan', value: `${completed}`, hint: `${total} seansın`, icon: CalendarCheck2, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
+  ]
 
   return (
     <>
@@ -155,6 +196,7 @@ export default async function AgendaPage({
         }
       />
 
+      <SummaryStrip tiles={weekTiles} />
       <AgendaWeek days={week.days} todayKey={week.todayKey} reminderTemplate={reminderTemplate} />
     </>
   )
