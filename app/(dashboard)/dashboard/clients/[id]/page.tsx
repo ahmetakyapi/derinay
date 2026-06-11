@@ -14,6 +14,9 @@ import {
   HeartPulse,
   Package,
   Activity,
+  Paperclip,
+  ExternalLink,
+  FileText as FileIcon,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -30,11 +33,13 @@ import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { NewPackageDialog } from '@/components/forms/NewPackageDialog'
 import { NewScoreDialog } from '@/components/forms/NewScoreDialog'
 import { ScoreTrend } from '@/components/clients/ScoreTrend'
+import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderTemplate } from '@/lib/queries'
 import { deleteClient } from '@/app/actions/clients'
 import { deletePackage } from '@/app/actions/packages'
 import { deleteScore } from '@/app/actions/scores'
+import { deleteDocument } from '@/app/actions/documents'
 import {
   CLIENT_STATUS_LABEL,
   INVOICE_STATUS_LABEL,
@@ -47,7 +52,7 @@ import { cn } from '@/lib/utils'
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   const [data, reminderTemplate] = await Promise.all([getClientDetail(params.id), getReminderTemplate()])
   if (!data) notFound()
-  const { client, notes, sessions, payments, invoices, stats, activePackage, scores } = data
+  const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents } = data
   const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
   const pkgLow = activePackage ? activePackage.remaining > 0 && activePackage.remaining <= 2 : false
   const pkgDone = activePackage ? activePackage.remaining === 0 : false
@@ -372,6 +377,46 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </ul>
             ) : (
               <p className="py-4 text-center text-sm text-slate-400">Fatura yok.</p>
+            )}
+          </section>
+
+          {/* Belgeler — bağlantı referansları (dosya kullanıcının deposunda) */}
+          <section className="glass rounded-2xl p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+                <Paperclip className="h-4 w-4 text-violet-500 dark:text-violet-400" /> Belgeler
+              </h2>
+              <NewDocumentDialog clientId={client.id} />
+            </div>
+            {documents.length ? (
+              <ul className="space-y-2">
+                {documents.map((doc) => (
+                  <li key={doc.id} className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                      <FileIcon className="h-4 w-4" />
+                    </span>
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group min-w-0 flex-1"
+                    >
+                      <p className="flex items-center gap-1 truncate text-sm font-semibold text-slate-800 transition-colors group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-300">
+                        <span className="truncate">{doc.name}</span>
+                        <ExternalLink className="h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                      </p>
+                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                        {doc.type ? doc.type : 'Belge'}{doc.note ? ` · ${doc.note}` : ''}
+                      </p>
+                    </a>
+                    <DeleteButton action={deleteDocument.bind(null, doc.id, client.id)} className="h-7 w-7" />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="py-3 text-sm text-slate-400">
+                Belge bağlantısı yok. Onam formu, test veya rapor bağlantısını ekle — dosya kendi deponda kalır.
+              </p>
             )}
           </section>
         </div>

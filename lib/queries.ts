@@ -1,7 +1,7 @@
 import 'server-only'
 import { and, arrayContains, desc, eq, gte, ilike, lte, or } from 'drizzle-orm'
 import { db } from './db'
-import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores } from './schema'
+import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
 import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
@@ -164,7 +164,7 @@ export async function getClientDetail(id: string) {
   const [client] = await db.select().from(clients).where(eq(clients.id, id))
   if (!client) return null
 
-  const [notes, sess, pays, invs, txs, pkgs, scoreRows] = await Promise.all([
+  const [notes, sess, pays, invs, txs, pkgs, scoreRows, docRows] = await Promise.all([
     db.select().from(clientNotes).where(eq(clientNotes.clientId, id)).orderBy(desc(clientNotes.pinned), desc(clientNotes.createdAt)),
     db.select().from(sessions).where(eq(sessions.clientId, id)).orderBy(desc(sessions.date)),
     db.select().from(payments).where(eq(payments.clientId, id)).orderBy(desc(payments.date)),
@@ -172,6 +172,7 @@ export async function getClientDetail(id: string) {
     db.select().from(transactions).where(eq(transactions.clientId, id)).orderBy(desc(transactions.date)),
     db.select().from(sessionPackages).where(eq(sessionPackages.clientId, id)).orderBy(desc(sessionPackages.purchaseDate)),
     db.select().from(clientScores).where(eq(clientScores.clientId, id)).orderBy(clientScores.date),
+    db.select().from(clientDocuments).where(eq(clientDocuments.clientId, id)).orderBy(desc(clientDocuments.createdAt)),
   ])
 
   const totalPaid = pays.reduce((s, p) => s + num(p.amount), 0)
@@ -215,6 +216,7 @@ export async function getClientDetail(id: string) {
       date: String(s.date),
       note: s.note,
     })),
+    documents: docRows.map((d) => ({ id: d.id, name: d.name, type: d.type, url: d.url, note: d.note })),
     stats: { totalPaid, totalInvoiced, completedSessions, noShowSessions, cancelledSessions, outstanding: totalInvoiced - totalPaid },
   }
 }

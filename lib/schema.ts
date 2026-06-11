@@ -118,6 +118,17 @@ export const sessionPackages = pgTable('session_packages', {
   createdAt:     timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Client documents (belge referansları — dosya kullanıcının deposunda) ────
+export const clientDocuments = pgTable('client_documents', {
+  id:        uuid('id').primaryKey().defaultRandom(),
+  clientId:  uuid('client_id').notNull().references(() => clients.id, { onDelete: 'cascade' }),
+  name:      text('name').notNull(),
+  type:      text('type'),                                     // Onam, Test/Ölçek, Rapor… (serbest)
+  url:       text('url').notNull(),                            // Drive/iCloud vb. bağlantısı
+  note:      text('note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 // ─── Client scores (ilerleme ölçümü — ölçek puanları) ────────────────────────
 export const clientScores = pgTable('client_scores', {
   id:        uuid('id').primaryKey().defaultRandom(),
@@ -170,3 +181,5 @@ export type SessionPackage = typeof sessionPackages.$inferSelect
 export type NewSessionPackage = typeof sessionPackages.$inferInsert
 export type ClientScore    = typeof clientScores.$inferSelect
 export type NewClientScore = typeof clientScores.$inferInsert
+export type ClientDocument = typeof clientDocuments.$inferSelect
+export type NewClientDocument = typeof clientDocuments.$inferInsert

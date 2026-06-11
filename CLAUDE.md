@@ -147,6 +147,8 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   ücret işletme geliri olarak da yazılabilir.
 - **clientScores** — ilerleme ölçümü: clientId→cascade, label(ölçek adı), value, scaleMax(ops.),
   date, note. Danışan detayında en güncel ölçeğin zaman serisi `ScoreTrend` ile grafiklenir.
+- **clientDocuments** — belge referansı: clientId→cascade, name, type, **url**, note. Dosya saklanmaz;
+  KVKK gereği yalnızca kullanıcının kendi deposundaki (Drive/iCloud) bağlantısı tutulur.
 - **settings** — anahtar-değer: `reminder_template` (hatırlatma) ve `business` (işletme/makbuz
   kimliği JSON). `getBusinessInfo()` varsayılan `BUSINESS` üstüne uygular; Ayarlar sayfasından düzenlenir.
 
