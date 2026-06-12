@@ -30,6 +30,13 @@ export default function Header() {
 
   return (
     <>
+      <a
+        href="#lp-main"
+        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
+      >
+        İçeriğe atla
+      </a>
+
       <header
         className={`fixed inset-x-0 top-0 z-50 h-16 transition-all duration-300 ${
           scrolled ? 'glass shadow-xl shadow-black/10' : 'bg-transparent'
@@ -80,6 +87,8 @@ export default function Header() {
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Menü"
+              aria-expanded={menuOpen}
+              aria-controls="landing-mobile-menu"
               className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 md:hidden"
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -90,6 +99,7 @@ export default function Header() {
 
       {menuOpen && (
         <motion.div
+          id="landing-mobile-menu"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="surface fixed inset-x-4 top-20 z-40 rounded-2xl p-4 md:hidden"

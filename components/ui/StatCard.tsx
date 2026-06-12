@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { fadeUp } from '@/lib/variants'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
@@ -40,6 +40,7 @@ export function StatCard({
   hint,
   animateTo,
   animateKind = 'currency',
+  goodDirection = 'up',
 }: {
   label: string
   value: string
@@ -50,9 +51,14 @@ export function StatCard({
   /** Verilirse büyük rakam 0'dan bu değere sayılır (value yine fallback) */
   animateTo?: number
   animateKind?: 'currency' | 'count'
+  /** Hangi yön "iyi"dir — gelir/net için 'up', gider için 'down'.
+   *  Ok yönü artış/azalışı, renk ise iyi/kötü olduğunu gösterir. */
+  goodDirection?: 'up' | 'down'
 }) {
   const a = ACCENTS[accent]
-  const positive = (change ?? 0) >= 0
+  // Ok = değişimin yönü; renk = bu yönün "iyi" mi kötü mü olduğu.
+  const rising = (change ?? 0) > 0
+  const isGood = change == null || change === 0 ? null : goodDirection === 'up' ? change > 0 : change < 0
 
   return (
     <motion.div
@@ -84,14 +90,17 @@ export function StatCard({
         <div className="relative z-10 mt-3.5 flex items-center gap-2 text-xs">
           {change !== undefined && change !== null && (
             <span
+              aria-label={`Geçen döneme göre %${Math.abs(change).toFixed(0)} ${rising ? 'arttı' : change === 0 ? 'değişmedi' : 'azaldı'}`}
               className={cn(
                 'inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-mono font-semibold tabular-nums',
-                positive
-                  ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
-                  : 'bg-rose-500/12 text-rose-600 dark:text-rose-400',
+                isGood === null
+                  ? 'bg-slate-500/12 text-slate-500 dark:text-slate-400'
+                  : isGood
+                    ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-rose-500/12 text-rose-600 dark:text-rose-400',
               )}
             >
-              {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {change === 0 ? <Minus className="h-3 w-3" /> : rising ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
               {Math.abs(change).toFixed(0)}%
             </span>
           )}

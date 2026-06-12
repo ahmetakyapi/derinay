@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 import { Field, Input } from '@/components/ui/Field'
 import { addScore } from '@/app/actions/scores'
 
@@ -69,15 +70,13 @@ export function NewScoreDialog({ clientId, lastLabel }: { clientId: string; last
             <Input name="note" placeholder="Kısa bağlam…" />
           </Field>
 
-          {error && <p className="text-sm text-rose-500">{error}</p>}
+          {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
-            <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Ölçümü Kaydet'}
-            </button>
+            <SubmitButton pending={pending}>Ölçümü Kaydet</SubmitButton>
           </div>
         </form>
       </Modal>

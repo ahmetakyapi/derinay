@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { FilePlus, Download, Check } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createInvoice } from '@/app/actions/invoices'
 import { calcMakbuz } from '@/lib/finance'
@@ -147,15 +148,13 @@ export function NewInvoiceDialog({
             </div>
           </div>
 
-          {error && <p className="text-sm text-rose-500">{error}</p>}
+          {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
-            <button type="submit" disabled={pending} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60">
-              {pending ? 'Kaydediliyor…' : 'Makbuzu oluştur'}
-            </button>
+            <SubmitButton pending={pending}>Makbuzu oluştur</SubmitButton>
           </div>
         </form>
       </Modal>

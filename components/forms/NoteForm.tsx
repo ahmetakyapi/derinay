@@ -175,7 +175,7 @@ export function NoteForm({
         )}
       </div>
 
-      {error && <p className="text-sm text-rose-500">{error}</p>}
+      {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
       <div className="flex justify-end">
         <button

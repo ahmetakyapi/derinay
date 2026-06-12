@@ -149,7 +149,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
           <Plus className="h-4 w-4" />
         </button>
       </form>
-      {error && <p className="mt-2 text-sm text-rose-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-sm text-rose-500">{error}</p>}
       {!goals.length && (
         <p className="mt-2 text-[11px] text-slate-400">
           Danışanla birlikte belirlediğiniz hedefleri ekle — tamamlandıkça ilerleme görünür.

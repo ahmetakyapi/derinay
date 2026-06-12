@@ -126,7 +126,7 @@ export function ReminderButton({
                 {saved ? 'Şablon kaydedildi' : pending ? 'Kaydediliyor…' : 'Şablon Olarak Kaydet'}
               </button>
             )}
-            {error && <p className="mt-1.5 text-xs text-rose-500">{error}</p>}
+            {error && <p role="alert" className="mt-1.5 text-xs text-rose-500">{error}</p>}
           </div>
 
           {/* Önizleme */}

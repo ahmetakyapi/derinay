@@ -143,6 +143,7 @@ export default async function DashboardPage({
           icon={<TrendingDown className="h-5 w-5" />}
           accent="rose"
           change={pctChange(k.expense, k.prevExpense)}
+          goodDirection="down"
           hint="geçen aya göre"
         />
         <StatCard

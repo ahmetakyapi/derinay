@@ -273,7 +273,7 @@ export function PersonalCalendar({
           <Field label="Not (opsiyonel)">
             <Input name="note" placeholder="örn. haftalık market, kahve molası…" />
           </Field>
-          {error && <p className="text-sm text-rose-500">{error}</p>}
+          {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
           <div className="flex justify-end">
             <button
               type="submit"

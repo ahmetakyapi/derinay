@@ -119,7 +119,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             />
           ))}
         </div>
-        {error && <p className="text-xs text-rose-500">{error}</p>}
+        {error && <p role="alert" className="text-xs text-rose-500">{error}</p>}
         <div className="flex justify-end gap-1.5">
           <button
             type="button"

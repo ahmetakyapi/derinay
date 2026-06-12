@@ -138,7 +138,7 @@ export function NewTransactionDialog({
             </span>
           </label>
 
-          {error && <p className="text-sm text-rose-500">{error}</p>}
+          {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <button

@@ -195,6 +195,14 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
 
   return (
     <div className="min-h-screen">
+      {/* Klavye kullanıcısı için içeriğe atla — odaklanınca görünür */}
+      <a
+        href="#main-content"
+        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
+      >
+        İçeriğe atla
+      </a>
+
       {/* Desktop sidebar */}
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 p-5 lg:flex">
         <div className="mb-6">
@@ -323,7 +331,7 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
       <CommandPalette clients={clients} />
 
       {/* Content */}
-      <main className="lg:pl-64">
+      <main id="main-content" tabIndex={-1} className="outline-none lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <PageTransition>{children}</PageTransition>
         </div>

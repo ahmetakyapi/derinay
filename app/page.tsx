@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useSpring } from 'framer-motion'
 import {
   Users,
   Wallet,
@@ -11,6 +11,9 @@ import {
   PieChart,
   ArrowRight,
   Sparkles,
+  ShieldCheck,
+  Calculator,
+  HeartHandshake,
 } from 'lucide-react'
 import { useSpotlight } from '@/hooks/useSpotlight'
 import { fadeUp, staggerContainer, EASE } from '@/lib/variants'
@@ -23,12 +26,20 @@ import Footer from '@/components/layout/Footer'
 export default function Home() {
   // Çam tonu spotlight — fare ile gezinen ışık
   const spotlight = useSpotlight(620, 'rgba(63,124,114,0.08)')
+  // Sayfa kaydırma ilerleme çubuğu — üstte ince altın şerit
+  const { scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 })
 
   return (
     <>
+      <motion.div
+        aria-hidden
+        style={{ scaleX: progress }}
+        className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-gradient-to-r from-indigo-500 via-amber-400 to-rose-400"
+      />
       <Header />
 
-      <main className="relative min-h-screen overflow-hidden">
+      <main id="lp-main" tabIndex={-1} className="relative min-h-screen overflow-hidden outline-none">
         <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
 
         {/* Suluboya lekeleri — galeri atmosferi */}
@@ -231,6 +242,31 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Değer şeridi — ilke odaklı, özelliklerden farklı */}
+        <section className="relative z-10 mx-auto max-w-5xl px-6 py-16">
+          <motion.div
+            variants={staggerContainer(0.1)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid gap-4 sm:grid-cols-3"
+          >
+            {VALUES.map((v) => (
+              <motion.div key={v.title} variants={fadeUp} className="flex items-start gap-3.5">
+                <span className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${v.accent}`}>
+                  <v.icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-display text-base font-semibold tracking-tight text-slate-900 dark:text-white">
+                    {v.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{v.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+
         {/* Özellikler */}
         <section id="features" className="relative z-10 mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
           <motion.div
@@ -342,6 +378,27 @@ export default function Home() {
     </>
   )
 }
+
+const VALUES = [
+  {
+    icon: ShieldCheck,
+    title: 'KVKK senin kontrolünde',
+    desc: 'Danışan onamı kayıt altında; fotoğraf ve belgeler senin kendi deponda kalır.',
+    accent: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400',
+  },
+  {
+    icon: Calculator,
+    title: 'Vergi kendiliğinden hesaplanır',
+    desc: 'KDV, stopaj ve tahmini gelir vergisi makbuzla birlikte otomatik çıkar.',
+    accent: 'bg-amber-500/12 text-amber-600 dark:text-amber-400',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Sakin, odaklı arayüz',
+    desc: 'Galeri estetiğinde, gözü yormayan bir panel — işin değil, danışanın merkezde.',
+    accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400',
+  },
+] as const
 
 const FEATURES = [
   { icon: Wallet, title: 'Gelir & Gider Takibi', desc: 'Kategori bazlı hareketler, aylık kırılım ve net kâr — tek bakışta.', accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' },

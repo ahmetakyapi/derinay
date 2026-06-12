@@ -252,7 +252,7 @@ export function SettingsForm({
         </div>
       </form>
 
-      {error && <p className="text-sm text-rose-500">{error}</p>}
+      {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
     </div>
   )
 }
