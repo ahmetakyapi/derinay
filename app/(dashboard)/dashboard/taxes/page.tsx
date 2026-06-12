@@ -92,7 +92,7 @@ export default async function TaxesPage() {
               <span className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> KDV
               </span>
-              <span className="font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+              <span className="sensitive font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                 {formatTRY(current.kdvCollected)}
               </span>
             </div>
@@ -100,7 +100,7 @@ export default async function TaxesPage() {
               <span className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Gelir vergisi
               </span>
-              <span className="font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+              <span className="sensitive font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                 {formatTRY(current.incomeTax)}
               </span>
             </div>
@@ -118,7 +118,7 @@ export default async function TaxesPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                   {b.label}
                 </p>
-                <p className={cn('mt-1.5 font-display text-2xl font-semibold tracking-tight', b.tone)}>
+                <p className={cn('sensitive mt-1.5 font-display text-2xl font-semibold tracking-tight', b.tone)}>
                   {formatTRY(b.value)}
                 </p>
                 <p className="mt-auto pt-2 text-[11px] text-slate-400">{b.hint}</p>
@@ -194,11 +194,11 @@ export default async function TaxesPage() {
                         )}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(m.income)}</td>
-                    <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(m.expense)}</td>
-                    <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvCollected)}</td>
-                    <td className="px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.incomeTax)}</td>
-                    <td className="px-5 py-3 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(m.totalDue)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(m.income)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(m.expense)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvCollected)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.incomeTax)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(m.totalDue)}</td>
                   </tr>
                 )
               })}
@@ -206,10 +206,10 @@ export default async function TaxesPage() {
             <tfoot>
               <tr className="border-t-2 border-slate-500/15 bg-slate-500/[0.05] font-bold text-slate-900 dark:text-white">
                 <td className="px-5 py-3.5">Son {months.length} Ay</td>
-                <td className="px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(totals.income)}</td>
-                <td className="px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(totals.expense)}</td>
-                <td className="px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.kdv)}</td>
-                <td className="px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.incomeTax)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(totals.income)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(totals.expense)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.kdv)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.incomeTax)}</td>
                 <td className="px-5 py-3.5 text-right font-display text-base font-semibold tracking-tight">{formatTRY(totals.due)}</td>
               </tr>
             </tfoot>

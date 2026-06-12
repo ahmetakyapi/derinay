@@ -200,7 +200,7 @@ export default async function FinancesPage({
                   </span>
                   <span
                     className={cn(
-                      'font-mono text-xs font-semibold tabular-nums',
+                      'sensitive font-mono text-xs font-semibold tabular-nums',
                       dayNet >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400',
                     )}
                   >
@@ -231,7 +231,7 @@ export default async function FinancesPage({
                         </div>
                         <span
                           className={cn(
-                            'flex shrink-0 items-center gap-1 font-mono text-[13px] font-semibold tabular-nums',
+                            'sensitive flex shrink-0 items-center gap-1 font-mono text-[13px] font-semibold tabular-nums',
                             inc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400',
                           )}
                         >
@@ -285,7 +285,7 @@ function SummaryCard({
     <div className="glass rounded-2xl p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{label}</p>
       <div className="mt-2 flex flex-wrap items-baseline gap-2">
-        <p className={cn('font-display text-2xl font-semibold tracking-tight', valueCls)}>{formatTRY(value)}</p>
+        <p className={cn('sensitive font-display text-2xl font-semibold tracking-tight', valueCls)}>{formatTRY(value)}</p>
         {change !== null && (
           <span
             className={cn(

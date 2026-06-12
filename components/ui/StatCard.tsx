@@ -70,7 +70,8 @@ export function StatCard({
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
             {label}
           </p>
-          <p className="mt-2 font-display text-[1.7rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white">
+          {/* sensitive: gizlilik modunda tutarlar da bulanır */}
+          <p className="sensitive mt-2 font-display text-[1.7rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white">
             {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
           </p>
         </div>

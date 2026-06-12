@@ -90,7 +90,9 @@ html.dark body::after { opacity: 0.05; }
 html.privacy .sensitive {
   filter: blur(7px);
   user-select: none;
-  pointer-events: none;
+  /* pointer-events: none KULLANMA — .sensitive bir <Link>/<a> üzerindeyse
+     tıklamayı öldürür ("detay sayfasına gitmiyor" bug'ı). Görsel bulanıklık
+     yeterli; tıklanabilirlik korunur. */
 }
 
 /* Display tipografi — Fraunces optik incelikleri */

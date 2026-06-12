@@ -89,7 +89,7 @@ export default async function DashboardPage({
           <p className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">
             <span className="font-bold">{out.overdueCount} gecikmiş fatura</span>
             <span className="text-slate-500 dark:text-slate-400"> · toplam </span>
-            <span className="font-mono font-semibold tabular-nums text-rose-600 dark:text-rose-400">
+            <span className="sensitive font-mono font-semibold tabular-nums text-rose-600 dark:text-rose-400">
               {formatTRY(out.overdueTotal, { compact: true })}
             </span>
           </p>
@@ -171,7 +171,7 @@ export default async function DashboardPage({
             <span className="font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
               Aylık Hedef
             </span>
-            <span className="font-mono tabular-nums text-slate-600 dark:text-slate-300">
+            <span className="sensitive font-mono tabular-nums text-slate-600 dark:text-slate-300">
               <span className={goalPct >= 100 ? 'font-bold text-emerald-600 dark:text-emerald-400' : 'font-bold text-slate-900 dark:text-white'}>
                 {formatTRY(k.income, { compact: true })}
               </span>
@@ -250,9 +250,9 @@ export default async function DashboardPage({
                   <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
                   <Link
                     href={s.clientId ? `/dashboard/clients/${s.clientId}` : '#'}
-                    className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
+                    className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
                   >
-                    {s.clientName}
+                    <span className="sensitive">{s.clientName}</span>
                   </Link>
                   {s.status === 'scheduled' && (
                     <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
@@ -419,7 +419,7 @@ export default async function DashboardPage({
                       <p className="text-xs text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</p>
                     </div>
                     <span
-                      className={`shrink-0 font-mono text-[13px] font-semibold tabular-nums ${
+                      className={`sensitive shrink-0 font-mono text-[13px] font-semibold tabular-nums ${
                         income ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                       }`}
                     >
@@ -453,7 +453,7 @@ export default async function DashboardPage({
                 <span className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-amber-700 dark:text-slate-200 dark:group-hover:text-amber-300">
                   {b.name}
                 </span>
-                <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
                   {formatTRY(b.outstanding, { compact: true })}
                 </span>
               </Link>

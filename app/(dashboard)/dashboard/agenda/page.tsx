@@ -8,7 +8,7 @@ import { formatDateShort, formatMonth, formatTRY, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 // Ajanda özet şeridi — premium istatistik kartları
-function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?: string; icon: typeof Clock; tone: string; bg: string }[] }) {
+function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?: string; icon: typeof Clock; tone: string; bg: string; sensitive?: boolean }[] }) {
   return (
     <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
       {tiles.map((t) => (
@@ -17,7 +17,7 @@ function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?:
             <t.icon className="h-4 w-4" />
           </span>
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{t.label}</p>
-          <p className={cn('mt-0.5 font-display text-lg font-semibold tracking-tight', t.tone)}>{t.value}</p>
+          <p className={cn('mt-0.5 font-display text-lg font-semibold tracking-tight', t.sensitive && 'sensitive', t.tone)}>{t.value}</p>
           {t.hint && <p className="mt-0.5 text-[11px] text-slate-400">{t.hint}</p>}
         </div>
       ))}
@@ -168,7 +168,7 @@ export default async function AgendaPage({
   const weekTiles = [
     { label: 'Toplam Seans', value: String(total), hint: weekRange, icon: CalendarDays, tone: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-500/10' },
     { label: 'Planlanan Saat', value: `${totalHours.toFixed(1).replace('.', ',')} sa`, hint: 'tamamlanan + planlanan', icon: Clock, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
-    { label: 'Beklenen Gelir', value: formatTRY(expectedIncome, { compact: true }), hint: 'bu hafta', icon: Wallet, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
+    { label: 'Beklenen Gelir', value: formatTRY(expectedIncome, { compact: true }), hint: 'bu hafta', icon: Wallet, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10', sensitive: true },
     { label: 'Tamamlanan', value: `${completed}`, hint: `${total} seansın`, icon: CalendarCheck2, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
   ]
 

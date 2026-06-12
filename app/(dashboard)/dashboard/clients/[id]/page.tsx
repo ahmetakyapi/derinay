@@ -160,9 +160,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
       {/* İstatistikler */}
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Toplam Tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" />
-        <Stat label="Faturalanan" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" />
-        <Stat label="Bakiye" value={formatTRY(stats.outstanding)} tone={stats.outstanding > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} />
+        <Stat label="Toplam Tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" sensitive />
+        <Stat label="Faturalanan" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" sensitive />
+        <Stat label="Bakiye" value={formatTRY(stats.outstanding)} tone={stats.outstanding > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} sensitive />
         <Stat
           label="Tamamlanan Seans"
           value={String(stats.completedSessions)}
@@ -204,7 +204,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {activePackage.used} kullanıldı
-                {activePackage.pricePaid > 0 && <> · {formatTRY(activePackage.pricePaid)}</>}
+                {activePackage.pricePaid > 0 && <> · <span className="sensitive">{formatTRY(activePackage.pricePaid)}</span></>}
               </p>
             </div>
             <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-500/10">
@@ -338,7 +338,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                       {s.status === 'scheduled' && (
                         <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} template={reminderTemplate} />
                       )}
-                      <span className="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                      <span className="sensitive font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
                         {formatTRY(s.fee, { compact: true })}
                       </span>
                       <SessionStatusSelect id={s.id} clientId={client.id} value={s.status} />
@@ -363,7 +363,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <span className="text-slate-500 dark:text-slate-400">
                       {formatDate(p.date)} · {PAYMENT_METHOD_LABEL[p.method]}
                     </span>
-                    <span className="font-mono text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">+{formatTRY(p.amount)}</span>
+                    <span className="sensitive font-mono text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">+{formatTRY(p.amount)}</span>
                   </li>
                 ))}
               </ul>
@@ -384,7 +384,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{i.number}</span>
                     <span className="flex items-center gap-3">
                       <StatusBadge label={INVOICE_STATUS_LABEL[i.status]} tone={STATUS_TONE[i.status]} />
-                      <span className="font-mono text-[13px] font-semibold tabular-nums text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
+                      <span className="sensitive font-mono text-[13px] font-semibold tabular-nums text-slate-900 dark:text-white">{formatTRY(i.total)}</span>
                       <Link
                         href={`/invoices/${i.id}/print`}
                         target="_blank"
@@ -447,11 +447,11 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   )
 }
 
-function Stat({ label, value, tone, sub }: { label: string; value: string; tone: string; sub?: string }) {
+function Stat({ label, value, tone, sub, sensitive }: { label: string; value: string; tone: string; sub?: string; sensitive?: boolean }) {
   return (
     <div className="glass rounded-2xl p-4">
       <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-      <p className={`mt-1 font-display text-xl font-semibold tracking-tight ${tone}`}>{value}</p>
+      <p className={cn('mt-1 font-display text-xl font-semibold tracking-tight', sensitive && 'sensitive', tone)}>{value}</p>
       {sub && <p className="mt-0.5 text-[11px] font-medium text-rose-500/90 dark:text-rose-400/90">{sub}</p>}
     </div>
   )

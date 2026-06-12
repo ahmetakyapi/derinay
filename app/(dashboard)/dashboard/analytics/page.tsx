@@ -184,7 +184,7 @@ export default async function AnalyticsPage({
             </span>
             <span>
               ort. ücret{' '}
-              <span className="font-mono font-semibold tabular-nums text-slate-900 dark:text-white">
+              <span className="sensitive font-mono font-semibold tabular-nums text-slate-900 dark:text-white">
                 {formatTRY(a.sessionStats.avgFee, { compact: true })}
               </span>
             </span>
@@ -198,7 +198,7 @@ export default async function AnalyticsPage({
               <p className="min-w-0 flex-1 text-[11px] leading-tight text-slate-600 dark:text-slate-300">
                 İptal + gelmeyen seanslarda kaçan gelir
               </p>
-              <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
+              <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
                 {formatTRY(a.sessionStats.lostRevenue, { compact: true })}
               </span>
             </div>
@@ -242,7 +242,7 @@ export default async function AnalyticsPage({
                         <span className="sensitive truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600 dark:text-slate-200 dark:group-hover:text-indigo-300">
                           {c.name}
                         </span>
-                        <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+                        <span className="sensitive shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                           {formatTRY(c.amount, { compact: true })}
                         </span>
                       </div>
@@ -275,7 +275,7 @@ export default async function AnalyticsPage({
                       {PAYMENT_METHOD_LABEL[m.method]}
                       <span className="text-[11px] text-slate-400">({m.count})</span>
                     </span>
-                    <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+                    <span className="sensitive shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                       {formatTRY(m.amount, { compact: true })}
                     </span>
                   </div>
@@ -297,7 +297,7 @@ export default async function AnalyticsPage({
                 {a.incomeByCategory.slice(0, 4).map((c) => (
                   <li key={c.category} className="flex min-w-0 items-center justify-between gap-2 text-sm">
                     <span className="min-w-0 truncate text-slate-600 dark:text-slate-300">{c.category}</span>
-                    <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                    <span className="sensitive shrink-0 font-mono text-xs font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
                       {formatTRY(c.amount, { compact: true })}
                     </span>
                   </li>

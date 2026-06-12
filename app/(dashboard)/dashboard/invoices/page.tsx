@@ -40,7 +40,13 @@ export default async function InvoicesPage() {
     <>
       <PageHeader
         title="Makbuzlar"
-        subtitle={`${invoices.length} makbuz · ${formatTRY(totalBilled, { compact: true })} tahsil · ${formatTRY(totalKdv, { compact: true })} KDV${totalStopaj > 0 ? ` · ${formatTRY(totalStopaj, { compact: true })} stopaj` : ''}`}
+        subtitle={
+          <>
+            {invoices.length} makbuz · <span className="sensitive">{formatTRY(totalBilled, { compact: true })}</span> tahsil ·{' '}
+            <span className="sensitive">{formatTRY(totalKdv, { compact: true })}</span> KDV
+            {totalStopaj > 0 && <> · <span className="sensitive">{formatTRY(totalStopaj, { compact: true })}</span> stopaj</>}
+          </>
+        }
         action={<NewInvoiceDialog clients={clients} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />}
       />
 
@@ -52,11 +58,11 @@ export default async function InvoicesPage() {
             <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
               <Receipt className="h-3.5 w-3.5 text-amber-500" /> Toplam Tahsil Edilen
             </p>
-            <p className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
               {formatTRY(totalBilled)}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-mono font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(paidTotal, { compact: true })}</span> tahsil edildi
+              <span className="sensitive font-mono font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(paidTotal, { compact: true })}</span> tahsil edildi
             </p>
           </div>
           <div className="shrink-0 sm:text-right">
@@ -90,7 +96,7 @@ export default async function InvoicesPage() {
               <p className="mt-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                 {m.label}
               </p>
-              <p className={cn('mt-0.5 font-display text-lg font-semibold tracking-tight', m.tone)}>
+              <p className={cn('sensitive mt-0.5 font-display text-lg font-semibold tracking-tight', m.tone)}>
                 {formatTRY(sumByStatus(st), { compact: true })}
               </p>
             </div>
@@ -134,7 +140,7 @@ export default async function InvoicesPage() {
                         </div>
                       </div>
                       <span className={cn(
-                        'shrink-0 font-mono text-[13px] font-bold tabular-nums sm:hidden',
+                        'sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums sm:hidden',
                         i.status === 'paid' ? 'text-emerald-600 dark:text-emerald-400'
                           : i.status === 'overdue' ? 'text-rose-600 dark:text-rose-400'
                           : 'text-slate-900 dark:text-white',
@@ -143,7 +149,7 @@ export default async function InvoicesPage() {
                       </span>
                     </div>
 
-                    <div className="hidden shrink-0 text-right text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:block">
+                    <div className="sensitive hidden shrink-0 text-right text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:block">
                       <span className="block">Brüt {formatTRY(i.subtotal, { compact: true })}</span>
                       <span className="block">
                         KDV %{i.kdvRate}
@@ -152,7 +158,7 @@ export default async function InvoicesPage() {
                     </div>
 
                     <span className={cn(
-                      'hidden w-28 shrink-0 text-right font-mono text-sm font-bold tabular-nums sm:block',
+                      'sensitive hidden w-28 shrink-0 text-right font-mono text-sm font-bold tabular-nums sm:block',
                       i.status === 'paid' ? 'text-emerald-600 dark:text-emerald-400'
                         : i.status === 'overdue' ? 'text-rose-600 dark:text-rose-400'
                         : 'text-slate-900 dark:text-white',

@@ -82,7 +82,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Toplam</span>
-          <span className="font-display text-base font-semibold text-slate-900 dark:text-white">
+          <span className="sensitive font-display text-base font-semibold text-slate-900 dark:text-white">
             {formatTRY(total, { compact: true })}
           </span>
         </div>
@@ -104,7 +104,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
                 <span className="w-9 shrink-0 text-right text-[11px] font-medium tabular-nums text-slate-400">
                   %{pct}
                 </span>
-                <span className="shrink-0 whitespace-nowrap font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+                <span className="sensitive shrink-0 whitespace-nowrap font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                   {formatTRY(d.amount, { compact: true })}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
           <li className="flex items-center gap-2.5 pt-0.5 text-xs text-slate-400">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-slate-400/40" />
             <span className="flex-1">+{rest.length} diğer kategori</span>
-            <span className="shrink-0 font-mono font-semibold tabular-nums">
+            <span className="sensitive shrink-0 font-mono font-semibold tabular-nums">
               {formatTRY(restTotal, { compact: true })}
             </span>
           </li>

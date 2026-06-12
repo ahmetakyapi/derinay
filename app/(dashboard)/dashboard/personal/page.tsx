@@ -34,6 +34,7 @@ export default async function PersonalPage({
     {
       label: 'Bu Ay Toplam',
       value: formatTRY(data.total),
+      money: true,
       icon: Wallet,
       tone: 'text-rose-600 dark:text-rose-400',
       bg: 'bg-rose-500/10',
@@ -42,6 +43,7 @@ export default async function PersonalPage({
     {
       label: 'Günlük Ortalama',
       value: formatTRY(dailyAvg),
+      money: true,
       icon: CalendarDays,
       tone: 'text-indigo-600 dark:text-indigo-400',
       bg: 'bg-indigo-500/10',
@@ -50,6 +52,7 @@ export default async function PersonalPage({
     {
       label: 'En Çok Harcanan',
       value: topCategory ? topCategory.category : '—',
+      money: false,
       icon: Crown,
       tone: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-500/10',
@@ -58,6 +61,7 @@ export default async function PersonalPage({
     {
       label: 'Harcama Günü',
       value: String(Object.keys(data.byDay).length),
+      money: false,
       icon: Hash,
       tone: 'text-sky-600 dark:text-sky-400',
       bg: 'bg-sky-500/10',
@@ -106,7 +110,7 @@ export default async function PersonalPage({
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
               {s.label}
             </p>
-            <p className={cn('mt-0.5 truncate font-display text-lg font-semibold tracking-tight', s.tone)} title={s.value}>
+            <p className={cn('mt-0.5 truncate font-display text-lg font-semibold tracking-tight', s.money && 'sensitive', s.tone)} title={s.value}>
               {s.value}
             </p>
             <p className="mt-0.5 text-[11px] text-slate-400">{s.hint}</p>
@@ -164,7 +168,7 @@ export default async function PersonalPage({
                     <span className="text-xs font-bold capitalize tracking-wide text-slate-600 dark:text-slate-300">
                       {dayLabel(day)}
                     </span>
-                    <span className="font-mono text-xs font-semibold tabular-nums text-rose-600 dark:text-rose-400">
+                    <span className="sensitive font-mono text-xs font-semibold tabular-nums text-rose-600 dark:text-rose-400">
                       −{formatTRY(dayTotal)}
                     </span>
                   </div>
@@ -185,7 +189,7 @@ export default async function PersonalPage({
                               </p>
                             )}
                           </div>
-                          <span className="shrink-0 font-mono text-[13px] font-semibold tabular-nums text-rose-600 dark:text-rose-400">
+                          <span className="sensitive shrink-0 font-mono text-[13px] font-semibold tabular-nums text-rose-600 dark:text-rose-400">
                             −{formatTRY(it.amount)}
                           </span>
                         </li>
@@ -202,7 +206,7 @@ export default async function PersonalPage({
             <span className="text-sm font-bold capitalize text-slate-800 dark:text-slate-100">
               {formatMonth(monthDate)} Toplamı
             </span>
-            <span className="font-display text-lg font-semibold tracking-tight text-rose-600 dark:text-rose-400">
+            <span className="sensitive font-display text-lg font-semibold tracking-tight text-rose-600 dark:text-rose-400">
               −{formatTRY(data.total)}
             </span>
           </footer>

@@ -146,7 +146,7 @@ export function PersonalCalendar({
                         <span className="text-[8px] leading-none text-slate-400">+{data.items.length - 4}</span>
                       )}
                     </div>
-                    <p className="truncate font-mono text-[9px] font-bold tabular-nums text-rose-700 dark:text-rose-300 sm:text-[11px]">
+                    <p className="sensitive truncate font-mono text-[9px] font-bold tabular-nums text-rose-700 dark:text-rose-300 sm:text-[11px]">
                       {formatTRY(data.total, { compact: true })}
                     </p>
                   </div>
@@ -212,7 +212,7 @@ export function PersonalCalendar({
                       </p>
                     )}
                   </div>
-                  <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                  <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
                     −{formatTRY(it.amount)}
                   </span>
                   <button

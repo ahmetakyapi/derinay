@@ -35,7 +35,11 @@ export default async function PaymentsPage() {
     <>
       <PageHeader
         title="Ödemeler"
-        subtitle={`${payments.length} tahsilat · ${formatTRY(total, { compact: true })} toplam`}
+        subtitle={
+          <>
+            {payments.length} tahsilat · <span className="sensitive">{formatTRY(total, { compact: true })}</span> toplam
+          </>
+        }
         action={<NewPaymentDialog clients={clients} />}
       />
 
@@ -46,7 +50,7 @@ export default async function PaymentsPage() {
           <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
             <Wallet className="h-3.5 w-3.5 text-emerald-500" /> Toplam Tahsilat
           </p>
-          <p className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-4xl">
+          <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-4xl">
             {formatTRY(total)}
           </p>
 
@@ -75,7 +79,7 @@ export default async function PaymentsPage() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                     {m.label} · {m.count}
                   </p>
-                  <p className="font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white">
+                  <p className="sensitive font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white">
                     {formatTRY(m.amount, { compact: true })}
                   </p>
                 </div>
@@ -102,9 +106,9 @@ export default async function PaymentsPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={p.clientId ? `/dashboard/clients/${p.clientId}` : '#'}
-                        className="sensitive truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
+                        className="block truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
                       >
-                        {p.clientName ?? 'Silinmiş danışan'}
+                        <span className="sensitive">{p.clientName ?? 'Silinmiş danışan'}</span>
                       </Link>
                       <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
                         <span className="shrink-0">{formatDate(p.date)}</span>
@@ -120,7 +124,7 @@ export default async function PaymentsPage() {
                         )}
                       </p>
                     </div>
-                    <span className="shrink-0 font-mono text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                    <span className="sensitive shrink-0 font-mono text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                       +{formatTRY(p.amount)}
                     </span>
                     <DeleteButton action={deletePayment.bind(null, p.id)} />
