@@ -36,6 +36,7 @@ import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirth
 import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
 import { USER, SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
+import { cn } from '@/lib/utils'
 
 export default async function DashboardPage({
   searchParams,
@@ -99,28 +100,38 @@ export default async function DashboardPage({
 
       {/* Yaklaşan doğum günleri — sıcak hatırlatma */}
       {birthdays.length > 0 && (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] px-4 py-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-            <Cake className="h-4 w-4" />
-          </span>
-          <p className="text-sm text-slate-700 dark:text-slate-200">
-            <span className="font-bold">Yaklaşan doğum günü</span>
-            <span className="text-slate-500 dark:text-slate-400"> · küçük bir mesaj sevindirir</span>
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            {birthdays.slice(0, 4).map((b) => (
-              <Link
-                key={b.id}
-                href={`/dashboard/clients/${b.id}`}
-                className="group inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-[var(--bg)]/40 py-1 pl-1 pr-3 transition-colors hover:border-amber-500/50"
-              >
-                <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
-                <span className="sensitive text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
-                <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
-                  {b.daysUntil === 0 ? 'bugün 🎂' : b.daysUntil === 1 ? 'yarın' : `${b.daysUntil}g`}
-                </span>
-              </Link>
-            ))}
+        <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/[0.09] via-amber-500/[0.05] to-transparent px-4 py-3.5 sm:px-5">
+          <span aria-hidden className="pointer-events-none absolute -left-6 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-amber-500/10 blur-2xl" />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 shadow-sm shadow-amber-500/10 dark:text-amber-400">
+                <Cake className="h-5 w-5" />
+              </span>
+              <div className="leading-tight">
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">Yaklaşan doğum günü</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Küçük bir mesaj sevindirir 🌿</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {birthdays.slice(0, 4).map((b) => (
+                <Link
+                  key={b.id}
+                  href={`/dashboard/clients/${b.id}`}
+                  className="group inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-[rgba(var(--paper),0.7)] py-1 pl-1 pr-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/50 hover:shadow-md"
+                >
+                  <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
+                  <span className="sensitive text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
+                  <span className={cn(
+                    'rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums',
+                    b.daysUntil === 0
+                      ? 'bg-amber-500 text-white'
+                      : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+                  )}>
+                    {b.daysUntil === 0 ? 'bugün 🎂' : b.daysUntil === 1 ? 'yarın' : `${b.daysUntil} gün`}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

@@ -14,7 +14,7 @@ export function Avatar({
 }: {
   name: string
   color?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   src?: string | null
   className?: string
 }) {
@@ -22,6 +22,7 @@ export function Avatar({
     sm: 'h-8 w-8 text-[11px]',
     md: 'h-10 w-10 text-sm',
     lg: 'h-14 w-14 text-lg',
+    xl: 'h-20 w-20 text-2xl rounded-2xl',
   }
 
   if (src) {

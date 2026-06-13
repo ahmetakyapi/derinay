@@ -48,7 +48,9 @@ import {
   INVOICE_STATUS_LABEL,
   PAYMENT_METHOD_LABEL,
   STATUS_TONE,
+  CLIENT_COLOR_BG,
 } from '@/lib/constants'
+import { BloomArt } from '@/components/art/BloomArt'
 import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -82,78 +84,110 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         <ArrowLeft className="h-4 w-4" /> Danışanlar
       </Link>
 
-      {/* Başlık */}
-      <div className="glass mb-6 rounded-2xl p-5 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar name={client.name} color={client.colorTag} src={client.avatarUrl} size="lg" />
-            <div>
-              <h1 className="sensitive font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{client.name}</h1>
-              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
-                {client.consentGiven ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
-                    <ShieldCheck className="h-3 w-3" /> Onam alındı
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
-                    <ShieldAlert className="h-3 w-3" /> Onam eksik
-                  </span>
-                )}
-                <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5" /> {durationSince(client.startDate)} ({formatDate(client.startDate)})</span>
-                {client.birthDate && (
-                  <span className="inline-flex items-center gap-1">
-                    <Cake className="h-3.5 w-3.5" />
-                    {new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' }).format(new Date(client.birthDate))}
-                  </span>
-                )}
-                {client.email && <span className="sensitive inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {client.email}</span>}
-                {client.phone && <span className="sensitive inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {client.phone}</span>}
+      {/* Başlık — galeri kapaklı premium kart */}
+      <div className="glass relative mb-6 overflow-hidden rounded-2xl">
+        {/* Renk yıkamalı kapak + soluk orkide — kâğıda doğru erir */}
+        <div className="relative h-24 sm:h-28">
+          <div className={cn('absolute inset-0 bg-gradient-to-br', CLIENT_COLOR_BG[client.colorTag] ?? CLIENT_COLOR_BG.indigo)} />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--paper),0.97)] via-[rgba(var(--paper),0.5)] to-[rgba(var(--paper),0.12)]" />
+          <BloomArt className="pointer-events-none absolute -top-3 right-4 h-32 w-24 opacity-45" delay={0.3} />
+        </div>
+
+        <div className="px-5 pb-5 sm:px-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            {/* Avatar + kimlik */}
+            <div className="flex items-end gap-4">
+              <div className="-mt-14 shrink-0 rounded-[1.15rem] bg-[var(--bg)] p-1 shadow-xl shadow-black/10">
+                <Avatar name={client.name} color={client.colorTag} src={client.avatarUrl} size="xl" />
               </div>
-              {client.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {client.tags.map((t) => (
-                    <Link
-                      key={t}
-                      href={`/dashboard/clients?tag=${encodeURIComponent(t)}`}
-                      className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 dark:text-indigo-300"
-                    >
-                      #{t}
-                    </Link>
-                  ))}
+              <div className="min-w-0 pb-0.5">
+                <h1 className="sensitive truncate font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.7rem]">
+                  {client.name}
+                </h1>
+
+                {/* Durum & künye pilleri */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
+                  {client.consentGiven ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                      <ShieldCheck className="h-3 w-3" /> Onam alındı
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                      <ShieldAlert className="h-3 w-3" /> Onam eksik
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <CalendarClock className="h-3 w-3 text-slate-400" /> {durationSince(client.startDate)}
+                  </span>
+                  {client.birthDate && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                      <Cake className="h-3 w-3 text-amber-500" />
+                      {new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' }).format(new Date(client.birthDate))}
+                    </span>
+                  )}
+                  <span className="sensitive inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <CreditCard className="h-3 w-3 text-slate-400" /> {formatTRY(client.sessionFee)} / seans
+                  </span>
                 </div>
-              )}
+
+                {/* İletişim */}
+                {(client.email || client.phone) && (
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                    {client.email && <span className="sensitive inline-flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-slate-400" /> {client.email}</span>}
+                    {client.phone && <span className="sensitive inline-flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-slate-400" /> {client.phone}</span>}
+                  </div>
+                )}
+
+                {client.tags.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {client.tags.map((t) => (
+                      <Link
+                        key={t}
+                        href={`/dashboard/clients?tag=${encodeURIComponent(t)}`}
+                        className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 dark:text-indigo-300"
+                      >
+                        #{t}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={`/clients/${client.id}/print`}
-              target="_blank"
-              aria-label="Danışan dosyasını yazdır"
-              title="Danışan Dosyası (PDF)"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
-            >
-              <Printer className="h-4 w-4" />
-            </Link>
-            <NewPaymentDialog clients={[]} fixedClientId={client.id} />
-            <NewInvoiceDialog clients={[]} fixedClientId={client.id} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />
-            <EditClientDialog
-              client={{
-                id: client.id,
-                name: client.name,
-                email: client.email,
-                phone: client.phone,
-                status: client.status,
-                sessionFee: client.sessionFee,
-                startDate: String(client.startDate),
-                birthDate: client.birthDate ? String(client.birthDate) : null,
-                colorTag: client.colorTag,
-                consentGiven: client.consentGiven,
-                avatarUrl: client.avatarUrl,
-                tags: client.tags,
-              }}
-            />
-            <DeleteClientButton clientId={client.id} clientName={client.name} />
+
+            {/* Aksiyonlar — birincil makbuz + ikincil ikon kümesi */}
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <NewInvoiceDialog clients={[]} fixedClientId={client.id} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />
+              <NewPaymentDialog clients={[]} fixedClientId={client.id} />
+              <div className="flex items-center gap-1.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] p-1">
+                <Link
+                  href={`/clients/${client.id}/print`}
+                  target="_blank"
+                  aria-label="Danışan dosyasını yazdır"
+                  title="Danışan Dosyası (PDF)"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+                >
+                  <Printer className="h-4 w-4" />
+                </Link>
+                <EditClientDialog
+                  client={{
+                    id: client.id,
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                    status: client.status,
+                    sessionFee: client.sessionFee,
+                    startDate: String(client.startDate),
+                    birthDate: client.birthDate ? String(client.birthDate) : null,
+                    colorTag: client.colorTag,
+                    consentGiven: client.consentGiven,
+                    avatarUrl: client.avatarUrl,
+                    tags: client.tags,
+                  }}
+                />
+                <DeleteClientButton clientId={client.id} clientName={client.name} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
