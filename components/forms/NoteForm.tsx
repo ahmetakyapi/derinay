@@ -79,111 +79,131 @@ export function NoteForm({
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="space-y-3">
-      {/* Not türü */}
-      <div className="flex flex-wrap gap-1.5">
-        {NOTE_KINDS.map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => setKind(k)}
-            className={cn(
-              'rounded-full border px-3 py-1.5 text-xs font-semibold transition-all',
-              kind === k
-                ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
-                : 'border-slate-500/20 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:hover:text-slate-300',
-            )}
-          >
-            {NOTE_KIND_LABEL[k]}
-          </button>
-        ))}
+    <form ref={formRef} onSubmit={onSubmit} className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            Yazı Masası
+          </p>
+          <p className="mt-1 max-w-sm font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+            Seansın izini taze tut
+          </p>
+        </div>
+        <div className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.66)] px-3 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+          {goals.length} aktif hedef
+        </div>
       </div>
 
-      <Input name="title" placeholder="Başlık (opsiyonel)" />
-      <Textarea
-        name="body"
-        rows={body.includes('\n') ? 7 : 3}
-        required
-        placeholder="Bugünün notu…"
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-      />
-
-      {/* Şablonlar — yapılandırılmış not iskeletleri */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Şablon:</span>
-        {NOTE_TEMPLATES.map((t) => (
-          <button
-            key={t.label}
-            type="button"
-            onClick={() => {
-              if (body.trim()) return setPendingTemplate(t.body)
-              setBody(t.body)
-            }}
-            className="rounded-full border border-slate-500/20 px-2.5 py-1 text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Hedefe bağla — aktif tedavi hedefleri */}
-      {goals.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Hedef:</span>
-          {goals.map((g) => (
+      <div>
+        <p className="field-label">Kayıt türü</p>
+        <div className="flex flex-wrap gap-1.5">
+          {NOTE_KINDS.map((k) => (
             <button
-              key={g.id}
+              key={k}
               type="button"
-              onClick={() => setGoalId(goalId === g.id ? null : g.id)}
+              onClick={() => setKind(k)}
               className={cn(
-                'max-w-[220px] truncate rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
-                goalId === g.id
-                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                  : 'border-slate-500/20 text-slate-500 hover:border-amber-500/40 hover:text-amber-600 dark:text-slate-400',
+                'rounded-full border px-3 py-1.5 text-xs font-semibold transition-all',
+                kind === k
+                  ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 shadow-sm dark:text-indigo-300'
+                  : 'border-slate-500/20 bg-white/40 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/[0.02] dark:hover:text-slate-300',
               )}
             >
-              🎯 {g.title}
+              {NOTE_KIND_LABEL[k]}
             </button>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* Duygu durumu — 5'li skala */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Seans duygusu:</span>
-        <div className="flex items-center gap-1.5">
-          {MOODS.map((m) => (
+      <div className="space-y-3">
+        <Input name="title" placeholder="Başlık (opsiyonel)" className="bg-[rgba(var(--paper),0.9)]" />
+        <Textarea
+          name="body"
+          rows={body.includes('\n') ? 10 : 8}
+          required
+          placeholder="Bugünün notu… Seanstaki ana izlenim, kırılma anı ya da bir sonraki adım."
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          className="min-h-[220px] bg-[rgba(var(--paper),0.92)] text-[15px] leading-7"
+        />
+      </div>
+
+      <div className="space-y-3 border-t border-slate-500/10 pt-4">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Şablon:</span>
+          {NOTE_TEMPLATES.map((t) => (
             <button
-              key={m}
+              key={t.label}
               type="button"
-              onClick={() => setMood(mood === m ? null : m)}
-              title={MOOD_LABEL[m]}
-              aria-label={MOOD_LABEL[m]}
-              className={cn(
-                'h-6 w-6 rounded-full transition-all',
-                MOOD_BG[m],
-                mood === m
-                  ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
-                  : 'opacity-45 hover:scale-105 hover:opacity-90',
-              )}
-            />
+              onClick={() => {
+                if (body.trim()) return setPendingTemplate(t.body)
+                setBody(t.body)
+              }}
+              className="rounded-full border border-slate-500/20 px-2.5 py-1 text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+            >
+              {t.label}
+            </button>
           ))}
         </div>
-        {mood && (
-          <span className="font-display text-xs italic text-slate-600 dark:text-slate-300">
-            {MOOD_LABEL[mood]}
-          </span>
+
+        {goals.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Hedef:</span>
+            {goals.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => setGoalId(goalId === g.id ? null : g.id)}
+                className={cn(
+                  'max-w-[260px] truncate rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
+                  goalId === g.id
+                    ? 'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                    : 'border-slate-500/20 text-slate-500 hover:border-amber-500/40 hover:text-amber-600 dark:text-slate-400',
+                )}
+              >
+                🎯 {g.title}
+              </button>
+            ))}
+          </div>
         )}
+      </div>
+
+      <div className="rounded-2xl border border-slate-500/12 bg-[rgba(var(--paper),0.52)] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Seans duygusu:</span>
+          <div className="flex items-center gap-2">
+            {MOODS.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMood(mood === m ? null : m)}
+                title={MOOD_LABEL[m]}
+                aria-label={MOOD_LABEL[m]}
+                className={cn(
+                  'h-7 w-7 rounded-full transition-all',
+                  MOOD_BG[m],
+                  mood === m
+                    ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
+                    : 'opacity-50 hover:scale-105 hover:opacity-90',
+                )}
+              />
+            ))}
+          </div>
+          {mood && (
+            <span className="font-display text-sm italic text-slate-600 dark:text-slate-300">
+              {MOOD_LABEL[mood]}
+            </span>
+          )}
+        </div>
       </div>
 
       {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-1">
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
+          className="inline-flex min-w-[148px] items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:bg-[rgb(var(--pine))] disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
         >
           <Feather className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Not Ekle'}
         </button>

@@ -79,7 +79,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
 
   if (editing) {
     return (
-      <form onSubmit={onSave} className="note-paper relative space-y-3 rounded-xl p-4 ring-1 ring-indigo-500/30">
+      <form onSubmit={onSave} className="note-paper note-paper-rich relative space-y-3 rounded-[1.35rem] p-4 ring-1 ring-indigo-500/30 sm:p-5">
         <div className="flex flex-wrap gap-1.5">
           {NOTE_KINDS.map((k) => (
             <button
@@ -142,34 +142,41 @@ export function NoteCard({ note }: { note: NoteCardData }) {
   return (
     <div
       className={cn(
-        'note-paper group relative rounded-xl p-4 transition-all',
+        'note-paper note-paper-rich group relative rounded-[1.35rem] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:p-5',
         note.pinned && 'ring-1 ring-amber-500/40',
       )}
     >
       {/* Altın raptiye — sabitlenmiş not */}
       {note.pinned && (
-        <span className="absolute -top-2 right-4 flex h-5 w-5 rotate-12 items-center justify-center rounded-full bg-amber-500 text-white shadow-md">
+        <span className="absolute -top-2 right-4 flex h-6 w-6 rotate-12 items-center justify-center rounded-full bg-amber-500 text-white shadow-md">
           <Pin className="h-3 w-3" />
         </span>
       )}
 
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <StatusBadge label={NOTE_KIND_LABEL[note.kind]} tone={NOTE_KIND_TONE[note.kind]} />
-        {note.mood && (
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-            <span className={cn('h-2.5 w-2.5 rounded-full', MOOD_BG[note.mood])} />
-            {MOOD_LABEL[note.mood]}
-          </span>
-        )}
-        {note.goalTitle && (
-          <span
-            title={`Hedef: ${note.goalTitle}`}
-            className="inline-flex max-w-[180px] items-center gap-1 truncate rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
-          >
-            🎯 <span className="truncate">{note.goalTitle}</span>
-          </span>
-        )}
-        <span className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+      <div className="mb-3 flex flex-wrap items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge label={NOTE_KIND_LABEL[note.kind]} tone={NOTE_KIND_TONE[note.kind]} />
+            {note.mood && (
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                <span className={cn('h-2.5 w-2.5 rounded-full', MOOD_BG[note.mood])} />
+                {MOOD_LABEL[note.mood]}
+              </span>
+            )}
+            {note.goalTitle && (
+              <span
+                title={`Hedef: ${note.goalTitle}`}
+                className="inline-flex max-w-[220px] items-center gap-1 truncate rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+              >
+                🎯 <span className="truncate">{note.goalTitle}</span>
+              </span>
+            )}
+          </div>
+          <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+            {formatDateTime(note.createdAt)}
+          </p>
+        </div>
+        <span className="ml-auto flex items-center gap-0.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
           <button
             onClick={() => setEditing(true)}
             disabled={pending}
@@ -210,14 +217,13 @@ export function NoteCard({ note }: { note: NoteCardData }) {
       />
 
       {note.title && (
-        <p className="font-display text-[15px] font-semibold tracking-tight text-slate-900 dark:text-white">
+        <p className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           {note.title}
         </p>
       )}
-      <p className="mt-1 whitespace-pre-wrap text-sm leading-7 text-slate-600 dark:text-slate-300">
+      <p className="whitespace-pre-wrap text-[15px] leading-7 text-slate-600 dark:text-slate-300">
         {note.body}
       </p>
-      <p className="mt-2 text-[11px] text-slate-400">{formatDateTime(note.createdAt)}</p>
     </div>
   )
 }
