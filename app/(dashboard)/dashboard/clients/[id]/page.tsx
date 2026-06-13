@@ -54,6 +54,8 @@ import { BloomArt } from '@/components/art/BloomArt'
 import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   const [data, reminderTemplate, taxRates] = await Promise.all([getClientDetail(params.id), getReminderTemplate(), getTaxSettings()])
   if (!data) notFound()

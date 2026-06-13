@@ -27,6 +27,8 @@ export function revalidateSessions(clientId?: string | null) {
 
 /** Danışan kimliği değişti — liste + tüm detay sayfaları + ⌘K listesi (layout) */
 export function revalidateClients() {
+  revalidatePath('/dashboard/clients')
+  revalidatePath('/dashboard')
   revalidatePath('/dashboard/clients', 'layout')
   revalidatePath('/dashboard', 'layout') // komut paleti danışan listesi layout'ta çekiliyor
 }

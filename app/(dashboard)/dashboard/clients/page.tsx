@@ -10,6 +10,8 @@ import { CLIENT_STATUS_LABEL, STATUS_TONE, CLIENT_STATUSES, type ClientStatus } 
 import { cn } from '@/lib/utils'
 import { durationSince, formatTRY, formatDateTime } from '@/lib/format'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ClientsPage({
   searchParams,
 }: {

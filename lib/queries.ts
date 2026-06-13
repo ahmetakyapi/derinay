@@ -1,5 +1,6 @@
 import 'server-only'
 import { and, arrayContains, desc, eq, gte, ilike, lt, lte, or } from 'drizzle-orm'
+import { unstable_noStore as noStore } from 'next/cache'
 import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
@@ -69,6 +70,7 @@ export async function listTransactions(opts?: {
 
 // ─── Dashboard istatistikleri ────────────────────────────────────────────────
 export async function getDashboard(monthsBack = 6) {
+  noStore()
   await autoMarkOverdue() // vade geçtiyse uyarı bandı güncel olsun
   const [allTx, allInvoices, clientRows, taxRates] = await Promise.all([
     // Dashboard = iş (business) genel görünümü; kişisel harcamalar hariç
@@ -150,6 +152,7 @@ export async function getDashboard(monthsBack = 6) {
 
 // ─── Danışanlar ──────────────────────────────────────────────────────────────
 export async function listClients(opts?: { status?: ClientStatus; q?: string; tag?: string }) {
+  noStore()
   const filters = []
   if (opts?.status) filters.push(eq(clients.status, opts.status))
   if (opts?.q?.trim()) filters.push(ilike(clients.name, `%${opts.q.trim()}%`))
@@ -177,6 +180,7 @@ export async function listClients(opts?: { status?: ClientStatus; q?: string; ta
 }
 
 export async function getClientDetail(id: string) {
+  noStore()
   const [client] = await db.select().from(clients).where(eq(clients.id, id))
   if (!client) return null
 
@@ -363,6 +367,7 @@ export async function listPayments() {
 // Form select'leri için hafif danışan listesi (sessionFee → seans ücretini otomatik doldurmak için)
 /** Komut paleti için hafif danışan listesi (ad + renk + avatar) */
 export async function clientSearchList() {
+  noStore()
   return db
     .select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
     .from(clients)
@@ -370,6 +375,7 @@ export async function clientSearchList() {
 }
 
 export async function clientOptions() {
+  noStore()
   const rows = await db
     .select({ id: clients.id, name: clients.name, sessionFee: clients.sessionFee })
     .from(clients)
@@ -379,6 +385,7 @@ export async function clientOptions() {
 
 // ─── Yaklaşan doğum günleri (önümüzdeki N gün) ──────────────────────────────
 export async function getUpcomingBirthdays(daysAhead = 14) {
+  noStore()
   const rows = await db
     .select({ id: clients.id, name: clients.name, birthDate: clients.birthDate, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
     .from(clients)
@@ -403,6 +410,7 @@ export async function getUpcomingBirthdays(daysAhead = 14) {
 
 // ─── Dashboard hatırlatmaları (bugün + eksik not + biten paket + eski ölçüm) ──
 export async function getDashboardReminders() {
+  noStore()
   const now = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
   const dkey = (d: Date | string) => iso(new Date(d))
@@ -488,6 +496,7 @@ export async function getDashboardReminders() {
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
 export async function getOutstandingBalances() {
+  noStore()
   const [clientRows, invs, pays] = await Promise.all([
     db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl }).from(clients),
     db.select().from(invoices),
@@ -519,6 +528,7 @@ export async function getOutstandingBalances() {
 
 // ─── Kişisel harcamalar (gün bazlı takvim) ───────────────────────────────────
 export async function getPersonalMonth(month?: string) {
+  noStore()
   const base = month ? new Date(Number(month.split('-')[0]), Number(month.split('-')[1]) - 1, 1) : new Date()
   const start = iso(new Date(base.getFullYear(), base.getMonth(), 1))
   const end = iso(new Date(base.getFullYear(), base.getMonth() + 1, 0))
@@ -571,6 +581,7 @@ export async function getPersonalMonth(month?: string) {
 
 // ─── Haftalık seans takvimi (dashboard) ──────────────────────────────────────
 export async function getWeekSessions(weekOffset = 0) {
+  noStore()
   const now = new Date()
   // Haftanın başlangıcı = Pazartesi
   const day = (now.getDay() + 6) % 7 // Pzt=0 … Paz=6
@@ -626,6 +637,7 @@ export async function getWeekSessions(weekOffset = 0) {
 
 // ─── Vergi genel görünümü ────────────────────────────────────────────────────
 export async function getTaxOverview(monthsBack = 6) {
+  noStore()
   const [allTx, allInvoices, taxRates] = await Promise.all([
     db.select().from(transactions).where(eq(transactions.scope, 'business')),
     db.select().from(invoices),
@@ -655,6 +667,7 @@ export async function getTaxOverview(monthsBack = 6) {
 
 // ─── Yıllık analiz ───────────────────────────────────────────────────────────
 export async function getYearAnalytics(year: number) {
+  noStore()
   const start = `${year}-01-01`
   const end = `${year}-12-31`
   const yearStart = new Date(year, 0, 1)
