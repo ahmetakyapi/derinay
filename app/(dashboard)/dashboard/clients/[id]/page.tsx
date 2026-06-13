@@ -76,7 +76,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     : []
   const scoreMax = scoreLabel ? scores.find((s) => s.label === scoreLabel && s.scaleMax)?.scaleMax ?? null : null
   const recentScores = [...scores].reverse().slice(0, 6)
-  const activeGoalsForNotes = goals.filter((g) => g.status === 'active').map((g) => ({ id: g.id, title: g.title }))
   const pinnedNoteCount = notes.filter((n) => n.pinned).length
   const latestNoteAt = notes[0] ? formatDateTime(String(notes[0].createdAt)) : null
 
@@ -325,89 +324,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             )}
           </section>
 
-          {/* Seans Defteri */}
-          <section className="glass relative overflow-hidden rounded-[1.75rem]">
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-indigo-500/[0.09] via-amber-500/[0.06] to-transparent" />
-            <div className="relative border-b border-slate-500/10 px-5 py-5 sm:px-6">
-              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-                <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri
-              </h2>
-              <p className="mt-2 max-w-2xl font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
-                Yazı masası solda, yaşayan kayıt akışı sağda.
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.68)] px-3 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  {notes.length} kayıt
-                </span>
-                <span className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.68)] px-3 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  {pinnedNoteCount} sabitlenmiş not
-                </span>
-                <span className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.68)] px-3 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  {activeGoalsForNotes.length} aktif hedef bağlantısı
-                </span>
-              </div>
-            </div>
-
-            <div className="relative grid lg:grid-cols-[minmax(320px,0.92fr)_minmax(0,1.08fr)]">
-              <div className="border-b border-slate-500/10 p-5 sm:p-6 lg:border-b-0 lg:border-r">
-                <div className="lg:sticky lg:top-24">
-                  <div className="note-studio rounded-[1.55rem] p-5 sm:p-6">
-                    <NoteForm clientId={client.id} goals={activeGoalsForNotes} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-5 sm:p-6">
-                <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Kayıt Akışı
-                    </p>
-                    <p className="mt-1 font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-                      Son notlar ve gözlemler
-                    </p>
-                  </div>
-                  {latestNoteAt && (
-                    <p className="text-xs text-slate-400">
-                      Son kayıt: <span className="font-semibold text-slate-500 dark:text-slate-300">{latestNoteAt}</span>
-                    </p>
-                  )}
-                </div>
-
-                {notes.length ? (
-                  <div className="relative space-y-4 pl-5 before:absolute before:left-[7px] before:top-2 before:bottom-6 before:w-px before:bg-gradient-to-b before:from-indigo-500/35 before:via-slate-500/12 before:to-transparent">
-                    {notes.map((n) => (
-                      <div key={n.id} className="relative before:absolute before:-left-5 before:top-8 before:h-3.5 before:w-3.5 before:rounded-full before:border before:border-[rgba(var(--line),0.16)] before:bg-[rgba(var(--paper),0.96)] before:shadow-sm">
-                        <NoteCard
-                          note={{
-                            id: n.id,
-                            clientId: client.id,
-                            title: n.title,
-                            body: n.body,
-                            kind: n.kind,
-                            mood: n.mood,
-                            pinned: n.pinned,
-                            createdAt: String(n.createdAt),
-                            goalId: n.goalId,
-                            goalTitle: n.goalId ? goals.find((g) => g.id === n.goalId)?.title ?? null : null,
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="note-studio rounded-[1.4rem] px-6 py-10 text-center">
-                    <p className="font-display text-base italic text-slate-500 dark:text-slate-300">
-                      Defterin ilk sayfası seni bekliyor.
-                    </p>
-                    <p className="mt-2 text-sm text-slate-400">
-                      Soldaki yazı masasından ilk seans kaydını oluşturarak bu akışı başlatabilirsin.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
         </div>
 
         <div className="space-y-6">
@@ -533,6 +449,70 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           </section>
         </div>
       </div>
+
+      {/* Seans Defteri */}
+      <section className="glass mt-6 overflow-hidden rounded-[1.5rem]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
+          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri
+          </h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.68)] px-3.5 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+              {notes.length} kayıt
+            </span>
+            <span className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.68)] px-3.5 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+              {pinnedNoteCount} sabitli
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 divide-y divide-slate-500/10 lg:grid-cols-[0.95fr_1.05fr] lg:divide-x lg:divide-y-0">
+          <div className="p-4 sm:p-5">
+            <div className="note-studio rounded-[1.35rem] p-4 sm:p-5">
+              <NoteForm clientId={client.id} compact />
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-bold tracking-[0.01em] text-slate-700 dark:text-slate-200">Kayıtlar</p>
+              {latestNoteAt && (
+                <p className="text-xs text-slate-400">
+                  Son kayıt <span className="font-semibold text-slate-500 dark:text-slate-300">{latestNoteAt}</span>
+                </p>
+              )}
+            </div>
+
+            {notes.length ? (
+              <div className="space-y-3">
+                {notes.map((n) => (
+                  <NoteCard
+                    key={n.id}
+                    note={{
+                      id: n.id,
+                      clientId: client.id,
+                      title: n.title,
+                      body: n.body,
+                      kind: n.kind,
+                      mood: n.mood,
+                      pinned: n.pinned,
+                      createdAt: String(n.createdAt),
+                      goalId: n.goalId,
+                      goalTitle: n.goalId ? goals.find((g) => g.id === n.goalId)?.title ?? null : null,
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="note-studio rounded-[1.3rem] px-6 py-8 text-center">
+                <p className="font-display text-sm italic text-slate-500 dark:text-slate-300">
+                  İlk not için alan hazır.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </>
   )
 }

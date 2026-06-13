@@ -39,17 +39,15 @@ const NOTE_TEMPLATES: { label: string; body: string }[] = [
  */
 export function NoteForm({
   clientId,
-  goals = [],
+  compact = false,
 }: {
   clientId: string
-  /** Aktif tedavi hedefleri — not bir hedefe bağlanabilir */
-  goals?: { id: string; title: string }[]
+  compact?: boolean
 }) {
   const [pending, start] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [kind, setKind] = useState<NoteKind>('session')
   const [mood, setMood] = useState<Mood | null>(null)
-  const [goalId, setGoalId] = useState<string | null>(null)
   const [body, setBody] = useState('')
   const [pendingTemplate, setPendingTemplate] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -66,36 +64,21 @@ export function NoteForm({
         body,
         kind,
         mood,
-        goalId,
+        goalId: null,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
       formRef.current?.reset()
       setBody('')
       setMood(null)
-      setGoalId(null)
       setKind('session')
       router.refresh()
     })
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-            Yazı Masası
-          </p>
-          <p className="mt-1 max-w-sm font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-            Seansın izini taze tut
-          </p>
-        </div>
-        <div className="rounded-full border border-slate-500/15 bg-[rgba(var(--paper),0.66)] px-3 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-          {goals.length} aktif hedef
-        </div>
-      </div>
-
+    <form ref={formRef} onSubmit={onSubmit} className={cn('space-y-5', compact && 'space-y-4')}>
       <div>
-        <p className="field-label">Kayıt türü</p>
+        <p className="mb-2 text-sm font-bold tracking-[0.01em] text-slate-700 dark:text-slate-200">Kayıt Türü</p>
         <div className="flex flex-wrap gap-1.5">
           {NOTE_KINDS.map((k) => (
             <button
@@ -103,7 +86,7 @@ export function NoteForm({
               type="button"
               onClick={() => setKind(k)}
               className={cn(
-                'rounded-full border px-3 py-1.5 text-xs font-semibold transition-all',
+                'rounded-full border px-3.5 py-2 text-sm font-semibold transition-all',
                 kind === k
                   ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 shadow-sm dark:text-indigo-300'
                   : 'border-slate-500/20 bg-white/40 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/[0.02] dark:hover:text-slate-300',
@@ -119,18 +102,21 @@ export function NoteForm({
         <Input name="title" placeholder="Başlık (opsiyonel)" className="bg-[rgba(var(--paper),0.9)]" />
         <Textarea
           name="body"
-          rows={body.includes('\n') ? 10 : 8}
+          rows={compact ? (body.includes('\n') ? 9 : 7) : body.includes('\n') ? 12 : 10}
           required
-          placeholder="Bugünün notu… Seanstaki ana izlenim, kırılma anı ya da bir sonraki adım."
+          placeholder="Bugünün notu…"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="min-h-[220px] bg-[rgba(var(--paper),0.92)] text-[15px] leading-7"
+          className={cn(
+            'bg-[rgba(var(--paper),0.92)] text-[15px] leading-7',
+            compact ? 'min-h-[240px]' : 'min-h-[320px]',
+          )}
         />
       </div>
 
       <div className="space-y-3 border-t border-slate-500/10 pt-4">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Şablon:</span>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Şablon:</span>
           {NOTE_TEMPLATES.map((t) => (
             <button
               key={t.label}
@@ -139,38 +125,17 @@ export function NoteForm({
                 if (body.trim()) return setPendingTemplate(t.body)
                 setBody(t.body)
               }}
-              className="rounded-full border border-slate-500/20 px-2.5 py-1 text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+              className="rounded-full border border-slate-500/20 px-3 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
             >
               {t.label}
             </button>
           ))}
         </div>
-
-        {goals.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Hedef:</span>
-            {goals.map((g) => (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => setGoalId(goalId === g.id ? null : g.id)}
-                className={cn(
-                  'max-w-[260px] truncate rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
-                  goalId === g.id
-                    ? 'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                    : 'border-slate-500/20 text-slate-500 hover:border-amber-500/40 hover:text-amber-600 dark:text-slate-400',
-                )}
-              >
-                🎯 {g.title}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="rounded-2xl border border-slate-500/12 bg-[rgba(var(--paper),0.52)] px-4 py-3">
+      <div className={cn('rounded-2xl border border-slate-500/12 bg-[rgba(var(--paper),0.52)] px-4 py-3', compact && 'px-3.5 py-2.5')}>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Seans duygusu:</span>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Seans Duygusu:</span>
           <div className="flex items-center gap-2">
             {MOODS.map((m) => (
               <button
@@ -199,11 +164,14 @@ export function NoteForm({
 
       {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
-      <div className="flex justify-end pt-1">
+      <div className={cn('flex justify-end pt-1', compact && 'pt-0')}>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-w-[148px] items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:bg-[rgb(var(--pine))] disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+          className={cn(
+            'inline-flex min-w-[148px] items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:bg-[rgb(var(--pine))] disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100',
+            compact && 'min-w-[132px] rounded-xl px-4 py-2.5 text-[13px]',
+          )}
         >
           <Feather className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Not Ekle'}
         </button>

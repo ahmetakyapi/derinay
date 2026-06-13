@@ -11,7 +11,6 @@ import {
   CalendarRange,
   DatabaseBackup,
   Users,
-  ClipboardList,
   ArrowLeftRight,
   CalendarDays,
   FileText,
@@ -42,7 +41,6 @@ const NAV_GROUPS = [
       { label: 'Genel Bakış', href: '/dashboard', icon: LayoutDashboard },
       { label: 'Ajanda', href: '/dashboard/agenda', icon: CalendarRange },
       { label: 'Danışanlar', href: '/dashboard/clients', icon: Users },
-      { label: 'Bekleme Listesi', href: '/dashboard/waitlist', icon: ClipboardList },
     ],
   },
   {
@@ -88,10 +86,10 @@ function Brand() {
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   return (
-    <nav className="flex flex-col gap-5">
+    <nav className="flex flex-col gap-4">
       {NAV_GROUPS.map((group) => (
         <div key={group.label}>
-          <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400/80">
+          <p className="mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400/80">
             {group.label}
           </p>
           <div className="flex flex-col gap-0.5">
@@ -106,7 +104,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                   href={item.href}
                   onClick={onNavigate}
                   className={cn(
-                    'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
+                    'group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all',
                     active
                       ? 'bg-indigo-500/10 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300'
                       : 'text-slate-500 hover:bg-slate-500/8 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
@@ -132,7 +130,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-function ThemeToggle() {
+function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -142,7 +140,10 @@ function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Tema değiştir"
-      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400"
+      className={cn(
+        'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400',
+        className,
+      )}
     >
       {mounted && (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
     </button>
@@ -204,64 +205,71 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 p-5 lg:flex">
-        <div className="mb-6">
-          <Brand />
+      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex">
+        <div className="flex-1 pr-1">
+          <div className="mb-5">
+            <Brand />
+          </div>
+          {/* Komut paleti tetikleyici */}
+          <button
+            onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
+            className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-400 transition-colors hover:border-indigo-500/30 hover:text-slate-600 dark:hover:text-slate-300"
+          >
+            <Search className="h-4 w-4" />
+            <span className="flex-1 text-left">Ara…</span>
+            <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
+          </button>
+          <NavList />
         </div>
-        {/* Komut paleti tetikleyici */}
-        <button
-          onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
-          className="mb-5 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-400 transition-colors hover:border-indigo-500/30 hover:text-slate-600 dark:hover:text-slate-300"
-        >
-          <Search className="h-4 w-4" />
-          <span className="flex-1 text-left">Ara…</span>
-          <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
-        </button>
-        <NavList />
-        <div className="mt-auto">
+        <div className="shrink-0 pt-3">
           {/* Galeri ayracı */}
           <div className="mb-3 flex items-center gap-3 px-2" aria-hidden>
             <span className="h-px flex-1 bg-slate-500/15" />
             <span className="text-[10px] text-amber-500/70">✦</span>
             <span className="h-px flex-1 bg-slate-500/15" />
           </div>
-        <div className="flex items-center justify-between gap-2 rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
-              SA
-            </span>
-            <div className="min-w-0 text-xs">
-              <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
-              <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
+          <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+            <div className="flex items-center gap-2.5">
+              <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
+                  SA
+                </span>
+                <div className="min-w-0 text-xs">
+                  <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
+                  <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 grid grid-cols-3 gap-1.5">
+              <button
+                onClick={togglePrivacy}
+                aria-label="Gizlilik modu"
+                title="Gizlilik modu (⌘⇧H)"
+                className={cn(
+                  'flex h-10 items-center justify-center rounded-xl border transition-all',
+                  privacy
+                    ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-slate-500/20 text-slate-500 hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400',
+                )}
+              >
+                {privacy ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+              <div>
+                <ThemeToggle className="h-10 w-full" />
+              </div>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  aria-label="Çıkış yap"
+                  title="Çıkış yap"
+                  className="flex h-10 w-full items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </form>
             </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <button
-              onClick={togglePrivacy}
-              aria-label="Gizlilik modu"
-              title="Gizlilik modu (⌘⇧H)"
-              className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-xl border transition-all',
-                privacy
-                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                  : 'border-slate-500/20 text-slate-500 hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400',
-              )}
-            >
-              {privacy ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-            <ThemeToggle />
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                aria-label="Çıkış yap"
-                title="Çıkış yap"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/50 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
-        </div>
         </div>
       </aside>
 

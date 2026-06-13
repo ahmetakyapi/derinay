@@ -11,7 +11,6 @@ import {
   Package,
   Activity,
   Paperclip,
-  ClipboardList,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { RestoreCard } from '@/components/backup/RestoreCard'
@@ -28,7 +27,6 @@ const CSV_EXPORTS = [
   { type: 'packages', label: 'Seans Paketleri', desc: 'Ön ödemeli paketler ve tutarlar', icon: Package, tone: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-500/10' },
   { type: 'scores', label: 'İlerleme Ölçümleri', desc: 'Ölçek puanları ve tarihler', icon: Activity, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
   { type: 'documents', label: 'Belge Bağlantıları', desc: 'Onam, test ve rapor referansları', icon: Paperclip, tone: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-500/10' },
-  { type: 'waitlist', label: 'Bekleme Listesi', desc: 'Başvuru adayları ve kaynakları', icon: ClipboardList, tone: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10' },
 ] as const
 
 export default async function BackupPage() {
@@ -73,7 +71,7 @@ export default async function BackupPage() {
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Tüm tabloların eksiksiz kopyası — danışanlar, seanslar, notlar, finans, makbuzlar, ödemeler,
-            paketler, ölçümler, belgeler, bekleme listesi ve ayarlar
+            paketler, ölçümler, belgeler ve ayarlar
           </p>
         </div>
         <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all group-hover:bg-indigo-500">

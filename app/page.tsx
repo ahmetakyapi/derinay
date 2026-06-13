@@ -229,7 +229,6 @@ export default function Home() {
                     'Seans Paketi',
                     'Vergi Özeti',
                     'Analiz & PDF Rapor',
-                    'Bekleme Listesi',
                     'Kişisel Harcamalar',
                   ].map((w) => (
                     <span key={w} className="flex items-center gap-10 whitespace-nowrap">

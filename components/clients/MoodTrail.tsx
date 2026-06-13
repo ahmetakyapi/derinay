@@ -31,21 +31,27 @@ export function MoodTrail({
   const trail = entries.slice(0, 16).reverse()
 
   return (
-    <div>
-      <div className="flex h-12 items-end gap-1.5">
-        {trail.map((e, i) => (
-          <span
-            key={i}
-            title={`${MOOD_LABEL[e.mood]} · ${formatDateShort(e.date)}`}
-            className={cn(
-              'w-3 flex-1 cursor-default rounded-full transition-all hover:scale-y-110',
-              MOOD_BG[e.mood],
-              MOOD_HEIGHT[e.mood],
-            )}
-          />
-        ))}
+    <div className="space-y-3">
+      <div className="rounded-2xl border border-slate-500/10 bg-[rgba(var(--paper),0.42)] px-3 py-3">
+        <div className="flex items-end gap-2 overflow-x-auto pb-1">
+          {trail.map((e, i) => (
+            <div key={i} className="flex shrink-0 flex-col items-center gap-2">
+              <span
+                title={`${MOOD_LABEL[e.mood]} · ${formatDateShort(e.date)}`}
+                className={cn(
+                  'block w-4 cursor-default rounded-full transition-all hover:scale-y-110',
+                  MOOD_BG[e.mood],
+                  MOOD_HEIGHT[e.mood],
+                )}
+              />
+              <span className="text-[10px] uppercase tracking-[0.12em] text-slate-400">
+                {formatDateShort(e.date)}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         {MOODS.map((m) => (
           <span key={m} className="inline-flex items-center gap-1 text-[10px] text-slate-400">
             <span className={cn('h-1.5 w-1.5 rounded-full', MOOD_BG[m])} />
