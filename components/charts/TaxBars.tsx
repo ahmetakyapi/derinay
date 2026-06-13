@@ -11,6 +11,7 @@ import {
 } from 'recharts'
 import { formatTRY } from '@/lib/format'
 import { CHART } from '@/lib/palette'
+import { useMounted } from '@/hooks/useMounted'
 
 type Point = { label: string; kdvCollected: number; incomeTax: number }
 
@@ -66,6 +67,8 @@ function TaxTooltip({
 
 /** Aylık vergi yükü — KDV (altın) + gelir vergisi (kil) yığılı çubuklar */
 export function TaxBars({ data }: { data: Point[] }) {
+  const mounted = useMounted()
+  if (!mounted) return <div className="skeleton rounded-xl" style={{ height: 240 }} aria-hidden />
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>

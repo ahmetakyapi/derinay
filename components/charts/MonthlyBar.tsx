@@ -12,10 +12,13 @@ import {
 } from 'recharts'
 import { formatTRY } from '@/lib/format'
 import { CHART } from '@/lib/palette'
+import { useMounted } from '@/hooks/useMounted'
 
 type Point = { label: string; net: number }
 
 export function MonthlyBar({ data }: { data: Point[] }) {
+  const mounted = useMounted()
+  if (!mounted) return <div className="skeleton rounded-xl" style={{ height: 280 }} aria-hidden />
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>

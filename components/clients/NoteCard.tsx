@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Pin, Trash2, Pencil, Check, X } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Input, Textarea } from '@/components/ui/Field'
 import { togglePinNote, deleteNote, updateNote } from '@/app/actions/notes'
 import {
@@ -40,6 +41,7 @@ export type NoteCardData = {
 export function NoteCard({ note }: { note: NoteCardData }) {
   const [pending, start] = useTransition()
   const [editing, setEditing] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const [kind, setKind] = useState<NoteKind>(note.kind)
   const [mood, setMood] = useState<Mood | null>(note.mood)
   const [error, setError] = useState<string | null>(null)
@@ -52,12 +54,9 @@ export function NoteCard({ note }: { note: NoteCardData }) {
     })
   }
 
-  function onDelete() {
-    if (!window.confirm('Bu not silinecek. Emin misiniz?')) return
-    start(async () => {
-      await deleteNote(note.id, note.clientId)
-      router.refresh()
-    })
+  async function onDelete() {
+    await deleteNote(note.id, note.clientId)
+    router.refresh()
   }
 
   function onSave(e: React.FormEvent<HTMLFormElement>) {
@@ -193,8 +192,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             <Pin className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={onDelete}
-            disabled={pending}
+            onClick={() => setConfirmOpen(true)}
             aria-label="Sil"
             className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
           >
@@ -202,6 +200,14 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           </button>
         </span>
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={onDelete}
+        title="Not silinsin mi?"
+        description="Bu seans notu kalıcı olarak silinecek."
+      />
 
       {note.title && (
         <p className="font-display text-[15px] font-semibold tracking-tight text-slate-900 dark:text-white">

@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Target, Plus, Check, Pause, Play, Trash2 } from 'lucide-react'
 import { addGoal, setGoalStatus, deleteGoal } from '@/app/actions/goals'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { cn } from '@/lib/utils'
 
 type Goal = {
@@ -20,6 +21,7 @@ type Goal = {
  */
 export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[] }) {
   const [error, setError] = useState<string | null>(null)
+  const [toDelete, setToDelete] = useState<Goal | null>(null)
   const [pending, start] = useTransition()
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -46,12 +48,10 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
     })
   }
 
-  function remove(id: string) {
-    if (!window.confirm('Hedef silinecek. Emin misiniz?')) return
-    start(async () => {
-      await deleteGoal(id, clientId)
-      router.refresh()
-    })
+  async function remove() {
+    if (!toDelete) return
+    await deleteGoal(toDelete.id, clientId)
+    router.refresh()
   }
 
   return (
@@ -121,7 +121,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
                 </button>
               )}
               <button
-                onClick={() => remove(g.id)}
+                onClick={() => setToDelete(g)}
                 disabled={pending}
                 aria-label="Sil"
                 className="shrink-0 text-slate-300 opacity-0 transition-all hover:text-rose-500 group-hover:opacity-100 dark:text-slate-600"
@@ -155,6 +155,14 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
           Danışanla birlikte belirlediğiniz hedefleri ekle — tamamlandıkça ilerleme görünür.
         </p>
       )}
+
+      <ConfirmDialog
+        open={toDelete !== null}
+        onClose={() => setToDelete(null)}
+        onConfirm={remove}
+        title="Hedef silinsin mi?"
+        description={toDelete ? `“${toDelete.title}” hedefi kaldırılacak.` : undefined}
+      />
     </section>
   )
 }

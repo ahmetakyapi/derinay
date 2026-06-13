@@ -1,6 +1,7 @@
 'use client'
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { useMounted } from '@/hooks/useMounted'
 import { formatTRY } from '@/lib/format'
 import { CHART_SERIES } from '@/lib/palette'
 
@@ -49,6 +50,7 @@ function DonutTooltip({
  * lejant altta tam genişlik satırlar (isim + % + tutar).
  */
 export function CategoryDonut({ data }: { data: Slice[] }) {
+  const mounted = useMounted()
   const total = data.reduce((s, d) => s + d.amount, 0)
   const rows = data.slice(0, MAX_ROWS)
   const rest = data.slice(MAX_ROWS)
@@ -57,6 +59,9 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
   return (
     <div className="flex flex-col items-center gap-5">
       <div className="relative h-[168px] w-[168px] shrink-0">
+        {!mounted ? (
+          <div className="skeleton h-full w-full rounded-full" aria-hidden />
+        ) : (
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -80,6 +85,7 @@ export function CategoryDonut({ data }: { data: Slice[] }) {
             />
           </PieChart>
         </ResponsiveContainer>
+        )}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Toplam</span>
           <span className="sensitive font-display text-base font-semibold text-slate-900 dark:text-white">

@@ -9,6 +9,17 @@ import { modalBackdrop, modalPanel } from '@/lib/variants'
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex="-1"])'
 
+// İç içe modallarda body kaydırma kilidini doğru yönet (ref-count).
+let scrollLockCount = 0
+function lockBodyScroll() {
+  if (scrollLockCount === 0) document.body.style.overflow = 'hidden'
+  scrollLockCount++
+}
+function unlockBodyScroll() {
+  scrollLockCount = Math.max(0, scrollLockCount - 1)
+  if (scrollLockCount === 0) document.body.style.overflow = ''
+}
+
 const SIZE_MAX: Record<'md' | 'lg' | 'xl' | '2xl', string> = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
@@ -73,11 +84,11 @@ export function Modal({
     }
 
     document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
+    lockBodyScroll()
     return () => {
       cancelAnimationFrame(raf)
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
+      unlockBodyScroll()
       prevFocus?.focus?.()
     }
   }, [open, onClose])

@@ -8,6 +8,7 @@ import {
 } from 'recharts'
 import { formatTRY } from '@/lib/format'
 import { CHART } from '@/lib/palette'
+import { useMounted } from '@/hooks/useMounted'
 
 /**
  * Bu ay ödenecek vergi göstergesi — altın halka KDV payını gösterir,
@@ -17,9 +18,13 @@ export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }
   const total = kdv + incomeTax
   const pct = total > 0 ? Math.round((kdv / total) * 100) : 0
   const data = [{ name: 'KDV', value: pct, fill: CHART.gold }]
+  const mounted = useMounted()
 
   return (
     <div className="relative h-[210px] w-full">
+      {!mounted ? (
+        <div className="skeleton h-full w-full rounded-2xl" aria-hidden />
+      ) : (
       <ResponsiveContainer width="100%" height="100%">
         <RadialBarChart
           innerRadius="78%"
@@ -32,6 +37,7 @@ export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }
           <RadialBar background={{ fill: CHART.track }} dataKey="value" cornerRadius={999} />
         </RadialBarChart>
       </ResponsiveContainer>
+      )}
 
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1">
         <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">

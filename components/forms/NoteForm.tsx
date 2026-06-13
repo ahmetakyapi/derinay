@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Feather } from 'lucide-react'
 import { Input, Textarea } from '@/components/ui/Field'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { createNote } from '@/app/actions/notes'
 import {
   NOTE_KINDS,
@@ -50,6 +51,7 @@ export function NoteForm({
   const [mood, setMood] = useState<Mood | null>(null)
   const [goalId, setGoalId] = useState<string | null>(null)
   const [body, setBody] = useState('')
+  const [pendingTemplate, setPendingTemplate] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
 
@@ -115,7 +117,7 @@ export function NoteForm({
             key={t.label}
             type="button"
             onClick={() => {
-              if (body.trim() && !window.confirm('Mevcut not şablonla değiştirilsin mi?')) return
+              if (body.trim()) return setPendingTemplate(t.body)
               setBody(t.body)
             }}
             className="rounded-full border border-slate-500/20 px-2.5 py-1 text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
@@ -186,6 +188,18 @@ export function NoteForm({
           <Feather className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Not Ekle'}
         </button>
       </div>
+
+      <ConfirmDialog
+        open={pendingTemplate !== null}
+        onClose={() => setPendingTemplate(null)}
+        onConfirm={() => {
+          if (pendingTemplate !== null) setBody(pendingTemplate)
+        }}
+        title="Şablon uygulansın mı?"
+        description="Şu an yazdığın not metni şablonla değiştirilecek."
+        confirmLabel="Değiştir"
+        tone="default"
+      />
     </form>
   )
 }

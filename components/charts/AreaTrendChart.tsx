@@ -11,6 +11,7 @@ import {
 } from 'recharts'
 import { formatTRY } from '@/lib/format'
 import { CHART } from '@/lib/palette'
+import { useMounted } from '@/hooks/useMounted'
 
 type Point = { label: string; income: number; expense: number }
 
@@ -76,6 +77,8 @@ function FlowTooltip({
 }
 
 export function AreaTrendChart({ data }: { data: Point[] }) {
+  const mounted = useMounted()
+  if (!mounted) return <div className="skeleton rounded-xl" style={{ height: 300 }} aria-hidden />
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={data} margin={{ top: 12, right: 6, left: -4, bottom: 0 }}>

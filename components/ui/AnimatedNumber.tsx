@@ -18,7 +18,9 @@ export function AnimatedNumber({
   duration?: number
 }) {
   const reduced = useReducedMotion()
-  const [val, setVal] = useState(reduced ? to : 0)
+  // Hydration güvenliği: SSR ve istemcinin İLK render'ı daima 0 olmalı.
+  // (reduced-motion açıkken bile başlangıçta 0; effect içinde hedefe atlanır.)
+  const [val, setVal] = useState(0)
   const raf = useRef<number>()
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useScroll, useSpring } from 'framer-motion'
 import {
   Users,
@@ -313,6 +314,65 @@ export default function Home() {
                 </GlassCard>
               </motion.div>
             ))}
+          </motion.div>
+        </section>
+
+        {/* Panele bir bakış — gerçek ürün görüntüsü (tema-duyarlı) */}
+        <section className="relative z-10 mx-auto max-w-6xl px-6 py-16">
+          <motion.div
+            variants={staggerContainer(0.08)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="mb-10 text-center"
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
+            >
+              Panele Bir <span className="italic text-indigo-700 dark:text-indigo-300">Bakış</span>
+            </motion.h2>
+            <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
+              Gelir, seans takvimi ve vergi — hepsi tek, sakin bir ekranda.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.8, ease: EASE }}
+            className="relative"
+          >
+            {/* Çerçeve ışıması */}
+            <div className="pointer-events-none absolute -inset-x-8 -top-8 bottom-0 -z-10 bg-gradient-to-b from-indigo-500/10 via-amber-500/5 to-transparent blur-3xl" />
+            {/* Tarayıcı tuvali */}
+            <div className="glass overflow-hidden rounded-2xl p-1.5 shadow-2xl">
+              <div className="flex items-center gap-1.5 px-3 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+                <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                  derinay · genel bakış
+                </span>
+              </div>
+              <Image
+                src="/showcase-light.jpg"
+                alt="Derinay panel önizlemesi — genel bakış"
+                width={1440}
+                height={900}
+                sizes="(min-width: 1152px) 1152px, 100vw"
+                className="block h-auto w-full rounded-xl dark:hidden"
+              />
+              <Image
+                src="/showcase-dark.jpg"
+                alt="Derinay panel önizlemesi — genel bakış (gece)"
+                width={1440}
+                height={900}
+                sizes="(min-width: 1152px) 1152px, 100vw"
+                className="hidden h-auto w-full rounded-xl dark:block"
+              />
+            </div>
           </motion.div>
         </section>
 

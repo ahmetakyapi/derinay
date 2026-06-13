@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Trash2, ExternalLink, GripVertical, Clock } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Field, Input } from '@/components/ui/Field'
 import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
 import { ReminderButton } from '@/components/clients/ReminderButton'
@@ -46,6 +47,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
 export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; todayKey: string; reminderTemplate: string }) {
   const [selected, setSelected] = useState<AgendaItem | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const [dragId, setDragId] = useState<string | null>(null)
   const [hoverDay, setHoverDay] = useState<string | null>(null) // sürükleme hedefi vurgusu
   const [nowMin, setNowMin] = useState<number | null>(null) // canlı "şu an" çizgisi (mount sonrası)
@@ -103,14 +105,11 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
     })
   }
 
-  function removeSession() {
+  async function removeSession() {
     if (!selected) return
-    if (!window.confirm('Bu seans silinecek. Emin misiniz?')) return
-    start(async () => {
-      await deleteSession(selected.id, selected.clientId)
-      setSelected(null)
-      router.refresh()
-    })
+    await deleteSession(selected.id, selected.clientId)
+    setSelected(null)
+    router.refresh()
   }
 
   const hours = Array.from({ length: SPAN / 60 + 1 }, (_, i) => DAY_START / 60 + i)
@@ -374,7 +373,7 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
 
             <div className="flex justify-end border-t border-slate-500/10 pt-3">
               <button
-                onClick={removeSession}
+                onClick={() => setConfirmDelete(true)}
                 disabled={pending}
                 className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 dark:text-rose-400"
               >
@@ -384,6 +383,15 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
           </div>
         )}
       </Modal>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={removeSession}
+        title="Seans silinsin mi?"
+        description={selected ? `${selected.clientName} · ${selected.time}` : undefined}
+        confirmLabel="Seansı sil"
+      />
     </>
   )
 }
