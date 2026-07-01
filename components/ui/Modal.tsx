@@ -107,8 +107,9 @@ export function Modal({
           animate="visible"
           exit="exit"
           onClick={onClose}
-          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4 backdrop-blur-sm sm:items-center"
+          className="fixed inset-0 z-[9999] flex items-end justify-center overflow-y-auto bg-slate-950/50 backdrop-blur-sm sm:items-center sm:p-4"
         >
+          {/* Mobil: alttan açılan sayfa (bottom sheet) · sm+: ortalanmış kart */}
           <motion.div
             ref={panelRef}
             variants={modalPanel}
@@ -118,8 +119,10 @@ export function Modal({
             aria-labelledby={titleId}
             aria-describedby={description ? descId : undefined}
             tabIndex={-1}
-            className={`surface my-8 w-full ${SIZE_MAX[size]} rounded-3xl p-5 shadow-2xl outline-none sm:p-6`}
+            className={`surface w-full ${SIZE_MAX[size]} max-h-[92dvh] overflow-y-auto rounded-t-3xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl outline-none sm:my-8 sm:max-h-none sm:rounded-3xl sm:p-6`}
           >
+            {/* Sürükleme tutamacı — yalnızca mobil */}
+            <span aria-hidden className="mx-auto mb-3 block h-1 w-10 rounded-full bg-slate-500/25 sm:hidden" />
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h2 id={titleId} className="font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">{title}</h2>

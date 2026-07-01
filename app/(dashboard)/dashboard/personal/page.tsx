@@ -72,6 +72,7 @@ export default async function PersonalPage({
   return (
     <>
       <PageHeader
+        eyebrow="Yaşam"
         title="Kişisel Harcamalar"
         subtitle="İş dışı günlük harcamaların — takvimden bir güne dokun ve ekle"
         action={

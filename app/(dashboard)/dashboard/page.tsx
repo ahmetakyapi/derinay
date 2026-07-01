@@ -33,7 +33,7 @@ import { MonthlyBar } from '@/components/charts/MonthlyBar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ReminderButton } from '@/components/clients/ReminderButton'
 import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, getReminderTemplate, getIncomeGoal, clientOptions } from '@/lib/queries'
-import { formatTRY, formatDateShort, formatMonth, pctChange } from '@/lib/format'
+import { formatTRY, formatDateShort, pctChange } from '@/lib/format'
 import { USER, SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
 import { cn } from '@/lib/utils'
@@ -70,8 +70,14 @@ export default async function DashboardPage({
   return (
     <>
       <PageHeader
-        title={`${greetingNow()}, ${USER.firstName}`}
-        subtitle={`${formatMonth(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
+        eyebrow={new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
+        title={
+          <>
+            {greetingNow()},{' '}
+            <span className="italic text-indigo-700 dark:text-indigo-300">{USER.firstName}</span>
+          </>
+        }
+        subtitle={`${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
         action={<QuickAddMenu clients={clients} />}
       />
 
@@ -136,8 +142,8 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* KPI kartları */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* KPI kartları — mobilde 2'li galeri rafı */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           label="Aylık Gelir"
           value={formatTRY(k.income)}

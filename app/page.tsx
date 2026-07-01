@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion, useScroll, useSpring, MotionConfig } from 'framer-motion'
 import {
   Users,
   Wallet,
@@ -32,7 +32,7 @@ export default function Home() {
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 })
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <motion.div
         aria-hidden
         style={{ scaleX: progress }}
@@ -434,7 +434,7 @@ export default function Home() {
       </main>
 
       <Footer />
-    </>
+    </MotionConfig>
   )
 }
 

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, LayoutDashboard, CalendarRange, Users, ArrowLeftRight, LineChart,
-  FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft,
+  FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft, Hourglass,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { EASE } from '@/lib/variants'
@@ -20,6 +20,7 @@ const COMMANDS: Cmd[] = [
   { label: 'Genel Bakış', href: '/dashboard', group: 'Klinik', icon: LayoutDashboard, keywords: 'ana sayfa dashboard özet' },
   { label: 'Ajanda', href: '/dashboard/agenda', group: 'Klinik', icon: CalendarRange, keywords: 'takvim seans randevu' },
   { label: 'Danışanlar', href: '/dashboard/clients', group: 'Klinik', icon: Users, keywords: 'hasta client kişi' },
+  { label: 'Bekleme Listesi', href: '/dashboard/waitlist', group: 'Klinik', icon: Hourglass, keywords: 'başvuru aday waitlist sıra' },
   { label: 'Gelir & Gider', href: '/dashboard/finances', group: 'Finans', icon: ArrowLeftRight, keywords: 'işlem transaction para' },
   { label: 'Analiz', href: '/dashboard/analytics', group: 'Finans', icon: LineChart, keywords: 'rapor grafik istatistik' },
   { label: 'Makbuzlar', href: '/dashboard/invoices', group: 'Finans', icon: FileText, keywords: 'fatura makbuz kdv stopaj' },

@@ -187,12 +187,15 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 - **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
   `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
 - **Bileşen envanteri** (önce bunları kullan, yenisini yazma):
-  - Kart başlık: `<PageHeader title subtitle action />`
+  - Kart başlık: `<PageHeader eyebrow title subtitle action />` — `eyebrow` = galeri bölüm
+    etiketi (**Klinik / Finans / Yaşam**, sidebar gruplarıyla aynı); `title` ReactNode alır
+    (dashboard'da italik isim). Başlık altı el çizimi fırça SVG'si — düz çizgiye çevirme.
   - KPI: `<StatCard label value icon={<Icon/>} accent change hint />` — `icon` **ReactNode**, lucide bileşeni DEĞİL (bkz §10)
   - Durum etiketi: `<StatusBadge label tone />` (tone: emerald/amber/slate/sky/red/indigo/violet) — `STATUS_TONE[...]` ile eşle
   - Avatar: `<Avatar name color size />`
   - Modal: `<Modal open onClose title description>` + form — **portal ile document.body'ye render edilir**
-    (backdrop-filter'lı .glass atalar fixed'i hapseder; modalı asla portalsız render etme)
+    (backdrop-filter'lı .glass atalar fixed'i hapseder; modalı asla portalsız render etme).
+    Mobilde otomatik **bottom-sheet** (alttan açılır, tutamaç + safe-area payı) — sm+ ortalanmış kart.
   - Form alanları: `<Field label><Input/Select/Textarea/></Field>`
   - Silme: `<DeleteButton action={fn.bind(null,id)} redirectTo? confirmText? />`
   - Boş durum: `<EmptyState icon title description action />`
@@ -202,6 +205,12 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 - **Marka**: mürekkep damgası — `bg-slate-900` kare + Fraunces italic "D" + altın nokta
   (Shell, Header ve fatura print'te aynı kimlik).
 - **Navigasyon**: `DashboardShell` içinde `NAV_GROUPS` (Klinik / Finans / Yaşam) — düz `NAV` dizisi değil.
+  Mobilde ayrıca **alt sekme çubuğu** (`TAB_ITEMS`: Genel/Ajanda/Danışan/Finans/Menü) — yeni ana
+  sayfa eklersen ilgili sekmenin `match` dizisine yolu ekle. İçerik `pb-28` ile bara pay bırakır;
+  alta sabitlenen pil/toast'lar mobilde `bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-5` kullanır.
+- **Mobil kalite tabanı**: `.field` mobilde 16px (iOS zoom fix), `touch-action: manipulation`,
+  `prefers-reduced-motion` CSS'te + Framer'da `MotionConfig reducedMotion="user"` (Shell & landing),
+  `viewportFit: 'cover'` + `env(safe-area-inset-*)` payları (topbar/tabbar/drawer).
 - **İmleç**: özel cursor YOK — normal mouse. Tekrar ekleme.
 
 ---

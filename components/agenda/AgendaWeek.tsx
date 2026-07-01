@@ -316,7 +316,7 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
 
       {/* Çakışma uyarısı — geçici pil */}
       {conflict && (
-        <div className="surface fixed bottom-5 left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300">
+        <div className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300 lg:bottom-5">
           <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-rose-500" />
           {conflict}
         </div>

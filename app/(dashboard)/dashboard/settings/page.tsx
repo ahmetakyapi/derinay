@@ -17,6 +17,7 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Yaşam"
         title="Ayarlar"
         subtitle="İşletme kimliğin, vergi oranların, hatırlatma şablonun ve veri yönetimi"
       />

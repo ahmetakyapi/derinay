@@ -109,6 +109,7 @@ export default async function FinancesPage({
   return (
     <>
       <PageHeader
+        eyebrow="Finans"
         title="Gelir & Gider"
         subtitle="Kliniğin finansal hareketleri — ay ay, gün gün"
         action={

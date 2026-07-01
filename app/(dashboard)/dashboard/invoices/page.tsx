@@ -39,6 +39,7 @@ export default async function InvoicesPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Finans"
         title="Makbuzlar"
         subtitle={
           <>

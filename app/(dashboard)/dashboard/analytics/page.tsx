@@ -68,6 +68,7 @@ export default async function AnalyticsPage({
   return (
     <>
       <PageHeader
+        eyebrow="Finans"
         title="Analiz"
         subtitle={`${year} yılının finansal hikâyesi — ay ay, kalem kalem`}
         action={
@@ -103,8 +104,8 @@ export default async function AnalyticsPage({
         }
       />
 
-      {/* Yıllık KPI'lar */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Yıllık KPI'lar — mobilde 2'li galeri rafı */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           label={`${year} Geliri`}
           value={formatTRY(a.totals.income)}

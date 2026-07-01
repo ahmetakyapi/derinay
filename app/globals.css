@@ -45,6 +45,22 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Dokunmatik: çift-tap zoom gecikmesini kaldır — butonlar anında tepki verir */
+a, button, [role='button'], input, select, textarea, label {
+  touch-action: manipulation;
+}
+
+/* Hareket azaltma tercihi — CSS animasyonları ve smooth scroll durur
+   (Framer tarafı DashboardShell'deki MotionConfig reducedMotion="user" ile) */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -213,6 +229,12 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
     color: rgba(var(--line), 0.78);
   }
   html.dark .field-label { color: rgba(var(--line), 0.7); }
+
+  /* iOS Safari, 16px altındaki input'a odaklanınca sayfayı zoom'lar —
+     mobilde alan yazısını 16px'e sabitleyerek istenmeyen zoom'u engelle */
+  @media (max-width: 640px) {
+    .field { font-size: 1rem; }
+  }
 
   /* Seans Defteri — çizgili kâğıt dokulu not kartı */
   .note-paper {

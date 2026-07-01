@@ -36,6 +36,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  // viewport-fit=cover — çentikli telefonlarda safe-area değişkenlerini aktive eder
+  // (tab bar / topbar env(safe-area-inset-*) paylarını kullanır)
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f6f2e9' },
     { media: '(prefers-color-scheme: dark)', color: '#04070d' },

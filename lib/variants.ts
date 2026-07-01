@@ -47,8 +47,9 @@ export const modalBackdrop = {
   exit:    { opacity: 0, transition: { duration: 0.15 } },
 }
 
+// Aşağıdan yükselerek belirir — mobil bottom-sheet ve masaüstü kartın ortak dili
 export const modalPanel = {
-  hidden:  { opacity: 0, scale: 0.96, y: -16 },
-  visible: { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.25, ease: EASE } },
-  exit:    { opacity: 0, scale: 0.96, y: -16, transition: { duration: 0.15 } },
+  hidden:  { opacity: 0, scale: 0.98, y: 28 },
+  visible: { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.28, ease: EASE } },
+  exit:    { opacity: 0, scale: 0.98, y: 28, transition: { duration: 0.18 } },
 }

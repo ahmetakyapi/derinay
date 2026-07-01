@@ -66,7 +66,7 @@ export function StatCard({
       initial="hidden"
       animate="visible"
       className={cn(
-        'glass group relative overflow-hidden rounded-2xl p-5',
+        'glass group relative overflow-hidden rounded-2xl p-4 sm:p-5',
         'before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:h-28 before:w-28 before:rounded-full before:blur-2xl before:content-[""]',
         a.glow,
       )}
@@ -77,11 +77,11 @@ export function StatCard({
             {label}
           </p>
           {/* sensitive: gizlilik modunda tutarlar da bulanır */}
-          <p className="sensitive mt-2 font-display text-[1.7rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white">
+          <p className="sensitive mt-2 font-display text-[1.35rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white sm:text-[1.7rem]">
             {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
           </p>
         </div>
-        <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl', a.icon)}>
+        <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10', a.icon)}>
           {icon}
         </span>
       </div>

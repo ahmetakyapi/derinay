@@ -19,6 +19,7 @@ export default async function WaitlistPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Klinik"
         title="Bekleme Listesi"
         subtitle={`${entries.length} başvuru${highCount ? ` · ${highCount} yüksek öncelik` : ''} — uygun slot açıldığında danışana çevir`}
         action={<NewWaitlistDialog />}

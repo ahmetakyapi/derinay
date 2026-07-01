@@ -34,6 +34,7 @@ export default async function PaymentsPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Finans"
         title="Ödemeler"
         subtitle={
           <>

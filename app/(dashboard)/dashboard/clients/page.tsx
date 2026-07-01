@@ -35,6 +35,7 @@ export default async function ClientsPage({
   return (
     <>
       <PageHeader
+        eyebrow="Klinik"
         title="Danışanlar"
         subtitle={`${clients.length} kayıtlı danışan`}
         action={<NewClientDialog />}

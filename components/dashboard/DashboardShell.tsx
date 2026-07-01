@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import {
   LayoutDashboard,
   LineChart,
@@ -25,6 +25,7 @@ import {
   LogOut,
   Eye,
   EyeOff,
+  Hourglass,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { USER } from '@/lib/constants'
@@ -41,6 +42,7 @@ const NAV_GROUPS = [
       { label: 'Genel Bakış', href: '/dashboard', icon: LayoutDashboard },
       { label: 'Ajanda', href: '/dashboard/agenda', icon: CalendarRange },
       { label: 'Danışanlar', href: '/dashboard/clients', icon: Users },
+      { label: 'Bekleme Listesi', href: '/dashboard/waitlist', icon: Hourglass },
     ],
   },
   {
@@ -62,6 +64,82 @@ const NAV_GROUPS = [
     ],
   },
 ]
+
+// Mobil alt sekme çubuğu — "galeri rafı": en sık kullanılan dört durak + menü.
+// Aktif sekme çam mürekkebi alır, altında küçük altın nokta (galeri plaketi işareti).
+const TAB_ITEMS = [
+  { label: 'Genel', href: '/dashboard', icon: LayoutDashboard, match: ['/dashboard'] },
+  { label: 'Ajanda', href: '/dashboard/agenda', icon: CalendarRange, match: ['/dashboard/agenda'] },
+  { label: 'Danışan', href: '/dashboard/clients', icon: Users, match: ['/dashboard/clients', '/dashboard/waitlist'] },
+  {
+    label: 'Finans',
+    href: '/dashboard/finances',
+    icon: ArrowLeftRight,
+    match: ['/dashboard/finances', '/dashboard/analytics', '/dashboard/invoices', '/dashboard/payments', '/dashboard/taxes'],
+  },
+] as const
+
+function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
+  const pathname = usePathname()
+  const isActive = (item: (typeof TAB_ITEMS)[number]) =>
+    item.href === '/dashboard'
+      ? pathname === '/dashboard'
+      : item.match.some((m) => pathname.startsWith(m))
+  const anyTabActive = TAB_ITEMS.some(isActive)
+
+  return (
+    <nav
+      aria-label="Alt gezinme"
+      className="glass fixed inset-x-0 bottom-0 z-40 border-t border-slate-500/10 pb-[env(safe-area-inset-bottom)] lg:hidden"
+    >
+      <div className="grid grid-cols-5">
+        {TAB_ITEMS.map((item) => {
+          const active = isActive(item)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              className={cn(
+                'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-[10px] font-semibold transition-colors',
+                active
+                  ? 'text-indigo-700 dark:text-indigo-300'
+                  : 'text-slate-500 active:text-slate-700 dark:text-slate-400 dark:active:text-slate-200',
+              )}
+            >
+              <item.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />
+              {item.label}
+              <span
+                aria-hidden
+                className={cn(
+                  'mt-0.5 h-1 w-1 rounded-full transition-all',
+                  active ? 'bg-amber-500' : 'bg-transparent',
+                )}
+              />
+            </Link>
+          )
+        })}
+        <button
+          onClick={onOpenMenu}
+          aria-label="Tüm menü"
+          className={cn(
+            'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-[10px] font-semibold transition-colors',
+            !anyTabActive
+              ? 'text-indigo-700 dark:text-indigo-300'
+              : 'text-slate-500 active:text-slate-700 dark:text-slate-400 dark:active:text-slate-200',
+          )}
+        >
+          <Menu className="h-5 w-5" strokeWidth={1.8} />
+          Menü
+          <span
+            aria-hidden
+            className={cn('mt-0.5 h-1 w-1 rounded-full', !anyTabActive ? 'bg-amber-500' : 'bg-transparent')}
+          />
+        </button>
+      </div>
+    </nav>
+  )
+}
 
 function Brand() {
   return (
@@ -195,6 +273,7 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
     })
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen">
       {/* Klavye kullanıcısı için içeriğe atla — odaklanınca görünür */}
       <a
@@ -273,8 +352,8 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
         </div>
       </aside>
 
-      {/* Mobile topbar */}
-      <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between px-4 lg:hidden">
+      {/* Mobile topbar — safe-area (çentik) payı */}
+      <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between px-4 pt-[env(safe-area-inset-top)] lg:hidden">
         <Brand />
         <div className="flex items-center gap-2">
           <button
@@ -318,19 +397,49 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
               exit={{ x: -300 }}
               transition={{ type: 'spring', stiffness: 300, damping: 32 }}
               onClick={(e) => e.stopPropagation()}
-              className="surface absolute inset-y-0 left-0 flex w-72 flex-col p-5"
+              className="surface absolute inset-y-0 left-0 flex w-72 flex-col overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
             >
               <div className="mb-8 flex items-center justify-between">
                 <Brand />
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Kapat"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <NavList onNavigate={() => setOpen(false)} />
+              <div className="flex-1">
+                <NavList onNavigate={() => setOpen(false)} />
+              </div>
+
+              {/* Kullanıcı kartı + çıkış — masaüstü sidebar'daki kimlik bloğunun mobil hali */}
+              <div className="mt-6 shrink-0">
+                <div className="mb-3 flex items-center gap-3 px-2" aria-hidden>
+                  <span className="h-px flex-1 bg-slate-500/15" />
+                  <span className="text-[10px] text-amber-500/70">✦</span>
+                  <span className="h-px flex-1 bg-slate-500/15" />
+                </div>
+                <div className="flex items-center gap-2.5 rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
+                    SA
+                  </span>
+                  <div className="min-w-0 flex-1 text-xs">
+                    <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
+                    <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
+                  </div>
+                  <form action={logoutAction}>
+                    <button
+                      type="submit"
+                      aria-label="Çıkış yap"
+                      title="Çıkış yap"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </button>
+                  </form>
+                </div>
+              </div>
             </motion.aside>
           </motion.div>
         )}
@@ -338,22 +447,25 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
 
       <CommandPalette clients={clients} />
 
-      {/* Content */}
+      {/* Content — mobilde alt sekme çubuğuna pay bırak */}
       <main id="main-content" tabIndex={-1} className="outline-none lg:pl-64">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:py-10">
           <PageTransition>{children}</PageTransition>
         </div>
       </main>
 
-      {/* Gizlilik modu göstergesi — kimlikler gizliyken geri açmak için */}
+      <MobileTabBar onOpenMenu={() => setOpen(true)} />
+
+      {/* Gizlilik modu göstergesi — mobilde tab bar'ın üstünde durur */}
       {privacy && (
         <button
           onClick={togglePrivacy}
-          className="surface fixed bottom-5 left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300"
+          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300 lg:bottom-5"
         >
           <EyeOff className="h-4 w-4" /> Gizlilik açık — kimlikler gizli
         </button>
       )}
     </div>
+    </MotionConfig>
   )
 }
