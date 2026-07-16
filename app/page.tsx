@@ -17,6 +17,7 @@ import {
   HeartHandshake,
 } from 'lucide-react'
 import { useSpotlight } from '@/hooks/useSpotlight'
+import { CHART } from '@/lib/palette'
 import { fadeUp, staggerContainer, EASE } from '@/lib/variants'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { BloomMark } from '@/components/brand/BloomMark'
@@ -159,14 +160,14 @@ export default function Home() {
                   <svg className="h-full w-full" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden>
                     <defs>
                       <linearGradient id="lpFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#3f7c72" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#3f7c72" stopOpacity="0.02" />
+                        <stop offset="0%" stopColor={CHART.primary} stopOpacity="0.25" />
+                        <stop offset="100%" stopColor={CHART.primary} stopOpacity="0.02" />
                       </linearGradient>
                     </defs>
                     <motion.path
                       d="M0 70 C40 62, 60 44, 95 48 S150 70, 185 56 S240 18, 280 26 S350 42, 400 22"
                       fill="none"
-                      stroke="#3f7c72"
+                      stroke={CHART.primary}
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       initial={{ pathLength: 0 }}

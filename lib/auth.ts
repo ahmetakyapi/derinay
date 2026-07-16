@@ -20,6 +20,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (String(credentials?.password ?? '') === expected) {
           return { id: 'owner', name: USER.fullName, email: 'owner@derinay.app' }
         }
+        // Yanlış denemeyi yavaşlat — otomatik parola denemelerini caydırır
+        await new Promise((r) => setTimeout(r, 800))
         return null
       },
     }),

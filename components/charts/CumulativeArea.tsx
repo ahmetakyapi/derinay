@@ -55,7 +55,7 @@ export function CumulativeArea({ data }: { data: Point[] }) {
           strokeLinecap="round"
           fill="url(#gCumulative)"
           dot={false}
-          activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', fill: CHART.primary }}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: CHART.dotRing, fill: CHART.primary }}
         />
       </AreaChart>
     </ResponsiveContainer>

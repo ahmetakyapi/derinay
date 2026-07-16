@@ -21,6 +21,8 @@ export const CHART = {
   grid: 'rgba(111, 107, 93, 0.16)',
   /** Tooltip cursor çizgisi */
   cursor: 'rgba(111, 107, 93, 0.35)',
+  /** Aktif nokta konturu — noktayı zeminden ayıran halka */
+  dotRing: '#ffffff',
   /** Radial/donut arka halka */
   track: 'rgba(111, 107, 93, 0.14)',
 } as const

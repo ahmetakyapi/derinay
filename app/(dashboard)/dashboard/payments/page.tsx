@@ -105,12 +105,18 @@ export default async function PaymentsPage() {
                     <span className={cn('absolute inset-y-3 left-0 w-1 rounded-r-full', meta.bar)} />
                     <Avatar name={p.clientName ?? '—'} color={p.clientColor ?? 'indigo'} src={p.clientAvatar} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <Link
-                        href={p.clientId ? `/dashboard/clients/${p.clientId}` : '#'}
-                        className="block truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
-                      >
-                        <span className="sensitive">{p.clientName ?? 'Silinmiş danışan'}</span>
-                      </Link>
+                      {p.clientId ? (
+                        <Link
+                          href={`/dashboard/clients/${p.clientId}`}
+                          className="block truncate text-sm font-semibold text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
+                        >
+                          <span className="sensitive">{p.clientName}</span>
+                        </Link>
+                      ) : (
+                        <span className="block truncate text-sm font-semibold text-slate-500 dark:text-slate-400">
+                          Silinmiş danışan
+                        </span>
+                      )}
                       <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
                         <span className="shrink-0">{formatDate(p.date)}</span>
                         <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold', meta.bg, meta.tone)}>

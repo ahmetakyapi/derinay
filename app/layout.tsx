@@ -27,12 +27,27 @@ const fraunces = Fraunces({
 })
 
 export const metadata: Metadata = {
+  // metadataBase — OG/canonical URL'lerin mutlak çözülmesi için (prod uyarısını da susturur)
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   title: {
     default: 'Derinay — Psikologlar için finans & danışan takibi',
     template: '%s · Derinay',
   },
   description:
     'Psikologlar için gelir-gider, fatura, vergi ve danışan takibini tek panelde toplayan sakin ve şık finans yönetimi.',
+  openGraph: {
+    title: 'Derinay — Psikologlar için finans & danışan takibi',
+    description:
+      'Gelir-gider, fatura, vergi ve danışan takibi tek, sakin panelde.',
+    siteName: 'Derinay',
+    locale: 'tr_TR',
+    type: 'website',
+  },
+  robots: {
+    // Kişisel panel — arama motorlarında listelenmesin
+    index: false,
+    follow: false,
+  },
 }
 
 export const viewport: Viewport = {

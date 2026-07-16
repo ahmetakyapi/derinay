@@ -266,12 +266,18 @@ export default async function DashboardPage({
                 <li key={s.id} className="group flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-indigo-500/40">
                   <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
                   <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
-                  <Link
-                    href={s.clientId ? `/dashboard/clients/${s.clientId}` : '#'}
-                    className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
-                  >
-                    <span className="sensitive">{s.clientName}</span>
-                  </Link>
+                  {s.clientId ? (
+                    <Link
+                      href={`/dashboard/clients/${s.clientId}`}
+                      className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-300"
+                    >
+                      <span className="sensitive">{s.clientName}</span>
+                    </Link>
+                  ) : (
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                      <span className="sensitive">{s.clientName}</span>
+                    </span>
+                  )}
                   {s.status === 'scheduled' && (
                     <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
                   )}

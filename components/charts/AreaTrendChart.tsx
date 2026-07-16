@@ -125,7 +125,7 @@ export function AreaTrendChart({ data }: { data: Point[] }) {
           strokeLinejoin="round"
           fill="url(#gExpense)"
           dot={false}
-          activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', fill: CHART.expense }}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: CHART.dotRing, fill: CHART.expense }}
         />
         {/* Gelir — üstte, belirgin */}
         <Area
@@ -137,7 +137,7 @@ export function AreaTrendChart({ data }: { data: Point[] }) {
           strokeLinejoin="round"
           fill="url(#gIncome)"
           dot={false}
-          activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', fill: CHART.income }}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: CHART.dotRing, fill: CHART.income }}
         />
       </AreaChart>
     </ResponsiveContainer>
