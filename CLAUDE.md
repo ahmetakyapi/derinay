@@ -26,7 +26,7 @@ sakin ve görsel bir arayüzde toplamak.
 | Framework | Next.js 14 App Router | Server Component varsayılan |
 | Stil | Tailwind CSS 3 (`darkMode: 'class'`) | `postcss.config.js` ŞART (yoksa derlenmez) |
 | Animasyon | Framer Motion 11 | GSAP yok. EASE = `[0.22,1,0.36,1]` |
-| Grafik | Recharts | `components/charts/` altında, hepsi `'use client'` |
+| Grafik | Recharts | `components/charts/` altında, hepsi `'use client'`. Sayfalar **`charts/lazy`den import eder** (dynamic, ssr:false — Recharts ana pakete girmez) |
 | DB | Neon Postgres + Drizzle ORM | `@neondatabase/serverless` (pg değil) |
 | Tema | next-themes | **light varsayılan** ("kâğıt galeri") + dark ("gece galerisi") — enableSystem kapalı |
 | İkonlar | lucide-react | |
@@ -73,9 +73,13 @@ Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` �
 
 ```
 app/
-  layout.tsx                       # ThemeProvider, Manrope+IBM Plex (subset latin+latin-ext), metadata
+  layout.tsx                       # ThemeProvider + ThemeColorSync, Manrope+IBM Plex (subset latin+latin-ext), metadataBase/OG/noindex
   globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
   page.tsx                         # Landing (hero/özellikler/CTA) — 'use client'
+  error.tsx / not-found.tsx        # Atölye dilinde hata sınırı + 404 (Next varsayılanı ASLA görünmesin)
+  manifest.ts                      # PWA manifesti (ana ekrana ekleme — standalone, /dashboard)
+  opengraph-image.tsx              # OG kartı (ImageResponse — Fraunces italik, mürekkep damgası)
+  apple-icon.tsx                   # iOS ana ekran ikonu (180px PNG, ImageResponse)
   (dashboard)/
     layout.tsx                     # DashboardShell + force-dynamic
     dashboard/
@@ -109,6 +113,9 @@ components/
   dashboard/       # DashboardShell (sidebar/topbar/drawer), PageHeader, PageTransition, WeekCalendar
   clients/         # NoteCard (Seans Defteri kartı), MoodTrail (duygu izleği)
   charts/          # AreaTrendChart, CategoryDonut, MonthlyBar, TaxRadial, CumulativeArea ('use client')
+                   # lazy.tsx = TEK GİRİŞ: sayfalar grafikleri buradan import eder (dynamic+iskelet);
+                   # yeni grafik → bileşeni yaz + lazy.tsx'e dynamic export ekle
+  theme/           # ThemeColorSync — <meta theme-color>'ı uygulama temasıyla eşler
   forms/           # New*Dialog, EditClientDialog, NoteForm (tür+duygu), AvatarPicker, InvoiceStatusSelect
   ui/              # GlassCard, Button, Chip, Modal, Field(Input/Select/Textarea), StatCard,
                    # StatusBadge, Avatar, EmptyState, DeleteButton

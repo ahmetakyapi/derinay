@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Manrope, IBM_Plex_Mono, Fraunces } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
+import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
 import './globals.css'
 
 // latin-ext — Türkçe karakterler (ş, ğ, ı, İ, ç, ö, ü) için zorunlu
@@ -56,10 +57,9 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f6f2e9' },
-    { media: '(prefers-color-scheme: dark)', color: '#04070d' },
-  ],
+  // Statik başlangıç değeri (light varsayılan) — sonrası ThemeColorSync'te:
+  // tema class-tabanlı olduğundan prefers-color-scheme media'sı yanlış olur.
+  themeColor: '#f6f2e9',
 }
 
 export default function RootLayout({
@@ -77,6 +77,7 @@ export default function RootLayout({
       <body className={manrope.className}>
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <ThemeColorSync />
           {children}
         </ThemeProvider>
       </body>
