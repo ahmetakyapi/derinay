@@ -4,7 +4,8 @@ import type { Quote } from '@/lib/quotes'
 
 /**
  * Günün Sözü — sayfanın üstünde, galeri yazıtı gibi yatay bir bant.
- * Sağda soluk orkide, solda altın tırnak, büyük Fraunces italik söz.
+ * Sağda soluk orkide, solda altın tırnak, büyük italik söz (gerçek italik —
+ * Schibsted Grotesk italik ekseni; alıntı için doğru tipografi).
  */
 export function QuoteCard({ quote }: { quote: Quote }) {
   return (

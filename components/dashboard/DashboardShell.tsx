@@ -28,7 +28,8 @@ import {
   Hourglass,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { USER } from '@/lib/constants'
+import { APP } from '@/lib/constants'
+import { initials } from '@/lib/format'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { PageTransition } from '@/components/dashboard/PageTransition'
 import { CommandPalette } from '@/components/dashboard/CommandPalette'
@@ -151,10 +152,10 @@ function Brand() {
       </div>
       <div className="leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-          Derinay
+          {APP.name}
         </span>
         <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-          Atölye
+          {APP.tagline}
         </span>
       </div>
     </Link>
@@ -181,6 +182,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                   key={item.href}
                   href={item.href}
                   onClick={onNavigate}
+                  aria-current={active ? 'page' : undefined}
                   className={cn(
                     'group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all',
                     active
@@ -229,8 +231,45 @@ function ThemeToggle({ className }: { className?: string }) {
 }
 
 type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
+/** Panel sahibi — Ayarlar → İşletme Kimliği'nden gelir (kodda sabit kişi adı yok) */
+export type Owner = { name: string; title: string; isSet: boolean }
 
-export function DashboardShell({ children, clients = [] }: { children: React.ReactNode; clients?: ClientLite[] }) {
+/** Sidebar/drawer kimlik kartı — masaüstü ve mobilde tek kaynak */
+function OwnerCard({ owner, onNavigate, children }: { owner: Owner; onNavigate?: () => void; children?: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <Link
+        href="/dashboard/settings"
+        onClick={onNavigate}
+        title="Kimlik bilgilerini düzenle"
+        className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-xl transition-opacity hover:opacity-80"
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-bold text-white">
+          {owner.isSet ? initials(owner.name) : <BloomMark className="h-4 w-4" />}
+        </span>
+        <div className="min-w-0 text-xs">
+          <p className="truncate font-semibold text-slate-700 dark:text-slate-200">
+            {owner.isSet ? owner.name : 'Adını ekle'}
+          </p>
+          <p className="truncate text-slate-500 dark:text-slate-400">
+            {owner.isSet ? owner.title : 'Ayarlar → İşletme Kimliği'}
+          </p>
+        </div>
+      </Link>
+      {children}
+    </div>
+  )
+}
+
+export function DashboardShell({
+  children,
+  clients = [],
+  owner,
+}: {
+  children: React.ReactNode
+  clients?: ClientLite[]
+  owner: Owner
+}) {
   const [open, setOpen] = useState(false)
   const [privacy, setPrivacy] = useState(false)
 
@@ -285,7 +324,9 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
 
       {/* Desktop sidebar */}
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex">
-        <div className="flex-1 pr-1">
+        {/* min-h-0 + overflow-y-auto: kısa ekranlarda (13" dizüstü) menü kesilmesin,
+            alttaki kimlik kartı her zaman görünür kalsın */}
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           <div className="mb-5">
             <Brand />
           </div>
@@ -308,17 +349,7 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
             <span className="h-px flex-1 bg-slate-500/15" />
           </div>
           <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
-            <div className="flex items-center gap-2.5">
-              <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
-                  SA
-                </span>
-                <div className="min-w-0 text-xs">
-                  <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
-                  <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
-                </div>
-              </div>
-            </div>
+            <OwnerCard owner={owner} />
 
             <div className="mt-3 grid grid-cols-3 gap-1.5">
               <button
@@ -420,24 +451,19 @@ export function DashboardShell({ children, clients = [] }: { children: React.Rea
                   <span className="text-[10px] text-amber-500/70">✦</span>
                   <span className="h-px flex-1 bg-slate-500/15" />
                 </div>
-                <div className="flex items-center gap-2.5 rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-semibold italic text-white">
-                    SA
-                  </span>
-                  <div className="min-w-0 flex-1 text-xs">
-                    <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{USER.fullName}</p>
-                    <p className="truncate text-slate-500 dark:text-slate-400">{USER.title}</p>
-                  </div>
-                  <form action={logoutAction}>
-                    <button
-                      type="submit"
-                      aria-label="Çıkış yap"
-                      title="Çıkış yap"
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
-                    >
-                      <LogOut className="h-4 w-4" />
-                    </button>
-                  </form>
+                <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+                  <OwnerCard owner={owner} onNavigate={() => setOpen(false)}>
+                    <form action={logoutAction}>
+                      <button
+                        type="submit"
+                        aria-label="Çıkış yap"
+                        title="Çıkış yap"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </button>
+                    </form>
+                  </OwnerCard>
                 </div>
               </div>
             </motion.aside>

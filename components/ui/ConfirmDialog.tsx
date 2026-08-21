@@ -26,8 +26,8 @@ export function ConfirmDialog({
   open: boolean
   onClose: () => void
   onConfirm: () => void | Promise<unknown>
-  title: string
-  description?: string
+  title: React.ReactNode
+  description?: React.ReactNode
   confirmLabel?: string
   cancelLabel?: string
   tone?: Tone

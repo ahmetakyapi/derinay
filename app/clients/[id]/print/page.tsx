@@ -10,6 +10,7 @@ import {
   NOTE_KIND_LABEL,
   MOOD_LABEL,
   PAYMENT_METHOD_LABEL,
+  OWNER_PLACEHOLDER,
 } from '@/lib/constants'
 import { formatTRY, formatDate, formatDateTime } from '@/lib/format'
 
@@ -58,7 +59,7 @@ export default async function ClientFilePrintPage({
               <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>
             <p className="mt-2 text-xs text-slate-500">
-              {BUSINESS.owner} · {BUSINESS.title}
+              {BUSINESS.owner || OWNER_PLACEHOLDER} · {BUSINESS.title}
             </p>
           </div>
           <div className="text-right">
@@ -220,7 +221,7 @@ export default async function ClientFilePrintPage({
         <div className="mt-12 border-t border-slate-200 pt-5 text-center text-xs text-slate-400">
           <p className="font-semibold text-slate-500">GİZLİ — Bu dosya özel nitelikli kişisel veri içerir.</p>
           <p className="mt-1">
-            {BUSINESS.name} · {BUSINESS.owner} tarafından {formatDate(new Date().toISOString())} tarihinde oluşturulmuştur.
+            {BUSINESS.name} · {BUSINESS.owner || OWNER_PLACEHOLDER} tarafından {formatDate(new Date().toISOString())} tarihinde oluşturulmuştur.
             KVKK kapsamında yalnızca yetkili kişilerle paylaşılabilir.
           </p>
         </div>

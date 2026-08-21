@@ -193,7 +193,7 @@ export type BusinessInfo = {
 
 export const BUSINESS: BusinessInfo = {
   name: 'Derinay',
-  owner: 'Simay Ahi',
+  owner: '',
   title: 'Klinik Psikolog',
   taxOffice: '[Vergi Dairesi]',
   taxId: '[VKN / TC No]',
@@ -203,14 +203,38 @@ export const BUSINESS: BusinessInfo = {
   iban: '',
 }
 
+/** Ayarlar'da doldurulmamış alanların belgelerde göründüğü yer tutucu */
+export const OWNER_PLACEHOLDER = '[Ad Soyad]' as const
+
+/**
+ * Bir işletme alanı gerçekten doldurulmuş mu?
+ * Varsayılanlar köşeli parantezli yer tutucudur ("[Vergi Dairesi]") — bunlar
+ * belgede "burayı doldur" işareti olarak durur ama DOLU sayılmaz.
+ */
+export function isPlaceholderValue(value: string): boolean {
+  const v = value.trim()
+  return v.length === 0 || (v.startsWith('[') && v.endsWith(']'))
+}
+
+/** İşletme kimliğinde makbuz için anlamlı alanlar + Türkçe etiketleri */
+export const BUSINESS_FIELD_LABELS: Partial<Record<keyof BusinessInfo, string>> = {
+  owner: 'Ad soyad',
+  taxOffice: 'Vergi dairesi',
+  taxId: 'VKN / TC Kimlik No',
+  address: 'Adres',
+  phone: 'Telefon',
+  email: 'E-posta',
+}
+
 // ─── Hatırlatma mesajı şablonu ───────────────────────────────────────────────
 // Yer tutucular: {ad} = danışanın adı, {tarih} = seans tarihi+saati, {terapist} = terapist adı
 export const REMINDER_TEMPLATE_DEFAULT =
   'Merhaba {ad} 🌿 {tarih} saatindeki seansımızı hatırlatmak isterim. Görüşmek üzere! — {terapist}'
 
-// Uygulamayı kullanan kişi
-export const USER = {
-  firstName: 'Simay',
-  fullName: 'Simay Ahi',
-  title: 'Klinik Psikolog',
+// Uygulama kimliği — panelde/oturumda görünen sabit marka adı.
+// Kullanıcının kendi adı Ayarlar → İşletme Kimliği'nden gelir (BUSINESS.owner),
+// burada KİŞİ adı tutulmaz.
+export const APP = {
+  name: 'Derinay',
+  tagline: 'Atölye',
 } as const

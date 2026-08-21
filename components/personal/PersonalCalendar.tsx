@@ -177,7 +177,7 @@ export function PersonalCalendar({
         <button
           onClick={() => setSelected(todayKey)}
           aria-label="Bugüne harcama ekle"
-          className="fixed bottom-5 right-5 z-40 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-90 lg:hidden"
+          className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-90 lg:hidden"
         >
           <Plus className="h-6 w-6" />
         </button>

@@ -1,8 +1,8 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { settings } from '@/lib/schema'
+import { revalidateSettings } from '@/lib/revalidate'
 import { BUSINESS, type BusinessInfo } from '@/lib/constants'
 
 /** Vergi oranlarını kaydet (settings 'tax' anahtarı) — tüm hesaplamalar bunu okur */
@@ -23,11 +23,7 @@ export async function saveTaxSettings(input: { kdvRate: number; stopajRate: numb
     .onConflictDoUpdate({ target: settings.key, set: { value, updatedAt: new Date() } })
 
   // Vergi oranı her hesabı etkiler — geniş tazeleme
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/taxes')
-  revalidatePath('/dashboard/invoices')
-  revalidatePath('/dashboard/analytics')
-  revalidatePath('/dashboard/settings')
+  revalidateSettings()
   return { ok: true }
 }
 
@@ -39,8 +35,7 @@ export async function saveIncomeGoal(value: number) {
     .insert(settings)
     .values({ key: 'income_goal', value: v, updatedAt: new Date() })
     .onConflictDoUpdate({ target: settings.key, set: { value: v, updatedAt: new Date() } })
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/settings')
+  revalidateSettings()
   return { ok: true }
 }
 
@@ -63,9 +58,9 @@ export async function saveBusinessInfo(input: Partial<BusinessInfo>) {
     .values({ key: 'business', value, updatedAt: new Date() })
     .onConflictDoUpdate({ target: settings.key, set: { value, updatedAt: new Date() } })
 
-  revalidatePath('/dashboard/settings')
-  revalidatePath('/dashboard/invoices')
-  revalidatePath('/dashboard/taxes')
+  // Ad/unvan kenar çubuğundaki sahip kartında ve karşılama başlığında da görünür
+  // → layout dahil tazelenmeli (revalidateSettings bunu yapar).
+  revalidateSettings()
   return { ok: true }
 }
 
@@ -80,7 +75,6 @@ export async function saveReminderTemplate(value: string) {
     .values({ key: 'reminder_template', value: v, updatedAt: new Date() })
     .onConflictDoUpdate({ target: settings.key, set: { value: v, updatedAt: new Date() } })
 
-  revalidatePath('/dashboard/agenda')
-  revalidatePath('/dashboard/clients')
+  revalidateSettings()
   return { ok: true }
 }

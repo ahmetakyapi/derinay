@@ -5,7 +5,7 @@ import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSummary } from './finance'
-import { REMINDER_TEMPLATE_DEFAULT, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
+import { REMINDER_TEMPLATE_DEFAULT, APP, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -920,6 +920,15 @@ export async function getReminderTemplate(): Promise<string> {
   return row?.value ?? REMINDER_TEMPLATE_DEFAULT
 }
 
+/**
+ * Hatırlatma mesajı için gereken her şey: şablon + `{terapist}` yerine yazılacak ad.
+ * Ad, Ayarlar → İşletme Kimliği'nden gelir (kodda kişi adı tutulmaz).
+ */
+export async function getReminderConfig(): Promise<{ template: string; therapist: string }> {
+  const [template, business] = await Promise.all([getReminderTemplate(), getBusinessInfo()])
+  return { template, therapist: business.owner.trim() || business.name.trim() }
+}
+
 // ─── Bekleme listesi ─────────────────────────────────────────────────────────
 export async function listWaitlist() {
   const rows = await db.select().from(waitlist).orderBy(desc(waitlist.priority), desc(waitlist.createdAt))
@@ -968,8 +977,35 @@ export async function getBusinessInfo(): Promise<BusinessInfo> {
   if (!row?.value) return BUSINESS
   try {
     const saved = JSON.parse(row.value) as Partial<BusinessInfo>
-    return { ...BUSINESS, ...saved }
+    // Boş kaydedilen alan varsayılana düşer: belgede köşeli parantezli yer tutucu
+    // kalır ("[Vergi Dairesi]"), boşluk değil — muhasebeci neyin eksik olduğunu görür.
+    const merged = { ...BUSINESS }
+    for (const key of Object.keys(BUSINESS) as (keyof BusinessInfo)[]) {
+      const v = saved[key]
+      if (typeof v === 'string' && v.trim()) merged[key] = v.trim()
+    }
+    return merged
   } catch {
     return BUSINESS
+  }
+}
+
+/**
+ * Panelde görünen sahip kimliği — sidebar kartı ve karşılama başlığı bunu kullanır.
+ * Ayarlar boşsa marka adına düşer; hiçbir yerde sabit kişi adı yoktur.
+ */
+export async function getOwnerIdentity(): Promise<{
+  name: string
+  firstName: string
+  title: string
+  isSet: boolean
+}> {
+  const b = await getBusinessInfo()
+  const owner = b.owner.trim()
+  return {
+    name: owner || b.name.trim() || APP.name,
+    firstName: owner ? owner.split(/\s+/)[0] : '',
+    title: b.title.trim() || BUSINESS.title,
+    isSet: owner.length > 0,
   }
 }

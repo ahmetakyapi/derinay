@@ -69,7 +69,7 @@ export default function Home() {
               className="mb-6 font-display text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl"
             >
               Pratiğini Yönet,{' '}
-              <span className="relative inline-block italic text-indigo-700 dark:text-indigo-300">
+              <span className="relative inline-block text-indigo-700 dark:text-indigo-300">
                 Kafanı Dinlendir
                 {/* El çizimi fırça vurgusu — çizilerek belirir */}
                 <svg
@@ -233,7 +233,7 @@ export default function Home() {
                     'Kişisel Harcamalar',
                   ].map((w) => (
                     <span key={w} className="flex items-center gap-10 whitespace-nowrap">
-                      <span className="font-display text-lg italic text-slate-500/90 dark:text-slate-400">{w}</span>
+                      <span className="font-display text-lg font-medium text-slate-500/90 dark:text-slate-400">{w}</span>
                       <span className="text-amber-500/70">✦</span>
                     </span>
                   ))}
@@ -281,7 +281,7 @@ export default function Home() {
               variants={fadeUp}
               className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
             >
-              Pratiğin İçin <span className="italic text-indigo-700 dark:text-indigo-300">Her Şey</span>
+              Pratiğin İçin <span className="text-indigo-700 dark:text-indigo-300">Her Şey</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
               Finanstan danışan takibine kadar tüm iş yükünü tek yerde topla.
@@ -303,7 +303,7 @@ export default function Home() {
                       <f.icon className="h-5 w-5" />
                     </span>
                     {/* Galeri plaketi numarası */}
-                    <span className="font-display text-sm italic text-slate-300 transition-colors group-hover:text-amber-500 dark:text-slate-600 dark:group-hover:text-amber-400">
+                    <span className="font-mono text-xs font-semibold tabular-nums text-slate-300 transition-colors group-hover:text-amber-500 dark:text-slate-600 dark:group-hover:text-amber-400">
                       {String(i + 1).padStart(2, '0')}
                     </span>
                   </div>
@@ -330,7 +330,7 @@ export default function Home() {
               variants={fadeUp}
               className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
             >
-              Panele Bir <span className="italic text-indigo-700 dark:text-indigo-300">Bakış</span>
+              Panele Bir <span className="text-indigo-700 dark:text-indigo-300">Bakış</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
               Gelir, seans takvimi ve vergi — hepsi tek, sakin bir ekranda.
@@ -392,7 +392,7 @@ export default function Home() {
             />
             {STEPS.map((s, i) => (
               <motion.div key={s.title} variants={fadeUp} className="glass relative rounded-2xl p-6">
-                <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/12 font-display text-base font-semibold italic text-amber-600 dark:text-amber-400">
+                <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/12 font-display text-base font-bold text-amber-600 dark:text-amber-400">
                   {i + 1}
                 </span>
                 <h3 className="mb-2 font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -415,11 +415,11 @@ export default function Home() {
           >
             <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 animate-pulse-slow rounded-full bg-indigo-500/15 blur-3xl motion-reduce:animate-none" />
             <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 animate-pulse-slow rounded-full bg-amber-500/15 blur-3xl [animation-delay:2s] motion-reduce:animate-none" />
-            <span className="pointer-events-none absolute left-6 top-5 select-none font-display text-6xl italic text-amber-500/15" aria-hidden>
+            <span className="pointer-events-none absolute left-6 top-5 select-none font-display text-6xl font-bold text-amber-500/15" aria-hidden>
               “
             </span>
             <h2 className="relative font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              Bugün <span className="italic">Düzeni</span> Kurmaya Başla
+              Bugün <span className="text-indigo-700 dark:text-indigo-300">Düzeni</span> Kurmaya Başla
             </h2>
             <p className="relative mx-auto mt-3 max-w-md text-slate-500 dark:text-slate-300">
               Danışanlarını ekle, ilk faturanı kes ve grafiklerin dolmasını izle.

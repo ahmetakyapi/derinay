@@ -18,7 +18,8 @@ export function DeleteButton({
   className,
 }: {
   action: () => Promise<{ ok: boolean }>
-  confirmText?: string
+  /** ReactNode — kişi adı geçen metinleri <span className="sensitive"> ile sar */
+  confirmText?: React.ReactNode
   confirmLabel?: string
   redirectTo?: string
   className?: string

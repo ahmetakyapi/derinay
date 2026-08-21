@@ -39,7 +39,7 @@ import { ScoreTrend } from '@/components/charts/lazy'
 import { GoalsCard } from '@/components/clients/GoalsCard'
 import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
-import { getClientDetail, getReminderTemplate, getTaxSettings } from '@/lib/queries'
+import { getClientDetail, getReminderConfig, getTaxSettings } from '@/lib/queries'
 import { deletePackage } from '@/app/actions/packages'
 import { deleteScore } from '@/app/actions/scores'
 import { deleteDocument } from '@/app/actions/documents'
@@ -54,10 +54,11 @@ import { BloomArt } from '@/components/art/BloomArt'
 import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+export const metadata = { title: 'Danışan Dosyası' }
 export const dynamic = 'force-dynamic'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
-  const [data, reminderTemplate, taxRates] = await Promise.all([getClientDetail(params.id), getReminderTemplate(), getTaxSettings()])
+  const [data, reminder, taxRates] = await Promise.all([getClientDetail(params.id), getReminderConfig(), getTaxSettings()])
   if (!data) notFound()
   const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents, goals } = data
   const pkgPct = activePackage ? Math.round((activePackage.used / activePackage.totalSessions) * 100) : 0
@@ -342,7 +343,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <span className="text-slate-700 dark:text-slate-200">{formatDateTime(s.date)}</span>
                     <span className="flex items-center gap-2">
                       {s.status === 'scheduled' && (
-                        <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} template={reminderTemplate} />
+                        <ReminderButton clientName={client.name} phone={client.phone} date={String(s.date)} template={reminder.template} therapist={reminder.therapist} />
                       )}
                       <span className="sensitive font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
                         {formatTRY(s.fee, { compact: true })}
@@ -505,7 +506,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </div>
             ) : (
               <div className="note-studio rounded-[1.3rem] px-6 py-8 text-center">
-                <p className="font-display text-sm italic text-slate-500 dark:text-slate-300">
+                <p className="text-sm text-slate-500 dark:text-slate-300">
                   İlk not için alan hazır.
                 </p>
               </div>

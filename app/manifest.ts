@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 /**
- * PWA manifesti — Simay paneli telefonun ana ekranına eklediğinde
+ * PWA manifesti — panel telefonun ana ekranına eklendiğinde
  * uygulama gibi (adres çubuğu olmadan, kendi ikonu ve açılış rengiyle) açılır.
  * iOS manifest ikonlarını kullanmaz; orada app/apple-icon.tsx devrededir.
  */

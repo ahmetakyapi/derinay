@@ -37,8 +37,9 @@ export function Modal({
 }: {
   open: boolean
   onClose: () => void
-  title: string
-  description?: string
+  /** ReactNode — danışan adı geçen başlıkları <span className="sensitive"> ile sar */
+  title: React.ReactNode
+  description?: React.ReactNode
   children: React.ReactNode
   size?: 'md' | 'lg' | 'xl' | '2xl'
 }) {

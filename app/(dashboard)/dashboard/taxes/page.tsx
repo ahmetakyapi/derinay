@@ -6,6 +6,8 @@ import { getTaxOverview } from '@/lib/queries'
 import { formatTRY } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+export const metadata = { title: 'Vergiler' }
+
 export default async function TaxesPage() {
   const { months, current, taxRates } = await getTaxOverview()
   const year = new Date().getFullYear()
@@ -210,7 +212,7 @@ export default async function TaxesPage() {
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(totals.expense)}</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.kdv)}</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.incomeTax)}</td>
-                <td className="px-5 py-3.5 text-right font-display text-base font-semibold tracking-tight">{formatTRY(totals.due)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-display text-base font-semibold tracking-tight">{formatTRY(totals.due)}</td>
               </tr>
             </tfoot>
           </table>

@@ -1,29 +1,33 @@
 import type { Metadata, Viewport } from 'next'
-import { Manrope, IBM_Plex_Mono, Fraunces } from 'next/font/google'
+import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
 import './globals.css'
 
-// latin-ext — Türkçe karakterler (ş, ğ, ı, İ, ç, ö, ü) için zorunlu
-const manrope = Manrope({
+/**
+ * Tipografi — ekosistem yığını (bkz. ~/dev-starter, Mimio & Açılış Zili):
+ * TEK aile **Schibsted Grotesk** hem gövde hem başlık; ayrım ağırlık ve optik
+ * sıkılıktan gelir (`.font-display` → daha dar tracking). Rakamlar IBM Plex Mono.
+ *
+ * `weight` listesi VERİLMEZ — aile değişken (400–900); Tailwind'in
+ * font-medium/semibold/bold sınıfları ekseni doğrudan kullanır.
+ * latin-ext — Türkçe karakterler (ş, ğ, ı, İ, ç, ö, ü) için zorunlu.
+ *
+ * TUZAK: next/font `variable` adı, globals.css'teki token adıyla AYNI olursa
+ * dairesel referans oluşur (--font-sans: var(--font-sans)) ve sessizce çöker.
+ * Bu yüzden burada `-face` soneki kullanılır.
+ */
+const schibsted = Schibsted_Grotesk({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-sans',
+  style: ['normal', 'italic'],
+  variable: '--font-sans-face',
   display: 'swap',
 })
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600'],
-  variable: '--font-mono',
-  display: 'swap',
-})
-
-// Display serif — başlıklar ve büyük rakamlar için sanatsal tipografi
-const fraunces = Fraunces({
-  subsets: ['latin', 'latin-ext'],
-  style: ['normal', 'italic'],
-  variable: '--font-display',
+  variable: '--font-mono-face',
   display: 'swap',
 })
 
@@ -72,9 +76,9 @@ export default function RootLayout({
     <html
       lang="tr"
       suppressHydrationWarning
-      className={`${manrope.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}
+      className={`${schibsted.variable} ${ibmPlexMono.variable}`}
     >
-      <body className={manrope.className}>
+      <body className={schibsted.className}>
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <ThemeColorSync />

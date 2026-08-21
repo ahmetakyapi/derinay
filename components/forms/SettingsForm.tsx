@@ -5,8 +5,22 @@ import { useRouter } from 'next/navigation'
 import { Check, Building2, MessageSquareText, Landmark, Target, Loader2 } from 'lucide-react'
 import { Field, Input, Textarea } from '@/components/ui/Field'
 import { saveBusinessInfo, saveReminderTemplate, saveTaxSettings, saveIncomeGoal } from '@/app/actions/settings'
-import type { BusinessInfo } from '@/lib/constants'
+import { isPlaceholderValue, type BusinessInfo } from '@/lib/constants'
 import type { TaxSettings } from '@/lib/queries'
+
+/**
+ * Varsayılan işletme alanları "[Vergi Dairesi]" gibi köşeli parantezli yer
+ * tutuculardır — belgede "burayı doldur" işareti olarak dururlar ama forma
+ * DEĞER olarak gelmemeliler (kullanıcı önce silmek zorunda kalıyordu).
+ * Boşaltılıp gerçek `placeholder` metnine bırakılırlar.
+ */
+function stripPlaceholders(b: BusinessInfo): BusinessInfo {
+  const out = { ...b }
+  for (const key of Object.keys(out) as (keyof BusinessInfo)[]) {
+    if (isPlaceholderValue(out[key])) out[key] = ''
+  }
+  return out
+}
 
 type Saved = 'business' | 'reminder' | 'tax' | 'goal' | null
 
@@ -21,7 +35,7 @@ export function SettingsForm({
   taxSettings: TaxSettings
   incomeGoal: number
 }) {
-  const [b, setB] = useState<BusinessInfo>(business)
+  const [b, setB] = useState<BusinessInfo>(() => stripPlaceholders(business))
   const [tax, setTax] = useState<TaxSettings>(taxSettings)
   const [goal, setGoal] = useState(incomeGoal)
   const [tpl, setTpl] = useState(reminderTemplate)
@@ -99,8 +113,8 @@ export function SettingsForm({
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-          <Field label="İşletme / marka adı"><Input value={b.name} onChange={set('name')} required /></Field>
-          <Field label="Ad soyad"><Input value={b.owner} onChange={set('owner')} required /></Field>
+          <Field label="İşletme / marka adı"><Input value={b.name} onChange={set('name')} placeholder="Derinay" required /></Field>
+          <Field label="Ad soyad"><Input value={b.owner} onChange={set('owner')} placeholder="Ad Soyad" required /></Field>
           <Field label="Unvan"><Input value={b.title} onChange={set('title')} placeholder="Klinik Psikolog" /></Field>
           <Field label="Vergi dairesi"><Input value={b.taxOffice} onChange={set('taxOffice')} placeholder="Kadıköy" /></Field>
           <Field label="VKN / TC Kimlik No"><Input value={b.taxId} onChange={set('taxId')} placeholder="11111111111" /></Field>

@@ -30,11 +30,13 @@ import { WeekCalendar } from '@/components/dashboard/WeekCalendar'
 import { AreaTrendChart, CategoryDonut, MonthlyBar } from '@/components/charts/lazy'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ReminderButton } from '@/components/clients/ReminderButton'
-import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, getReminderTemplate, getIncomeGoal, clientOptions } from '@/lib/queries'
+import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, getReminderConfig, getIncomeGoal, getOwnerIdentity, clientOptions } from '@/lib/queries'
 import { formatTRY, formatDateShort, pctChange } from '@/lib/format'
-import { USER, SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
+import { SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
 import { cn } from '@/lib/utils'
+
+export const metadata = { title: 'Genel Bakış' }
 
 export default async function DashboardPage({
   searchParams,
@@ -42,14 +44,15 @@ export default async function DashboardPage({
   searchParams: { week?: string }
 }) {
   const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
-  const [d, week, out, birthdays, rem, reminderTemplate, incomeGoal, clients] = await Promise.all([
+  const [d, week, out, birthdays, rem, reminder, incomeGoal, owner, clients] = await Promise.all([
     getDashboard(),
     getWeekSessions(weekOffset),
     getOutstandingBalances(),
     getUpcomingBirthdays(),
     getDashboardReminders(),
-    getReminderTemplate(),
+    getReminderConfig(),
     getIncomeGoal(),
+    getOwnerIdentity(),
     clientOptions(),
   ])
   const goalPct = incomeGoal > 0 ? Math.min(Math.round((d.kpis.income / incomeGoal) * 100), 100) : 0
@@ -70,10 +73,14 @@ export default async function DashboardPage({
       <PageHeader
         eyebrow={new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
         title={
-          <>
-            {greetingNow()},{' '}
-            <span className="italic text-indigo-700 dark:text-indigo-300">{USER.firstName}</span>
-          </>
+          owner.firstName ? (
+            <>
+              {greetingNow()},{' '}
+              <span className="text-indigo-700 dark:text-indigo-300">{owner.firstName}</span>
+            </>
+          ) : (
+            greetingNow()
+          )
         }
         subtitle={`${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
         action={<QuickAddMenu clients={clients} />}
@@ -206,7 +213,7 @@ export default async function DashboardPage({
             />
           </div>
           {goalPct >= 100 && (
-            <p className="mt-2 font-display text-xs italic text-emerald-600 dark:text-emerald-400">
+            <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               Hedef tamamlandı — harika bir ay ✨
             </p>
           )}
@@ -277,14 +284,14 @@ export default async function DashboardPage({
                     </span>
                   )}
                   {s.status === 'scheduled' && (
-                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
+                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminder.template} therapist={reminder.therapist} />
                   )}
                   <StatusBadge label={SESSION_STATUS_LABEL[s.status]} tone={STATUS_TONE[s.status]} />
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="py-6 text-center font-display text-sm italic text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
+            <p className="py-6 text-center text-sm text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
           )}
 
           {/* Yarın — tek tık WhatsApp hatırlatması (no-show kıran ritüel) */}
@@ -298,7 +305,7 @@ export default async function DashboardPage({
                   <li key={s.id} className="flex items-center gap-2.5 rounded-lg px-1.5 py-1">
                     <span className="w-10 shrink-0 font-mono text-[11px] font-bold text-slate-400">{s.time}</span>
                     <span className="sensitive min-w-0 flex-1 truncate text-[13px] text-slate-600 dark:text-slate-300">{s.clientName}</span>
-                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminderTemplate} />
+                    <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminder.template} therapist={reminder.therapist} />
                   </li>
                 ))}
               </ul>
@@ -380,7 +387,7 @@ export default async function DashboardPage({
               )}
             </ul>
           ) : (
-            <p className="py-6 text-center font-display text-sm italic text-slate-400">Her şey güncel — defter temiz ✨</p>
+            <p className="py-6 text-center text-sm text-slate-400">Her şey güncel — defter temiz ✨</p>
           )}
         </section>
       </div>
@@ -482,7 +489,7 @@ export default async function DashboardPage({
             ))}
           </div>
         ) : (
-          <p className="py-4 text-center font-display text-sm italic text-slate-400">
+          <p className="py-4 text-center text-sm text-slate-400">
             Tüm tahsilatlar tamamlandı — defter temiz ✨
           </p>
         )}

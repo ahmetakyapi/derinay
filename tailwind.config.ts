@@ -28,10 +28,12 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
+      // Fallback zinciri CSS değişkeninin İÇİNDE (globals.css :root) —
+      // burada tek kaynak kullanılır, iki yerde fallback tutulmaz.
       fontFamily: {
-        sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['var(--font-mono)', 'monospace'],
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)'],
+        mono: ['var(--font-mono)'],
+        display: ['var(--font-display)'],
       },
       colors: {
         // Mürekkep — sıcak nötr skala

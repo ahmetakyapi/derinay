@@ -8,11 +8,12 @@
 
 ## 1. Proje Nedir
 
-**Derinay**, **Klinik Psikolog Simay Ahi** için tek kişilik bir pratik yönetim panelidir.
+**Derinay**, tek kişilik bir klinik psikoloji pratiği için yönetim panelidir.
 Amaç: gelir-gider, danışan, seans, fatura, ödeme, vergi ve kişisel harcamaları tek,
 sakin ve görsel bir arayüzde toplamak.
 
-- **Kullanan kişi**: Simay Ahi (tek terapist). **Tek kullanıcılı parola kilidi VAR** (next-auth v5
+- **Kullanan kişi**: panel sahibi tek terapist. Adı/unvanı **kodda tutulmaz** — Ayarlar →
+  İşletme Kimliği'nden gelir (`getOwnerIdentity`). **Tek kullanıcılı parola kilidi VAR** (next-auth v5
   credentials, bkz. §9) — `APP_PASSWORD` + `AUTH_SECRET` env'leri zorunlu.
 - **Dil**: Tüm arayüz **Türkçe**. Para **₺ / tr-TR**. Tarihler Türkçe ay/gün adları.
 - **Marka**: Derinay, logo "D", fatura no öneki `DER-YYYY-NNN`.
@@ -73,12 +74,12 @@ Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` �
 
 ```
 app/
-  layout.tsx                       # ThemeProvider + ThemeColorSync, Manrope+IBM Plex (subset latin+latin-ext), metadataBase/OG/noindex
+  layout.tsx                       # ThemeProvider + ThemeColorSync, Schibsted Grotesk + IBM Plex Mono (subset latin+latin-ext), metadataBase/OG/noindex
   globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
   page.tsx                         # Landing (hero/özellikler/CTA) — 'use client'
   error.tsx / not-found.tsx        # Atölye dilinde hata sınırı + 404 (Next varsayılanı ASLA görünmesin)
   manifest.ts                      # PWA manifesti (ana ekrana ekleme — standalone, /dashboard)
-  opengraph-image.tsx              # OG kartı (ImageResponse — Fraunces italik, mürekkep damgası)
+  opengraph-image.tsx              # OG kartı (ImageResponse — sıkı grotesk manşet, mürekkep damgası)
   apple-icon.tsx                   # iOS ana ekran ikonu (180px PNG, ImageResponse)
   (dashboard)/
     layout.tsx                     # DashboardShell + force-dynamic
@@ -170,7 +171,7 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 
 ### `scope` kuralı (ÖNEMLİ)
 `business` = kliniğin finansı (dashboard, finances, taxes burayı sayar).
-`personal` = Simay'ın özel günlük harcamaları (yalnızca **Kişisel** sekmesi). Dashboard ve
+`personal` = panel sahibinin özel günlük harcamaları (yalnızca **Kişisel** sekmesi). Dashboard ve
 vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi etkilemez.
 
 ---
@@ -185,9 +186,17 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   `rose`→terracotta (gider), `amber`→okra altını (vergi/vurgu), `sky`→pus mavisi,
   `violet`→erik, `teal`/`cyan`→okaliptüs/su. **Default Tailwind `blue/purple/orange/pink`
   KULLANMA** — remap edilmediler, paletle çatışır.
-- **Tipografi**: Başlık/büyük rakam = **Fraunces** (`font-display`, italic vurgular);
-  gövde = Manrope; tutar/tablo rakamı = IBM Plex Mono + `tabular-nums`. Bölüm başlıkları
-  galeri etiketi stili: `text-xs font-bold uppercase tracking-[0.12em]`.
+- **Tipografi (ekosistem yığını — `~/dev-starter`, Mimio/Açılış Zili ile aynı)**:
+  TEK aile **Schibsted Grotesk** (değişken 400–900, `latin`+`latin-ext`, `style: normal+italic`).
+  Gövde ile başlık aynı aileyi kullanır; ayrım **ağırlık + optik sıkılıktan** gelir —
+  `font-display` yalnızca tracking'i daraltır (`-0.032em`, 3xl+ için `-0.04em`), ağırlık
+  SET ETMEZ (çağrı yerindeki `font-semibold/bold` kazanır). Tutar/tablo rakamı = IBM Plex Mono
+  + `tabular-nums`. Bölüm başlıkları galeri etiketi stili:
+  `text-xs font-bold uppercase tracking-[0.12em]`.
+  **Dekoratif italik YOK** — italik yalnızca gerçek alıntıda (Günün Sözü, giriş ekranı sözü)
+  ve not/açıklama satırında kullanılır.
+  TUZAK: `next/font` `variable` adı CSS token adıyla aynı olursa dairesel referans oluşur —
+  bu yüzden next/font tarafında `--font-sans-face` / `--font-mono-face` soneki kullanılır.
 - **Chart renkleri**: `lib/palette.ts` (`CHART`, `CHART_SERIES`) — chart bileşenine hex yazma.
 - Renkler `globals.css` CSS değişkenleri (`--pine/--sage/--gold/--clay/--mist`, `--paper/--line`)
   + Tailwind ile; **hardcoded hex yok**.
@@ -209,7 +218,7 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   - Grafik: `AreaTrendChart / CategoryDonut / MonthlyBar / TaxRadial`
 - **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel…) + `EASE`.
   Rotalar arası geçiş `PageTransition` ile otomatik.
-- **Marka**: mürekkep damgası — `bg-slate-900` kare + Fraunces italic "D" + altın nokta
+- **Marka**: mürekkep damgası — `bg-slate-900` kare + orkide işareti (`BloomMark`) + altın nokta
   (Shell, Header ve fatura print'te aynı kimlik).
 - **Navigasyon**: `DashboardShell` içinde `NAV_GROUPS` (Klinik / Finans / Yaşam) — düz `NAV` dizisi değil.
   Mobilde ayrıca **alt sekme çubuğu** (`TAB_ITEMS`: Genel/Ajanda/Danışan/Finans/Menü) — yeni ana

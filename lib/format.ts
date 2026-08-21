@@ -54,14 +54,19 @@ export function monthKeyToLabel(key: string): string {
   return new Intl.DateTimeFormat(LOCALE, { month: 'short' }).format(new Date(y, m - 1, 1))
 }
 
-/** İsimden baş harfler: "Ayşe Yılmaz" → "AY" */
+/**
+ * İsimden baş harfler: "Ayşe Yılmaz" → "AY".
+ * Türkçe locale ŞART — aksi halde "İrem" → "I" olur ("İ" değil).
+ */
 export function initials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('')
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((p) => p[0]?.toLocaleUpperCase(LOCALE) ?? '')
+      .join('') || '—'
+  )
 }
 
 /** Başlangıç tarihinden bugüne süre: "4 ay", "1 yıl 2 ay" */

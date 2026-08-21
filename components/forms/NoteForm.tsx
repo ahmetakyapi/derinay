@@ -155,7 +155,7 @@ export function NoteForm({
             ))}
           </div>
           {mood && (
-            <span className="font-display text-sm italic text-slate-600 dark:text-slate-300">
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
               {MOOD_LABEL[mood]}
             </span>
           )}

@@ -3,9 +3,11 @@ import { ChevronLeft, ChevronRight, CalendarDays, Clock, Wallet, CalendarCheck2 
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { AgendaWeek } from '@/components/agenda/AgendaWeek'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
-import { getAgendaWeek, getAgendaMonth, clientOptions, getReminderTemplate } from '@/lib/queries'
+import { getAgendaWeek, getAgendaMonth, clientOptions, getReminderConfig } from '@/lib/queries'
 import { formatDateShort, formatMonth, formatTRY, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
+
+export const metadata = { title: 'Ajanda' }
 
 // Ajanda özet şeridi — premium istatistik kartları
 function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?: string; icon: typeof Clock; tone: string; bg: string; sensitive?: boolean }[] }) {
@@ -38,7 +40,7 @@ export default async function AgendaPage({
   searchParams: { view?: string; date?: string; month?: string }
 }) {
   const view = searchParams.view === 'month' ? 'month' : 'week'
-  const [clients, reminderTemplate] = await Promise.all([clientOptions(), getReminderTemplate()])
+  const [clients, reminder] = await Promise.all([clientOptions(), getReminderConfig()])
 
   /* ───────────────────────── Aylık görünüm ───────────────────────── */
   if (view === 'month') {
@@ -130,7 +132,7 @@ export default async function AgendaPage({
                       <span key={it.id} className="flex items-center gap-1 truncate rounded bg-slate-500/[0.06] px-1 py-0.5 text-[9px] text-slate-600 dark:text-slate-300">
                         <span className={cn('h-1 w-1 shrink-0 rounded-full', DOT[it.colorTag] ?? DOT.indigo)} />
                         <span className="font-mono font-semibold">{it.time}</span>
-                        <span className="truncate">{it.clientName}</span>
+                        <span className="sensitive truncate">{it.clientName}</span>
                       </span>
                     ))}
                     {items.length > 3 && (
@@ -199,7 +201,7 @@ export default async function AgendaPage({
       />
 
       <SummaryStrip tiles={weekTiles} />
-      <AgendaWeek days={week.days} todayKey={week.todayKey} reminderTemplate={reminderTemplate} />
+      <AgendaWeek days={week.days} todayKey={week.todayKey} reminderTemplate={reminder.template} therapist={reminder.therapist} />
     </>
   )
 }

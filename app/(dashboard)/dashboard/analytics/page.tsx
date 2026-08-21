@@ -22,6 +22,8 @@ import { formatTRY } from '@/lib/format'
 import { PAYMENT_METHOD_LABEL, type PaymentMethod } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
+export const metadata = { title: 'Analiz' }
+
 const METHOD_ICON: Record<PaymentMethod, typeof Banknote> = {
   cash: Banknote,
   card: CreditCard,

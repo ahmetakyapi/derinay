@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CreditCard, Banknote, Landmark, StickyNote, Wallet } from 'lucide-react'
+import { CreditCard, Banknote, Landmark, StickyNote, Wallet, Search, X } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
@@ -8,9 +8,11 @@ import { BloomArt } from '@/components/art/BloomArt'
 import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { listPayments, clientOptions } from '@/lib/queries'
 import { deletePayment } from '@/app/actions/payments'
-import { PAYMENT_METHOD_LABEL, type PaymentMethod } from '@/lib/constants'
+import { PAYMENT_METHOD_LABEL, PAYMENT_METHODS, type PaymentMethod } from '@/lib/constants'
 import { formatTRY, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
+
+export const metadata = { title: 'Ödemeler' }
 
 const METHOD_META: Record<PaymentMethod, { icon: typeof Banknote; tone: string; bg: string; bar: string; seg: string }> = {
   cash:     { icon: Banknote,   tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/12', bar: 'bg-emerald-500/70', seg: 'bg-emerald-500' },
@@ -18,7 +20,13 @@ const METHOD_META: Record<PaymentMethod, { icon: typeof Banknote; tone: string; 
   transfer: { icon: Landmark,   tone: 'text-sky-600 dark:text-sky-400',         bg: 'bg-sky-500/12',     bar: 'bg-sky-500/70',     seg: 'bg-sky-500' },
 }
 
-export default async function PaymentsPage() {
+const trLower = (v: string) => v.toLocaleLowerCase('tr')
+
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams: { method?: string; q?: string }
+}) {
   const [payments, clients] = await Promise.all([listPayments(), clientOptions()])
   const total = payments.reduce((s, p) => s + p.amount, 0)
 
@@ -30,6 +38,30 @@ export default async function PaymentsPage() {
     count: byMethod(m).length,
     ...METHOD_META[m],
   }))
+
+  // Filtreler yalnızca listeyi daraltır — üstteki tahsilat şeridi hep tüm geçmişi anlatır
+  const method = (PAYMENT_METHODS as readonly string[]).includes(searchParams.method ?? '')
+    ? (searchParams.method as PaymentMethod)
+    : undefined
+  const q = searchParams.q?.trim() || undefined
+  const needle = q ? trLower(q) : null
+  const visible = payments.filter(
+    (p) =>
+      (!method || p.method === method) &&
+      (!needle || trLower(`${p.clientName ?? ''} ${p.note ?? ''}`).includes(needle)),
+  )
+  const filtered = Boolean(method || q)
+  const visibleTotal = visible.reduce((s, p) => s + p.amount, 0)
+
+  const filterHref = (over: { method?: PaymentMethod | 'all'; q?: string }) => {
+    const sp = new URLSearchParams()
+    const mm = over.method ?? method ?? 'all'
+    const qq = over.q ?? q ?? ''
+    if (mm !== 'all') sp.set('method', mm)
+    if (qq) sp.set('q', qq)
+    const qs = sp.toString()
+    return `/dashboard/payments${qs ? `?${qs}` : ''}`
+  }
 
   return (
     <>
@@ -70,35 +102,85 @@ export default async function PaymentsPage() {
           </div>
 
           {/* Yöntem lejantı */}
+          {/* Yöntem lejantı — aynı zamanda filtre (tıkla → o yöntemi listele) */}
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {methods.map((m) => (
-              <div key={m.method} className="flex items-center gap-3 rounded-xl border border-slate-500/10 p-3">
-                <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', m.bg, m.tone)}>
-                  <m.icon className="h-4 w-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
-                    {m.label} · {m.count}
-                  </p>
-                  <p className="sensitive font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white">
-                    {formatTRY(m.amount, { compact: true })}
-                  </p>
-                </div>
-              </div>
-            ))}
+            {methods.map((m) => {
+              const active = method === m.method
+              return (
+                <Link
+                  key={m.method}
+                  href={filterHref({ method: active ? 'all' : m.method })}
+                  aria-pressed={active}
+                  title={active ? 'Filtreyi kaldır' : `${m.label} tahsilatlarını göster`}
+                  className={cn(
+                    'flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-slate-500/25',
+                    active && 'border-indigo-500/40 bg-indigo-500/[0.05] ring-1 ring-indigo-500/30',
+                  )}
+                >
+                  <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', m.bg, m.tone)}>
+                    <m.icon className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+                      {m.label} · {m.count}
+                    </p>
+                    <p className="sensitive font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white">
+                      {formatTRY(m.amount, { compact: true })}
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>
 
+      {/* Arama + aktif filtre göstergesi */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        {filtered && (
+          <Link
+            href="/dashboard/payments"
+            className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/[0.07] px-3 py-1.5 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-500/60 dark:text-indigo-300"
+          >
+            <X className="h-3.5 w-3.5" />
+            {method ? PAYMENT_METHOD_LABEL[method] : 'Arama'} filtresini kaldır
+          </Link>
+        )}
+        <form action="/dashboard/payments" className="relative ml-auto w-full sm:w-64">
+          {method && <input type="hidden" name="method" value={method} />}
+          <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="Danışan veya not ara…"
+            className="field !py-2 !pl-9 text-sm"
+          />
+        </form>
+      </div>
+
       <div className="glass overflow-hidden rounded-2xl">
-        {payments.length ? (
+        {visible.length ? (
           <>
-            <header className="flex items-center justify-between border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
-              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Tahsilat Geçmişi</h2>
-              <span className="text-xs text-slate-400">{payments.length} kayıt</span>
+            <header className="flex items-center justify-between gap-3 border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
+              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+                {method ? `${PAYMENT_METHOD_LABEL[method]} Tahsilatları` : 'Tahsilat Geçmişi'}
+              </h2>
+              <span className="shrink-0 text-xs text-slate-400">
+                {filtered ? (
+                  <>
+                    {visible.length} / {payments.length} kayıt ·{' '}
+                    <span className="sensitive font-mono font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                      {formatTRY(visibleTotal, { compact: true })}
+                    </span>
+                  </>
+                ) : (
+                  `${payments.length} kayıt`
+                )}
+              </span>
             </header>
             <div className="divide-y divide-slate-500/10">
-              {payments.map((p) => {
+              {visible.map((p) => {
                 const meta = METHOD_META[p.method]
                 return (
                   <div key={p.id} className="relative flex items-center gap-3 py-3.5 pl-5 pr-4 transition-colors hover:bg-slate-500/[0.025] sm:gap-4 sm:pl-6 sm:pr-5">
@@ -141,7 +223,21 @@ export default async function PaymentsPage() {
             </div>
           </>
         ) : (
-          <EmptyState icon={CreditCard} title="Henüz ödeme yok" description="Danışandan alınan ilk tahsilatı ekle." />
+          <EmptyState
+            icon={CreditCard}
+            title={filtered ? 'Eşleşen tahsilat yok' : 'Henüz ödeme yok'}
+            description={filtered ? 'Filtreyi kaldırıp tekrar dene.' : 'Danışandan alınan ilk tahsilatı ekle.'}
+            action={
+              filtered ? (
+                <Link
+                  href="/dashboard/payments"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
+                >
+                  Filtreyi temizle
+                </Link>
+              ) : undefined
+            }
+          />
         )}
       </div>
     </>

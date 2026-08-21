@@ -17,6 +17,7 @@ import {
   HeartHandshake,
   Users,
   Briefcase,
+  X,
   type LucideIcon,
 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
@@ -29,6 +30,8 @@ import { deleteTransaction } from '@/app/actions/transactions'
 import { formatTRY, monthKey, formatMonth, pctChange } from '@/lib/format'
 import type { TxType } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+
+export const metadata = { title: 'Gelir & Gider' }
 
 // Kategori → ikon eşlemesi (anahtar kelime ile)
 const CATEGORY_ICONS: [RegExp, LucideIcon][] = [
@@ -94,11 +97,12 @@ export default async function FinancesPage({
   const dayLabel = (d: string) =>
     new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date(d))
 
+  // over.q = '' verilirse arama temizlenir (?? değil, açık undefined kontrolü)
   const buildHref = (over: { month?: string; type?: string; q?: string }) => {
     const p = new URLSearchParams()
     const mm = over.month ?? month
     const tt = over.type ?? (type ?? 'all')
-    const qq = over.q ?? (q ?? '')
+    const qq = over.q !== undefined ? over.q : (q ?? '')
     if (mm !== monthKey(now)) p.set('month', mm)
     if (tt !== 'all') p.set('type', tt)
     if (qq) p.set('q', qq)
@@ -164,6 +168,15 @@ export default async function FinancesPage({
             )
           })}
         </div>
+
+        {q && (
+          <Link
+            href={buildHref({ q: '' })}
+            className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/[0.07] px-3 py-1.5 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-500/60 dark:text-indigo-300"
+          >
+            <X className="h-3.5 w-3.5" /> “{q}” aramasını temizle
+          </Link>
+        )}
 
         {/* Arama — GET formu */}
         <form action="/dashboard/finances" className="relative ml-auto w-full sm:w-56">
@@ -252,8 +265,18 @@ export default async function FinancesPage({
         <div className="glass rounded-2xl">
           <EmptyState
             icon={Wallet}
-            title={q ? 'Arama sonucu yok' : 'Bu ay işlem yok'}
-            description={q ? 'Farklı bir kelimeyle dene.' : 'İlk gelir veya gider kaydını ekleyin.'}
+            title={q ? 'Arama sonucu yok' : type ? 'Bu ay bu türde kayıt yok' : 'Bu ay işlem yok'}
+            description={q ? 'Farklı bir kelimeyle dene.' : 'İlk gelir veya gider kaydını ekle.'}
+            action={
+              q || type ? (
+                <Link
+                  href={buildHref({ q: '', type: 'all' })}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
+                >
+                  Filtreyi temizle
+                </Link>
+              ) : undefined
+            }
           />
         </div>
       )}

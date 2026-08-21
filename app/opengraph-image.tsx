@@ -3,8 +3,9 @@ import { ImageResponse } from 'next/og'
 /**
  * OG görseli — link paylaşımlarında görünen kart (1200×630).
  * Atölye kimliği: fildişi kâğıt + suluboya yıkamaları + mürekkep damgası +
- * Fraunces italik başlık. Fontlar Google Fonts'tan istek anında çekilir;
- * çekilemezse varsayılan fontla (tasarım bozulmadan) render edilir.
+ * sıkı grotesk manşet (uygulamayla aynı aile: Schibsted Grotesk). Fontlar
+ * Google Fonts'tan istek anında çekilir; çekilemezse varsayılan fontla
+ * (tasarım bozulmadan) render edilir.
  */
 
 export const alt = 'Derinay — Psikologlar için finans & danışan takibi'
@@ -77,14 +78,14 @@ function OrchidStamp() {
 }
 
 export default async function OgImage() {
-  const [fraunces, manrope] = await Promise.all([
-    loadGoogleFont('Fraunces:ital,wght@1,600', TITLE),
-    loadGoogleFont('Manrope:wght@600', `${SUBTITLE}${EYEBROW}`),
+  const [display, body] = await Promise.all([
+    loadGoogleFont('Schibsted+Grotesk:wght@800', TITLE),
+    loadGoogleFont('Schibsted+Grotesk:wght@500', `${SUBTITLE}${EYEBROW}`),
   ])
 
   const fonts = [
-    fraunces && { name: 'Fraunces', data: fraunces, style: 'italic' as const, weight: 600 as const },
-    manrope && { name: 'Manrope', data: manrope, style: 'normal' as const, weight: 600 as const },
+    display && { name: 'DerinayDisplay', data: display, style: 'normal' as const, weight: 800 as const },
+    body && { name: 'DerinayBody', data: body, style: 'normal' as const, weight: 500 as const },
   ].filter((f): f is NonNullable<typeof f> => f !== null)
 
   return new ImageResponse(
@@ -112,7 +113,8 @@ export default async function OgImage() {
             alignItems: 'center',
             gap: 14,
             marginTop: 44,
-            fontFamily: 'Manrope',
+            fontFamily: 'DerinayBody',
+            fontWeight: 500,
             fontSize: 22,
             letterSpacing: 10,
             color: '#957022',
@@ -126,11 +128,11 @@ export default async function OgImage() {
           style={{
             display: 'flex',
             marginTop: 10,
-            fontFamily: 'Fraunces',
-            fontStyle: 'italic',
+            fontFamily: 'DerinayDisplay',
+            fontWeight: 800,
             fontSize: 130,
             color: '#1e1c18',
-            letterSpacing: -3,
+            letterSpacing: -5,
           }}
         >
           {TITLE}
@@ -148,7 +150,8 @@ export default async function OgImage() {
           style={{
             display: 'flex',
             marginTop: 22,
-            fontFamily: 'Manrope',
+            fontFamily: 'DerinayBody',
+            fontWeight: 500,
             fontSize: 34,
             color: '#57534a',
           }}

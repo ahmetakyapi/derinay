@@ -10,9 +10,11 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --font-sans: 'Manrope';
-  --font-mono: 'IBM Plex Mono';
-  --font-display: 'Fraunces';
+  /* Tipografi tokenları — next/font `-face` değişkenlerini sarar (layout.tsx).
+     Display ile sans AYNI aileyi işaret eder; fark ağırlık + tracking'ten gelir. */
+  --font-sans: var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Palet çapaları (Tailwind config ile senkron) */
   --pine: 47, 99, 91;        /* birincil — çam/petrol */
@@ -62,7 +64,7 @@ a, button, [role='button'], input, select, textarea, label {
 }
 
 body {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -111,10 +113,17 @@ html.privacy .sensitive {
      yeterli; tıklanabilirlik korunur. */
 }
 
-/* Display tipografi — Fraunces optik incelikleri */
+/* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
+   Ağırlık burada SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın. */
 .font-display {
-  font-optical-sizing: auto;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  letter-spacing: -0.032em;
+}
+/* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
+   Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı
+   varyantlar bileşik seçiciyle eşleşmez, h1 her kırılımda eşleşir. */
+h1.font-display {
+  letter-spacing: -0.04em;
 }
 
 /* ─── Selection ─────────────────────────────────────────────────────────── */
@@ -221,6 +230,16 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
     border-color: rgba(var(--pine-soft), 0.55);
     box-shadow: 0 0 0 3px rgba(var(--pine-soft), 0.14);
   }
+  .field:disabled,
+  .field[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background: rgba(var(--line), 0.05);
+  }
+  /* Geçersiz alan — tarayıcı doğrulaması kullanıcı etkileşiminden sonra kızarır */
+  .field:user-invalid {
+    border-color: rgba(187, 96, 62, 0.55);
+  }
   .field-label {
     display: block;
     margin-bottom: 0.35rem;
@@ -229,6 +248,15 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
     color: rgba(var(--line), 0.78);
   }
   html.dark .field-label { color: rgba(var(--line), 0.7); }
+
+  /* Tarih/saat alanının yerli takvim ikonu light'ta neredeyse görünmez;
+     dark'ta ise beyaz parlar. İkisini de mürekkep tonuna çek. */
+  .field::-webkit-calendar-picker-indicator {
+    opacity: 0.45;
+    cursor: pointer;
+  }
+  .field::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
+  html.dark .field::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
 
   /* iOS Safari, 16px altındaki input'a odaklanınca sayfayı zoom'lar —
      mobilde alan yazısını 16px'e sabitleyerek istenmeyen zoom'u engelle */

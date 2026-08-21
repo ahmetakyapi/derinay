@@ -10,6 +10,7 @@ import { CLIENT_STATUS_LABEL, STATUS_TONE, CLIENT_STATUSES, type ClientStatus } 
 import { cn } from '@/lib/utils'
 import { durationSince, formatTRY, formatDateTime } from '@/lib/format'
 
+export const metadata = { title: 'Danışanlar' }
 export const dynamic = 'force-dynamic'
 
 export default async function ClientsPage({
@@ -24,10 +25,12 @@ export default async function ClientsPage({
     : undefined
   const clients = await listClients({ q, status, tag })
 
+  // Statü sekmeleri arasında gezinirken arama VE etiket filtresi korunur
   const statusHref = (st?: string) => {
     const p = new URLSearchParams()
     if (st) p.set('status', st)
     if (q) p.set('q', q)
+    if (tag) p.set('tag', tag)
     const qs = p.toString()
     return `/dashboard/clients${qs ? `?${qs}` : ''}`
   }
@@ -68,6 +71,7 @@ export default async function ClientsPage({
         </div>
         <form action="/dashboard/clients" className="relative ml-auto w-full sm:w-56">
           {status && <input type="hidden" name="status" value={status} />}
+          {tag && <input type="hidden" name="tag" value={tag} />}
           <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="search"
@@ -85,8 +89,11 @@ export default async function ClientsPage({
             #{tag}
           </span>
           etiketiyle filtreleniyor ·
-          <Link href="/dashboard/clients" className="text-xs font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
-            filtreyi temizle
+          <Link
+            href={statusHref(status)}
+            className="text-xs font-semibold text-indigo-600 hover:underline dark:text-indigo-300"
+          >
+            etiketi kaldır
           </Link>
         </div>
       )}
@@ -150,10 +157,10 @@ export default async function ClientsPage({
       ) : (
         <EmptyState
           icon={Users}
-          title={q || status ? 'Eşleşen danışan yok' : 'Henüz danışan yok'}
-          description={q || status ? 'Filtreyi temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
+          title={q || status || tag ? 'Eşleşen danışan yok' : 'Henüz danışan yok'}
+          description={q || status || tag ? 'Filtreyi temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
           action={
-            q || status ? (
+            q || status || tag ? (
               <Link
                 href="/dashboard/clients"
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"

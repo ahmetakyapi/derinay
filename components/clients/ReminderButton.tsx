@@ -6,7 +6,6 @@ import { Copy, Check, MessageCircle, Save, Send } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Field'
 import { saveReminderTemplate } from '@/app/actions/settings'
-import { USER } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 /** "05xx xxx xx xx" → "905xxxxxxxxx" (wa.me formatı) */
@@ -18,7 +17,7 @@ function waPhone(phone: string): string {
 }
 
 /** Şablondaki yer tutucuları doldur: {ad}, {tarih}, {terapist} */
-function resolve(template: string, clientName: string, date: Date): string {
+function resolve(template: string, clientName: string, date: Date, therapist: string): string {
   const firstName = clientName.trim().split(/\s+/)[0]
   const when = new Intl.DateTimeFormat('tr-TR', {
     day: 'numeric',
@@ -30,7 +29,7 @@ function resolve(template: string, clientName: string, date: Date): string {
   return template
     .replaceAll('{ad}', firstName)
     .replaceAll('{tarih}', when)
-    .replaceAll('{terapist}', USER.fullName)
+    .replaceAll('{terapist}', therapist)
 }
 
 /**
@@ -42,12 +41,15 @@ export function ReminderButton({
   phone,
   date,
   template,
+  therapist,
   className,
 }: {
   clientName: string
   phone: string | null
   date: string | Date
   template: string
+  /** `{terapist}` yerine yazılacak ad — Ayarlar → İşletme Kimliği'nden gelir */
+  therapist: string
   className?: string
 }) {
   const [open, setOpen] = useState(false)
@@ -58,7 +60,7 @@ export function ReminderButton({
   const [pending, start] = useTransition()
   const router = useRouter()
 
-  const message = resolve(draft, clientName, new Date(date))
+  const message = resolve(draft, clientName, new Date(date), therapist)
   const dirty = draft !== template
 
   async function copy() {
@@ -104,7 +106,12 @@ export function ReminderButton({
         open={open}
         onClose={() => setOpen(false)}
         title="Seans Hatırlatması"
-        description={`${clientName} · mesajı düzenleyebilir, şablon olarak kaydedebilirsin`}
+        description={
+          <>
+            <span className="sensitive">{clientName}</span> · mesajı düzenleyebilir, şablon olarak
+            kaydedebilirsin
+          </>
+        }
       >
         <div className="space-y-4">
           <div>

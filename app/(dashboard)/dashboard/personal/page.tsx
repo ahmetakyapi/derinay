@@ -9,6 +9,8 @@ import { getPersonalMonth } from '@/lib/queries'
 import { formatTRY, formatMonth, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+export const metadata = { title: 'Kişisel Harcamalar' }
+
 export default async function PersonalPage({
   searchParams,
 }: {

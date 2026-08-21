@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { PrintButton } from '@/components/invoice/PrintButton'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { getInvoiceDetail, getBusinessInfo } from '@/lib/queries'
-import { INVOICE_STATUS_LABEL } from '@/lib/constants'
+import { INVOICE_STATUS_LABEL, OWNER_PLACEHOLDER } from '@/lib/constants'
 import { formatTRY, formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -45,7 +45,7 @@ export default async function InvoicePrintPage({
               <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>
             <div className="mt-3 text-xs leading-relaxed text-slate-500">
-              <p className="font-semibold text-slate-700">{BUSINESS.owner}</p>
+              <p className="font-semibold text-slate-700">{BUSINESS.owner || OWNER_PLACEHOLDER}</p>
               <p>{BUSINESS.title}</p>
               <p>{BUSINESS.address}</p>
               <p>{BUSINESS.phone} · {BUSINESS.email}</p>

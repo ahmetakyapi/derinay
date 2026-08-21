@@ -4,7 +4,7 @@ import { Lock, ArrowRight } from 'lucide-react'
 import { signIn, auth } from '@/lib/auth'
 import { BloomArt } from '@/components/art/BloomArt'
 import { BloomMark } from '@/components/brand/BloomMark'
-import { USER } from '@/lib/constants'
+import { APP } from '@/lib/constants'
 import { quoteOfTheDay } from '@/lib/quotes'
 
 export const metadata = { title: 'Giriş' }
@@ -53,7 +53,7 @@ export default async function LoginPage({
             Tekrar Hoş Geldin
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {USER.fullName} · {USER.title}
+            {APP.name} · pratiğinin sakin çalışma masası
           </p>
         </div>
 

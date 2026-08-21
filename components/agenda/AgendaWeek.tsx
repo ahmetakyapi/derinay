@@ -45,7 +45,17 @@ const tintOf = (c: string) => TINT[c] ?? TINT.indigo
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; todayKey: string; reminderTemplate: string }) {
+export function AgendaWeek({
+  days,
+  todayKey,
+  reminderTemplate,
+  therapist,
+}: {
+  days: Day[]
+  todayKey: string
+  reminderTemplate: string
+  therapist: string
+}) {
   const [selected, setSelected] = useState<AgendaItem | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [dragId, setDragId] = useState<string | null>(null)
@@ -326,8 +336,14 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
       <Modal
         open={selected !== null}
         onClose={() => setSelected(null)}
-        title={selected?.clientName ?? ''}
-        description={selected ? `${formatTRY(selected.fee)} · ${selected.durationMin} dk` : undefined}
+        title={<span className="sensitive">{selected?.clientName ?? ''}</span>}
+        description={
+          selected ? (
+            <span className="sensitive">
+              {formatTRY(selected.fee)} · {selected.durationMin} dk
+            </span>
+          ) : undefined
+        }
       >
         {selected && (
           <div className="space-y-4">
@@ -342,6 +358,7 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
                 phone={selected.clientPhone}
                 date={`${selected.dateKey}T${pad(Math.floor(selected.startMin / 60))}:${pad(selected.startMin % 60)}`}
                 template={reminderTemplate}
+                therapist={therapist}
               />
               {selected.clientId && (
                 <Link
@@ -389,7 +406,13 @@ export function AgendaWeek({ days, todayKey, reminderTemplate }: { days: Day[]; 
         onClose={() => setConfirmDelete(false)}
         onConfirm={removeSession}
         title="Seans silinsin mi?"
-        description={selected ? `${selected.clientName} · ${selected.time}` : undefined}
+        description={
+          selected ? (
+            <span className="sensitive">
+              {selected.clientName} · {selected.time}
+            </span>
+          ) : undefined
+        }
         confirmLabel="Seansı sil"
       />
     </>

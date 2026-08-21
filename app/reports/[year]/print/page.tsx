@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { PrintButton } from '@/components/invoice/PrintButton'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { getYearAnalytics, getBusinessInfo } from '@/lib/queries'
-import { PAYMENT_METHOD_LABEL } from '@/lib/constants'
+import { PAYMENT_METHOD_LABEL, OWNER_PLACEHOLDER } from '@/lib/constants'
 import { formatTRY } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -48,7 +48,7 @@ export default async function ReportPrintPage({
               <span className="font-display text-2xl font-semibold tracking-tight">{BUSINESS.name}</span>
             </div>
             <p className="mt-2 text-xs text-slate-500">
-              {BUSINESS.owner} · {BUSINESS.title}
+              {BUSINESS.owner || OWNER_PLACEHOLDER} · {BUSINESS.title}
             </p>
           </div>
           <div className="text-right">

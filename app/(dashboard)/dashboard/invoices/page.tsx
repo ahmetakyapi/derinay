@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText, Printer, CircleCheck, Send, Clock3, AlertTriangle, Receipt } from 'lucide-react'
+import { FileText, Printer, CircleCheck, Send, Clock3, AlertTriangle, Receipt, Search, X } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
@@ -10,8 +10,10 @@ import { InvoiceStatusSelect } from '@/components/forms/InvoiceStatusSelect'
 import { listInvoices, clientOptions, getTaxSettings } from '@/lib/queries'
 import { deleteInvoice } from '@/app/actions/invoices'
 import { formatTRY, formatDate } from '@/lib/format'
-import type { InvoiceStatus } from '@/lib/constants'
+import { INVOICE_STATUSES, type InvoiceStatus } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+
+export const metadata = { title: 'Makbuzlar' }
 
 // Statü → galeri etiketi tonu (sol aksan + yumuşak tint)
 const STATUS_META: Record<InvoiceStatus, { label: string; icon: typeof CircleCheck; tone: string; bg: string; bar: string; rowTint: string }> = {
@@ -23,8 +25,37 @@ const STATUS_META: Record<InvoiceStatus, { label: string; icon: typeof CircleChe
 
 const STATUS_ORDER: InvoiceStatus[] = ['paid', 'sent', 'draft', 'overdue']
 
-export default async function InvoicesPage() {
+const trLower = (v: string) => v.toLocaleLowerCase('tr')
+
+export default async function InvoicesPage({
+  searchParams,
+}: {
+  searchParams: { status?: string; q?: string }
+}) {
   const [invoices, clients, taxRates] = await Promise.all([listInvoices(), clientOptions(), getTaxSettings()])
+
+  // Filtreler yalnızca LİSTEYİ daraltır — üstteki özet her zaman tüm makbuzları anlatır
+  const status = (INVOICE_STATUSES as readonly string[]).includes(searchParams.status ?? '')
+    ? (searchParams.status as InvoiceStatus)
+    : undefined
+  const q = searchParams.q?.trim() || undefined
+  const needle = q ? trLower(q) : null
+  const visible = invoices.filter(
+    (i) =>
+      (!status || i.status === status) &&
+      (!needle || trLower(`${i.clientName ?? 'Genel'} ${i.number}`).includes(needle)),
+  )
+  const filtered = Boolean(status || q)
+
+  const filterHref = (over: { status?: InvoiceStatus | 'all'; q?: string }) => {
+    const p = new URLSearchParams()
+    const st = over.status ?? status ?? 'all'
+    const qq = over.q ?? q ?? ''
+    if (st !== 'all') p.set('status', st)
+    if (qq) p.set('q', qq)
+    const qs = p.toString()
+    return `/dashboard/invoices${qs ? `?${qs}` : ''}`
+  }
 
   const totalKdv = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.kdvAmount, 0)
   const totalStopaj = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.stopajAmount, 0)
@@ -80,12 +111,22 @@ export default async function InvoicesPage() {
         </div>
       </div>
 
-      {/* Statü özeti — galeri rafı */}
-      <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {/* Statü özeti — aynı zamanda filtre rafı (tıkla → o statüyü listele) */}
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {STATUS_ORDER.map((st) => {
           const m = STATUS_META[st]
+          const active = status === st
           return (
-            <div key={st} className="glass group rounded-2xl p-4 transition-all hover:-translate-y-0.5">
+            <Link
+              key={st}
+              href={filterHref({ status: active ? 'all' : st })}
+              aria-pressed={active}
+              title={active ? 'Filtreyi kaldır' : `${m.label} makbuzları göster`}
+              className={cn(
+                'glass group rounded-2xl p-4 transition-all hover:-translate-y-0.5',
+                active && 'ring-2 ring-indigo-500/40',
+              )}
+            >
               <div className="flex items-center justify-between">
                 <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl transition-transform group-hover:scale-110', m.bg, m.tone)}>
                   <m.icon className="h-4 w-4" />
@@ -100,20 +141,48 @@ export default async function InvoicesPage() {
               <p className={cn('sensitive mt-0.5 font-display text-lg font-semibold tracking-tight', m.tone)}>
                 {formatTRY(sumByStatus(st), { compact: true })}
               </p>
-            </div>
+            </Link>
           )
         })}
       </div>
 
+      {/* Arama + aktif filtre göstergesi */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        {filtered && (
+          <Link
+            href="/dashboard/invoices"
+            className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/[0.07] px-3 py-1.5 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-500/60 dark:text-indigo-300"
+          >
+            <X className="h-3.5 w-3.5" />
+            {status ? STATUS_META[status].label : 'Arama'} filtresini kaldır
+          </Link>
+        )}
+        <form action="/dashboard/invoices" className="relative ml-auto w-full sm:w-64">
+          {status && <input type="hidden" name="status" value={status} />}
+          <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="Danışan veya makbuz no ara…"
+            className="field !py-2 !pl-9 text-sm"
+          />
+        </form>
+      </div>
+
       <div className="glass overflow-hidden rounded-2xl">
-        {invoices.length ? (
+        {visible.length ? (
           <>
             <header className="flex items-center justify-between border-b border-slate-500/10 px-5 py-3.5 sm:px-6">
-              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Tüm Makbuzlar</h2>
-              <span className="text-xs text-slate-400">{invoices.length} kayıt</span>
+              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+                {status ? `${STATUS_META[status].label} Makbuzlar` : 'Tüm Makbuzlar'}
+              </h2>
+              <span className="text-xs text-slate-400">
+                {filtered ? `${visible.length} / ${invoices.length} kayıt` : `${invoices.length} kayıt`}
+              </span>
             </header>
             <div className="divide-y divide-slate-500/10">
-              {invoices.map((i) => {
+              {visible.map((i) => {
                 const m = STATUS_META[i.status]
                 return (
                   // Mobil: iki satır (kimlik+tutar / kontroller) · sm+: tek satır
@@ -187,7 +256,21 @@ export default async function InvoicesPage() {
             </div>
           </>
         ) : (
-          <EmptyState icon={FileText} title="Henüz makbuz yok" description="İlk makbuzunu kes." />
+          <EmptyState
+            icon={FileText}
+            title={filtered ? 'Eşleşen makbuz yok' : 'Henüz makbuz yok'}
+            description={filtered ? 'Filtreyi kaldırıp tekrar dene.' : 'İlk makbuzunu kes.'}
+            action={
+              filtered ? (
+                <Link
+                  href="/dashboard/invoices"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
+                >
+                  Filtreyi temizle
+                </Link>
+              ) : undefined
+            }
+          />
         )}
       </div>
     </>

@@ -12,7 +12,7 @@ import { useMounted } from '@/hooks/useMounted'
 
 /**
  * Bu ay ödenecek vergi göstergesi — altın halka KDV payını gösterir,
- * merkezde tam tutar (kısaltmasız) Fraunces ile.
+ * merkezde tam tutar (kısaltmasız) display ailesiyle.
  */
 export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }) {
   const total = kdv + incomeTax
