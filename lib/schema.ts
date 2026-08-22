@@ -76,6 +76,11 @@ export const transactions = pgTable('transactions', {
   date:        date('date').notNull().defaultNow(),
   recurring:   boolean('recurring').notNull().default(false), // her ay tekrarlanan sabit kalem (kira, abonelik)
   clientId:    uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
+  // İNDİRİLECEK KDV — yalnız GİDER satırlarında anlamlı. `amount` KDV DAHİL
+  // ödenen tutardır; `kdvAmount` onun içinden ayrılan, beyanda hesaplanan
+  // KDV'den düşülecek kısımdır. Boş (null) = belgesiz/KDV'siz gider.
+  kdvRate:     integer('kdv_rate'),
+  kdvAmount:   numeric('kdv_amount', { precision: 12, scale: 2 }),
   createdAt:   timestamp('created_at').defaultNow().notNull(),
 })
 

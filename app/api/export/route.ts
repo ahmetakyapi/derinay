@@ -95,6 +95,8 @@ export async function GET(req: Request) {
       { key: 'scope', label: 'Kapsam' },
       { key: 'category', label: 'Kategori' },
       { key: 'amount', label: 'Tutar' },
+      { key: 'kdvRate', label: 'KDV %' },
+      { key: 'kdvAmount', label: 'İndirilecek KDV' },
       { key: 'description', label: 'Açıklama' },
       { key: 'recurring', label: 'Tekrarlayan' },
     ]))

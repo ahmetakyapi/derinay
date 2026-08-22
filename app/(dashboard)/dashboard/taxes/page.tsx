@@ -25,7 +25,7 @@ export default async function TaxesPage() {
     (acc, m) => ({
       income: acc.income + m.income,
       expense: acc.expense + m.expense,
-      kdv: acc.kdv + m.kdvCollected,
+      kdv: acc.kdv + m.kdvPayable,
       incomeTax: acc.incomeTax + m.incomeTax,
       due: acc.due + m.totalDue,
     }),
@@ -34,12 +34,15 @@ export default async function TaxesPage() {
 
   const breakdown = [
     {
-      label: 'Toplanan KDV',
-      value: current.kdvCollected,
+      label: 'Ödenecek KDV',
+      value: current.kdvPayable,
       icon: Receipt,
       tone: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-500/10',
-      hint: 'taslak hariç makbuzlardan',
+      hint:
+        current.kdvDeductible > 0
+          ? `${formatTRY(current.kdvCollected, { compact: true })} hesaplanan − ${formatTRY(current.kdvDeductible, { compact: true })} indirilecek`
+          : 'taslak hariç makbuzlardan hesaplanan',
     },
     {
       label: 'Gelir Vergisi',
@@ -60,6 +63,16 @@ export default async function TaxesPage() {
       bg: 'bg-indigo-500/10',
       hint: 'bu ay ödenecek',
     },
+    ...(current.kdvCarry > 0
+      ? [{
+          label: 'Devreden KDV',
+          value: current.kdvCarry,
+          icon: Receipt,
+          tone: 'text-sky-600 dark:text-sky-400',
+          bg: 'bg-sky-500/10',
+          hint: 'sonraki aya devreder',
+        }]
+      : []),
     ...(current.stopajWithheld > 0
       ? [{
           label: 'Kesilen Stopaj',
@@ -94,14 +107,14 @@ export default async function TaxesPage() {
           <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
             Bu Ay Ödenecek
           </h2>
-          <TaxRadial kdv={current.kdvCollected} incomeTax={current.incomeTax} />
+          <TaxRadial kdv={current.kdvPayable} incomeTax={current.incomeTax} />
           <div className="mt-3 space-y-2 border-t border-slate-500/10 pt-3">
             <div className="flex items-center justify-between text-sm">
               <span className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> KDV
               </span>
               <span className="sensitive font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
-                {formatTRY(current.kdvCollected)}
+                {formatTRY(current.kdvPayable)}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
@@ -141,8 +154,10 @@ export default async function TaxesPage() {
                 <p className="mb-0.5 font-semibold text-slate-800 dark:text-slate-100">Tahmini hesaplama</p>
                 <p>
                   Gelir vergisi, net kâr üzerinden <strong>%{taxRates.incomeTaxRate}</strong> ile
-                  hesaplanan basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV, taslak
-                  dışındaki makbuzlardan toplanır. Makbuzlarında kesilen <strong>stopaj</strong>, o
+                  hesaplanan basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV beyanı hesaplanan
+                  eksi indirilecektir: kestiğin makbuzların KDV&apos;sinden, gider belgelerinde
+                  ödediğin KDV düşülür; indirilecek fazlaysa fark ödenmez, sonraki aya
+                  <strong> devreder</strong>. Makbuzlarında kesilen <strong>stopaj</strong>, o
                   gelirin vergisinden peşin ödenmiş kısımdır ve bu tahminden düşülür — fazla kesinti
                   varsa iade/mahsup konusu olduğu için buraya yazılmaz.
                   Oranları <strong>Ayarlar</strong>&apos;dan değiştirebilirsin.
@@ -179,7 +194,7 @@ export default async function TaxesPage() {
                 <th className="px-5 py-2.5 font-medium">Ay</th>
                 <th className="px-5 py-2.5 text-right font-medium">Gelir</th>
                 <th className="px-5 py-2.5 text-right font-medium">Gider</th>
-                <th className="px-5 py-2.5 text-right font-medium">KDV</th>
+                <th className="px-5 py-2.5 text-right font-medium">Ödenecek KDV</th>
                 <th className="px-5 py-2.5 text-right font-medium">Gelir v.</th>
                 <th className="px-5 py-2.5 text-right font-medium">Toplam Vergi</th>
               </tr>
@@ -207,7 +222,7 @@ export default async function TaxesPage() {
                     </td>
                     <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(m.income)}</td>
                     <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(m.expense)}</td>
-                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvCollected)}</td>
+                    <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.kdvPayable)}</td>
                     <td className="sensitive px-5 py-3 text-right font-mono text-[13px] tabular-nums">{formatTRY(m.incomeTax)}</td>
                     <td className="sensitive px-5 py-3 text-right font-mono text-[13px] font-bold tabular-nums text-slate-900 dark:text-white">{formatTRY(m.totalDue)}</td>
                   </tr>

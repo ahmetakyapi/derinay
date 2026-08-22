@@ -76,7 +76,7 @@ export default async function ReportPrintPage({
               <th className="py-2 text-right font-semibold">Gelir</th>
               <th className="py-2 text-right font-semibold">Gider</th>
               <th className="py-2 text-right font-semibold">Net</th>
-              <th className="py-2 text-right font-semibold">KDV</th>
+              <th className="py-2 text-right font-semibold">Ödenecek KDV</th>
               <th className="py-2 text-right font-semibold">Gelir v.</th>
               <th className="py-2 text-right font-semibold">Toplam Vergi</th>
             </tr>
@@ -88,7 +88,7 @@ export default async function ReportPrintPage({
                 <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.income)}</td>
                 <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.expense)}</td>
                 <td className="py-2 text-right font-mono font-semibold tabular-nums">{formatTRY(m.net)}</td>
-                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.kdv)}</td>
+                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.kdvPayable)}</td>
                 <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.incomeTax)}</td>
                 <td className="py-2 text-right font-mono font-semibold tabular-nums">{formatTRY(m.totalDue)}</td>
               </tr>

@@ -147,6 +147,9 @@ export const PERSONAL_CATEGORIES = [
   'Diğer',
 ] as const
 
+/** Türkiye'de yürürlükteki KDV oranları — makbuz ve gider belgesi seçicileri */
+export const KDV_RATE_OPTIONS = [0, 1, 10, 20] as const
+
 // ─── Vergi oranları (tahmini) ────────────────────────────────────────────────
 
 export const TAX = {

@@ -167,12 +167,26 @@ async function main() {
 
   // ─── Giderler (her ay düzenli) ─────────────────────────────────────────────
   console.log('→ Giderler ekleniyor…')
+  // KDV'li gider = belgeli gider; tutar KDV DAHİL girilir, indirilecek KDV
+  // içinden ayrılır. Süpervizyon gibi belgesiz kalemler KDV'siz bırakılır ki
+  // demo veri iki durumu da gösterebilsin.
+  const withKdv = (amount: number, rate: number) => ({
+    kdvRate: rate,
+    kdvAmount: String(Math.round((amount - amount / (1 + rate / 100)) * 100) / 100),
+  })
+
   for (let m = 4; m >= 0; m--) {
-    txRows.push({ type: 'expense', amount: money(9000), category: 'Ofis kirası', date: isoDate(monthsAgo(m, 1)), description: 'Aylık ofis kirası', recurring: true })
-    txRows.push({ type: 'expense', amount: money(1200 + Math.random() * 600), category: 'Faturalar (elektrik/su/internet)', date: isoDate(monthsAgo(m, 5)) })
-    txRows.push({ type: 'expense', amount: money(650), category: 'Yazılım & abonelikler', date: isoDate(monthsAgo(m, 3)), description: 'Randevu & not yazılımı', recurring: true })
+    const rent = money(9000)
+    const bill = money(1200 + Math.random() * 600)
+    const soft = money(650)
+    txRows.push({ type: 'expense', amount: rent, category: 'Ofis Kirası', date: isoDate(monthsAgo(m, 1)), description: 'Aylık ofis kirası', recurring: true, ...withKdv(Number(rent), 20) })
+    txRows.push({ type: 'expense', amount: bill, category: 'Faturalar (elektrik/su/internet)', date: isoDate(monthsAgo(m, 5)), ...withKdv(Number(bill), 20) })
+    txRows.push({ type: 'expense', amount: soft, category: 'Yazılım & Abonelikler', date: isoDate(monthsAgo(m, 3)), description: 'Randevu & not yazılımı', recurring: true, ...withKdv(Number(soft), 20) })
     if (m % 2 === 0) txRows.push({ type: 'expense', amount: money(2500), category: 'Süpervizyon', date: isoDate(monthsAgo(m, 12)) })
-    if (m % 3 === 0) txRows.push({ type: 'expense', amount: money(1800), category: 'Pazarlama', date: isoDate(monthsAgo(m, 9)), description: 'Sosyal medya reklamı' })
+    if (m % 3 === 0) {
+      const ads = money(1800)
+      txRows.push({ type: 'expense', amount: ads, category: 'Pazarlama', date: isoDate(monthsAgo(m, 9)), description: 'Sosyal medya reklamı', ...withKdv(Number(ads), 20) })
+    }
   }
 
   // ─── Kişisel harcamalar (bu ay, gün bazlı) ─────────────────────────────────

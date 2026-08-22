@@ -62,3 +62,70 @@ export function taxSummary(args: {
     totalDue: round2(args.kdvCollected + incomeTax),
   }
 }
+
+/**
+ * KDV DAHİL bir gider tutarından, içindeki indirilecek KDV'yi ayırır.
+ * Türkiye'de fatura tutarı KDV dahildir: 1.200 TL / %20 → 200 TL KDV.
+ */
+export function extractKdv(grossAmount: number, rate: number) {
+  if (!rate || rate <= 0) return 0
+  return round2(grossAmount - grossAmount / (1 + rate / 100))
+}
+
+/** Bir dönemin ham toplamları — vergi serisini besleyen girdi */
+export type PeriodInput = {
+  key: string
+  label: string
+  income: number
+  expense: number
+  /** Kesilen makbuzlardan HESAPLANAN KDV (taslak hariç) */
+  kdvCollected: number
+  /** Gider belgelerinden İNDİRİLECEK KDV */
+  kdvDeductible: number
+  /** Makbuzlardan kesilen gelir vergisi stopajı */
+  stopajWithheld: number
+}
+
+export type PeriodTax = PeriodInput & {
+  /** Bu dönem ödenecek KDV — devreden düşüldükten sonra */
+  kdvPayable: number
+  /** Sonraki döneme devreden KDV (indirilecek fazlası) */
+  kdvCarry: number
+  incomeTaxGross: number
+  stopajCredited: number
+  incomeTax: number
+  totalDue: number
+}
+
+/**
+ * Aylık vergi serisi — DEVREDEN KDV zinciriyle.
+ *
+ * KDV beyanı `hesaplanan − indirilecek`tir. İndirilecek fazlaysa fark ödenmez,
+ * SONRAKİ döneme devreder. Bu yüzden aylar tek tek değil SIRAYLA hesaplanır ve
+ * bu fonksiyon tek kaynak olur — dashboard ile Vergiler sayfası aynı seriyi
+ * okuduğu için iki ekran asla farklı rakam gösteremez.
+ *
+ * `periods` ESKİDEN YENİYE sıralı verilmelidir.
+ */
+export function taxSeries(periods: PeriodInput[], incomeTaxRate?: number): PeriodTax[] {
+  let carry = 0
+  return periods.map((p) => {
+    const deductible = p.kdvDeductible + carry
+    const kdvPayable = round2(Math.max(0, p.kdvCollected - deductible))
+    carry = round2(Math.max(0, deductible - p.kdvCollected))
+
+    const incomeTaxGross = estimateIncomeTax(p.income, p.expense, incomeTaxRate)
+    const stopajCredited = round2(Math.min(incomeTaxGross, Math.max(p.stopajWithheld, 0)))
+    const incomeTax = round2(incomeTaxGross - stopajCredited)
+
+    return {
+      ...p,
+      kdvPayable,
+      kdvCarry: carry,
+      incomeTaxGross,
+      stopajCredited,
+      incomeTax,
+      totalDue: round2(kdvPayable + incomeTax),
+    }
+  })
+}

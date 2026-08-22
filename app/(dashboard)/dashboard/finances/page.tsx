@@ -254,6 +254,14 @@ export default async function FinancesPage({
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{t.category}</p>
                           <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                            {t.kdvAmount > 0 && (
+                              <span
+                                title="Bu giderden indirilecek KDV"
+                                className="mr-1.5 rounded bg-amber-500/12 px-1 py-0.5 font-mono text-[10px] font-semibold tabular-nums text-amber-700 dark:text-amber-300"
+                              >
+                                KDV {formatTRY(t.kdvAmount, { compact: true })}
+                              </span>
+                            )}
                             {t.clientName && <span className="sensitive">{t.clientName}</span>}
                             {t.clientName && t.description ? ' · ' : ''}
                             {t.description}

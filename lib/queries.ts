@@ -4,7 +4,7 @@ import { unstable_noStore as noStore } from 'next/cache'
 import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
-import { taxSummary } from './finance'
+import { taxSeries, type PeriodInput } from './finance'
 import { REMINDER_TEMPLATE_DEFAULT, APP, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
@@ -29,6 +29,8 @@ export type TxRow = {
   date: string
   clientId: string | null
   clientName: string | null
+  /** Gider satırındaki indirilecek KDV — gelir/kişisel satırlarda 0 */
+  kdvAmount: number
 }
 
 export async function listTransactions(opts?: {
@@ -57,6 +59,7 @@ export async function listTransactions(opts?: {
       category: transactions.category,
       description: transactions.description,
       date: transactions.date,
+      kdvAmount: transactions.kdvAmount,
       clientId: transactions.clientId,
       clientName: clients.name,
     })
@@ -65,7 +68,7 @@ export async function listTransactions(opts?: {
     .where(filters.length ? and(...filters) : undefined)
     .orderBy(desc(transactions.date))
 
-  return rows.map((r) => ({ ...r, amount: num(r.amount) }))
+  return rows.map((r) => ({ ...r, amount: num(r.amount), kdvAmount: num(r.kdvAmount) }))
 }
 
 // ─── Dashboard istatistikleri ────────────────────────────────────────────────
@@ -95,22 +98,13 @@ export async function getDashboard(monthsBack = 6) {
   const prevIncome = sumBy(prev, 'income')
   const prevExpense = sumBy(prev, 'expense')
 
-  // KDV — bu ay düzenlenmiş (taslak hariç) faturalar
-  const kdvCollected = allInvoices
-    .filter((i) => i.status !== 'draft' && monthKey(i.issueDate) === cur)
-    .reduce((s, i) => s + num(i.kdvAmount), 0)
-
-  // Kesilen stopaj gelir vergisinden mahsup edilir — KDV ile aynı taban (taslak hariç)
-  const stopajWithheld = allInvoices
-    .filter((i) => i.status !== 'draft' && monthKey(i.issueDate) === cur)
-    .reduce((s, i) => s + num(i.stopajAmount), 0)
-  const tax = taxSummary({
-    income: curIncome,
-    expense: curExpense,
-    kdvCollected,
-    incomeTaxRate: taxRates.incomeTaxRate,
-    stopajWithheld,
-  })
+  // Vergi — Vergiler sayfasıyla AYNI seriden okunur (devreden KDV zinciri dahil).
+  // Ayrı hesaplansaydı iki ekran farklı "ödenecek vergi" gösterebilirdi.
+  const taxRows = taxSeries(
+    buildPeriods(allTx, allInvoices, monthKeysFromYearStart(now)),
+    taxRates.incomeTaxRate,
+  )
+  const tax = taxRows[taxRows.length - 1]
 
   // Aylık trend (son N ay)
   const trend: { key: string; label: string; income: number; expense: number; net: number }[] = []
@@ -657,6 +651,42 @@ export async function getWeekSessions(weekOffset = 0) {
   }
 }
 
+
+/**
+ * Bir ay aralığının ham vergi girdilerini çıkarır (ESKİDEN YENİYE sıralı).
+ * `taxSeries` bunu devreden KDV zinciriyle işler — dashboard ve Vergiler
+ * sayfası AYNI fonksiyonu kullandığı için iki ekran farklı rakam gösteremez.
+ *
+ * `startKey`'den önceki aylar da hesaba katılır: devreden KDV zinciri yılbaşından
+ * kurulmazsa ilk ayın devreden bakiyesi sıfır sanılır.
+ */
+function buildPeriods(
+  allTx: { type: string; date: string; amount: string | number; kdvAmount: string | number | null }[],
+  allInvoices: { status: string; issueDate: string; kdvAmount: string | number; stopajAmount: string | number }[],
+  keys: string[],
+): PeriodInput[] {
+  return keys.map((k) => {
+    const monthTx = allTx.filter((t) => monthKey(t.date) === k)
+    const monthInv = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k)
+    return {
+      key: k,
+      label: monthKeyToLabel(k),
+      income: monthTx.filter((t) => t.type === 'income').reduce((s, t) => s + num(t.amount), 0),
+      expense: monthTx.filter((t) => t.type === 'expense').reduce((s, t) => s + num(t.amount), 0),
+      kdvCollected: monthInv.reduce((s, iv) => s + num(iv.kdvAmount), 0),
+      kdvDeductible: monthTx.filter((t) => t.type === 'expense').reduce((s, t) => s + num(t.kdvAmount), 0),
+      stopajWithheld: monthInv.reduce((s, iv) => s + num(iv.stopajAmount), 0),
+    }
+  })
+}
+
+/** Yılbaşından verilen aya kadarki ay anahtarları — devreden zinciri için */
+function monthKeysFromYearStart(through: Date): string[] {
+  const out: string[] = []
+  for (let m = 0; m <= through.getMonth(); m++) out.push(monthKey(new Date(through.getFullYear(), m, 1)))
+  return out
+}
+
 // ─── Vergi genel görünümü ────────────────────────────────────────────────────
 export async function getTaxOverview(monthsBack = 6) {
   noStore()
@@ -666,23 +696,12 @@ export async function getTaxOverview(monthsBack = 6) {
     getTaxSettings(),
   ])
   const now = new Date()
-  const months: {
-    key: string; label: string; income: number; expense: number
-    kdvCollected: number; stopajWithheld: number
-    incomeTaxGross: number; stopajCredited: number; incomeTax: number; totalDue: number
-  }[] = []
 
-  for (let i = monthsBack - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    const k = monthKey(d)
-    const income = allTx.filter((t) => t.type === 'income' && monthKey(t.date) === k).reduce((s, t) => s + num(t.amount), 0)
-    const expense = allTx.filter((t) => t.type === 'expense' && monthKey(t.date) === k).reduce((s, t) => s + num(t.amount), 0)
-    const monthInv = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k)
-    const kdvCollected = monthInv.reduce((s, iv) => s + num(iv.kdvAmount), 0)
-    const stopajWithheld = monthInv.reduce((s, iv) => s + num(iv.stopajAmount), 0)
-    const t = taxSummary({ income, expense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate, stopajWithheld })
-    months.push({ key: k, label: monthKeyToLabel(k), income, expense, stopajWithheld, ...t })
-  }
+  // Devreden KDV zinciri YILBAŞINDAN kurulur; yalnız gösterilen 6 ay üzerinden
+  // kurulsaydı ilk ayın devreden bakiyesi hatalı biçimde sıfır sayılırdı.
+  const chainKeys = monthKeysFromYearStart(now)
+  const full = taxSeries(buildPeriods(allTx, allInvoices, chainKeys), taxRates.incomeTaxRate)
+  const months = full.slice(-monthsBack)
 
   const current = months[months.length - 1]
   return { months, current, taxRates }
@@ -704,6 +723,7 @@ export async function getYearAnalytics(year: number) {
         amount: transactions.amount,
         category: transactions.category,
         date: transactions.date,
+        kdvAmount: transactions.kdvAmount, // indirilecek KDV — taxSeries okur
         clientId: transactions.clientId,
         clientName: clients.name,
         clientColor: clients.colorTag,
@@ -718,30 +738,28 @@ export async function getYearAnalytics(year: number) {
   ])
   const taxRates = await getTaxSettings()
 
-  // 12 aylık seri + kümülatif net
-  const months = Array.from({ length: 12 }, (_, m) => {
-    const k = `${year}-${String(m + 1).padStart(2, '0')}`
-    const income = txs.filter((t) => t.type === 'income' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
-    const expense = txs.filter((t) => t.type === 'expense' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
-    const kdv = invs.filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k)).reduce((s, i) => s + num(i.kdvAmount), 0)
-    const stopaj = invs
-      .filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k))
-      .reduce((s, i) => s + num(i.stopajAmount), 0)
-    const tax = taxSummary({
-      income,
-      expense,
-      kdvCollected: kdv,
-      incomeTaxRate: taxRates.incomeTaxRate,
-      stopajWithheld: stopaj,
-    })
-    return { key: k, label: monthKeyToLabel(k), income, expense, net: income - expense, kdv, incomeTax: tax.incomeTax, totalDue: tax.totalDue }
-  })
+  // 12 aylık seri + kümülatif net — vergi tarafı ORTAK seriden (devreden KDV dahil)
+  const yearKeys = Array.from({ length: 12 }, (_, m) => `${year}-${String(m + 1).padStart(2, '0')}`)
+  const taxRows = taxSeries(buildPeriods(txs, invs, yearKeys), taxRates.incomeTaxRate)
+  const months = taxRows.map((r) => ({
+    key: r.key,
+    label: r.label,
+    income: r.income,
+    expense: r.expense,
+    net: r.income - r.expense,
+    kdv: r.kdvCollected,
+    kdvDeductible: r.kdvDeductible,
+    kdvPayable: r.kdvPayable,
+    incomeTax: r.incomeTax,
+    totalDue: r.totalDue,
+  }))
   let running = 0
   const cumulative = months.map((m) => ({ label: m.label, value: (running += m.net) }))
 
   const totalIncome = months.reduce((s, m) => s + m.income, 0)
   const totalExpense = months.reduce((s, m) => s + m.expense, 0)
-  const totalKdv = months.reduce((s, m) => s + m.kdv, 0)
+  // Yıllık toplamda ÖDENECEK KDV kullanılır — 'toplanan' beyan edilecek tutar değil
+  const totalKdv = months.reduce((s, m) => s + m.kdvPayable, 0)
   const totalTax = months.reduce((s, m) => s + m.totalDue, 0)
 
   // Ortalama: cari yılda geçen aylar, geçmiş yılda 12 ay

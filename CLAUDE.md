@@ -145,7 +145,9 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   homework/important), **mood**(great/good/neutral/low/difficult — duygu izleği), **pinned**.
 - **transactions** — gelir/gider: `type`(income/expense), **`scope`(business/personal)**,
   amount, category(serbest metin), description, date, **`recurring`** (sabit kalem — 'sabit
-  giderleri kopyala' bunu önceki aydan kopyalar), clientId→set null.
+  giderleri kopyala' bunu önceki aydan kopyalar), clientId→set null,
+  **`kdvRate` + `kdvAmount`** (İNDİRİLECEK KDV — yalnız işletme giderinde dolu; `amount`
+  KDV DAHİL tutardır, `kdvAmount` `extractKdv` ile içinden ayrılır).
 - **invoices** — Serbest Meslek Makbuzu: number(unique), clientId→set null, issueDate, dueDate,
   subtotal(=brüt ücret), kdvRate, kdvAmount, **stopajRate**, **stopajAmount** (gelir vergisi tevkifatı),
   total(=brüt − stopaj + KDV = tahsil edilen), `status`(draft/sent/paid/overdue), note.
@@ -169,6 +171,12 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   `getBusinessInfo()` / `getTaxSettings()` varsayılanların üstüne uygular; Ayarlar sayfasından düzenlenir.
   Vergi hesapları (`taxSummary`) ve makbuz varsayılanları bu oranları okur. Ayrıca `income_goal`
   (aylık gelir hedefi — dashboard ilerleme bandı) ve `last_backup_at` anahtarları da burada.
+- **KDV beyanı = hesaplanan − indirilecek**: `lib/finance.ts` → `taxSeries()` aylık seriyi
+  DEVREDEN KDV zinciriyle üretir (indirilecek fazlaysa fark ödenmez, sonraki aya devreder).
+  Dashboard, Vergiler ve Analiz sayfalarının ÜÇÜ de bu tek fonksiyonu okur — ayrı hesaplamak
+  iki ekranın farklı "ödenecek vergi" göstermesine yol açardı. Zincir yılbaşından kurulur.
+- **Stopaj mahsubu**: makbuzda kesilen stopaj gelir vergisi tahmininden düşülür (negatife
+  inmez — fazla kesinti iade/mahsup konusudur, tahmin onu yazmaz).
 - **Otomatik vade**: `listInvoices`/`getDashboard` çağrılırken vadesi geçen 'sent' makbuzlar
   idempotent şekilde 'overdue' yapılır (`autoMarkOverdue`).
 - **Çakışma kontrolü**: `createSession`/`updateSessionTime` üst üste binen seansı engeller

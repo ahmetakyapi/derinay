@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { and, eq, gte, lte } from 'drizzle-orm'
+import { extractKdv } from '@/lib/finance'
 import { db } from '@/lib/db'
 import { transactions } from '@/lib/schema'
 import { revalidateFinance } from '@/lib/revalidate'
@@ -16,7 +17,12 @@ export async function createTransaction(input: {
   date?: string
   clientId?: string | null
   recurring?: boolean
+  /** İndirilecek KDV oranı — yalnız İŞLETME GİDERİNDE anlamlı, 0/boş = KDV'siz */
+  kdvRate?: number | null
 }) {
+  const kdvRate = Number(input.kdvRate ?? 0)
+  const isDeductible = input.type === 'expense' && (input.scope ?? 'business') === 'business' && kdvRate > 0
+
   if (!input.amount || input.amount <= 0) return { ok: false, error: 'Tutar geçersiz' }
   if (!input.category?.trim()) return { ok: false, error: 'Kategori zorunlu' }
 
@@ -28,6 +34,10 @@ export async function createTransaction(input: {
     description: input.description || null,
     date: input.date || undefined,
     clientId: input.clientId || null,
+    // KDV yalnız İŞLETME GİDERİNDE tutulur: gelir tarafının KDV'si makbuzda
+    // (invoices.kdvAmount), kişisel harcamanın ise beyanda yeri yok.
+    kdvRate: isDeductible ? kdvRate : null,
+    kdvAmount: isDeductible && kdvRate ? String(extractKdv(input.amount, kdvRate)) : null,
     recurring: input.recurring ?? false,
   })
 
@@ -84,6 +94,10 @@ export async function copyRecurring(targetMonth: string) {
       description: t.description,
       date: `${targetMonth}-${String(day).padStart(2, '0')}`,
       clientId: t.clientId,
+      // Sabit giderin KDV'si de her ay tekrar eder — taşınmazsa kopyalanan
+      // kira/abonelik kalemleri beyanda indirilecek KDV'siz görünürdü.
+      kdvRate: t.kdvRate,
+      kdvAmount: t.kdvAmount,
       recurring: true,
     })
     copied++

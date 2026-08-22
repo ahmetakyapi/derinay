@@ -190,7 +190,7 @@ export default async function DashboardPage({
           animateTo={k.taxDue}
           icon={<Landmark className="h-5 w-5" />}
           accent="amber"
-          hint={`KDV ${formatTRY(d.tax.kdvCollected, { compact: true })} + gelir v.`}
+          hint={`KDV ${formatTRY(d.tax.kdvPayable, { compact: true })} + gelir v.`}
         />
       </div>
 
