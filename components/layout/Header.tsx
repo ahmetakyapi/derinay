@@ -7,9 +7,12 @@ import { useTheme } from 'next-themes'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 
+// Landing bölümleriyle BİREBİR eşleşmeli — var olmayan bir çapaya bağlanan
+// menü satırı sessizce hiçbir şey yapmaz (eski #features/#how böyleydi).
 const NAV_LINKS = [
-  { label: 'Özellikler', href: '#features' },
-  { label: 'Nasıl Çalışır', href: '#how' },
+  { label: 'Makbuz', href: '#makbuz' },
+  { label: 'Vergi', href: '#vergi' },
+  { label: 'Veri Güvenliği', href: '#emanet' },
 ]
 
 export default function Header() {
