@@ -189,7 +189,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           <button
             onClick={onPin}
             disabled={pending}
-            aria-label={note.pinned ? 'Sabitlemeyi kaldır' : 'Notu sabitle'}
+            aria-label={note.pinned ? 'Sabitlemeyi Kaldır' : 'Notu Sabitle'}
             className={cn(
               'flex h-7 w-7 items-center justify-center rounded-lg transition-colors',
               note.pinned

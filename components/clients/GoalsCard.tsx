@@ -91,7 +91,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
               <button
                 onClick={() => setStatus(g.id, g.status === 'achieved' ? 'active' : 'achieved')}
                 disabled={pending}
-                aria-label={g.status === 'achieved' ? 'Aktife çevir' : 'Tamamlandı işaretle'}
+                aria-label={g.status === 'achieved' ? 'Aktife Çevir' : 'Tamamlandı İşaretle'}
                 className={cn(
                   'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all',
                   g.status === 'achieved'
@@ -113,8 +113,8 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
                 <button
                   onClick={() => setStatus(g.id, g.status === 'paused' ? 'active' : 'paused')}
                   disabled={pending}
-                  aria-label={g.status === 'paused' ? 'Devam et' : 'Duraklat'}
-                  title={g.status === 'paused' ? 'Devam et' : 'Duraklat'}
+                  aria-label={g.status === 'paused' ? 'Devam Et' : 'Duraklat'}
+                  title={g.status === 'paused' ? 'Devam Et' : 'Duraklat'}
                   className="shrink-0 text-slate-300 opacity-100 transition-all hover:text-amber-500 dark:text-slate-600 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
                 >
                   {g.status === 'paused' ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
