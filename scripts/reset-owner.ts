@@ -1,10 +1,12 @@
 import { config } from 'dotenv'
+import { requireDatabaseUrl } from './db-env'
 import { eq } from 'drizzle-orm'
 import { db } from '../lib/db'
 import { settings } from '../lib/schema'
 import { BUSINESS, type BusinessInfo } from '../lib/constants'
 
 config({ path: '.env.local' })
+requireDatabaseUrl('npm run db:reset-owner')
 
 /**
  * Kayıtlı kişi adını (ve istenirse tüm işletme kimliğini) veritabanından siler.

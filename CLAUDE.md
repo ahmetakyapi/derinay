@@ -45,9 +45,16 @@ npm run lint       # next lint
 npm run db:push    # şemayı Neon'a uygula (drizzle-kit push)
 npm run db:seed    # örnek Türkçe veriyle doldur (scripts/seed.ts — önce TÜM tabloları siler)
 npm run db:studio  # Drizzle Studio
+npm run db:check   # ŞEMA DOĞRULAMA — db:push sonrası kolonlar gerçekten oluştu mu
+npm run db:reset-owner  # settings'te kayıtlı kişi adını sil (--all = tüm kimlik)
 ```
 
 Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` → `dev`.
+
+> **Şema değişikliğinden sonra**: `npm run db:push` çalıştır, ardından
+> `npm run db:check` ile kolonların gerçekten oluştuğunu doğrula. Push sessizce
+> yarım kalabilir (izin, bağlantı, tip çakışması); `db:check` bunu yakalar.
+> CLI betikleri `DATABASE_URL` yoksa ham yığın izi yerine ne yapılacağını yazar.
 
 ---
 
