@@ -16,6 +16,7 @@ import {
   Package,
   Activity,
   ShieldAlert,
+  UserMinus,
   DatabaseBackup,
   ChevronLeft,
   ChevronRight,
@@ -64,6 +65,7 @@ export default async function DashboardPage({
     rem.endingPackages.length +
     rem.staleScores.length +
     rem.missingConsent.length +
+    rem.silentClients.length +
     (rem.backupStale ? 1 : 0)
   const k = d.kpis
   const weekTotal = week.days.reduce((s, day) => s + day.items.length, 0)
@@ -375,6 +377,27 @@ export default async function DashboardPage({
                       <p className="sensitive truncate text-xs text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-sky-600 dark:text-sky-400">→</span>
+                  </Link>
+                </li>
+              )}
+              {rem.silentClients.length > 0 && (
+                <li>
+                  <Link
+                    href={`/dashboard/clients/${rem.silentClients[0].clientId}`}
+                    className="flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-amber-500/40"
+                  >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      <UserMinus className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                        {rem.silentClients.length} danışan sessizleşti
+                      </p>
+                      <p className="sensitive truncate text-xs text-slate-400">
+                        {rem.silentClients.slice(0, 3).map((c) => `${c.clientName} (${c.daysSince}g)`).join(', ')}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400">→</span>
                   </Link>
                 </li>
               )}

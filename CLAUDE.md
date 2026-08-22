@@ -180,6 +180,9 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   iki ekranın farklı "ödenecek vergi" göstermesine yol açardı. Zincir yılbaşından kurulur.
 - **Stopaj mahsubu**: makbuzda kesilen stopaj gelir vergisi tahmininden düşülür (negatife
   inmez — fazla kesinti iade/mahsup konusudur, tahmin onu yazmaz).
+- **Sessizleşen danışan**: `getDashboardReminders().silentClients` — statüsü 'aktif' ama
+  ileriye dönük planlı seansı olmayan VE son tamamlanan seansı 21+ gün önce olan danışanlar.
+  Hiç tamamlanmış seansı olmayan yeni kayıtlar kapsam dışıdır (henüz başlamamış olabilirler).
 - **Bekleyen tahsilat = AÇIK MAKBUZ**: `getOutstandingBalances` borcu makbuz DURUMUNDAN
   türetir (`sent` + `overdue`), ödeme kayıtlarından değil. Eskiden "makbuz toplamı − ödeme
   toplamı" idi: 'Ödendi' işaretlemek bakiyeyi kapatmıyor, ikisini birden yapan kullanıcı ise

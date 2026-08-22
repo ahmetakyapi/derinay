@@ -503,11 +503,55 @@ export async function getDashboardReminders() {
     .filter((c) => c.status === 'active' && !c.consentGiven)
     .map((c) => ({ clientId: c.id, clientName: c.name }))
 
+  /**
+   * SESSİZLEŞEN DANIŞAN — statüsü hâlâ 'aktif' ama ileriye dönük planlı seansı
+   * YOK ve son seansının üzerinden 21+ gün geçmiş. Panelde hiçbir yerde
+   * işaretlenmiyordu: danışan listesi yalnız statüye bakar, statüyü de kimse
+   * elle 'duraklatıldı' yapmaz. Terapi sessizce biter ve fark edilmez.
+   */
+  const SILENT_AFTER_DAYS = 21
+  const nowMs = Date.now()
+  const lastSessionAt = new Map<string, number>()
+  const hasUpcoming = new Set<string>()
+  for (const se of sess) {
+    if (!se.clientId) continue
+    const t = new Date(se.date).getTime()
+    if (t > nowMs) {
+      if (se.status === 'scheduled') hasUpcoming.add(se.clientId)
+      continue
+    }
+    if (se.status !== 'completed') continue
+    const cur = lastSessionAt.get(se.clientId)
+    if (cur === undefined || t > cur) lastSessionAt.set(se.clientId, t)
+  }
+
+  const silentClients = clientRows
+    .filter((c) => c.status === 'active' && !hasUpcoming.has(c.id))
+    .map((c) => {
+      const last = lastSessionAt.get(c.id)
+      // Hiç tamamlanmış seansı olmayan yeni kayıtlar radara girmez — onlar
+      // "sessizleşmiş" değil, henüz başlamamış olabilir.
+      if (last === undefined) return null
+      const daysSince = Math.floor((nowMs - last) / 86_400_000)
+      return daysSince >= SILENT_AFTER_DAYS ? { clientId: c.id, clientName: c.name, daysSince } : null
+    })
+    .filter((x): x is { clientId: string; clientName: string; daysSince: number } => x !== null)
+    .sort((a, b) => b.daysSince - a.daysSince)
+
   // Yedek eskidi mi? (hiç yoksa veya 14+ gün geçtiyse uyar)
   const backup = await getLastBackup()
   const backupStale = backup.daysAgo === null || backup.daysAgo >= 14 ? backup : null
 
-  return { todaySessions, tomorrowSessions, missingNotes, endingPackages, staleScores, missingConsent, backupStale }
+  return {
+    todaySessions,
+    tomorrowSessions,
+    missingNotes,
+    endingPackages,
+    staleScores,
+    missingConsent,
+    silentClients,
+    backupStale,
+  }
 }
 
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
