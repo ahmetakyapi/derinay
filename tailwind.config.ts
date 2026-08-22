@@ -29,19 +29,19 @@ const config: Config = {
   theme: {
     extend: {
       /**
-       * Opaklık ölçeği — ARA ADIMLAR.
+       * Opaklık ölçeği — YALNIZCA 5'in katı OLMAYAN adımlar.
        *
-       * Tailwind'in varsayılan `opacity` ölçeği 0, 5, 10, 20, 25, 30, 40, 50,
-       * 60, 70, 75, 80, 90, 95, 100'dür. Ölçekte OLMAYAN bir değer için
-       * `bg-emerald-500/12` **hiç CSS üretmez** — sınıf sessizce yok sayılır ve
-       * rozet zeminsiz kalır. Bu projenin görsel dili ara değerlere dayandığı
-       * için burada YALNIZCA gerçekten kullanılanlar tanımlıdır.
-       * Yeni bir ara değer kullanmadan önce buraya ekle (ya da `/[0.12]` yaz).
+       * ÖLÇÜLDÜ (Tailwind 3.4): varsayılan `opacity` ölçeği 5'in katlarını
+       * üretir — /15, /35, /45 config'siz çalışır. 5'in katı OLMAYAN bir değer
+       * (ör. /12, /8) ise **hiç CSS üretmez**: sınıf sessizce yok sayılır ve
+       * rozet zeminsiz kalır. Bu projede yalnız bu ikisi kullanılıyor.
+       *
+       * Yeni bir değer eklemeden önce 5'in katı mı diye bak; katıysa buraya
+       * yazma (ölü konfigürasyon olur).
        */
       opacity: {
         8: '0.08',
         12: '0.12',
-        15: '0.15',
       },
       // Fallback zinciri CSS değişkeninin İÇİNDE (globals.css :root) —
       // burada tek kaynak kullanılır, iki yerde fallback tutulmaz.

@@ -253,7 +253,9 @@ export function AgendaWeek({
                     key={it.id}
                     role="button"
                     tabIndex={0}
-                    aria-label={`${it.time} · ${it.clientName} — seansı aç`}
+                    /* İsim aria-label'a YAZILMAZ: ekranda .sensitive ile bulanan
+                       değer erişilebilir adda düz metin olarak sızıyordu. */
+                    aria-label={`${it.time} seansını aç`}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault()

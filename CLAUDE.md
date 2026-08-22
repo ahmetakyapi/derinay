@@ -219,16 +219,21 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   **Türkçe tuzağı**: `capitalize` sınıfı ve `.toUpperCase()`/`title()` KULLANMA —
   `i → I` üretir, `İ` değil. Metni elle yaz. Küçük bağlaçlar (ve, ile, için, de,
   da) başta değilse küçük kalır; kısaltmalar olduğu gibi durur (KDV, CSV, VKN, EFT).
-- **Opaklık ölçeği (KRİTİK)**: Tailwind'in varsayılan `opacity` ölçeği yalnızca
-  `0,5,10,20,25,30,40,50,60,70,75,80,90,95,100` içerir. Ölçekte OLMAYAN bir değer için
-  `bg-emerald-500/12` **hiç CSS üretmez** — sınıf sessizce yok sayılır, rozet zeminsiz kalır.
-  Bu projenin görsel dili ara değerlere dayandığı için `tailwind.config.ts` →
-  `theme.extend.opacity` içinde `2,3,4,6,7,8,12,15,18,35,45,55,65,85` tanımlıdır.
-  **Yeni bir ara değer kullanmadan önce oraya ekle** (ya da `/[0.12]` arbitrary yaz).
+- **Opaklık ölçeği (KRİTİK)**: Tailwind 3.4'ün varsayılan `opacity` ölçeği **5'in
+  katlarını** üretir (`/15`, `/35`, `/45` config'siz çalışır). 5'in katı OLMAYAN bir
+  değer — `/12`, `/8` gibi — **hiç CSS üretmez**: sınıf sessizce yok sayılır, rozet
+  zeminsiz kalır. Bu yüzden `tailwind.config.ts` → `theme.extend.opacity` içinde
+  YALNIZCA `8` ve `12` tanımlıdır. Yeni bir ara değer kullanmadan önce 5'in katı mı
+  diye bak; katıysa config'e ekleme (ölü konfigürasyon olur), değilse eklemeden
+  kullanma (sessizce kaybolur). Alternatif: `/[0.12]` arbitrary sözdizimi.
 - **Bileşen envanteri** (önce bunları kullan, yenisini yazma):
-  - Kart başlık: `<PageHeader eyebrow title subtitle action />` — `eyebrow` = galeri bölüm
-    etiketi (**Klinik / Finans / Yaşam**, sidebar gruplarıyla aynı); `title` ReactNode alır
-    (dashboard'da italik isim). Başlık altı el çizimi fırça SVG'si — düz çizgiye çevirme.
+  - Sayfa başlığı: `<PageHeader title subtitle action />` — `title` ReactNode alır.
+    Solunda `BrushPull` (dikey mürekkep çekişi) metin bloğu boyunca uzar. `eyebrow`
+    prop'u YOK (kenar çubuğu grup adını tekrar ediyordu); başlık altı fırça SVG'si de
+    YOK — jest artık başlığın SOLUNDA ve yapısal.
+  - Fırça jestleri: `components/brand/Brush.tsx` → `BrushPull` (dikey, sayfa başlığı) ve
+    `BrushSweep` (yatay, landing manşetinde vurgu kelimesinin arkasında). İkisi de DOLGU
+    geometrisi — `stroke` ile çizilmiş ince yol DEĞİL.
   - KPI: `<StatCard label value icon={<Icon/>} accent change hint />` — `icon` **ReactNode**, lucide bileşeni DEĞİL (bkz §10)
   - Durum etiketi: `<StatusBadge label tone />` (tone: emerald/amber/slate/sky/red/indigo/violet) — `STATUS_TONE[...]` ile eşle
   - Avatar: `<Avatar name color size />`

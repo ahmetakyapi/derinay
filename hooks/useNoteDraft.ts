@@ -59,13 +59,21 @@ export function useNoteDraft(clientId: string) {
     }
   }, [key])
 
+  /**
+   * Bekleyen taslak varken de yazılanı sakla — kullanıcı bandı yok sayıp yeni
+   * bir not yazmaya başlarsa o metin de korunmalı. Boş formun depodaki taslağı
+   * ezmesi çağıran tarafta değil, burada içerik kontrolüyle engellenir.
+   */
   const save = useCallback(
     (draft: Omit<NoteDraft, 'savedAt'>) => {
       if (timer.current) clearTimeout(timer.current)
       timer.current = setTimeout(() => {
         try {
-          if (!draft.body.trim() && !draft.title.trim()) localStorage.removeItem(key)
-          else localStorage.setItem(key, JSON.stringify({ ...draft, savedAt: Date.now() }))
+          // Boş formu YAZMA ve var olanı SİLME: mount'taki boş geçiş depodaki
+          // taslağı ezmesin. Silme yalnız açık iki yoldan olur — not kaydedilince
+          // veya kullanıcı bandın çarpısına basınca (`clear`).
+          if (!draft.body.trim() && !draft.title.trim()) return
+          localStorage.setItem(key, JSON.stringify({ ...draft, savedAt: Date.now() }))
         } catch {
           /* kota dolu / kapalı — taslak olmadan devam */
         }

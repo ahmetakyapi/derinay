@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { desc, eq, like } from 'drizzle-orm'
+import { eq, like } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/schema'
 import { revalidateFinance } from '@/lib/revalidate'
@@ -20,16 +20,19 @@ import { TAX, type InvoiceStatus } from '@/lib/constants'
  */
 async function nextInvoiceNumber(year: number) {
   const prefix = `DER-${year}-`
-  const [latest] = await db
+  // METİN sıralamasına güvenilmez: 3 haneli dolgu yalnız 999'a kadar
+  // leksikografik sırayı korur ('DER-2026-1000' < 'DER-2026-999'). O yılın tüm
+  // numaraları okunup sıra SAYISAL olarak bulunur (yılda birkaç yüz kayıt).
+  const rows = await db
     .select({ number: invoices.number })
     .from(invoices)
     .where(like(invoices.number, `${prefix}%`))
-    .orderBy(desc(invoices.number))
-    .limit(1)
 
-  const lastSeq = latest ? Number(latest.number.slice(prefix.length)) : 0
-  const next = Number.isFinite(lastSeq) ? lastSeq + 1 : 1
-  return `${prefix}${String(next).padStart(3, '0')}`
+  const lastSeq = rows.reduce((max, r) => {
+    const n = Number(r.number.slice(prefix.length))
+    return Number.isFinite(n) && n > max ? n : max
+  }, 0)
+  return `${prefix}${String(lastSeq + 1).padStart(3, '0')}`
 }
 
 export async function createInvoice(input: {
@@ -74,9 +77,11 @@ export async function createInvoice(input: {
     try {
       ;[created] = await db.insert(invoices).values({ number, ...values }).returning({ id: invoices.id })
     } catch (e) {
+      // Her denemeyi logla — sessizce yutulan ilk iki hata, unique ihlali
+      // sanılan başka bir arızayı (FK, bağlantı) gizliyordu.
+      console.error(`Makbuz oluşturma denemesi ${attempt + 1} başarısız:`, e)
       if (attempt === 2) {
-        console.error('Makbuz numarası üretilemedi:', e)
-        return { ok: false, error: 'Makbuz numarası üretilemedi, tekrar dene' }
+        return { ok: false, error: 'Makbuz oluşturulamadı, tekrar dene' }
       }
     }
   }

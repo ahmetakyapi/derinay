@@ -59,16 +59,15 @@ export function NoteForm({
   const { restored, dismissRestored, save: saveDraft, clear: clearDraft } = useNoteDraft(clientId)
 
   /**
-   * DİKKAT: Bekleyen bir taslak varken KAYDETME. Aksi halde mount'ta form boş
-   * olduğu için `save({ body: '' })` çalışır, depodaki taslağı siler ve
-   * kullanıcı "Geri Yükle"ye basmadan sayfayı yenilerse metin gider.
+   * Yazılan her şey saklanır — geri yükleme bandı açıkken bile: kullanıcı bandı
+   * yok sayıp yeni bir not yazmaya başlarsa o metin de korunmalı. Boş formun
+   * depodaki taslağı ezmesi `saveDraft` içinde engelleniyor.
    * Bağımlılıkta `saveDraft` (kararlı useCallback) var, hook nesnesi değil —
    * nesne her render'da yeniden üretildiği için efekt her render koşuyordu.
    */
   useEffect(() => {
-    if (restored) return
     saveDraft({ title, body, kind, mood })
-  }, [title, body, kind, mood, restored, saveDraft])
+  }, [title, body, kind, mood, saveDraft])
 
   function restoreDraft() {
     if (!restored) return

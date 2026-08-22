@@ -71,14 +71,13 @@ export function StatusPillSelect<T extends string>({
           </option>
         ))}
       </select>
-      {/* currentColor: chevron hapın durum rengini alsın — nötr gri, boyalı
-          hapın içinde yabancı duruyordu ve dark temada kayboluyordu. */}
-      <span
+      {/* Chevron hapın METİN rengini alır. `styles[current]` KULLANILMAZ:
+          o dizi arka plan ve kenarlık da taşıyor, sarmalayıcıya uygulanınca
+          hapın üstünde ikinci bir renkli kutu çiziliyordu. */}
+      <ChevronDown
         aria-hidden
-        className={cn('pointer-events-none absolute right-2 top-1/2 -translate-y-1/2', styles[current])}
-      >
-        <ChevronDown className="h-3.5 w-3.5 opacity-80" />
-      </span>
+        className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-current opacity-70"
+      />
     </span>
   )
 }

@@ -77,12 +77,16 @@ export default async function FinancesPage({
   // ÖNEMLİ: `txs` filtreli listeyi besler, `monthTxs` özet kartlarını.
   // İkisi karışırsa "Ay Geliri" filtreye göre değişip filtresiz önceki ayla
   // karşılaştırılır ve yüzde tamamen anlamsız olur.
-  const [txs, monthTxs, prevTxs, clients] = await Promise.all([
+  // Filtre yoksa `txs` ile `monthTxs` birebir aynı sorgudur — ikisini de atmak
+  // her varsayılan sayfa yüklemesinde bir sorguyu boşa harcıyordu.
+  const filtered = Boolean(type || q)
+  const [txs, monthTxsMaybe, prevTxs, clients] = await Promise.all([
     listTransactions({ scope: 'business', month, type, q }),
-    listTransactions({ scope: 'business', month }),
+    filtered ? listTransactions({ scope: 'business', month }) : Promise.resolve(null),
     listTransactions({ scope: 'business', month: prevKey }),
     clientOptions(),
   ])
+  const monthTxs = monthTxsMaybe ?? txs
 
   const sum = (rows: TxRow[], t: TxType) => rows.filter((r) => r.type === t).reduce((s, r) => s + r.amount, 0)
   const income = sum(monthTxs, 'income')
