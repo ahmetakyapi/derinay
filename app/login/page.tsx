@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { AuthError } from 'next-auth'
-import { Lock, ArrowRight } from 'lucide-react'
 import { signIn, auth } from '@/lib/auth'
+import { LoginForm } from '@/components/forms/LoginForm'
 import { BloomArt } from '@/components/art/BloomArt'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { APP } from '@/lib/constants'
@@ -49,7 +49,7 @@ export default async function LoginPage({
             <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
             <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
           </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="font-display text-[1.65rem] font-bold tracking-[-0.035em] text-slate-900 dark:text-white">
             Tekrar Hoş Geldin
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -57,37 +57,7 @@ export default async function LoginPage({
           </p>
         </div>
 
-        <form action={login} className="space-y-4">
-          <label className="block">
-            <span className="field-label">Parola</span>
-            <div className="relative">
-              <Lock className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="password"
-                name="password"
-                required
-                autoFocus
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="field !pl-9"
-              />
-            </div>
-          </label>
-
-          {searchParams.error && (
-            <p className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-3 py-2 text-sm text-rose-600 dark:text-rose-400">
-              Parola hatalı — tekrar dene.
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-[0.98]"
-          >
-            Panele Gir
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        </form>
+        <LoginForm action={login} hasError={Boolean(searchParams.error)} />
 
         <p className="mt-6 text-center font-display text-xs italic text-slate-400">
           &ldquo;{quoteOfTheDay().text}&rdquo;
