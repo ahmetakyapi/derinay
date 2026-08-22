@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
-    ],
-  },
+  // NOT: `images` yapılandırması yok — projede `next/image` KULLANILMIYOR.
+  // Danışan avatarları istemcide küçültülmüş data-URI'lerdir ve düz <img> ile
+  // basılır (next/image data-URI'yi optimize edemez). Şablondan kalan
+  // `remotePatterns: avatars.githubusercontent.com` kaydı, hiçbir uzak görsel
+  // yüklenmediği için gereksiz yere izin yüzeyi açıyordu; kaldırıldı.
   experimental: {
     serverActions: {
       // Yedek geri yükleme (JSON, avatar data-URI'leriyle) için yükseltildi

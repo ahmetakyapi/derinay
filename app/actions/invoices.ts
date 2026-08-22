@@ -1,17 +1,35 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { count, eq } from 'drizzle-orm'
+import { desc, eq, like } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/schema'
 import { revalidateFinance } from '@/lib/revalidate'
 import { calcMakbuz } from '@/lib/finance'
 import { TAX, type InvoiceStatus } from '@/lib/constants'
 
-async function nextInvoiceNumber() {
-  const [{ value }] = await db.select({ value: count() }).from(invoices)
-  const year = new Date().getFullYear()
-  return `DER-${year}-${String(value + 1).padStart(3, '0')}`
+/**
+ * Sıradaki makbuz numarası — DER-YYYY-NNN.
+ *
+ * TOPLAM SAYIYA GÖRE ÜRETME: `count()` iki yönden bozuktu —
+ *  1) Bir makbuz silinince sayaç geri düşüyor ve ZATEN VAR OLAN bir numara
+ *     tekrar üretiliyordu; `number` unique olduğu için insert patlıyordu.
+ *  2) Sayaç kümülatif olduğu için yeni yılın ilk makbuzu 001'den değil,
+ *     önceki yılların toplamından devam ediyordu.
+ * Bunun yerine O YILIN en büyük sıra numarası okunur ve bir artırılır.
+ */
+async function nextInvoiceNumber(year: number) {
+  const prefix = `DER-${year}-`
+  const [latest] = await db
+    .select({ number: invoices.number })
+    .from(invoices)
+    .where(like(invoices.number, `${prefix}%`))
+    .orderBy(desc(invoices.number))
+    .limit(1)
+
+  const lastSeq = latest ? Number(latest.number.slice(prefix.length)) : 0
+  const next = Number.isFinite(lastSeq) ? lastSeq + 1 : 1
+  return `${prefix}${String(next).padStart(3, '0')}`
 }
 
 export async function createInvoice(input: {
@@ -29,25 +47,40 @@ export async function createInvoice(input: {
   const rate = input.kdvRate ?? TAX.KDV_RATE
   const stopajRate = input.stopajRate ?? 0
   const { kdvAmount, stopajAmount, total } = calcMakbuz(input.subtotal, rate, stopajRate)
-  const number = await nextInvoiceNumber()
+  // Numara makbuzun KENDİ düzenleme yılından türer; ileri/geri tarihli makbuz
+  // "gelecek yıla ait numara" almasın diye issueDate esas alınır.
+  const issueYear = new Date(input.issueDate || Date.now()).getFullYear()
 
-  const [created] = await db
-    .insert(invoices)
-    .values({
-      number,
-      clientId: input.clientId || null,
-      subtotal: String(input.subtotal),
-      kdvRate: rate,
-      kdvAmount: String(kdvAmount),
-      stopajRate,
-      stopajAmount: String(stopajAmount),
-      total: String(total),
-      issueDate: input.issueDate || undefined,
-      dueDate: input.dueDate || null,
-      status: input.status ?? 'sent',
-      note: input.note || null,
-    })
-    .returning({ id: invoices.id })
+  const values = {
+    clientId: input.clientId || null,
+    subtotal: String(input.subtotal),
+    kdvRate: rate,
+    kdvAmount: String(kdvAmount),
+    stopajRate,
+    stopajAmount: String(stopajAmount),
+    total: String(total),
+    issueDate: input.issueDate || undefined,
+    dueDate: input.dueDate || null,
+    status: input.status ?? 'sent',
+    note: input.note || null,
+  }
+
+  // Numara üretimi ile insert arası bir yarış olabilir (aynı anda iki makbuz).
+  // unique ihlalinde bir kez daha dene, sonra anlamlı hata dön.
+  let number = ''
+  let created: { id: string } | undefined
+  for (let attempt = 0; attempt < 3 && !created; attempt++) {
+    number = await nextInvoiceNumber(issueYear)
+    try {
+      ;[created] = await db.insert(invoices).values({ number, ...values }).returning({ id: invoices.id })
+    } catch (e) {
+      if (attempt === 2) {
+        console.error('Makbuz numarası üretilemedi:', e)
+        return { ok: false, error: 'Makbuz numarası üretilemedi, tekrar dene' }
+      }
+    }
+  }
+  if (!created) return { ok: false, error: 'Makbuz oluşturulamadı' }
 
   revalidateFinance()
   if (input.clientId) revalidatePath(`/dashboard/clients/${input.clientId}`)

@@ -2,11 +2,10 @@ import { TAX } from './constants'
 
 const round2 = (n: number) => Math.round(n * 100) / 100
 
-/** KDV hesabı — net tutar üzerinden */
-export function calcKdv(subtotal: number, rate: number = TAX.KDV_RATE) {
-  const kdvAmount = round2(subtotal * (rate / 100))
-  return { kdvAmount, total: round2(subtotal + kdvAmount) }
-}
+// NOT: Ayrı bir `calcKdv` yardımcısı BİLİNÇLİ olarak yok. Makbuz toplamı
+// stopajsız hesaplanamaz; sadece KDV ekleyen bir yardımcı, çağıranı tevkifatı
+// unutmaya davet ediyordu (ve hiçbir yerden kullanılmıyordu). Tek giriş
+// noktası `calcMakbuz`.
 
 /**
  * Serbest Meslek Makbuzu hesabı.
@@ -22,18 +21,13 @@ export function calcMakbuz(brut: number, kdvRate: number = TAX.KDV_RATE, stopajR
   return { kdvAmount, stopajAmount, netUcret, total }
 }
 
-/** Net kâr = gelir - gider */
-export function netProfit(income: number, expense: number) {
-  return income - expense
-}
-
 /**
  * Basitleştirilmiş gelir vergisi tahmini.
  * Net kâr (pozitifse) üzerinden orana göre — gerçek beyan değil, gösterge.
  * Oran Ayarlar'dan değiştirilebilir (settings 'tax' anahtarı).
  */
 export function estimateIncomeTax(income: number, expense: number, rate: number = TAX.INCOME_TAX_ESTIMATE_RATE) {
-  const profit = netProfit(income, expense)
+  const profit = income - expense
   if (profit <= 0) return 0
   return round2(profit * (rate / 100))
 }

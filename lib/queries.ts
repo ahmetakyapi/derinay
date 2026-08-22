@@ -424,7 +424,20 @@ export async function getDashboardReminders() {
     db.select().from(sessionPackages).orderBy(desc(sessionPackages.purchaseDate)),
     db.select({ clientId: clientScores.clientId, date: clientScores.date, label: clientScores.label }).from(clientScores),
   ])
-  const cOf = (id: string | null) => clientRows.find((c) => c.id === id)
+  // Map — `clientRows.find()` her seans/not/paket/ölçüm için tüm listeyi
+  // tarıyordu (O(n²)). Dashboard'un en sıcak sorgusu, indeks bir kez kurulur.
+  const clientById = new Map(clientRows.map((c) => [c.id, c]))
+  const cOf = (id: string | null) => (id ? clientById.get(id) : undefined)
+
+  // Danışan başına TAMAMLANMIŞ seans tarihleri — paket kullanımı bunun üzerinden
+  // sayılır; eskiden paket başına tüm seans listesi filtreleniyordu.
+  const completedByClient = new Map<string, string[]>()
+  for (const s of sess) {
+    if (s.status !== 'completed' || !s.clientId) continue
+    const list = completedByClient.get(s.clientId) ?? []
+    list.push(dkey(s.date))
+    completedByClient.set(s.clientId, list)
+  }
 
   const mapSession = (s: (typeof sess)[number]) => {
     const d = new Date(s.date)
@@ -462,9 +475,8 @@ export async function getDashboardReminders() {
   for (const p of pkgs) {
     if (seen.has(p.clientId)) continue
     seen.add(p.clientId)
-    const used = sess.filter(
-      (s) => s.clientId === p.clientId && s.status === 'completed' && dkey(s.date) >= String(p.purchaseDate).slice(0, 10),
-    ).length
+    const since = String(p.purchaseDate).slice(0, 10)
+    const used = (completedByClient.get(p.clientId) ?? []).filter((d) => d >= since).length
     const remaining = Math.max(p.totalSessions - used, 0)
     if (remaining <= 1) endingPackages.push({ clientId: p.clientId, clientName: cOf(p.clientId)?.name ?? '—', remaining, total: p.totalSessions })
   }

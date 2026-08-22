@@ -94,8 +94,12 @@ async function main() {
     db.delete(settings),
   ]
 
+  // SIRA ÖNEMLİ: clientNotes.goalId → clientGoals.id yabancı anahtarı var.
+  // Hedefler notlardan SONRA eklenirse hedefe bağlı tek bir not FK ihlaliyle
+  // tüm batch'i düşürür. app/actions/restore.ts ile AYNI sırayı koru.
   if (rows.clients.length) statements.push(db.insert(clients).values(rows.clients as never))
   if (rows.sessions.length) statements.push(db.insert(sessions).values(rows.sessions as never))
+  if (rows.clientGoals.length) statements.push(db.insert(clientGoals).values(rows.clientGoals as never))
   if (rows.notes.length) statements.push(db.insert(clientNotes).values(rows.notes as never))
   if (rows.transactions.length) statements.push(db.insert(transactions).values(rows.transactions as never))
   if (rows.invoices.length) statements.push(db.insert(invoices).values(rows.invoices as never))
@@ -103,7 +107,6 @@ async function main() {
   if (rows.sessionPackages.length) statements.push(db.insert(sessionPackages).values(rows.sessionPackages as never))
   if (rows.clientScores.length) statements.push(db.insert(clientScores).values(rows.clientScores as never))
   if (rows.clientDocuments.length) statements.push(db.insert(clientDocuments).values(rows.clientDocuments as never))
-  if (rows.clientGoals.length) statements.push(db.insert(clientGoals).values(rows.clientGoals as never))
   if (rows.waitlist.length) statements.push(db.insert(waitlist).values(rows.waitlist as never))
   if (rows.settings.length) statements.push(db.insert(settings).values(rows.settings as never))
 
