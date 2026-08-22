@@ -9,6 +9,14 @@ import { modalBackdrop, modalPanel } from '@/lib/variants'
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex="-1"])'
 
+/**
+ * Açık modal yığını. İç içe modal (ör. gün detayında DeleteButton'ın onayı)
+ * olduğunda TEK bir Escape ikisini birden kapatıyordu: iki dinleyici de aynı
+ * hedefte, aynı fazda duruyor ve kimse yayılımı durdurmuyordu. Artık Escape'i
+ * yalnız yığının en üstündeki örnek işler.
+ */
+const modalStack: symbol[] = []
+
 // İç içe modallarda body kaydırma kilidini doğru yönet (ref-count).
 let scrollLockCount = 0
 function lockBodyScroll() {
@@ -58,24 +66,32 @@ export function Modal({
   useEffect(() => {
     if (!open) return
 
+    const token = Symbol('modal')
+    modalStack.push(token)
+
     // Açılışta odağı modala taşı; kapanışta tetikleyen öğeye geri ver.
     const prevFocus = document.activeElement as HTMLElement | null
     const focusFirst = () => {
       const panel = panelRef.current
       if (!panel) return
-      // autoFocus isteyen alan varsa ona öncelik ver — aksi halde dialoglardaki
-      // autoFocus sessizce ezilir ve odak "Kapat" düğmesinde açılır.
-      const preferred = panel.querySelector<HTMLElement>('[autofocus],[data-autofocus]')
-      const first = preferred ?? panel.querySelector<HTMLElement>(FOCUSABLE)
+      // React `autoFocus` prop'u DOM'a `autofocus` özniteliği YAZMAZ; mount
+      // anında kendisi focus() çağırır. Bu yüzden `[autofocus]` seçicisiyle
+      // aramak boşunaydı. Doğru kontrol: odak zaten panelin içine düştüyse
+      // (React'in autoFocus'u çalıştıysa) ona dokunma.
+      if (panel.contains(document.activeElement) && document.activeElement !== panel) return
+      const first = panel.querySelector<HTMLElement>(FOCUSABLE)
       ;(first ?? panel).focus()
     }
     const raf = requestAnimationFrame(focusFirst)
 
     const onKey = (e: KeyboardEvent) => {
+      // Yalnız yığının en üstü Escape'i tüketir (iç içe modal koruması)
+      const isTop = modalStack[modalStack.length - 1] === token
       if (e.key === 'Escape') {
-        onCloseRef.current()
+        if (isTop) onCloseRef.current()
         return
       }
+      if (!isTop) return
       // Focus-trap — Tab odağı modal içinde döndürür.
       if (e.key === 'Tab' && panelRef.current) {
         const items = Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
@@ -101,6 +117,8 @@ export function Modal({
       cancelAnimationFrame(raf)
       document.removeEventListener('keydown', onKey)
       unlockBodyScroll()
+      const i = modalStack.indexOf(token)
+      if (i !== -1) modalStack.splice(i, 1)
       prevFocus?.focus?.()
     }
   }, [open])

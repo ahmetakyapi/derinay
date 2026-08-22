@@ -12,7 +12,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
  */
 export function DeleteButton({
   action,
-  confirmText = 'Bu kaydı silmek istediğinize emin misiniz?',
+  confirmText = 'Bu kaydı silmek istediğine emin misin?',
   confirmLabel = 'Sil',
   redirectTo,
   className,

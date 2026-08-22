@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, StickyNote } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { DeleteButton } from '@/components/ui/DeleteButton'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 import { Field, Input } from '@/components/ui/Field'
 import { createTransaction, deleteTransaction } from '@/app/actions/transactions'
 import { PERSONAL_CATEGORIES } from '@/lib/constants'
@@ -278,13 +279,9 @@ export function PersonalCalendar({
           </Field>
           {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={pending}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
-            >
-              <Plus className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Harcama Ekle'}
-            </button>
+            <SubmitButton pending={pending} busyLabel="Ekleniyor…">
+              <Plus className="h-4 w-4" /> Harcama Ekle
+            </SubmitButton>
           </div>
         </form>
       </Modal>

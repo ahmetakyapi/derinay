@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Target, Plus, Check, Pause, Play, Trash2 } from 'lucide-react'
+import { Target, Plus, Check, Pause, Play, Trash2, Loader2 } from 'lucide-react'
 import { addGoal, setGoalStatus, deleteGoal } from '@/app/actions/goals'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { cn } from '@/lib/utils'
@@ -140,19 +140,22 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
           placeholder="Yeni hedef — örn. uyku düzenini iyileştirmek"
           className="field flex-1 !py-2 text-sm"
         />
+        {/* İkon-only: SubmitButton metin sözleşmesine uymuyor, meşguliyet
+            aria-busy + spinner ile bildirilir. */}
         <button
           type="submit"
           disabled={pending}
+          aria-busy={pending}
           aria-label="Hedef ekle"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
         >
-          <Plus className="h-4 w-4" />
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Plus className="h-4 w-4" />}
         </button>
       </form>
       {error && <p role="alert" className="mt-2 text-sm text-rose-500">{error}</p>}
       {!goals.length && (
         <p className="mt-2 text-[11px] text-slate-400">
-          Danışanla birlikte belirlediğiniz hedefleri ekle — tamamlandıkça ilerleme görünür.
+          Danışanla birlikte belirlediğin hedefleri ekle — tamamlandıkça ilerleme görünür.
         </p>
       )}
 

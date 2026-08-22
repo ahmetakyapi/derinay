@@ -241,7 +241,7 @@ function OwnerCard({ owner, onNavigate, children }: { owner: Owner; onNavigate?:
       <Link
         href="/dashboard/settings"
         onClick={onNavigate}
-        title="Kimlik bilgilerini düzenle"
+        title="Kimlik Bilgilerini Düzenle"
         className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-xl transition-opacity hover:opacity-80"
       >
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-bold text-white">
@@ -341,7 +341,7 @@ export function DashboardShell({
         href="#main-content"
         className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
       >
-        İçeriğe atla
+        İçeriğe Atla
       </a>
 
       {/* Desktop sidebar */}
@@ -378,7 +378,7 @@ export function DashboardShell({
                 onClick={togglePrivacy}
                 aria-label="Gizlilik modu"
                 aria-pressed={privacy}
-                title="Gizlilik modu (⌘⇧H)"
+                title="Gizlilik Modu (⌘⇧H)"
                 className={cn(
                   'flex h-10 items-center justify-center rounded-xl border transition-all',
                   privacy
@@ -395,7 +395,7 @@ export function DashboardShell({
                 <button
                   type="submit"
                   aria-label="Çıkış yap"
-                  title="Çıkış yap"
+                  title="Çıkış Yap"
                   className="flex h-10 w-full items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
                 >
                   <LogOut className="h-4 w-4" />
@@ -486,7 +486,7 @@ export function DashboardShell({
                       <button
                         type="submit"
                         aria-label="Çıkış yap"
-                        title="Çıkış yap"
+                        title="Çıkış Yap"
                         className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-rose-500/40 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
                       >
                         <LogOut className="h-4 w-4" />

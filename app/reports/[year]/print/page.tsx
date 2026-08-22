@@ -78,7 +78,7 @@ export default async function ReportPrintPage({
               <th className="py-2 text-right font-semibold">Net</th>
               <th className="py-2 text-right font-semibold">KDV</th>
               <th className="py-2 text-right font-semibold">Gelir v.</th>
-              <th className="py-2 text-right font-semibold">Vergi toplam</th>
+              <th className="py-2 text-right font-semibold">Toplam Vergi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

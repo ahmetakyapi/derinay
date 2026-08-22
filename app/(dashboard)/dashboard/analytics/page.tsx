@@ -84,16 +84,23 @@ export default async function AnalyticsPage({
             <span className="min-w-[64px] text-center font-display text-lg font-semibold text-slate-900 dark:text-white">
               {year}
             </span>
-            <Link
-              href={`/dashboard/analytics?year=${year + 1}`}
-              aria-label="Sonraki yıl"
-              className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300',
-                year >= currentYear && 'pointer-events-none opacity-40',
-              )}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Link>
+            {year >= currentYear ? (
+              <span
+                aria-disabled="true"
+                aria-label="Sonraki yıl (bu yıl son yıl)"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 opacity-40"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </span>
+            ) : (
+              <Link
+                href={`/dashboard/analytics?year=${year + 1}`}
+                aria-label="Sonraki yıl"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            )}
             <Link
               href={`/reports/${year}/print`}
               target="_blank"

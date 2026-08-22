@@ -19,6 +19,7 @@ import {
 } from '@/lib/constants'
 import { formatDateTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 
 export type NoteCardData = {
   id: string
@@ -131,13 +132,9 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           >
             <X className="h-3.5 w-3.5" /> Vazgeç
           </button>
-          <button
-            type="submit"
-            disabled={pending}
-            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
-          >
-            <Check className="h-3.5 w-3.5" /> {pending ? 'Kaydediliyor…' : 'Kaydet'}
-          </button>
+          <SubmitButton pending={pending} className="!px-3 !py-1.5 !text-xs !shadow-none">
+            <Check className="h-3.5 w-3.5" /> Kaydet
+          </SubmitButton>
         </div>
       </form>
     )

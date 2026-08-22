@@ -98,7 +98,7 @@ export function NewSessionDialog({
             </Field>
           )}
 
-          <Field label="Tarih & saat">
+          <Field label="Tarih & Saat">
             <Input name="date" type="datetime-local" required defaultValue={nowLocal} />
           </Field>
 
@@ -129,7 +129,7 @@ export function NewSessionDialog({
               </Select>
             </Field>
             {everyWeeks > 0 && (
-              <Field label="Kaç seans">
+              <Field label="Kaç Seans">
                 <Input
                   type="number"
                   min={2}

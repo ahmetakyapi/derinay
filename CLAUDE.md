@@ -206,6 +206,18 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   + Tailwind ile; **hardcoded hex yok**.
 - **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
   `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
+- **Title Case KURALI (metin yazarken ilk bakılacak yer)**:
+  **Title Case olan** — sayfa/bölüm/kart başlıkları, modal başlıkları, düğme ve
+  bağlantı metinleri, form alanı etiketleri (`<Field label>`), sekme adları, menü
+  satırları, durum/kategori/filtre rozetleri (`lib/constants.ts` sözlükleri),
+  tablo başlıkları, eylem adı veren `title` ipuçları.
+  **Cümle düzeninde kalan** — gövde ve açıklama metni, `subtitle`, modal
+  `description`, `placeholder`, `hint`, boş durum cümleleri ("Bu ay gider yok"),
+  onay sorusu başlıkları ("Seans silinsin mi?"), hata sayfası cümleleri
+  ("Bir şeyler ters gitti"), mono mikro etiketler ("son 1 ay", "3 gün önce").
+  **Türkçe tuzağı**: `capitalize` sınıfı ve `.toUpperCase()`/`title()` KULLANMA —
+  `i → I` üretir, `İ` değil. Metni elle yaz. Küçük bağlaçlar (ve, ile, için, de,
+  da) başta değilse küçük kalır; kısaltmalar olduğu gibi durur (KDV, CSV, VKN, EFT).
 - **Opaklık ölçeği (KRİTİK)**: Tailwind'in varsayılan `opacity` ölçeği yalnızca
   `0,5,10,20,25,30,40,50,60,70,75,80,90,95,100` içerir. Ölçekte OLMAYAN bir değer için
   `bg-emerald-500/12` **hiç CSS üretmez** — sınıf sessizce yok sayılır, rozet zeminsiz kalır.

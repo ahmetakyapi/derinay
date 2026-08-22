@@ -93,7 +93,7 @@ export function ReminderButton({
           setOpen(true)
         }}
         aria-label="Seans hatırlatması gönder"
-        title="Seans hatırlatması gönder"
+        title="Seans Hatırlatması Gönder"
         className={cn(
           'flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400',
           className,
@@ -130,7 +130,7 @@ export function ReminderButton({
                 className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-500/25 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 disabled:opacity-60 dark:text-slate-300 dark:hover:text-indigo-300"
               >
                 {saved ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Save className="h-3.5 w-3.5" />}
-                {saved ? 'Şablon kaydedildi' : pending ? 'Kaydediliyor…' : 'Şablon Olarak Kaydet'}
+                {saved ? 'Şablon Kaydedildi' : pending ? 'Kaydediliyor…' : 'Şablon Olarak Kaydet'}
               </button>
             )}
             {error && <p role="alert" className="mt-1.5 text-xs text-rose-500">{error}</p>}

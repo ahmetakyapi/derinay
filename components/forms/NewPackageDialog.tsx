@@ -54,15 +54,15 @@ export function NewPackageDialog({
       <Modal open={open} onClose={() => setOpen(false)} title="Seans Paketi" description="Ön ödemeli paket — kullanım tamamlanan seanslardan sayılır">
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Seans sayısı">
+            <Field label="Seans Sayısı">
               <Input name="totalSessions" type="number" min="1" step="1" required placeholder="10" autoFocus />
             </Field>
-            <Field label="Ödenen tutar (₺)">
+            <Field label="Ödenen Tutar (₺)">
               <Input name="pricePaid" type="number" step="0.01" min="0" placeholder="0,00" defaultValue={defaultPrice || ''} />
             </Field>
           </div>
 
-          <Field label="Satın alma tarihi">
+          <Field label="Satın Alma Tarihi">
             <Input name="purchaseDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
           </Field>
 

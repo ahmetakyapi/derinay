@@ -42,7 +42,7 @@ export default function Header() {
         href="#lp-main"
         className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
       >
-        İçeriğe atla
+        İçeriğe Atla
       </a>
 
       <header

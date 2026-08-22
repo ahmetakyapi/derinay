@@ -162,14 +162,14 @@ export default async function ClientsPage({
         <EmptyState
           icon={Users}
           title={q || status || tag ? 'Eşleşen danışan yok' : 'Henüz danışan yok'}
-          description={q || status || tag ? 'Filtreyi temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
+          description={q || status || tag ? 'Filtreyi Temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
           action={
             q || status || tag ? (
               <Link
                 href="/dashboard/clients"
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
               >
-                Filtreyi temizle
+                Filtreyi Temizle
               </Link>
             ) : (
               <NewClientDialog />

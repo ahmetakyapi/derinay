@@ -7,6 +7,7 @@ import { Trash2, ExternalLink, GripVertical, Clock } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Field, Input } from '@/components/ui/Field'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
 import { ReminderButton } from '@/components/clients/ReminderButton'
 import { updateSessionTime, deleteSession } from '@/app/actions/notes'
@@ -404,7 +405,7 @@ export function AgendaWeek({
             </div>
 
             <form onSubmit={saveTime} className="flex items-end gap-2">
-              <Field label="Tarih & saat" className="flex-1">
+              <Field label="Tarih & Saat" className="flex-1">
                 <Input
                   name="when"
                   type="datetime-local"
@@ -412,13 +413,9 @@ export function AgendaWeek({
                   defaultValue={`${selected.dateKey}T${pad(Math.floor(selected.startMin / 60))}:${pad(selected.startMin % 60)}`}
                 />
               </Field>
-              <button
-                type="submit"
-                disabled={pending}
-                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
-              >
+              <SubmitButton pending={pending} busyLabel="Taşınıyor…">
                 Taşı
-              </button>
+              </SubmitButton>
             </form>
 
             <div className="flex justify-end border-t border-slate-500/10 pt-3">
@@ -427,7 +424,7 @@ export function AgendaWeek({
                 disabled={pending}
                 className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 dark:text-rose-400"
               >
-                <Trash2 className="h-3.5 w-3.5" /> Seansı sil
+                <Trash2 className="h-3.5 w-3.5" /> Seansı Sil
               </button>
             </div>
           </div>
@@ -446,7 +443,7 @@ export function AgendaWeek({
             </span>
           ) : undefined
         }
-        confirmLabel="Seansı sil"
+        confirmLabel="Seansı Sil"
       />
     </>
   )

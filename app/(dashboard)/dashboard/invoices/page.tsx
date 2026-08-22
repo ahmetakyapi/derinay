@@ -59,17 +59,17 @@ export default async function InvoicesPage({
 
   const totalKdv = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.kdvAmount, 0)
   const totalStopaj = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.stopajAmount, 0)
-  /** Kesilen tüm makbuzların toplamı — taslaklar dahil */
-  const totalBilled = invoices.reduce((s, i) => s + i.total, 0)
+  /** KESİLEN makbuzların toplamı — taslak HARİÇ.
+   *  Taslak henüz kesilmemiş bir belgedir; hem bu tutar hem tahsilat oranının
+   *  paydası hem de KDV/stopaj toplamları aynı tabanı kullanmak zorunda,
+   *  yoksa aynı kartta "kesilen" iki farklı şey anlamına geliyor. */
+  const totalBilled = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.total, 0)
   const sumByStatus = (st: InvoiceStatus) =>
     invoices.filter((i) => i.status === st).reduce((s, i) => s + i.total, 0)
   const countByStatus = (st: InvoiceStatus) => invoices.filter((i) => i.status === st).length
 
   const paidTotal = sumByStatus('paid')
-  /** Tahsilat oranının paydası: taslak HARİÇ — taslak henüz kesilmemiş sayılır
-   *  (KDV/stopaj toplamları da aynı tabanı kullanıyor, tutarlılık için şart). */
-  const billable = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.total, 0)
-  const collectionRate = billable > 0 ? Math.round((paidTotal / billable) * 100) : 0
+  const collectionRate = totalBilled > 0 ? Math.round((paidTotal / totalBilled) * 100) : 0
 
   return (
     <>
@@ -269,7 +269,7 @@ export default async function InvoicesPage({
                   href="/dashboard/invoices"
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
                 >
-                  Filtreyi temizle
+                  Filtreyi Temizle
                 </Link>
               ) : undefined
             }

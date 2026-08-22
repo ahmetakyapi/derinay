@@ -41,11 +41,11 @@ export const metadata: Metadata = {
     template: '%s · Derinay',
   },
   description:
-    'Psikologlar için gelir-gider, fatura, vergi ve danışan takibini tek panelde toplayan sakin ve şık finans yönetimi.',
+    'Psikologlar için gelir-gider, serbest meslek makbuzu, vergi ve danışan takibini tek panelde toplayan sakin finans yönetimi.',
   openGraph: {
     title: 'Derinay — Psikologlar için finans & danışan takibi',
     description:
-      'Gelir-gider, fatura, vergi ve danışan takibi tek, sakin panelde.',
+      'Gelir-gider, makbuz, vergi ve danışan takibi tek, sakin panelde.',
     siteName: 'Derinay',
     locale: 'tr_TR',
     type: 'website',

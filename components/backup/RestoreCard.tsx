@@ -84,6 +84,8 @@ export function RestoreCard() {
 
         {result && (
           <p
+            role={result.ok ? 'status' : 'alert'}
+            aria-live={result.ok ? 'polite' : 'assertive'}
             className={cn(
               'mt-3 flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm',
               result.ok

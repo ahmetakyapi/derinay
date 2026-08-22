@@ -19,6 +19,10 @@ export const PAYMENT_METHODS = ['cash', 'card', 'transfer'] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
 // ─── Etiket sözlükleri (Türkçe görünen metinler) ────────────────────────────
+// KURAL: Bunlar rozet / sekme / filtre / kategori etiketidir → **Title Case**.
+// Elle yazılır; `capitalize` veya `.toUpperCase()` KULLANILMAZ (Türkçede i → I
+// üretir, İ değil). Küçük bağlaçlar (ve, ile, için) başta değilse küçük kalır;
+// kısaltmalar olduğu gibi durur (KDV, CSV, VKN, EFT).
 
 export const CLIENT_STATUS_LABEL: Record<ClientStatus, string> = {
   active:    'Aktif',
@@ -29,7 +33,7 @@ export const CLIENT_STATUS_LABEL: Record<ClientStatus, string> = {
 export const SESSION_STATUS_LABEL: Record<SessionStatus, string> = {
   scheduled: 'Planlandı',
   completed: 'Tamamlandı',
-  cancelled: 'İptal edildi',
+  cancelled: 'İptal Edildi',
   no_show:   'Gelmedi',
 }
 
@@ -59,7 +63,7 @@ export const NOTE_KINDS = ['session', 'observation', 'homework', 'important'] as
 export type NoteKind = (typeof NOTE_KINDS)[number]
 
 export const NOTE_KIND_LABEL: Record<NoteKind, string> = {
-  session:     'Seans notu',
+  session:     'Seans Notu',
   observation: 'Gözlem',
   homework:    'Ödev',
   important:   'Önemli',
@@ -74,7 +78,7 @@ export const MOODS = ['great', 'good', 'neutral', 'low', 'difficult'] as const
 export type Mood = (typeof MOODS)[number]
 
 export const MOOD_LABEL: Record<Mood, string> = {
-  great:     'Çok iyi',
+  great:     'Çok İyi',
   good:      'İyi',
   neutral:   'Nötr',
   low:       'Düşük',
@@ -101,24 +105,24 @@ export const MOOD_RING: Record<Mood, string> = {
 // ─── Kategoriler ─────────────────────────────────────────────────────────────
 
 export const INCOME_CATEGORIES = [
-  'Seans geliri',
-  'Online seans',
-  'Grup terapisi',
+  'Seans Geliri',
+  'Online Seans',
+  'Grup Terapisi',
   'Danışmanlık',
-  'Eğitim / atölye',
-  'Diğer gelir',
+  'Eğitim / Atölye',
+  'Diğer Gelir',
 ] as const
 
 export const EXPENSE_CATEGORIES = [
-  'Ofis kirası',
+  'Ofis Kirası',
   'Faturalar (elektrik/su/internet)',
   'Süpervizyon',
-  'Eğitim / sertifika',
-  'Yazılım & abonelikler',
+  'Eğitim / Sertifika',
+  'Yazılım & Abonelikler',
   'Pazarlama',
   'Ulaşım',
   'Vergi & SGK',
-  'Diğer gider',
+  'Diğer Gider',
 ] as const
 
 export const CATEGORY_BY_TYPE: Record<TxType, readonly string[]> = {
@@ -129,7 +133,7 @@ export const CATEGORY_BY_TYPE: Record<TxType, readonly string[]> = {
 // Kişisel harcama kategorileri (iş dışı) — kullanıcı özel kategori de yazabilir
 export const PERSONAL_CATEGORIES = [
   'Market',
-  'Yemek & kafe',
+  'Yemek & Kafe',
   'Ulaşım',
   'Kira',
   'Faturalar',
@@ -137,7 +141,7 @@ export const PERSONAL_CATEGORIES = [
   'Giyim',
   'Eğlence',
   'Abonelikler',
-  'Kişisel bakım',
+  'Kişisel Bakım',
   'Hediye',
   'Tatil',
   'Diğer',
@@ -165,12 +169,12 @@ export type ClientColor = (typeof CLIENT_COLORS)[number]
 export const CLIENT_COLOR_LABEL: Record<ClientColor, string> = {
   indigo:  'Çam',
   emerald: 'Adaçayı',
-  sky:     'Pus mavisi',
+  sky:     'Pus Mavisi',
   violet:  'Erik',
-  amber:   'Okra altını',
+  amber:   'Okra Altını',
   rose:    'Terracotta',
   teal:    'Okaliptüs',
-  cyan:    'Su yeşili',
+  cyan:    'Su Yeşili',
 }
 
 /**
@@ -245,8 +249,8 @@ export function isPlaceholderValue(value: string): boolean {
 
 /** İşletme kimliğinde makbuz için anlamlı alanlar + Türkçe etiketleri */
 export const BUSINESS_FIELD_LABELS: Partial<Record<keyof BusinessInfo, string>> = {
-  owner: 'Ad soyad',
-  taxOffice: 'Vergi dairesi',
+  owner: 'Ad Soyad',
+  taxOffice: 'Vergi Dairesi',
   taxId: 'VKN / TC Kimlik No',
   address: 'Adres',
   phone: 'Telefon',

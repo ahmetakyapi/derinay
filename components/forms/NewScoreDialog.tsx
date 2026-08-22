@@ -46,7 +46,7 @@ export function NewScoreDialog({ clientId, lastLabel }: { clientId: string; last
 
       <Modal open={open} onClose={() => setOpen(false)} title="İlerleme Ölçümü" description="Bir ölçek puanı kaydet — zaman içindeki değişimi izle">
         <form onSubmit={onSubmit} className="space-y-4">
-          <Field label="Ölçek / ölçüm">
+          <Field label="Ölçek / Ölçüm">
             <Input name="label" required list="score-labels" autoComplete="off" defaultValue={lastLabel ?? ''} placeholder="İyilik hali" />
             <datalist id="score-labels">
               {SCALE_SUGGESTIONS.map((s) => <option key={s} value={s} />)}
@@ -57,7 +57,7 @@ export function NewScoreDialog({ clientId, lastLabel }: { clientId: string; last
             <Field label="Puan">
               <Input name="value" type="number" step="0.5" required placeholder="7" autoFocus />
             </Field>
-            <Field label="Üst sınır (opsiyonel)">
+            <Field label="Üst Sınır (opsiyonel)">
               <Input name="scaleMax" type="number" step="1" min="1" placeholder="10" />
             </Field>
           </div>

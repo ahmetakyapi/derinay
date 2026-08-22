@@ -139,16 +139,24 @@ export default async function FinancesPage({
           <span className="min-w-[120px] text-center text-sm font-bold text-slate-900 dark:text-white sm:min-w-[140px]">
             {formatMonth(monthDate)}
           </span>
-          <Link
-            href={buildHref({ month: nextKey })}
-            aria-label="Sonraki ay"
-            className={cn(
-              'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300',
-              isCurrentMonth && 'pointer-events-none opacity-40',
-            )}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Link>
+          {/* pointer-events-none klavyeyi engellemez — kapalıyken bağlantı hiç render edilmez */}
+          {isCurrentMonth ? (
+            <span
+              aria-disabled="true"
+              aria-label="Sonraki ay (bu ay son ay)"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 opacity-40"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </span>
+          ) : (
+            <Link
+              href={buildHref({ month: nextKey })}
+              aria-label="Sonraki ay"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-1 rounded-xl border border-slate-500/15 p-1">
@@ -278,7 +286,7 @@ export default async function FinancesPage({
                   href={buildHref({ q: '', type: 'all' })}
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-500/25 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/50 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
                 >
-                  Filtreyi temizle
+                  Filtreyi Temizle
                 </Link>
               ) : undefined
             }

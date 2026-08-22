@@ -71,10 +71,14 @@ export function StatusPillSelect<T extends string>({
           </option>
         ))}
       </select>
-      <ChevronDown
+      {/* currentColor: chevron hapın durum rengini alsın — nötr gri, boyalı
+          hapın içinde yabancı duruyordu ve dark temada kayboluyordu. */}
+      <span
         aria-hidden
-        className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 opacity-70"
-      />
+        className={cn('pointer-events-none absolute right-2 top-1/2 -translate-y-1/2', styles[current])}
+      >
+        <ChevronDown className="h-3.5 w-3.5 opacity-80" />
+      </span>
     </span>
   )
 }

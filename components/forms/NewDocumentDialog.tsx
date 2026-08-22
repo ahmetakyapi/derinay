@@ -46,7 +46,7 @@ export function NewDocumentDialog({ clientId }: { clientId: string }) {
       <Modal open={open} onClose={() => setOpen(false)} title="Belge Bağlantısı" description="Dosya kendi deponda (Drive/iCloud) kalır — buraya yalnızca bağlantısını ekle">
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Belge adı">
+            <Field label="Belge Adı">
               <Input name="name" required placeholder="Onam formu" autoFocus />
             </Field>
             <Field label="Tür">

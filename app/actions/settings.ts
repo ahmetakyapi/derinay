@@ -41,8 +41,11 @@ export async function saveIncomeGoal(value: number) {
 
 /** İşletme/makbuz kimliğini kaydet (settings tablosunda 'business' JSON anahtarı) */
 export async function saveBusinessInfo(input: Partial<BusinessInfo>) {
+  // Ad soyad ZORUNLU DEĞİL: kimlik artık tamamen isteğe bağlı. Boş bırakılırsa
+  // belgelerde `[Ad Soyad]` yer tutucusu görünür ve panelde "Adını ekle" yazar.
+  // (Zorunlu tutulunca kullanıcı kayıtlı bir adı SİLEMİYORDU — yalnız
+  // değiştirebiliyordu; bu, "kişi adı tutma" kararıyla çelişiyordu.)
   if (!input.name?.trim()) return { ok: false, error: 'İşletme adı boş olamaz' }
-  if (!input.owner?.trim()) return { ok: false, error: 'Ad soyad boş olamaz' }
 
   // Yalnızca bilinen alanları al — fazlalığı temizle
   const merged: BusinessInfo = {

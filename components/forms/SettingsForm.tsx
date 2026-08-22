@@ -23,7 +23,46 @@ function stripPlaceholders(b: BusinessInfo): BusinessInfo {
   return out
 }
 
-type Saved = 'business' | 'reminder' | 'tax' | 'goal' | null
+type SettingsSection = 'business' | 'reminder' | 'tax' | 'goal'
+type Saved = SettingsSection | null
+
+/**
+ * Bölümün kaydet satırı — kaydedildi rozeti + hata + gönder düğmesi.
+ *
+ * MODÜL SEVİYESİNDE tanımlı olmak ZORUNDA: bileşen gövdesinin içinde
+ * tanımlanırsa her render'da yeni bir bileşen TİPİ üretilir, React alt ağacı
+ * söküp yeniden kurar ve az önce basılan Kaydet düğmesi DOM'dan kalkarak
+ * klavye odağını düşürür (üstelik her tuş vuruşunda dördü birden).
+ */
+function SaveRow({
+  section,
+  busy,
+  saved,
+  error,
+}: {
+  section: SettingsSection
+  busy: SettingsSection | null
+  saved: SettingsSection | null
+  error: { section: SettingsSection; message: string } | null
+}) {
+  return (
+    <>
+      {error?.section === section && (
+        <p role="alert" className="mt-4 rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-3 py-2 text-sm text-rose-600 dark:text-rose-400">
+          {error.message}
+        </p>
+      )}
+      <div className="mt-5 flex items-center justify-end gap-3">
+        {saved === section && (
+          <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            <Check className="h-4 w-4" /> Kaydedildi
+          </span>
+        )}
+        <SubmitButton pending={busy === section}>Kaydet</SubmitButton>
+      </div>
+    </>
+  )
+}
 
 export function SettingsForm({
   business,
@@ -42,14 +81,14 @@ export function SettingsForm({
   const [tpl, setTpl] = useState(reminderTemplate)
   // Bölüm bazlı durum: tek paylaşılan pending/error, bir formu kaydederken
   // dördünün de düğmesini kilitliyor ve hatayı sayfanın en altında gösteriyordu.
-  const [error, setError] = useState<{ section: Saved; message: string } | null>(null)
+  const [error, setError] = useState<{ section: SettingsSection; message: string } | null>(null)
   const [saved, setSaved] = useState<Saved>(null)
-  const [busy, setBusy] = useState<Saved>(null)
+  const [busy, setBusy] = useState<SettingsSection | null>(null)
   const [, start] = useTransition()
   const router = useRouter()
 
   /** Bir bölümü kaydet — pending/saved/error yalnız o bölüme yazılır */
-  function save(section: Exclude<Saved, null>, run: () => Promise<{ ok: boolean; error?: string }>) {
+  function save(section: SettingsSection, run: () => Promise<{ ok: boolean; error?: string }>) {
     setError(null)
     setBusy(section)
     start(async () => {
@@ -62,26 +101,6 @@ export function SettingsForm({
     })
   }
 
-  /** Bölümün kaydet satırı — kaydedildi rozeti + hata + gönder düğmesi */
-  function SaveRow({ section }: { section: Exclude<Saved, null> }) {
-    return (
-      <>
-        {error?.section === section && (
-          <p role="alert" className="mt-4 rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-3 py-2 text-sm text-rose-600 dark:text-rose-400">
-            {error.message}
-          </p>
-        )}
-        <div className="mt-5 flex items-center justify-end gap-3">
-          {saved === section && (
-            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-              <Check className="h-4 w-4" /> Kaydedildi
-            </span>
-          )}
-          <SubmitButton pending={busy === section}>Kaydet</SubmitButton>
-        </div>
-      </>
-    )
-  }
 
   const set = (k: keyof BusinessInfo) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setB((prev) => ({ ...prev, [k]: e.target.value }))
@@ -90,7 +109,7 @@ export function SettingsForm({
     setTax((prev) => ({ ...prev, [k]: Number(e.target.value) }))
 
   const submit =
-    (section: Exclude<Saved, null>, run: () => Promise<{ ok: boolean; error?: string }>) =>
+    (section: SettingsSection, run: () => Promise<{ ok: boolean; error?: string }>) =>
     (e: React.FormEvent) => {
       e.preventDefault()
       save(section, run)
@@ -111,10 +130,10 @@ export function SettingsForm({
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-          <Field label="İşletme / marka adı"><Input value={b.name} onChange={set('name')} placeholder="Derinay" required /></Field>
-          <Field label="Ad Soyad"><Input value={b.owner} onChange={set('owner')} placeholder="Ad Soyad" required /></Field>
+          <Field label="İşletme / Marka Adı"><Input value={b.name} onChange={set('name')} placeholder="Derinay" required /></Field>
+          <Field label="Ad Soyad" hint="Boş bırakırsan makbuzda [Ad Soyad] yer tutucusu görünür."><Input value={b.owner} onChange={set('owner')} placeholder="Ad Soyad" /></Field>
           <Field label="Unvan"><Input value={b.title} onChange={set('title')} placeholder="Klinik Psikolog" /></Field>
-          <Field label="Vergi dairesi"><Input value={b.taxOffice} onChange={set('taxOffice')} placeholder="Kadıköy" /></Field>
+          <Field label="Vergi Dairesi"><Input value={b.taxOffice} onChange={set('taxOffice')} placeholder="Kadıköy" /></Field>
           <Field label="VKN / TC Kimlik No"><Input value={b.taxId} onChange={set('taxId')} placeholder="11111111111" /></Field>
           <Field label="Telefon"><Input value={b.phone} onChange={set('phone')} placeholder="05xx xxx xx xx" /></Field>
           <div className="sm:col-span-2">
@@ -124,7 +143,7 @@ export function SettingsForm({
           <Field label="IBAN (opsiyonel)"><Input value={b.iban} onChange={set('iban')} placeholder="TR.. .... .... .." /></Field>
         </div>
 
-        <SaveRow section="business" />
+        <SaveRow section="business" busy={busy} saved={saved} error={error} />
       </form>
 
       {/* Vergi oranları — tüm hesaplamaları besler */}
@@ -140,13 +159,13 @@ export function SettingsForm({
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-          <Field label="KDV oranı (%)">
+          <Field label="KDV Oranı (%)">
             <Input type="number" min="0" max="60" step="1" value={tax.kdvRate} onChange={setRate('kdvRate')} required />
           </Field>
-          <Field label="Stopaj / tevkifat (%)">
+          <Field label="Stopaj / Tevkifat (%)">
             <Input type="number" min="0" max="60" step="1" value={tax.stopajRate} onChange={setRate('stopajRate')} required />
           </Field>
-          <Field label="Gelir vergisi tahmini (%)">
+          <Field label="Gelir Vergisi Tahmini (%)">
             <Input type="number" min="0" max="60" step="1" value={tax.incomeTaxRate} onChange={setRate('incomeTaxRate')} required />
           </Field>
         </div>
@@ -155,7 +174,7 @@ export function SettingsForm({
           Gelir vergisi oranı, panel ve Vergiler sayfasındaki tahmini anında günceller.
         </p>
 
-        <SaveRow section="tax" />
+        <SaveRow section="tax" busy={busy} saved={saved} error={error} />
       </form>
 
       {/* Aylık gelir hedefi — dashboard ilerleme bandı */}
@@ -170,11 +189,11 @@ export function SettingsForm({
           </div>
         </div>
 
-        <Field label="Hedef (₺ / ay)">
+        <Field label="Hedef (₺ / Ay)">
           <Input type="number" min="0" step="500" value={goal || ''} onChange={(e) => setGoal(Number(e.target.value) || 0)} placeholder="örn. 60000" />
         </Field>
 
-        <SaveRow section="goal" />
+        <SaveRow section="goal" busy={busy} saved={saved} error={error} />
       </form>
 
       {/* Hatırlatma mesajı şablonu */}
@@ -205,7 +224,7 @@ export function SettingsForm({
           ))}
         </div>
 
-        <SaveRow section="reminder" />
+        <SaveRow section="reminder" busy={busy} saved={saved} error={error} />
       </form>
     </div>
   )

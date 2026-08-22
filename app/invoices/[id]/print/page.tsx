@@ -66,7 +66,7 @@ export default async function InvoicePrintPage({
         {/* Taraflar + tarihler */}
         <div className="mt-8 grid grid-cols-2 gap-8 text-sm">
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Fatura edilen</p>
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Makbuz Edilen</p>
             <p className="font-bold">{inv.clientName ?? 'Genel müşteri'}</p>
             {inv.clientEmail && <p className="text-slate-500">{inv.clientEmail}</p>}
             {inv.clientPhone && <p className="text-slate-500">{inv.clientPhone}</p>}

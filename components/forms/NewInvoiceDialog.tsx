@@ -81,7 +81,7 @@ export function NewInvoiceDialog({
             </Field>
           )}
 
-          <Field label="Brüt ücret (₺)">
+          <Field label="Brüt Ücret (₺)">
             <Input
               name="subtotal"
               type="number"
@@ -94,14 +94,14 @@ export function NewInvoiceDialog({
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="KDV oranı (%)">
+            <Field label="KDV Oranı (%)">
               <Select value={kdvRate} onChange={(e) => setKdvRate(Number(e.target.value))}>
                 {[...new Set([0, 1, 10, 20, defaultKdvRate])].sort((a, b) => a - b).map((r) => (
                   <option key={r} value={r}>%{r}</option>
                 ))}
               </Select>
             </Field>
-            <Field label="Stopaj / tevkifat (%)">
+            <Field label="Stopaj / Tevkifat (%)">
               <Select value={stopajRate} onChange={(e) => setStopajRate(Number(e.target.value))}>
                 {[...new Set([0, 20, defaultStopajRate])].sort((a, b) => a - b).map((r) => (
                   <option key={r} value={r}>{r === 0 ? 'Yok' : `%${r}`}</option>
@@ -111,10 +111,10 @@ export function NewInvoiceDialog({
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Düzenleme tarihi">
+            <Field label="Düzenleme Tarihi">
               <Input name="issueDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
             </Field>
-            <Field label="Vade tarihi">
+            <Field label="Vade Tarihi">
               <Input name="dueDate" type="date" />
             </Field>
           </div>
@@ -172,7 +172,7 @@ export function NewInvoiceDialog({
             <div className="overflow-hidden rounded-xl border border-slate-500/15 bg-white">
               <iframe
                 src={`/invoices/${previewId}/print`}
-                title="Makbuz önizleme"
+                title="Makbuz Önizleme"
                 className="h-[74vh] w-full"
               />
             </div>

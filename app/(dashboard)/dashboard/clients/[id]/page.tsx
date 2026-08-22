@@ -55,8 +55,9 @@ import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Danışan Dosyası' }
 
-/** Danışan dosyasında satır içi gösterilen en fazla seans — üstü sayılır */
+/** Danışan dosyasında satır içi gösterilen en fazla kayıt — üstü sayılır */
 const SESSION_PREVIEW = 8
+const LEDGER_PREVIEW = 8
 export const dynamic = 'force-dynamic'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
@@ -203,7 +204,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       {/* İstatistikler */}
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Toplam Tahsilat" value={formatTRY(stats.totalPaid)} tone="text-emerald-600 dark:text-emerald-400" sensitive />
-        <Stat label="Faturalanan" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" sensitive />
+        <Stat label="Kesilen Makbuz" value={formatTRY(stats.totalInvoiced)} tone="text-slate-900 dark:text-white" sensitive />
         <Stat label="Bakiye" value={formatTRY(stats.outstanding)} tone={stats.outstanding > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} sensitive />
         <Stat
           label="Tamamlanan Seans"
@@ -376,7 +377,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             </h2>
             {payments.length ? (
               <ul className="space-y-2.5">
-                {payments.map((p) => (
+                {payments.slice(0, LEDGER_PREVIEW).map((p) => (
                   <li key={p.id} className="flex items-center justify-between text-sm">
                     <span className="text-slate-500 dark:text-slate-400">
                       {formatDate(p.date)} · {PAYMENT_METHOD_LABEL[p.method]}
@@ -388,6 +389,11 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             ) : (
               <p className="py-4 text-center text-sm text-slate-400">Ödeme kaydı yok.</p>
             )}
+            {payments.length > LEDGER_PREVIEW && (
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+                +{payments.length - LEDGER_PREVIEW} ödeme daha
+              </p>
+            )}
           </section>
 
           {/* Makbuzlar */}
@@ -397,7 +403,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             </h2>
             {invoices.length ? (
               <ul className="space-y-2.5">
-                {invoices.map((i) => (
+                {invoices.slice(0, LEDGER_PREVIEW).map((i) => (
                   <li key={i.id} className="flex items-center justify-between text-sm">
                     <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{i.number}</span>
                     <span className="flex items-center gap-3">
@@ -417,6 +423,14 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </ul>
             ) : (
               <p className="py-4 text-center text-sm text-slate-400">Makbuz yok.</p>
+            )}
+            {invoices.length > LEDGER_PREVIEW && (
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+                +{invoices.length - LEDGER_PREVIEW} makbuz daha ·{' '}
+                <Link href="/dashboard/invoices" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
+                  Tümünü Gör
+                </Link>
+              </p>
             )}
           </section>
 

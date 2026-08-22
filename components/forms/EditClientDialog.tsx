@@ -104,16 +104,16 @@ export function EditClientDialog({
                 ))}
               </Select>
             </Field>
-            <Field label="Seans ücreti (₺)">
+            <Field label="Seans Ücreti (₺)">
               <Input name="sessionFee" type="number" step="0.01" min="0" defaultValue={client.sessionFee} />
             </Field>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Başlangıç tarihi">
+            <Field label="Başlangıç Tarihi">
               <Input name="startDate" type="date" defaultValue={client.startDate.slice(0, 10)} />
             </Field>
-            <Field label="Doğum günü (opsiyonel)">
+            <Field label="Doğum Günü (opsiyonel)">
               <Input name="birthDate" type="date" defaultValue={client.birthDate?.slice(0, 10) ?? ''} />
             </Field>
           </div>

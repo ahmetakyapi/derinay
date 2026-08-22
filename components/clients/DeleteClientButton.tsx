@@ -32,7 +32,7 @@ export function DeleteClientButton({ clientId, clientName }: { clientId: string;
       <button
         onClick={() => setOpen(true)}
         aria-label="Danışanı sil"
-        title="Danışanı sil"
+        title="Danışanı Sil"
         className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-400 transition-colors hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500"
       >
         <Trash2 className="h-4 w-4" />

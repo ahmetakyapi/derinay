@@ -72,7 +72,7 @@ export default async function ClientFilePrintPage({
         <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
           <div>
             <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Danışan</p>
-            <p className="font-mono text-xl font-bold tabular-nums">{client.name}</p>
+            <p className="text-xl font-bold">{client.name}</p>
             <p className="mt-1 text-slate-500">
               {[client.email, client.phone].filter(Boolean).join(' · ') || '—'}
             </p>
@@ -152,6 +152,9 @@ export default async function ClientFilePrintPage({
                 ))}
               </tbody>
             </table>
+            {scores.length > 12 && (
+              <p className="mt-1 text-xs text-slate-400">… ve {scores.length - 12} eski ölçüm</p>
+            )}
           </section>
         )}
 
@@ -189,8 +192,8 @@ export default async function ClientFilePrintPage({
                     {formatDateTimeLong(String(n.createdAt))} · {NOTE_KIND_LABEL[n.kind]}
                     {n.mood ? ` · duygu: ${MOOD_LABEL[n.mood]}` : ''}
                   </p>
-                  {n.title && <p className="font-semibold">{n.title}</p>}
-                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-6 text-slate-700">{n.body}</p>
+                  {n.title && <p className="break-words font-semibold">{n.title}</p>}
+                  <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{n.body}</p>
                 </div>
               ))}
             </div>

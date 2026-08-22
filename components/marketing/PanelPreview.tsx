@@ -38,9 +38,9 @@ const NAV = [
 ] as const
 
 const KPIS = [
-  { label: 'Aylık Gelir', value: '₺48.250', icon: TrendingUp, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/12', delta: '+12%', up: true },
-  { label: 'Aylık Gider', value: '₺15.480', icon: TrendingDown, tone: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-500/12', delta: '−4%', up: false },
-  { label: 'Net Kâr', value: '₺32.770', icon: Wallet, tone: 'text-indigo-700 dark:text-indigo-300', bg: 'bg-indigo-500/12', delta: '+18%', up: true },
+  { label: 'Aylık Gelir', value: '₺48.250', icon: TrendingUp, tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/12', delta: '%12 ↑', up: true },
+  { label: 'Aylık Gider', value: '₺15.480', icon: TrendingDown, tone: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-500/12', delta: '%4 ↓', up: false },
+  { label: 'Net Kâr', value: '₺32.770', icon: Wallet, tone: 'text-indigo-700 dark:text-indigo-300', bg: 'bg-indigo-500/12', delta: '%18 ↑', up: true },
   { label: 'Ödenecek Vergi', value: '₺9.654', icon: Landmark, tone: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/12', delta: null, up: false },
 ] as const
 
@@ -77,7 +77,9 @@ export function PanelPreview() {
                 'flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] font-medium',
                 n.active
                   ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
-                  : 'text-slate-400 dark:text-slate-500',
+                  // Pasif satır: açık temada 500, koyu temada 400 (aydınlanır).
+                  // Ters yazım (400 → 500) koyuda kontrastı AA altına düşürüyordu.
+                  : 'text-slate-500 dark:text-slate-400',
               )}
             >
               <n.icon className="h-3.5 w-3.5 shrink-0" />
