@@ -18,8 +18,16 @@ export const dynamic = 'force-dynamic'
 type Row = Record<string, unknown>
 
 function toCsv(rows: Row[], headers: { key: string; label: string }[]): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
   const esc = (v: unknown) => {
-    const s = v === null || v === undefined ? '' : String(v)
+    // Drizzle timestamp sütunları JS Date döner; String(Date) İngilizce uzun
+    // biçim üretir ve Excel bunu tarih olarak tanımaz. ISO benzeri sabit biçime çevir.
+    const s =
+      v === null || v === undefined
+        ? ''
+        : v instanceof Date
+          ? `${v.getFullYear()}-${pad(v.getMonth() + 1)}-${pad(v.getDate())} ${pad(v.getHours())}:${pad(v.getMinutes())}`
+          : String(v)
     return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
   const lines = [

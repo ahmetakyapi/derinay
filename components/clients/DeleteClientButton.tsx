@@ -65,7 +65,7 @@ export function DeleteClientButton({ clientId, clientName }: { clientId: string;
             <input
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
-              placeholder={clientName}
+              placeholder="Danışanın adını yaz"
               autoFocus
               className="field"
             />

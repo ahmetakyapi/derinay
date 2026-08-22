@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2, StickyNote } from 'lucide-react'
+import { Plus, StickyNote } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
+import { DeleteButton } from '@/components/ui/DeleteButton'
 import { Field, Input } from '@/components/ui/Field'
 import { createTransaction, deleteTransaction } from '@/app/actions/transactions'
 import { PERSONAL_CATEGORIES } from '@/lib/constants'
@@ -82,13 +83,6 @@ export function PersonalCalendar({
     })
   }
 
-  function removeExpense(id: string) {
-    start(async () => {
-      await deleteTransaction(id)
-      router.refresh()
-    })
-  }
-
   return (
     <>
       <div className="glass rounded-2xl p-3 sm:p-4">
@@ -113,7 +107,9 @@ export function PersonalCalendar({
               <button
                 key={key}
                 onClick={() => setSelected(key)}
-                aria-label={`${day} — ${data ? formatTRY(data.total) : 'harcama yok'}`}
+                /* Tutar aria-label'a YAZILMAZ: ekranda .sensitive ile bulanan
+                   değer erişilebilir adda düz metin olarak sızıyordu. */
+                aria-label={`${day} — ${data ? `${data.items.length} harcama` : 'harcama yok'}`}
                 className={cn(
                   'group relative flex min-h-[58px] flex-col justify-between rounded-lg border p-1 text-left transition-all sm:min-h-[88px] sm:rounded-xl sm:p-2',
                   'border-slate-500/10 hover:-translate-y-0.5 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5',
@@ -189,9 +185,14 @@ export function PersonalCalendar({
         onClose={closeModal}
         title={selected ? formatDate(selected) : ''}
         description={
-          dayItems.length
-            ? `${dayItems.length} harcama · ${formatTRY(dayItems.reduce((s, i) => s + i.amount, 0))}`
-            : 'Bu güne kişisel harcama ekle'
+          dayItems.length ? (
+            <>
+              {dayItems.length} harcama ·{' '}
+              <span className="sensitive">{formatTRY(dayItems.reduce((s, i) => s + i.amount, 0))}</span>
+            </>
+          ) : (
+            'Bu güne kişisel harcama ekle'
+          )
         }
       >
         {dayItems.length > 0 && (
@@ -215,14 +216,16 @@ export function PersonalCalendar({
                   <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
                     −{formatTRY(it.amount)}
                   </span>
-                  <button
-                    onClick={() => removeExpense(it.id)}
-                    disabled={pending}
-                    aria-label="Sil"
-                    className="shrink-0 text-slate-400 transition-colors hover:text-rose-600 dark:hover:text-rose-400"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  {/* Projedeki tüm silmeler onaylı — burada da DeleteButton kullanılır */}
+                  <DeleteButton
+                    action={deleteTransaction.bind(null, it.id)}
+                    className="h-7 w-7 shrink-0"
+                    confirmText={
+                      <>
+                        {it.category} · <span className="sensitive">{formatTRY(it.amount)}</span> kaydı silinecek.
+                      </>
+                    }
+                  />
                 </li>
               )
             })}

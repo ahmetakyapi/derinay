@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { revalidateFinance } from '@/lib/revalidate'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { sessionPackages, transactions } from '@/lib/schema'
@@ -37,8 +38,8 @@ export async function createPackage(input: {
       date: input.purchaseDate || undefined,
       clientId: input.clientId,
     })
-    revalidatePath('/dashboard')
-    revalidatePath('/dashboard/finances')
+    // Gelir kaydı KPI, grafik, vergi ve analiz sayfalarının hepsini etkiler
+    revalidateFinance()
   }
 
   revalidatePath(`/dashboard/clients/${input.clientId}`)

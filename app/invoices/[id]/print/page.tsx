@@ -27,7 +27,7 @@ export default async function InvoicePrintPage({
           href="/dashboard/invoices"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
         >
-          <ArrowLeft className="h-4 w-4" /> Faturalar
+          <ArrowLeft className="h-4 w-4" /> Makbuzlar
         </Link>
         <PrintButton auto={searchParams.auto === '1'} />
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Trash2, ExternalLink, GripVertical, Clock } from 'lucide-react'
@@ -11,23 +11,38 @@ import { SessionStatusSelect } from '@/components/forms/SessionStatusSelect'
 import { ReminderButton } from '@/components/clients/ReminderButton'
 import { updateSessionTime, deleteSession } from '@/app/actions/notes'
 import type { AgendaItem } from '@/lib/queries'
-import { SESSION_STATUS_LABEL, STATUS_TONE, type SessionStatus } from '@/lib/constants'
+import { SESSION_STATUS_LABEL, STATUS_TONE, type SessionStatus, CLIENT_COLOR_DOT } from '@/lib/constants'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { formatTRY } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type Day = { key: string; label: string; dayNum: number; items: AgendaItem[] }
 
-// Çalışma aralığı: 08:00–21:00 → 1px = 1dk (desktop ızgara)
-const DAY_START = 8 * 60
-const DAY_END = 21 * 60
-const SPAN = DAY_END - DAY_START
+/**
+ * Görünür saat aralığı: 1px = 1dk (desktop ızgara).
+ * Varsayılan 08:00–21:00'dir ama aralık SABİT DEĞİLDİR — haftada 07:30 ya da
+ * 21:30'luk bir seans varsa pencere onu içerecek şekilde genişler. Sabit
+ * aralıkta bu seanslar ya yanlış saate çizilir (top negatif → 0'a kelepçelenir)
+ * ya da kolon dışına taşıp `overflow-hidden` tarafından kırpılırdı.
+ */
+const DEFAULT_START = 8 * 60
+const DEFAULT_END = 21 * 60
 const SNAP = 30 // sürüklemede dakika hassasiyeti
 
-const DOT: Record<string, string> = {
-  indigo: 'bg-indigo-500', emerald: 'bg-emerald-500', sky: 'bg-sky-500',
-  violet: 'bg-violet-500', amber: 'bg-amber-500', rose: 'bg-rose-500',
-  teal: 'bg-teal-500', cyan: 'bg-cyan-500',
+/** Haftadaki seansları kapsayan, saat başına yuvarlanmış görünür aralık */
+function visibleRange(days: Day[]): { start: number; end: number } {
+  let start = DEFAULT_START
+  let end = DEFAULT_END
+  for (const d of days) {
+    for (const it of d.items) {
+      start = Math.min(start, it.startMin)
+      end = Math.max(end, it.startMin + it.durationMin)
+    }
+  }
+  return {
+    start: Math.max(0, Math.floor(start / 60) * 60),
+    end: Math.min(24 * 60, Math.ceil(end / 60) * 60),
+  }
 }
 
 // Seans bloğu — danışan rengine göre yumuşak tint (galeri etiketi)
@@ -64,6 +79,9 @@ export function AgendaWeek({
   const [conflict, setConflict] = useState<string | null>(null) // çakışma uyarısı (geçici)
   const [pending, start] = useTransition()
   const router = useRouter()
+
+  const { start: DAY_START, end: DAY_END } = useMemo(() => visibleRange(days), [days])
+  const SPAN = DAY_END - DAY_START
 
   function showConflict(msg: string) {
     setConflict(msg)
@@ -216,20 +234,31 @@ export function AgendaWeek({
                   style={{ top: nowMin - DAY_START }}
                   aria-hidden
                 >
-                  <span className="-ml-1 h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_0_3px_rgba(187,96,62,0.25)]" />
+                  <span className="-ml-1 h-2 w-2 rounded-full bg-rose-500 ring-4 ring-rose-500/25" />
                   <span className="h-px flex-1 bg-rose-500/70" />
                 </span>
               )}
 
               {/* Seans blokları — danışan rengine göre tint */}
               {d.items.map((it) => {
-                const top = Math.max(0, it.startMin - DAY_START)
-                const height = Math.max(34, Math.min(it.durationMin, DAY_END - it.startMin))
+                // Aralık artık seansları kapsıyor; yine de kelepçele ki
+                // bozuk veri (ör. 23:50 + 60dk) ızgarayı taşırmasın.
+                const top = Math.min(Math.max(0, it.startMin - DAY_START), SPAN - 20)
+                const height = Math.max(24, Math.min(it.durationMin, SPAN - top))
                 const dim = it.status === 'cancelled' || it.status === 'no_show'
                 const t = tintOf(it.colorTag)
                 return (
                   <div
                     key={it.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${it.time} · ${it.clientName} — seansı aç`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setSelected(it)
+                      }
+                    }}
                     draggable
                     onDragStart={(e) => {
                       e.dataTransfer.setData('text/plain', it.id)
@@ -241,7 +270,7 @@ export function AgendaWeek({
                     className={cn(
                       // NOT: backdrop-blur kullanma — .glass (backdrop-filter) içinde iç içe
                       // backdrop blur, Chrome/Safari'de metinde smear/bulanıklık glitch'i yapar.
-                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm transition-all hover:shadow-md active:cursor-grabbing',
+                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm outline-none transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-500/60 active:cursor-grabbing',
                       t.border,
                       dim && 'opacity-45',
                       dragId === it.id && 'opacity-30',
@@ -306,7 +335,7 @@ export function AgendaWeek({
                           dim && 'opacity-50',
                         )}
                       >
-                        <span className={cn('h-2 w-2 shrink-0 rounded-full', DOT[it.colorTag] ?? DOT.indigo)} />
+                        <span className={cn('h-2 w-2 shrink-0 rounded-full', CLIENT_COLOR_DOT[it.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                         <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">{it.time}</span>
                         <span className={cn('sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                           {it.clientName}
@@ -326,9 +355,13 @@ export function AgendaWeek({
 
       {/* Çakışma uyarısı — geçici pil */}
       {conflict && (
-        <div className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300 lg:bottom-5">
+        <div
+          role="alert"
+          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300 lg:bottom-5"
+        >
           <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-rose-500" />
-          {conflict}
+          {/* Mesaj çakışan danışanın adını içerir → gizlilik modunda bulanmalı */}
+          <span className="sensitive">{conflict}</span>
         </div>
       )}
 

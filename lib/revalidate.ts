@@ -21,7 +21,9 @@ export function revalidateFinance() {
 
 /** Seans verisine bağlı sayfalar (takvimler, devam istatistiği, paket kullanımı) */
 export function revalidateSessions(clientId?: string | null) {
-  for (const p of ['/dashboard', '/dashboard/agenda', '/dashboard/analytics']) revalidatePath(p)
+  // Danışan kartlarındaki "sonraki seans" da seans verisinden türer → liste dahil
+  for (const p of ['/dashboard', '/dashboard/agenda', '/dashboard/analytics', '/dashboard/clients'])
+    revalidatePath(p)
   if (clientId) revalidatePath(`/dashboard/clients/${clientId}`)
 }
 

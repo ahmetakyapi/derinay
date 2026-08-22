@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Field, Input, Select, Textarea } from '@/components/ui/Field'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 import { createTransaction } from '@/app/actions/transactions'
 import { CATEGORY_BY_TYPE, type TxType } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -148,13 +149,7 @@ export function NewTransactionDialog({
             >
               İptal
             </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 disabled:opacity-60"
-            >
-              {pending ? 'Kaydediliyor…' : 'Kaydet'}
-            </button>
+            <SubmitButton pending={pending}>Kaydet</SubmitButton>
           </div>
         </form>
       </Modal>

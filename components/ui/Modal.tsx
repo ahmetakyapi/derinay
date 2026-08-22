@@ -47,6 +47,14 @@ export function Modal({
   const titleId = useId()
   const descId = useId()
 
+  // onClose her render'da yeni bir closure. Efektin bağımlılığı olsaydı modal
+  // içindeki HER tuş vuruşu efekti yeniden kurar, odağı ilk öğeye ("Kapat"
+  // düğmesi) geri fırlatırdı — yazarken odak kaçardı. Ref'te tutuluyor.
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
+
   useEffect(() => {
     if (!open) return
 
@@ -55,14 +63,17 @@ export function Modal({
     const focusFirst = () => {
       const panel = panelRef.current
       if (!panel) return
-      const first = panel.querySelector<HTMLElement>(FOCUSABLE)
+      // autoFocus isteyen alan varsa ona öncelik ver — aksi halde dialoglardaki
+      // autoFocus sessizce ezilir ve odak "Kapat" düğmesinde açılır.
+      const preferred = panel.querySelector<HTMLElement>('[autofocus],[data-autofocus]')
+      const first = preferred ?? panel.querySelector<HTMLElement>(FOCUSABLE)
       ;(first ?? panel).focus()
     }
     const raf = requestAnimationFrame(focusFirst)
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose()
+        onCloseRef.current()
         return
       }
       // Focus-trap — Tab odağı modal içinde döndürür.
@@ -92,7 +103,7 @@ export function Modal({
       unlockBodyScroll()
       prevFocus?.focus?.()
     }
-  }, [open, onClose])
+  }, [open])
 
   // Portal — modal her zaman document.body'ye render edilir. Aksi halde
   // backdrop-filter'lı .glass ataları fixed konumu hapseder (popup kartın

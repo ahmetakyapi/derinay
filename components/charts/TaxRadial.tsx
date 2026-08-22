@@ -43,7 +43,7 @@ export function TaxRadial({ kdv, incomeTax }: { kdv: number; incomeTax: number }
         <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
           Ödenecek Toplam
         </span>
-        <span className="max-w-[150px] text-center font-display text-[1.45rem] font-semibold leading-tight tracking-tight text-slate-900 dark:text-white">
+        <span className="sensitive max-w-[150px] text-center font-display text-[1.45rem] font-semibold leading-tight tracking-tight text-slate-900 dark:text-white">
           {formatTRY(total)}
         </span>
         <span className="mt-0.5 inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">

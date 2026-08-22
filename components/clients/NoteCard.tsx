@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Pin, Trash2, Pencil, Check, X } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { Input, Textarea } from '@/components/ui/Field'
+import {Field, Input, Textarea } from '@/components/ui/Field'
 import { togglePinNote, deleteNote, updateNote } from '@/app/actions/notes'
 import {
   NOTE_KINDS,
@@ -97,8 +97,12 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             </button>
           ))}
         </div>
-        <Input name="title" defaultValue={note.title ?? ''} placeholder="Başlık (opsiyonel)" />
-        <Textarea name="body" rows={4} required defaultValue={note.body} />
+        <Field label="Başlık (opsiyonel)">
+          <Input name="title" defaultValue={note.title ?? ''} placeholder="Başlık" />
+        </Field>
+        <Field label="Not">
+          <Textarea name="body" rows={4} required defaultValue={note.body} />
+        </Field>
         <div className="flex items-center gap-1.5">
           <span className="mr-1 text-xs font-semibold text-slate-500 dark:text-slate-400">Duygu:</span>
           {MOODS.map((m) => (
@@ -217,11 +221,12 @@ export function NoteCard({ note }: { note: NoteCardData }) {
       />
 
       {note.title && (
-        <p className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+        <p className="break-words font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           {note.title}
         </p>
       )}
-      <p className="whitespace-pre-wrap text-[15px] leading-7 text-slate-600 dark:text-slate-300">
+      {/* break-words: boşluksuz uzun metin (URL, uzun kelime) kartı taşırıyordu */}
+      <p className="whitespace-pre-wrap break-words text-[15px] leading-7 text-slate-600 dark:text-slate-300">
         {note.body}
       </p>
     </div>

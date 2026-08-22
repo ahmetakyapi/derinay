@@ -5,6 +5,7 @@ import { AgendaWeek } from '@/components/agenda/AgendaWeek'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { getAgendaWeek, getAgendaMonth, clientOptions, getReminderConfig } from '@/lib/queries'
 import { formatDateShort, formatMonth, formatTRY, monthKey } from '@/lib/format'
+import { CLIENT_COLOR_DOT } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Ajanda' }
@@ -12,7 +13,8 @@ export const metadata = { title: 'Ajanda' }
 // Ajanda özet şeridi — premium istatistik kartları
 function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?: string; icon: typeof Clock; tone: string; bg: string; sensitive?: boolean }[] }) {
   return (
-    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    // Kart sayısına göre ızgara — 3 kart 4 sütuna sabitlenince son hücre boş kalıyordu
+    <div className={cn('mb-5 grid gap-3', tiles.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 lg:grid-cols-4')}>
       {tiles.map((t) => (
         <div key={t.label} className="glass rounded-2xl p-4">
           <span className={cn('mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg', t.bg, t.tone)}>
@@ -28,11 +30,6 @@ function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?:
 }
 
 const WEEKDAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
-const DOT: Record<string, string> = {
-  indigo: 'bg-indigo-500', emerald: 'bg-emerald-500', sky: 'bg-sky-500',
-  violet: 'bg-violet-500', amber: 'bg-amber-500', rose: 'bg-rose-500',
-  teal: 'bg-teal-500', cyan: 'bg-cyan-500',
-}
 
 export default async function AgendaPage({
   searchParams,
@@ -40,11 +37,14 @@ export default async function AgendaPage({
   searchParams: { view?: string; date?: string; month?: string }
 }) {
   const view = searchParams.view === 'month' ? 'month' : 'week'
+  // Elle düzenlenmiş URL (?month=abc) Invalid Date üretip sorguyu patlatıyordu.
+  const monthParam = /^\d{4}-\d{2}$/.test(searchParams.month ?? '') ? searchParams.month : undefined
+  const dateParam = /^\d{4}-\d{2}-\d{2}$/.test(searchParams.date ?? '') ? searchParams.date : undefined
   const [clients, reminder] = await Promise.all([clientOptions(), getReminderConfig()])
 
   /* ───────────────────────── Aylık görünüm ───────────────────────── */
   if (view === 'month') {
-    const m = await getAgendaMonth(searchParams.month)
+    const m = await getAgendaMonth(monthParam)
     const monthDate = new Date(m.year, m.month, 1)
     const prev = monthKey(new Date(m.year, m.month - 1, 1))
     const next = monthKey(new Date(m.year, m.month + 1, 1))
@@ -57,6 +57,7 @@ export default async function AgendaPage({
     for (let d = 1; d <= daysInMonth; d++) cells.push(`${m.year}-${pad(m.month + 1)}-${pad(d)}`)
     while (cells.length % 7 !== 0) cells.push(null)
 
+    const isCurrentMonthView = m.todayKey.startsWith(`${m.year}-${pad(m.month + 1)}`)
     const filledDays = Object.keys(m.byDay).length
     const avgPerFilled = filledDays ? m.total / filledDays : 0
     const monthTiles = [
@@ -77,9 +78,17 @@ export default async function AgendaPage({
               <Link href={`/dashboard/agenda?view=month&month=${prev}`} aria-label="Önceki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
                 <ChevronLeft className="h-4 w-4" />
               </Link>
-              <span className="min-w-[110px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white">
+              <span className="min-w-[110px] text-center text-sm font-bold text-slate-900 dark:text-white">
                 {formatMonth(monthDate)}
               </span>
+              {!isCurrentMonthView && (
+                <Link
+                  href="/dashboard/agenda?view=month"
+                  className="rounded-xl border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                >
+                  Bu Ay
+                </Link>
+              )}
               <Link href={`/dashboard/agenda?view=month&month=${next}`} aria-label="Sonraki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
                 <ChevronRight className="h-4 w-4" />
               </Link>
@@ -130,7 +139,7 @@ export default async function AgendaPage({
                   <div className="hidden flex-1 flex-col gap-0.5 sm:flex">
                     {items.slice(0, 3).map((it) => (
                       <span key={it.id} className="flex items-center gap-1 truncate rounded bg-slate-500/[0.06] px-1 py-0.5 text-[9px] text-slate-600 dark:text-slate-300">
-                        <span className={cn('h-1 w-1 shrink-0 rounded-full', DOT[it.colorTag] ?? DOT.indigo)} />
+                        <span className={cn('h-1 w-1 shrink-0 rounded-full', CLIENT_COLOR_DOT[it.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                         <span className="font-mono font-semibold">{it.time}</span>
                         <span className="sensitive truncate">{it.clientName}</span>
                       </span>
@@ -143,7 +152,7 @@ export default async function AgendaPage({
                   {items.length > 0 && (
                     <div className="mt-auto flex gap-0.5 sm:hidden">
                       {items.slice(0, 4).map((it) => (
-                        <span key={it.id} className={cn('h-1.5 w-1.5 rounded-full', DOT[it.colorTag] ?? DOT.indigo)} />
+                        <span key={it.id} className={cn('h-1.5 w-1.5 rounded-full', CLIENT_COLOR_DOT[it.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                       ))}
                     </div>
                   )}
@@ -157,7 +166,7 @@ export default async function AgendaPage({
   }
 
   /* ───────────────────────── Haftalık görünüm ───────────────────────── */
-  const week = await getAgendaWeek(searchParams.date)
+  const week = await getAgendaWeek(dateParam)
   const weekRange = `${formatDateShort(week.days[0].key)} – ${formatDateShort(week.days[6].key)}`
   const items = week.days.flatMap((d) => d.items)
   const total = items.length

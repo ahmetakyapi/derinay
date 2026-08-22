@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -271,14 +271,28 @@ export function DashboardShell({
   owner: Owner
 }) {
   const [open, setOpen] = useState(false)
+  /**
+   * Gizlilik modu iki katmanlı:
+   *  - GÖRSEL katman: layout'taki engelleyici script `html.privacy` sınıfını daha
+   *    ilk boyamadan önce koyar, bulanıklık saf CSS olduğu için hidrasyonu beklemez.
+   *  - REACT katmanı: state SSR ile aynı değerle (false) başlar — DOM'dan okuyup
+   *    başlatmak hidrasyon uyuşmazlığı üretirdi. Mount sonrası senkronlanır;
+   *    yalnızca göz ikonu bir kare geç döner, veri hiçbir an açıkta kalmaz.
+   */
   const [privacy, setPrivacy] = useState(false)
+  const privacySynced = useRef(false)
 
-  // Esc ile mobil menüyü kapat (modallar kendi içinde hallediyor)
+  // Esc ile mobil menüyü kapat + arka plan kaydırmasını kilitle (modal davranışı)
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
   }, [open])
 
   // Gizlilik (odak) modu — son tercihi hatırla + ⌘/Ctrl+Shift+H kısayolu
@@ -298,11 +312,19 @@ export function DashboardShell({
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // Kök sınıf — yalnızca .sensitive işaretli alanlar bulanır (globals.css)
+  // Kök sınıf — yalnızca .sensitive işaretli alanlar bulanır (globals.css).
+  // İLK çalıştırmada sınıfa DOKUNMAZ: state henüz localStorage'dan okunmadan
+  // toggle(false) çağırmak, script'in koyduğu sınıfı silip flaş yaratıyordu.
   useEffect(() => {
+    if (!privacySynced.current) {
+      privacySynced.current = true
+      return
+    }
     document.documentElement.classList.toggle('privacy', privacy)
-    return () => document.documentElement.classList.remove('privacy')
   }, [privacy])
+
+  // Panelden çıkarken sınıfı temizle (landing/login bulanık kalmasın)
+  useEffect(() => () => document.documentElement.classList.remove('privacy'), [])
 
   const togglePrivacy = () =>
     setPrivacy((v) => {
@@ -355,6 +377,7 @@ export function DashboardShell({
               <button
                 onClick={togglePrivacy}
                 aria-label="Gizlilik modu"
+                aria-pressed={privacy}
                 title="Gizlilik modu (⌘⇧H)"
                 className={cn(
                   'flex h-10 items-center justify-center rounded-xl border transition-all',
@@ -384,7 +407,9 @@ export function DashboardShell({
       </aside>
 
       {/* Mobile topbar — safe-area (çentik) payı */}
-      <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between px-4 pt-[env(safe-area-inset-top)] lg:hidden">
+      {/* Yükseklik çentik payını İÇERİR — sabit h-16 üstüne pt eklenince
+          içerik kutusu eziliyor ve 40px marka damgası taşıyordu. */}
+      <header className="glass sticky top-0 z-30 flex h-[calc(4rem+env(safe-area-inset-top))] items-center justify-between px-4 pt-[env(safe-area-inset-top)] lg:hidden">
         <Brand />
         <div className="flex items-center gap-2">
           <button
@@ -397,6 +422,7 @@ export function DashboardShell({
           <button
             onClick={togglePrivacy}
             aria-label="Gizlilik modu"
+            aria-pressed={privacy}
             className={cn('flex h-9 w-9 items-center justify-center rounded-xl', privacy ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400')}
           >
             {privacy ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -423,6 +449,9 @@ export function DashboardShell({
             className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm lg:hidden"
           >
             <motion.aside
+              role="dialog"
+              aria-modal="true"
+              aria-label="Gezinme menüsü"
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
@@ -482,8 +511,10 @@ export function DashboardShell({
 
       <MobileTabBar onOpenMenu={() => setOpen(true)} />
 
-      {/* Gizlilik modu göstergesi — mobilde tab bar'ın üstünde durur */}
-      {privacy && (
+      {/* Gizlilik modu göstergesi — mobilde tab bar'ın üstünde durur.
+          Çekmece açıkken gizlenir: aksi halde z-[120] ile z-50'lik çekmecenin
+          üstüne çıkıp menünün üzerinde yüzüyordu. */}
+      {privacy && !open && (
         <button
           onClick={togglePrivacy}
           className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300 lg:bottom-5"

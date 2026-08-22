@@ -25,6 +25,14 @@ export default function Header() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
+  // Mobil menü modal gibi davranıyor: Esc ile kapansın
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
   // Varsayılan tema artık light — mount öncesi de light varsay
   const isDark = mounted ? resolvedTheme === 'dark' : false
 
@@ -38,7 +46,7 @@ export default function Header() {
       </a>
 
       <header
-        className={`fixed inset-x-0 top-0 z-50 h-16 transition-all duration-300 ${
+        className={`fixed inset-x-0 top-0 z-50 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-all duration-300 ${
           scrolled ? 'glass shadow-xl shadow-black/10' : 'bg-transparent'
         }`}
       >
@@ -98,30 +106,41 @@ export default function Header() {
       </header>
 
       {menuOpen && (
-        <motion.div
-          id="landing-mobile-menu"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="surface fixed inset-x-4 top-20 z-40 rounded-2xl p-4 md:hidden"
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-500/10 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-            >
-              {link.label}
-            </a>
-          ))}
-          <Link
-            href="/dashboard"
+        <>
+          {/* Dışına tıklayınca kapansın */}
+          <div
+            aria-hidden
             onClick={() => setMenuOpen(false)}
-            className="mt-2 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+            className="fixed inset-0 z-30 md:hidden"
+          />
+          <motion.div
+            id="landing-mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Gezinme menüsü"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="surface fixed inset-x-4 top-[calc(5rem+env(safe-area-inset-top))] z-40 rounded-2xl p-4 md:hidden"
           >
-            Panele Git
-          </Link>
-        </motion.div>
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-500/10 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              >
+                {link.label}
+              </a>
+            ))}
+            <Link
+              href="/dashboard"
+              onClick={() => setMenuOpen(false)}
+              className="mt-2 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+            >
+              Panele Git
+            </Link>
+          </motion.div>
+        </>
       )}
     </>
   )

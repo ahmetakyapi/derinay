@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { DeleteButton } from '@/components/ui/DeleteButton'
 import { NoteCard } from '@/components/clients/NoteCard'
 import { MoodTrail } from '@/components/clients/MoodTrail'
@@ -51,10 +50,13 @@ import {
   CLIENT_COLOR_BG,
 } from '@/lib/constants'
 import { BloomArt } from '@/components/art/BloomArt'
-import { formatTRY, formatDate, formatDateTime, durationSince } from '@/lib/format'
+import { formatTRY, formatDate, formatDateShort, formatDateTime, formatDayMonth, durationSince } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Danışan Dosyası' }
+
+/** Danışan dosyasında satır içi gösterilen en fazla seans — üstü sayılır */
+const SESSION_PREVIEW = 8
 export const dynamic = 'force-dynamic'
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
@@ -71,7 +73,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     ? scores
         .filter((s) => s.label === scoreLabel)
         .map((s) => ({
-          label: new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' }).format(new Date(s.date)),
+          label: formatDateShort(s.date),
           value: s.value,
         }))
     : []
@@ -128,7 +130,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   {client.birthDate && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
                       <Cake className="h-3 w-3 text-amber-500" />
-                      {new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' }).format(new Date(client.birthDate))}
+                      {formatDayMonth(client.birthDate)}
                     </span>
                   )}
                   <span className="sensitive inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
@@ -253,7 +255,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
-              <span>{new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(activePackage.purchaseDate))} tarihli</span>
+              <span>{formatDate(activePackage.purchaseDate)} tarihli</span>
               {(pkgLow || pkgDone) && (
                 <span className={cn('font-semibold', pkgDone ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400')}>
                   {pkgDone ? 'Paket tamamlandı — yenile' : 'Paket bitmek üzere'}
@@ -338,7 +340,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             </div>
             {sessions.length ? (
               <ul className="space-y-2.5">
-                {sessions.slice(0, 8).map((s) => (
+                {sessions.slice(0, SESSION_PREVIEW).map((s) => (
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span className="text-slate-700 dark:text-slate-200">{formatDateTime(s.date)}</span>
                     <span className="flex items-center gap-2">
@@ -355,6 +357,14 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </ul>
             ) : (
               <p className="py-4 text-center text-sm text-slate-400">Seans kaydı yok.</p>
+            )}
+            {sessions.length > SESSION_PREVIEW && (
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+                +{sessions.length - SESSION_PREVIEW} seans daha ·{' '}
+                <Link href="/dashboard/agenda" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
+                  Ajandada Gör
+                </Link>
+              </p>
             )}
           </section>
 
@@ -379,10 +389,10 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             )}
           </section>
 
-          {/* Faturalar */}
+          {/* Makbuzlar */}
           <section className="glass rounded-2xl p-5">
             <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-              <Receipt className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Faturalar
+              <Receipt className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Makbuzlar
             </h2>
             {invoices.length ? (
               <ul className="space-y-2.5">
@@ -405,7 +415,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 ))}
               </ul>
             ) : (
-              <p className="py-4 text-center text-sm text-slate-400">Fatura yok.</p>
+              <p className="py-4 text-center text-sm text-slate-400">Makbuz yok.</p>
             )}
           </section>
 
@@ -521,7 +531,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 function Stat({ label, value, tone, sub, sensitive }: { label: string; value: string; tone: string; sub?: string; sensitive?: boolean }) {
   return (
     <div className="glass rounded-2xl p-4">
-      <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{label}</p>
       <p className={cn('mt-1 font-display text-xl font-semibold tracking-tight', sensitive && 'sensitive', tone)}>{value}</p>
       {sub && <p className="mt-0.5 text-[11px] font-medium text-rose-500/90 dark:text-rose-400/90">{sub}</p>}
     </div>

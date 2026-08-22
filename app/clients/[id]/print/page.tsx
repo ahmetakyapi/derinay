@@ -12,7 +12,7 @@ import {
   PAYMENT_METHOD_LABEL,
   OWNER_PLACEHOLDER,
 } from '@/lib/constants'
-import { formatTRY, formatDate, formatDateTime } from '@/lib/format'
+import { formatTRY, formatDate, formatDateTimeLong } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,7 +72,7 @@ export default async function ClientFilePrintPage({
         <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
           <div>
             <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Danışan</p>
-            <p className="font-display text-xl font-semibold">{client.name}</p>
+            <p className="font-mono text-xl font-bold tabular-nums">{client.name}</p>
             <p className="mt-1 text-slate-500">
               {[client.email, client.phone].filter(Boolean).join(' · ') || '—'}
             </p>
@@ -99,19 +99,19 @@ export default async function ClientFilePrintPage({
         {/* Özet sayılar */}
         <div className="mt-6 grid grid-cols-4 gap-3 rounded-xl bg-slate-50 p-4 text-center text-sm">
           <div>
-            <p className="font-display text-xl font-semibold">{stats.completedSessions}</p>
+            <p className="font-mono text-xl font-bold tabular-nums">{stats.completedSessions}</p>
             <p className="text-xs text-slate-500">tamamlanan seans</p>
           </div>
           <div>
-            <p className="font-display text-xl font-semibold">{stats.noShowSessions + stats.cancelledSessions}</p>
+            <p className="font-mono text-xl font-bold tabular-nums">{stats.noShowSessions + stats.cancelledSessions}</p>
             <p className="text-xs text-slate-500">iptal / gelmedi</p>
           </div>
           <div>
-            <p className="font-display text-xl font-semibold">{formatTRY(stats.totalPaid, { compact: true })}</p>
+            <p className="font-mono text-xl font-bold tabular-nums">{formatTRY(stats.totalPaid, { compact: true })}</p>
             <p className="text-xs text-slate-500">toplam tahsilat</p>
           </div>
           <div>
-            <p className="font-display text-xl font-semibold">{goals.filter((g) => g.status === 'achieved').length}/{goals.length || 0}</p>
+            <p className="font-mono text-xl font-bold tabular-nums">{goals.filter((g) => g.status === 'achieved').length}/{goals.length || 0}</p>
             <p className="text-xs text-slate-500">hedef tamamlandı</p>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default async function ClientFilePrintPage({
             <tbody>
               {sessions.slice(0, 40).map((s) => (
                 <tr key={s.id} className="border-b border-slate-100 last:border-0">
-                  <td className="py-1.5 text-slate-500">{formatDateTime(s.date)}</td>
+                  <td className="py-1.5 text-slate-500">{formatDateTimeLong(s.date)}</td>
                   <td className="py-1.5">{SESSION_STATUS_LABEL[s.status]}</td>
                   <td className="py-1.5 text-right font-mono tabular-nums">{formatTRY(s.fee)}</td>
                 </tr>
@@ -186,7 +186,7 @@ export default async function ClientFilePrintPage({
               {notes.map((n) => (
                 <div key={n.id} className="break-inside-avoid rounded-lg border border-slate-100 p-3.5">
                   <p className="mb-1 text-xs text-slate-400">
-                    {formatDateTime(String(n.createdAt))} · {NOTE_KIND_LABEL[n.kind]}
+                    {formatDateTimeLong(String(n.createdAt))} · {NOTE_KIND_LABEL[n.kind]}
                     {n.mood ? ` · duygu: ${MOOD_LABEL[n.mood]}` : ''}
                   </p>
                   {n.title && <p className="font-semibold">{n.title}</p>}
@@ -214,6 +214,9 @@ export default async function ClientFilePrintPage({
                 ))}
               </tbody>
             </table>
+            {payments.length > 20 && (
+              <p className="mt-1 text-xs text-slate-400">… ve {payments.length - 20} eski ödeme</p>
+            )}
           </section>
         )}
 

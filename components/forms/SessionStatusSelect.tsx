@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { StatusPillSelect } from '@/components/ui/StatusPillSelect'
 import { updateSessionStatus } from '@/app/actions/notes'
 import { SESSION_STATUSES, SESSION_STATUS_LABEL, type SessionStatus } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 
 // Durum → renkli rozet stili (bir bakışta anlaşılır)
 const STATUS_STYLE: Record<SessionStatus, string> = {
@@ -14,9 +12,7 @@ const STATUS_STYLE: Record<SessionStatus, string> = {
   no_show: '!border-rose-500/40 !bg-rose-500/10 !text-rose-700 dark:!text-rose-300',
 }
 
-/**
- * Seans durumunu satır içinde değiştir — durum rengiyle boyalı rozet select.
- */
+/** Seans durumunu satır içinde değiştir. */
 export function SessionStatusSelect({
   id,
   clientId,
@@ -26,30 +22,14 @@ export function SessionStatusSelect({
   clientId: string
   value: SessionStatus
 }) {
-  const [current, setCurrent] = useState<SessionStatus>(value)
-  const [pending, start] = useTransition()
-  const router = useRouter()
-
   return (
-    <select
-      value={current}
-      disabled={pending}
-      onChange={(e) => {
-        const status = e.target.value as SessionStatus
-        setCurrent(status)
-        start(async () => {
-          await updateSessionStatus(id, clientId, status)
-          router.refresh()
-        })
-      }}
-      className={cn(
-        'field !w-auto cursor-pointer !rounded-full !py-1 !pl-3 !pr-7 text-xs !font-semibold transition-colors',
-        STATUS_STYLE[current],
-      )}
-    >
-      {SESSION_STATUSES.map((s) => (
-        <option key={s} value={s}>{SESSION_STATUS_LABEL[s]}</option>
-      ))}
-    </select>
+    <StatusPillSelect
+      value={value}
+      options={SESSION_STATUSES}
+      labels={SESSION_STATUS_LABEL}
+      styles={STATUS_STYLE}
+      ariaLabel="Seans durumu"
+      onSelect={(next) => updateSessionStatus(id, clientId, next)}
+    />
   )
 }

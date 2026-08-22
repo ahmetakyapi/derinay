@@ -90,5 +90,7 @@ export async function copyRecurring(targetMonth: string) {
   }
 
   revalidateFinance()
+  // Sabit kalemler personal scope'ta da olabilir — Kişisel sekmesi de tazelenmeli
+  revalidatePath('/dashboard/personal')
   return { ok: true, copied }
 }

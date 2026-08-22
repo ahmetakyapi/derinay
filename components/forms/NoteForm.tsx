@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Feather } from 'lucide-react'
+import { Feather, Loader2 } from 'lucide-react'
 import { Input, Textarea } from '@/components/ui/Field'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { createNote } from '@/app/actions/notes'
@@ -168,12 +168,14 @@ export function NoteForm({
         <button
           type="submit"
           disabled={pending}
+          aria-busy={pending}
           className={cn(
             'inline-flex min-w-[148px] items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:bg-[rgb(var(--pine))] disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100',
             compact && 'min-w-[132px] rounded-xl px-4 py-2.5 text-[13px]',
           )}
         >
-          <Feather className="h-4 w-4" /> {pending ? 'Ekleniyor…' : 'Not Ekle'}
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Feather className="h-4 w-4" />}
+          {pending ? 'Ekleniyor…' : 'Not Ekle'}
         </button>
       </div>
 

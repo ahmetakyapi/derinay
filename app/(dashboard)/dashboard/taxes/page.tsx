@@ -12,11 +12,15 @@ export default async function TaxesPage() {
   const { months, current, taxRates } = await getTaxOverview()
   const year = new Date().getFullYear()
 
-  // Tam ay adı (kısaltma değil) + dönem toplamları
-  const longLabel = (key: string) =>
-    new Intl.DateTimeFormat('tr-TR', { month: 'long' }).format(
-      new Date(Number(key.split('-')[0]), Number(key.split('-')[1]) - 1, 1),
-    )
+  // Tam ay adı. Son 6 aylık pencere yıl sınırını aşabilir — geçen yıla ait
+  // satırlarda yıl da yazılır, yoksa "Aralık" hangi yıl belli olmaz.
+  const longLabel = (key: string) => {
+    const [ky, km] = key.split('-').map(Number)
+    return new Intl.DateTimeFormat('tr-TR', {
+      month: 'long',
+      ...(ky !== year ? { year: 'numeric' as const } : {}),
+    }).format(new Date(ky, km - 1, 1))
+  }
   const totals = months.reduce(
     (acc, m) => ({
       income: acc.income + m.income,
@@ -35,7 +39,7 @@ export default async function TaxesPage() {
       icon: Receipt,
       tone: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-500/10',
-      hint: 'taslak hariç faturalardan',
+      hint: 'taslak hariç makbuzlardan',
     },
     {
       label: 'Gelir Vergisi',
@@ -186,7 +190,7 @@ export default async function TaxesPage() {
                       isCurrent && 'bg-amber-500/[0.06]',
                     )}
                   >
-                    <td className="whitespace-nowrap px-5 py-3 font-medium capitalize">
+                    <td className="whitespace-nowrap px-5 py-3 font-medium">
                       <span className="flex items-center gap-2">
                         {longLabel(m.key)}
                         {isCurrent && (
@@ -212,7 +216,7 @@ export default async function TaxesPage() {
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(totals.expense)}</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.kdv)}</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums">{formatTRY(totals.incomeTax)}</td>
-                <td className="sensitive px-5 py-3.5 text-right font-display text-base font-semibold tracking-tight">{formatTRY(totals.due)}</td>
+                <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] font-bold tabular-nums">{formatTRY(totals.due)}</td>
               </tr>
             </tfoot>
           </table>

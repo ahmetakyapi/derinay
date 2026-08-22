@@ -37,6 +37,35 @@ export function formatDateTime(date: Date | string): string {
   }).format(new Date(date))
 }
 
+/**
+ * "15 Mar 2026 14:00" — YIL DAHİL.
+ * Arşivlenen PDF çıktılarında yılsız tarih (formatDateTime) belirsiz kalıyor.
+ */
+export function formatDateTimeLong(date: Date | string): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  }).format(new Date(date))
+}
+
+/** "15 Mart" — gün + tam ay adı (yıl yok) */
+export function formatDayMonth(date: Date | string): string {
+  return new Intl.DateTimeFormat(LOCALE, { day: 'numeric', month: 'long' }).format(new Date(date))
+}
+
+/** "Pazartesi, 15 Mart" — sayfa başlığı üstündeki tarih etiketi */
+export function formatWeekdayLong(date: Date | string): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    weekday: 'long', day: 'numeric', month: 'long',
+  }).format(new Date(date))
+}
+
+/** "15 Mart Pazartesi" — gün gruplu listelerin başlığı */
+export function formatDayHeading(date: Date | string): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    day: 'numeric', month: 'long', weekday: 'long',
+  }).format(new Date(date))
+}
+
 /** "Mart 2026" */
 export function formatMonth(date: Date | string): string {
   return new Intl.DateTimeFormat(LOCALE, { month: 'long', year: 'numeric' }).format(new Date(date))

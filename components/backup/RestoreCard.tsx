@@ -30,7 +30,7 @@ export function RestoreCard() {
         const c = res.counts
         setResult({
           ok: true,
-          message: `Geri yüklendi: ${c.danışan} danışan, ${c.seans} seans, ${c.işlem} işlem, ${c.makbuz} makbuz. (Yedek tarihi: ${new Date(res.exportedAt).toLocaleString('tr-TR')})`,
+          message: `Geri yüklendi: ${c.danışan} danışan, ${c.seans} seans, ${c.not} not, ${c.işlem} işlem, ${c.makbuz} makbuz, ${c.ödeme} ödeme. (Yedek tarihi: ${new Date(res.exportedAt).toLocaleString('tr-TR')})`,
         })
         setFile(null)
         if (inputRef.current) inputRef.current.value = ''

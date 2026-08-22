@@ -31,12 +31,15 @@ import { AreaTrendChart, CategoryDonut, MonthlyBar } from '@/components/charts/l
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ReminderButton } from '@/components/clients/ReminderButton'
 import { getDashboard, getWeekSessions, getOutstandingBalances, getUpcomingBirthdays, getDashboardReminders, getReminderConfig, getIncomeGoal, getOwnerIdentity, clientOptions } from '@/lib/queries'
-import { formatTRY, formatDateShort, pctChange } from '@/lib/format'
+import { formatTRY, formatDateShort, formatWeekdayLong, pctChange } from '@/lib/format'
 import { SESSION_STATUS_LABEL, STATUS_TONE } from '@/lib/constants'
 import { greetingNow, quoteOfTheDay } from '@/lib/quotes'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Genel Bakış' }
+
+/** Doğum günü bandında gösterilen en fazla danışan — üstü sayılır */
+const BIRTHDAY_PREVIEW = 4
 
 export default async function DashboardPage({
   searchParams,
@@ -71,7 +74,7 @@ export default async function DashboardPage({
   return (
     <>
       <PageHeader
-        eyebrow={new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
+        eyebrow={formatWeekdayLong(new Date())}
         title={
           owner.firstName ? (
             <>
@@ -99,7 +102,7 @@ export default async function DashboardPage({
             <AlertTriangle className="h-4 w-4" />
           </span>
           <p className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">
-            <span className="font-bold">{out.overdueCount} gecikmiş fatura</span>
+            <span className="font-bold">{out.overdueCount} gecikmiş makbuz</span>
             <span className="text-slate-500 dark:text-slate-400"> · toplam </span>
             <span className="sensitive font-mono font-semibold tabular-nums text-rose-600 dark:text-rose-400">
               {formatTRY(out.overdueTotal, { compact: true })}
@@ -119,12 +122,12 @@ export default async function DashboardPage({
                 <Cake className="h-5 w-5" />
               </span>
               <div className="leading-tight">
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">Yaklaşan doğum günü</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">Yaklaşan Doğum Günü</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Küçük bir mesaj sevindirir 🌿</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {birthdays.slice(0, 4).map((b) => (
+              {birthdays.slice(0, BIRTHDAY_PREVIEW).map((b) => (
                 <Link
                   key={b.id}
                   href={`/dashboard/clients/${b.id}`}
@@ -142,6 +145,11 @@ export default async function DashboardPage({
                   </span>
                 </Link>
               ))}
+              {birthdays.length > BIRTHDAY_PREVIEW && (
+                <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                  +{birthdays.length - BIRTHDAY_PREVIEW} daha
+                </span>
+              )}
             </div>
           </div>
         </div>

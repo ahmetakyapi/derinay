@@ -11,7 +11,7 @@ import { Field, Input, Select } from '@/components/ui/Field'
 import { updateClient } from '@/app/actions/clients'
 import {
   CLIENT_COLORS,
-  CLIENT_COLOR_BG,
+  CLIENT_COLOR_BG, CLIENT_COLOR_LABEL,
   CLIENT_STATUSES,
   CLIENT_STATUS_LABEL,
   type ClientColor,
@@ -128,7 +128,8 @@ export function EditClientDialog({
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
-                  aria-label={c}
+                  aria-label={CLIENT_COLOR_LABEL[c]}
+                  aria-pressed={color === c}
                   className={cn(
                     'h-8 w-8 rounded-lg bg-gradient-to-br transition-all',
                     CLIENT_COLOR_BG[c],

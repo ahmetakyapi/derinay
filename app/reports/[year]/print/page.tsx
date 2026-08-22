@@ -66,8 +66,10 @@ export default async function ReportPrintPage({
         </div>
 
         {/* Aylık döküm */}
-        <h2 className="mt-8 mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Aylık döküm</h2>
-        <table className="w-full text-sm">
+        <h2 className="mt-8 mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Aylık Döküm</h2>
+        {/* Dar ekranda 7 sütun taşıyordu; yazdırmada kapsayıcı devre dışı */}
+        <div className="-mx-4 overflow-x-auto px-4 print:mx-0 print:overflow-visible print:px-0">
+        <table className="w-full min-w-[560px] text-sm print:min-w-0">
           <thead>
             <tr className="border-b border-slate-200 text-left text-xs text-slate-500">
               <th className="py-2 font-semibold">Ay</th>
@@ -82,7 +84,7 @@ export default async function ReportPrintPage({
           <tbody className="divide-y divide-slate-100">
             {a.months.map((m) => (
               <tr key={m.key}>
-                <td className="py-2 font-medium capitalize">{m.label}</td>
+                <td className="py-2 font-medium">{m.label}</td>
                 <td className="py-2 text-right tabular-nums">{formatTRY(m.income)}</td>
                 <td className="py-2 text-right tabular-nums">{formatTRY(m.expense)}</td>
                 <td className="py-2 text-right font-semibold tabular-nums">{formatTRY(m.net)}</td>
@@ -104,11 +106,12 @@ export default async function ReportPrintPage({
             </tr>
           </tfoot>
         </table>
+        </div>
 
         {/* Kırılımlar */}
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div>
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Gider kategorileri</h2>
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Gider Kategorileri</h2>
             {a.expenseByCategory.length ? (
               <ul className="divide-y divide-slate-100 text-sm">
                 {a.expenseByCategory.map((c) => (
@@ -123,7 +126,7 @@ export default async function ReportPrintPage({
             )}
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Gelir kategorileri</h2>
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Gelir Kategorileri</h2>
             {a.incomeByCategory.length ? (
               <ul className="divide-y divide-slate-100 text-sm">
                 {a.incomeByCategory.map((c) => (
@@ -137,7 +140,7 @@ export default async function ReportPrintPage({
               <p className="text-sm text-slate-400">Veri yok.</p>
             )}
 
-            <h2 className="mt-6 mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Tahsilat yöntemleri</h2>
+            <h2 className="mt-6 mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Tahsilat Yöntemleri</h2>
             <ul className="divide-y divide-slate-100 text-sm">
               {a.methodTotals.map((m) => (
                 <li key={m.method} className="flex justify-between gap-4 py-1.5">
@@ -166,7 +169,8 @@ function ReportStat({ label, value, strong }: { label: string; value: string; st
   return (
     <div className="rounded-xl border border-slate-200 p-3.5">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-      <p className={`mt-1 tabular-nums ${strong ? 'font-display text-xl font-semibold' : 'text-lg font-bold'}`}>
+      {/* Vurgulu değer daha KALIN olmalı; eskiden 600 iken diğerleri 700'dü */}
+      <p className={`mt-1 font-mono text-lg tabular-nums ${strong ? 'font-bold' : 'font-semibold'}`}>
         {value}
       </p>
     </div>

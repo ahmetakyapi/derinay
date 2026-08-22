@@ -59,13 +59,17 @@ export default async function InvoicesPage({
 
   const totalKdv = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.kdvAmount, 0)
   const totalStopaj = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.stopajAmount, 0)
+  /** Kesilen tüm makbuzların toplamı — taslaklar dahil */
   const totalBilled = invoices.reduce((s, i) => s + i.total, 0)
   const sumByStatus = (st: InvoiceStatus) =>
     invoices.filter((i) => i.status === st).reduce((s, i) => s + i.total, 0)
   const countByStatus = (st: InvoiceStatus) => invoices.filter((i) => i.status === st).length
 
   const paidTotal = sumByStatus('paid')
-  const collectionRate = totalBilled > 0 ? Math.round((paidTotal / totalBilled) * 100) : 0
+  /** Tahsilat oranının paydası: taslak HARİÇ — taslak henüz kesilmemiş sayılır
+   *  (KDV/stopaj toplamları da aynı tabanı kullanıyor, tutarlılık için şart). */
+  const billable = invoices.filter((i) => i.status !== 'draft').reduce((s, i) => s + i.total, 0)
+  const collectionRate = billable > 0 ? Math.round((paidTotal / billable) * 100) : 0
 
   return (
     <>
@@ -74,7 +78,7 @@ export default async function InvoicesPage({
         title="Makbuzlar"
         subtitle={
           <>
-            {invoices.length} makbuz · <span className="sensitive">{formatTRY(totalBilled, { compact: true })}</span> tahsil ·{' '}
+            {invoices.length} makbuz · <span className="sensitive">{formatTRY(totalBilled, { compact: true })}</span> kesildi ·{' '}
             <span className="sensitive">{formatTRY(totalKdv, { compact: true })}</span> KDV
             {totalStopaj > 0 && <> · <span className="sensitive">{formatTRY(totalStopaj, { compact: true })}</span> stopaj</>}
           </>
@@ -90,11 +94,11 @@ export default async function InvoicesPage({
             <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
               <Receipt className="h-3.5 w-3.5 text-amber-500" /> Toplam Tahsil Edilen
             </p>
-            <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              {formatTRY(totalBilled)}
+            <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-4xl">
+              {formatTRY(paidTotal)}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              <span className="sensitive font-mono font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(paidTotal, { compact: true })}</span> tahsil edildi
+              <span className="sensitive font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(totalBilled, { compact: true })}</span> kesildi
             </p>
           </div>
           <div className="shrink-0 sm:text-right">
@@ -120,7 +124,7 @@ export default async function InvoicesPage({
             <Link
               key={st}
               href={filterHref({ status: active ? 'all' : st })}
-              aria-pressed={active}
+              aria-current={active ? 'true' : undefined}
               title={active ? 'Filtreyi kaldır' : `${m.label} makbuzları göster`}
               className={cn(
                 'glass group rounded-2xl p-4 transition-all hover:-translate-y-0.5',

@@ -62,10 +62,18 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
   }, [])
 
   useEffect(() => {
-    if (open) {
-      setQuery('')
-      setActive(0)
-      setTimeout(() => inputRef.current?.focus(), 40)
+    if (!open) return
+    setQuery('')
+    setActive(0)
+    const t = setTimeout(() => inputRef.current?.focus(), 40)
+    // Açan öğeye odağı geri ver + arka plan kaydırmasını kilitle (modal davranışı)
+    const prevFocus = document.activeElement as HTMLElement | null
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      clearTimeout(t)
+      document.body.style.overflow = prevOverflow
+      prevFocus?.focus?.()
     }
   }, [open])
 
@@ -87,6 +95,12 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
   useEffect(() => {
     if (active >= results.length) setActive(0)
   }, [results, active])
+
+  // Ok tuşuyla gezinirken seçili satır görünür alanın dışına kayabiliyordu
+  const activeRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [active])
 
   function go(href: string) {
     setOpen(false)
@@ -117,6 +131,9 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
             exit={{ opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.18, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Komut paleti"
             className="surface w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
           >
             {/* Arama */}
@@ -128,19 +145,29 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onInputKey}
                 placeholder="Sayfa veya danışan ara…"
+                aria-label="Sayfa veya danışan ara"
+                role="combobox"
+                aria-expanded
+                aria-controls="cmdk-list"
+                aria-activedescendant={results[active] ? `cmdk-${results[active].key}` : undefined}
+                autoComplete="off"
                 className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
               />
               <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 sm:block">ESC</kbd>
             </div>
 
             {/* Sonuçlar */}
-            <div className="max-h-[52vh] overflow-y-auto p-2">
+            <div id="cmdk-list" role="listbox" aria-label="Sonuçlar" className="max-h-[52vh] overflow-y-auto p-2">
               {results.length === 0 ? (
                 <p className="px-3 py-6 text-center text-sm text-slate-400">Sonuç yok</p>
               ) : (
                 results.map((r, i) => (
                   <button
                     key={r.key}
+                    id={`cmdk-${r.key}`}
+                    role="option"
+                    aria-selected={i === active}
+                    ref={i === active ? activeRef : undefined}
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(r.href)}
                     className={cn(

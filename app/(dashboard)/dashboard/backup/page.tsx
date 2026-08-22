@@ -78,7 +78,7 @@ export default async function BackupPage() {
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Tüm tabloların eksiksiz kopyası — danışanlar, seanslar, notlar, finans, makbuzlar, ödemeler,
-            paketler, ölçümler, belgeler ve ayarlar
+            paketler, ölçümler, belgeler, hedefler, bekleme listesi ve ayarlar
           </p>
         </div>
         <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all group-hover:bg-indigo-500">
@@ -88,7 +88,7 @@ export default async function BackupPage() {
 
       {/* CSV'ler */}
       <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-        Tablo bazlı CSV (Excel uyumlu)
+        Tablo Bazlı CSV (Excel Uyumlu)
       </h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {CSV_EXPORTS.map((e) => (

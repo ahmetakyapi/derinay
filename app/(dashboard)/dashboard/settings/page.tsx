@@ -65,7 +65,7 @@ export default async function SettingsPage() {
             href="/dashboard/backup"
             className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-500/20 px-4 py-2.5 text-sm font-semibold text-slate-600 transition-all hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
           >
-            <DatabaseBackup className="h-4 w-4" /> Yedekleme sayfasına git
+            <DatabaseBackup className="h-4 w-4" /> Yedekleme Sayfasına Git
           </Link>
         </div>
 

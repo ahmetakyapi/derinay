@@ -83,7 +83,7 @@ export default function GlobalError({
               padding: '0.7rem 1.4rem',
             }}
           >
-            Tekrar dene
+            Tekrar Dene
           </button>
         </main>
       </body>

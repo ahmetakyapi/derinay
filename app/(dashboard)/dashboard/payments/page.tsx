@@ -95,7 +95,7 @@ export default async function PaymentsPage({
                   key={m.method}
                   className={cn('h-full transition-[width] duration-700', m.seg)}
                   style={{ width: `${total > 0 ? (m.amount / total) * 100 : 0}%` }}
-                  title={`${m.label} · ${formatTRY(m.amount)}`}
+                  title={m.label}
                 />
               ) : null,
             )}
@@ -110,7 +110,7 @@ export default async function PaymentsPage({
                 <Link
                   key={m.method}
                   href={filterHref({ method: active ? 'all' : m.method })}
-                  aria-pressed={active}
+                  aria-current={active ? 'true' : undefined}
                   title={active ? 'Filtreyi kaldır' : `${m.label} tahsilatlarını göster`}
                   className={cn(
                     'flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-slate-500/25',

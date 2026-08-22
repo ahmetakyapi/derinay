@@ -59,7 +59,7 @@ export function ConfirmDialog({
           {icon ?? <AlertTriangle className="h-5 w-5" />}
         </span>
         <p className="pt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          {danger ? 'Bu işlem geri alınamaz.' : 'Devam etmek istediğinize emin misiniz?'}
+          {danger ? 'Bu işlem geri alınamaz.' : 'Devam etmek istediğine emin misin?'}
         </p>
       </div>
 

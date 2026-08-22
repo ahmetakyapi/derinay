@@ -6,7 +6,7 @@ import { CategoryDonut } from '@/components/charts/lazy'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { personalCategoryIcon } from '@/components/personal/categoryIcon'
 import { getPersonalMonth } from '@/lib/queries'
-import { formatTRY, formatMonth, monthKey } from '@/lib/format'
+import { formatTRY, formatMonth, formatDayHeading, monthKey } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Kişisel Harcamalar' }
@@ -86,19 +86,27 @@ export default async function PersonalPage({
             >
               <ChevronLeft className="h-4 w-4" />
             </Link>
-            <span className="min-w-[120px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white sm:min-w-[140px]">
+            <span className="min-w-[120px] text-center text-sm font-bold text-slate-900 dark:text-white sm:min-w-[140px]">
               {formatMonth(monthDate)}
             </span>
-            <Link
-              href={`/dashboard/personal?month=${next}`}
-              className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300',
-                isCurrentMonth && 'pointer-events-none opacity-40',
-              )}
-              aria-label="Sonraki ay"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Link>
+            {/* pointer-events-none klavyeyi engellemez — kapalıyken bağlantı hiç render edilmez */}
+            {isCurrentMonth ? (
+              <span
+                aria-disabled="true"
+                aria-label="Sonraki ay (bu ay son ay)"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 opacity-40"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </span>
+            ) : (
+              <Link
+                href={`/dashboard/personal?month=${next}`}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                aria-label="Sonraki ay"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         }
       />
@@ -113,7 +121,11 @@ export default async function PersonalPage({
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
               {s.label}
             </p>
-            <p className={cn('mt-0.5 truncate font-display text-lg font-semibold tracking-tight', s.money && 'sensitive', s.tone)} title={s.value}>
+            {/* title, .sensitive filtresinden muaftır — para değerini oraya yazma */}
+            <p
+              className={cn('mt-0.5 truncate font-display text-lg font-semibold tracking-tight', s.money && 'sensitive', s.tone)}
+              title={s.money ? undefined : s.value}
+            >
               {s.value}
             </p>
             <p className="mt-0.5 text-[11px] text-slate-400">{s.hint}</p>
@@ -159,8 +171,7 @@ export default async function PersonalPage({
               byDate.set(it.date, list)
             }
             const dayKeys = [...byDate.keys()].sort((a, b) => (a < b ? 1 : -1))
-            const dayLabel = (d: string) =>
-              new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date(d))
+            const dayLabel = formatDayHeading
 
             return dayKeys.map((day) => {
               const rows = byDate.get(day)!
@@ -168,7 +179,7 @@ export default async function PersonalPage({
               return (
                 <div key={day}>
                   <div className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2 sm:px-5">
-                    <span className="text-xs font-bold capitalize tracking-wide text-slate-600 dark:text-slate-300">
+                    <span className="text-xs font-bold tracking-wide text-slate-600 dark:text-slate-300">
                       {dayLabel(day)}
                     </span>
                     <span className="sensitive font-mono text-xs font-semibold tabular-nums text-rose-600 dark:text-rose-400">
@@ -206,10 +217,10 @@ export default async function PersonalPage({
 
           {/* Ay toplamı */}
           <footer className="flex items-center justify-between border-t-2 border-slate-500/15 bg-slate-500/[0.05] px-4 py-3.5 sm:px-5">
-            <span className="text-sm font-bold capitalize text-slate-800 dark:text-slate-100">
+            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
               {formatMonth(monthDate)} Toplamı
             </span>
-            <span className="sensitive font-display text-lg font-semibold tracking-tight text-rose-600 dark:text-rose-400">
+            <span className="sensitive font-mono text-base font-bold tabular-nums text-rose-600 dark:text-rose-400">
               −{formatTRY(data.total)}
             </span>
           </footer>

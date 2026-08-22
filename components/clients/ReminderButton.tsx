@@ -115,13 +115,13 @@ export function ReminderButton({
       >
         <div className="space-y-4">
           <div>
-            <span className="field-label">
+            <label htmlFor="reminder-template" className="field-label">
               Mesaj şablonu{' '}
               <span className="font-normal text-slate-400">
                 — {'{ad}'}, {'{tarih}'}, {'{terapist}'} otomatik dolar
               </span>
-            </span>
-            <Textarea rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} />
+            </label>
+            <Textarea id="reminder-template" rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} />
             {dirty && (
               <button
                 type="button"
@@ -139,7 +139,8 @@ export function ReminderButton({
           {/* Önizleme */}
           <div className="note-paper rounded-xl p-3.5">
             <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Önizleme</p>
-            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-200">{message}</p>
+            {/* Mesaj danışanın adını içerir */}
+            <p className="sensitive whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-200">{message}</p>
           </div>
 
           <div className="flex flex-wrap justify-end gap-2">

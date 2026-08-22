@@ -27,7 +27,7 @@ import { NewTransactionDialog } from '@/components/forms/NewTransactionDialog'
 import { CopyRecurringButton } from '@/components/forms/CopyRecurringButton'
 import { listTransactions, clientOptions, type TxRow } from '@/lib/queries'
 import { deleteTransaction } from '@/app/actions/transactions'
-import { formatTRY, monthKey, formatMonth, pctChange } from '@/lib/format'
+import { formatTRY, monthKey, formatMonth, formatDayHeading, pctChange } from '@/lib/format'
 import type { TxType } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -74,15 +74,19 @@ export default async function FinancesPage({
   const nextKey = monthKey(new Date(y, m, 1))
   const isCurrentMonth = month === monthKey(now)
 
-  const [txs, prevTxs, clients] = await Promise.all([
+  // ÖNEMLİ: `txs` filtreli listeyi besler, `monthTxs` özet kartlarını.
+  // İkisi karışırsa "Ay Geliri" filtreye göre değişip filtresiz önceki ayla
+  // karşılaştırılır ve yüzde tamamen anlamsız olur.
+  const [txs, monthTxs, prevTxs, clients] = await Promise.all([
     listTransactions({ scope: 'business', month, type, q }),
+    listTransactions({ scope: 'business', month }),
     listTransactions({ scope: 'business', month: prevKey }),
     clientOptions(),
   ])
 
   const sum = (rows: TxRow[], t: TxType) => rows.filter((r) => r.type === t).reduce((s, r) => s + r.amount, 0)
-  const income = sum(txs, 'income')
-  const expense = sum(txs, 'expense')
+  const income = sum(monthTxs, 'income')
+  const expense = sum(monthTxs, 'expense')
   const prevIncome = sum(prevTxs, 'income')
   const prevExpense = sum(prevTxs, 'expense')
 
@@ -94,8 +98,7 @@ export default async function FinancesPage({
     byDay.set(t.date, list)
   }
   const dayKeys = [...byDay.keys()].sort((a, b) => (a < b ? 1 : -1))
-  const dayLabel = (d: string) =>
-    new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date(d))
+  const dayLabel = formatDayHeading
 
   // over.q = '' verilirse arama temizlenir (?? değil, açık undefined kontrolü)
   const buildHref = (over: { month?: string; type?: string; q?: string }) => {
@@ -134,7 +137,7 @@ export default async function FinancesPage({
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
-          <span className="min-w-[120px] text-center text-sm font-bold capitalize text-slate-900 dark:text-white sm:min-w-[140px]">
+          <span className="min-w-[120px] text-center text-sm font-bold text-slate-900 dark:text-white sm:min-w-[140px]">
             {formatMonth(monthDate)}
           </span>
           <Link
@@ -209,7 +212,7 @@ export default async function FinancesPage({
             return (
               <section key={day} className="glass overflow-hidden rounded-2xl">
                 <header className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2.5 sm:px-5">
-                  <span className="text-xs font-bold capitalize tracking-wide text-slate-600 dark:text-slate-300">
+                  <span className="text-xs font-bold tracking-wide text-slate-600 dark:text-slate-300">
                     {dayLabel(day)}
                   </span>
                   <span
@@ -240,7 +243,10 @@ export default async function FinancesPage({
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{t.category}</p>
                           <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                            {[t.clientName, t.description].filter(Boolean).join(' · ') || (inc ? 'Gelir' : 'Gider')}
+                            {t.clientName && <span className="sensitive">{t.clientName}</span>}
+                            {t.clientName && t.description ? ' · ' : ''}
+                            {t.description}
+                            {!t.clientName && !t.description && (inc ? 'Gelir' : 'Gider')}
                           </p>
                         </div>
                         <span

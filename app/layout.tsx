@@ -26,7 +26,9 @@ const schibsted = Schibsted_Grotesk({
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600'],
+  // 700 ŞART: tutar/rozet rakamlarında `font-mono font-bold` yaygın kullanılıyor;
+  // ağırlık yüklenmezse tarayıcı sentetik kalın üretir ve rakamlar bulanıklaşır.
+  weight: ['400', '500', '600', '700'],
   variable: '--font-mono-face',
   display: 'swap',
 })
@@ -78,6 +80,19 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${schibsted.variable} ${ibmPlexMono.variable}`}
     >
+      <head>
+        {/*
+          Gizlilik modu, tema gibi, İLK BOYAMADAN ÖNCE uygulanmalı: React mount
+          olana kadar .privacy sınıfı eklenmediği için kimlikler bir kare boyunca
+          bulanıksız görünüyordu (gizlilik özelliğinde kabul edilemez bir flaş).
+          next-themes'in kullandığı desenin aynısı: engelleyici satır içi script.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('derinay:privacy')==='1')document.documentElement.classList.add('privacy')}catch(e){}`,
+          }}
+        />
+      </head>
       <body className={schibsted.className}>
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>

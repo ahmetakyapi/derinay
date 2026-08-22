@@ -113,19 +113,6 @@ html.privacy .sensitive {
      yeterli; tıklanabilirlik korunur. */
 }
 
-/* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
-   Ağırlık burada SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın. */
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.032em;
-}
-/* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
-   Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı
-   varyantlar bileşik seçiciyle eşleşmez, h1 her kırılımda eşleşir. */
-h1.font-display {
-  letter-spacing: -0.04em;
-}
-
 /* ─── Selection ─────────────────────────────────────────────────────────── */
 ::selection {
   background: rgba(var(--gold), 0.28);
@@ -148,6 +135,10 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* Koyu temada çam çok koyu kalıyor — scrollbar'da yapılan düzeltmenin aynısı */
+html.dark :focus-visible {
+  outline-color: rgba(var(--pine-soft), 0.75);
+}
 
 /* ─── Print (fatura PDF çıktısı) ────────────────────────────────────────── */
 @media print {
@@ -165,6 +156,22 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
 
 /* ─── Components ────────────────────────────────────────────────────────── */
 @layer components {
+
+  /* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
+     Ağırlık SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın.
+     @layer components İÇİNDE olmalı — dışarıda tanımlanınca utilities'ten
+     sonra geldiği için `tracking-*` yardımcılarını eziyordu. */
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.032em;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
+     Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı
+     varyantlar bileşik seçiciyle eşleşmez, h1 her kırılımda eşleşir. */
+  h1.font-display {
+    letter-spacing: -0.04em;
+  }
 
   /* Kâğıt kart — light'ta sıcak kâğıt, dark'ta mürekkep camı */
   .glass {

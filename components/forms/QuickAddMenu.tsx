@@ -45,7 +45,7 @@ export function QuickAddMenu({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setMenuOpen((v) => !v)}
-        aria-haspopup="menu"
+        aria-haspopup="true"
         aria-expanded={menuOpen}
         className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-500"
       >
@@ -56,7 +56,8 @@ export function QuickAddMenu({
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            role="menu"
+            /* role="menu" ok tuşu gezinmesi + odak yönetimi zorunlu kılar;
+               burada ikisi de yok. Basit açılır liste olarak bırakılıyor. */
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
@@ -66,7 +67,6 @@ export function QuickAddMenu({
             {items.map((it) => (
               <button
                 key={it.key}
-                role="menuitem"
                 onClick={() => {
                   setMenuOpen(false)
                   setDialog(it.key)

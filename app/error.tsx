@@ -46,13 +46,13 @@ export default function AppError({
             onClick={reset}
             className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-[0.98]"
           >
-            <RefreshCw className="h-4 w-4" /> Tekrar dene
+            <RefreshCw className="h-4 w-4" /> Tekrar Dene
           </button>
           <Link
             href="/dashboard"
             className="flex items-center justify-center gap-2 rounded-xl border border-slate-500/20 px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/40 hover:text-indigo-700 dark:text-slate-300 dark:hover:text-indigo-300"
           >
-            <LayoutDashboard className="h-4 w-4" /> Panele dön
+            <LayoutDashboard className="h-4 w-4" /> Panele Dön
           </Link>
         </div>
       </div>

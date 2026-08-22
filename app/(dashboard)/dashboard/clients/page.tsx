@@ -40,7 +40,7 @@ export default async function ClientsPage({
       <PageHeader
         eyebrow="Klinik"
         title="Danışanlar"
-        subtitle={`${clients.length} kayıtlı danışan`}
+        subtitle={q || status || tag ? `${clients.length} sonuç` : `${clients.length} kayıtlı danışan`}
         action={<NewClientDialog />}
       />
 
@@ -110,8 +110,13 @@ export default async function ClientsPage({
                 <Avatar name={c.name} color={c.colorTag} src={c.avatarUrl} size="lg" />
                 <div className="flex items-center gap-1.5">
                   {!c.consentGiven && c.status === 'active' && (
-                    <span title="KVKK onamı eksik" className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-400">
-                      <ShieldAlert className="h-3.5 w-3.5" />
+                    <span
+                      title="KVKK onamı eksik"
+                      className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-400"
+                    >
+                      <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
+                      {/* title dokunmatikte görünmez, ekran okuyucuda güvenilmez */}
+                      <span className="sr-only">KVKK onamı eksik</span>
                     </span>
                   )}
                   <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" />
@@ -149,7 +154,7 @@ export default async function ClientsPage({
                     <span className="text-slate-400">Planlı seans yok</span>
                   )}
                 </span>
-                <span className="shrink-0 font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
+                <span className="sensitive shrink-0 font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
               </div>
             </Link>
           ))}

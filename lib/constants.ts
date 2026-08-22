@@ -161,6 +161,33 @@ export const CLIENT_COLORS = [
 ] as const
 export type ClientColor = (typeof CLIENT_COLORS)[number]
 
+/** Renk seçicinin erişilebilir adı — İngilizce token ekran okuyucuya okunmamalı */
+export const CLIENT_COLOR_LABEL: Record<ClientColor, string> = {
+  indigo:  'Çam',
+  emerald: 'Adaçayı',
+  sky:     'Pus mavisi',
+  violet:  'Erik',
+  amber:   'Okra altını',
+  rose:    'Terracotta',
+  teal:    'Okaliptüs',
+  cyan:    'Su yeşili',
+}
+
+/**
+ * Danışan rengi → nokta sınıfı. Takvimlerde/ajandada kullanılır.
+ * TEK KAYNAK: üç dosyada kopyalanınca tonları da kaymıştı (400 vs 500).
+ */
+export const CLIENT_COLOR_DOT: Record<string, string> = {
+  indigo:  'bg-indigo-500',
+  emerald: 'bg-emerald-500',
+  sky:     'bg-sky-500',
+  violet:  'bg-violet-500',
+  amber:   'bg-amber-500',
+  rose:    'bg-rose-500',
+  teal:    'bg-teal-500',
+  cyan:    'bg-cyan-500',
+}
+
 // Tailwind sınıf eşlemesi (avatar arka planı için — JIT'in görmesi adına tam yazıldı)
 // Yalnızca Atölye paletine remap edilmiş aileler kullanılır (blue/purple/orange/pink YOK).
 export const CLIENT_COLOR_BG: Record<string, string> = {

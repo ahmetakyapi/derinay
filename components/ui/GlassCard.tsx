@@ -23,13 +23,17 @@ export function GlassCard({ children, className, tilt = false, glow = false }: G
   const mouseY = useMotionValue(0.5)
 
   const onMove = useCallback((e: React.MouseEvent) => {
-    if (!tilt || !ref.current) return
+    // glow tek başına da çalışmalı: eskiden !tilt ise hemen return edildiği için
+    // `glow` prop'u parlama katmanını render ediyor ama hiç hareket ettirmiyordu.
+    if ((!tilt && !glow) || !ref.current) return
     const r = ref.current.getBoundingClientRect()
-    rx.set(-((e.clientY - r.top) / r.height - 0.5) * 8)
-    ry.set(((e.clientX - r.left) / r.width - 0.5) * 8)
+    if (tilt) {
+      rx.set(-((e.clientY - r.top) / r.height - 0.5) * 8)
+      ry.set(((e.clientX - r.left) / r.width - 0.5) * 8)
+    }
     mouseX.set((e.clientX - r.left) / r.width)
     mouseY.set((e.clientY - r.top) / r.height)
-  }, [tilt, rx, ry, mouseX, mouseY])
+  }, [tilt, glow, rx, ry, mouseX, mouseY])
 
   const onLeave = useCallback(() => {
     rx.set(0); ry.set(0)
@@ -39,7 +43,8 @@ export function GlassCard({ children, className, tilt = false, glow = false }: G
   const shineX = useTransform(mouseX, [0, 1], ['0%', '100%'])
   const shineY = useTransform(mouseY, [0, 1], ['0%', '100%'])
   // Çam + altın parlama — holografik vurgu (Atölye paleti)
-  const shine  = useMotionTemplate`radial-gradient(400px circle at ${shineX} ${shineY}, rgba(63,124,114,0.12), rgba(179,137,46,0.07), transparent 70%)`
+  // Palet token'ları — hardcoded hex/rgba yasağı (CLAUDE.md §7)
+  const shine  = useMotionTemplate`radial-gradient(400px circle at ${shineX} ${shineY}, rgba(var(--pine), 0.12), rgba(var(--gold), 0.07), transparent 70%)`
 
   return (
     <motion.div

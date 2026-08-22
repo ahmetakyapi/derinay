@@ -39,7 +39,7 @@ function TaxTooltip({
         color: 'var(--ink)',
       }}
     >
-      <p className="mb-2 font-bold capitalize">{label}</p>
+      <p className="mb-2 font-bold">{label}</p>
       <div className="space-y-1.5">
         <div className="flex items-center justify-between gap-4">
           <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">

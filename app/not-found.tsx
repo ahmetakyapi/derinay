@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { LayoutDashboard, ArrowLeft } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 
-export const metadata = { title: 'Sayfa bulunamadı' }
+export const metadata = { title: 'Sayfa Bulunamadı' }
 
 /** 404 — galeri dilinde: "bu duvarda böyle bir eser yok". */
 export default function NotFound() {
@@ -27,13 +27,13 @@ export default function NotFound() {
             href="/dashboard"
             className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-[0.98]"
           >
-            <LayoutDashboard className="h-4 w-4" /> Panele dön
+            <LayoutDashboard className="h-4 w-4" /> Panele Dön
           </Link>
           <Link
             href="/"
             className="flex items-center justify-center gap-2 rounded-xl border border-slate-500/20 px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:border-indigo-500/40 hover:text-indigo-700 dark:text-slate-300 dark:hover:text-indigo-300"
           >
-            <ArrowLeft className="h-4 w-4" /> Ana sayfa
+            <ArrowLeft className="h-4 w-4" /> Ana Sayfa
           </Link>
         </div>
       </div>

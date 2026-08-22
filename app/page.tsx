@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion, useScroll, useSpring, MotionConfig } from 'framer-motion'
 import {
   Users,
@@ -22,12 +21,13 @@ import { fadeUp, staggerContainer, EASE } from '@/lib/variants'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { BloomArt } from '@/components/art/BloomArt'
+import { PanelPreview } from '@/components/marketing/PanelPreview'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
 export default function Home() {
   // Çam tonu spotlight — fare ile gezinen ışık
-  const spotlight = useSpotlight(620, 'rgba(63,124,114,0.08)')
+  const spotlight = useSpotlight(620, 'rgba(var(--pine), 0.08)')
   // Sayfa kaydırma ilerleme çubuğu — üstte ince altın şerit
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 })
@@ -233,7 +233,7 @@ export default function Home() {
                     'Kişisel Harcamalar',
                   ].map((w) => (
                     <span key={w} className="flex items-center gap-10 whitespace-nowrap">
-                      <span className="font-display text-lg font-medium text-slate-500/90 dark:text-slate-400">{w}</span>
+                      <span className="font-display text-lg font-semibold text-slate-500/90 dark:text-slate-400">{w}</span>
                       <span className="text-amber-500/70">✦</span>
                     </span>
                   ))}
@@ -317,7 +317,7 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Panele bir bakış — gerçek ürün görüntüsü (tema-duyarlı) */}
+        {/* Panele bir bakış — kodla çizilen önizleme (ekran görüntüsü değil) */}
         <section className="relative z-10 mx-auto max-w-6xl px-6 py-16">
           <motion.div
             variants={staggerContainer(0.08)}
@@ -356,22 +356,10 @@ export default function Home() {
                   derinay · genel bakış
                 </span>
               </div>
-              <Image
-                src="/showcase-light.jpg"
-                alt="Derinay panel önizlemesi — genel bakış"
-                width={1440}
-                height={900}
-                sizes="(min-width: 1152px) 1152px, 100vw"
-                className="block h-auto w-full rounded-xl dark:hidden"
-              />
-              <Image
-                src="/showcase-dark.jpg"
-                alt="Derinay panel önizlemesi — genel bakış (gece)"
-                width={1440}
-                height={900}
-                sizes="(min-width: 1152px) 1152px, 100vw"
-                className="hidden h-auto w-full rounded-xl dark:block"
-              />
+              {/* Ekran görüntüsü DEĞİL — kodla çizilir. Bkz. PanelPreview başlığı. */}
+              <div className="overflow-hidden rounded-xl bg-[rgba(var(--paper),0.35)]">
+                <PanelPreview />
+              </div>
             </div>
           </motion.div>
         </section>
@@ -422,7 +410,7 @@ export default function Home() {
               Bugün <span className="text-indigo-700 dark:text-indigo-300">Düzeni</span> Kurmaya Başla
             </h2>
             <p className="relative mx-auto mt-3 max-w-md text-slate-500 dark:text-slate-300">
-              Danışanlarını ekle, ilk faturanı kes ve grafiklerin dolmasını izle.
+              Danışanlarını ekle, ilk makbuzunu kes ve grafiklerin dolmasını izle.
             </p>
             <Link
               href="/dashboard"
@@ -442,19 +430,19 @@ export default function Home() {
 const VALUES = [
   {
     icon: ShieldCheck,
-    title: 'KVKK senin kontrolünde',
+    title: 'KVKK Senin Kontrolünde',
     desc: 'Danışan onamı kayıt altında; fotoğraf ve belgeler senin kendi deponda kalır.',
     accent: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400',
   },
   {
     icon: Calculator,
-    title: 'Vergi kendiliğinden hesaplanır',
+    title: 'Vergi Kendiliğinden Hesaplanır',
     desc: 'KDV, stopaj ve tahmini gelir vergisi makbuzla birlikte otomatik çıkar.',
     accent: 'bg-amber-500/12 text-amber-600 dark:text-amber-400',
   },
   {
     icon: HeartHandshake,
-    title: 'Sakin, odaklı arayüz',
+    title: 'Sakin, Odaklı Arayüz',
     desc: 'Galeri estetiğinde, gözü yormayan bir panel — işin değil, danışanın merkezde.',
     accent: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400',
   },
@@ -471,6 +459,6 @@ const FEATURES = [
 
 const STEPS = [
   { title: 'Danışanlarını Ekle', desc: 'Birkaç saniyede danışan kartlarını oluştur, seans ücretlerini belirle.' },
-  { title: 'Gelir ve Gideri Gir', desc: 'Her hareketi kategorize et; faturaları kes, ödemeleri kaydet.' },
-  { title: 'Tabloyu İzle', desc: 'Dashboard ve vergi sayfası senin yerine hesaplar ve görselleştirir.' },
+  { title: 'Gelir ve Gideri Gir', desc: 'Her hareketi kategorize et; makbuzları kes, ödemeleri kaydet.' },
+  { title: 'Tabloyu İzle', desc: 'Genel Bakış ve Vergiler sayfası senin yerine hesaplar ve görselleştirir.' },
 ]

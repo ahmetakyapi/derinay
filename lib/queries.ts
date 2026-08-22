@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, arrayContains, desc, eq, gte, ilike, lt, lte, or } from 'drizzle-orm'
+import { and, arrayContains, desc, eq, gte, ilike, lt, lte, or, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
 import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
@@ -931,7 +931,12 @@ export async function getReminderConfig(): Promise<{ template: string; therapist
 
 // ─── Bekleme listesi ─────────────────────────────────────────────────────────
 export async function listWaitlist() {
-  const rows = await db.select().from(waitlist).orderBy(desc(waitlist.priority), desc(waitlist.createdAt))
+  // DİKKAT: desc(priority) METİN sıralamasıdır — 'normal' > 'high' olduğu için
+  // öncelikli başvuruları listenin SONUNA atardı. Açık CASE ifadesiyle sıralanır.
+  const rows = await db
+    .select()
+    .from(waitlist)
+    .orderBy(sql`case when ${waitlist.priority} = 'high' then 0 else 1 end`, desc(waitlist.createdAt))
   return rows.map((r) => ({ ...r, createdAt: String(r.createdAt) }))
 }
 

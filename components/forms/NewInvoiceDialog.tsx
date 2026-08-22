@@ -154,7 +154,7 @@ export function NewInvoiceDialog({
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
-            <SubmitButton pending={pending}>Makbuzu oluştur</SubmitButton>
+            <SubmitButton pending={pending}>Makbuzu Oluştur</SubmitButton>
           </div>
         </form>
       </Modal>

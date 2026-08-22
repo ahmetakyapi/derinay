@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { StatusPillSelect } from '@/components/ui/StatusPillSelect'
 import { updateInvoiceStatus } from '@/app/actions/invoices'
 import { INVOICE_STATUSES, INVOICE_STATUS_LABEL, type InvoiceStatus } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 
 // Durum → renkli rozet stili (ödendi/gecikmiş bir bakışta ayrışır)
 const STATUS_STYLE: Record<InvoiceStatus, string> = {
@@ -14,31 +12,16 @@ const STATUS_STYLE: Record<InvoiceStatus, string> = {
   overdue: '!border-rose-500/50 !bg-rose-500/12 !text-rose-700 dark:!text-rose-300',
 }
 
+/** Makbuz durumunu satır içinde değiştir. */
 export function InvoiceStatusSelect({ id, value }: { id: string; value: InvoiceStatus }) {
-  const [current, setCurrent] = useState<InvoiceStatus>(value)
-  const [pending, start] = useTransition()
-  const router = useRouter()
-
   return (
-    <select
-      value={current}
-      disabled={pending}
-      onChange={(e) => {
-        const status = e.target.value as InvoiceStatus
-        setCurrent(status)
-        start(async () => {
-          await updateInvoiceStatus(id, status)
-          router.refresh()
-        })
-      }}
-      className={cn(
-        'field !w-auto cursor-pointer !rounded-full !py-1.5 !pl-3 !pr-7 !text-xs !font-semibold transition-colors',
-        STATUS_STYLE[current],
-      )}
-    >
-      {INVOICE_STATUSES.map((s) => (
-        <option key={s} value={s}>{INVOICE_STATUS_LABEL[s]}</option>
-      ))}
-    </select>
+    <StatusPillSelect
+      value={value}
+      options={INVOICE_STATUSES}
+      labels={INVOICE_STATUS_LABEL}
+      styles={STATUS_STYLE}
+      ariaLabel="Makbuz durumu"
+      onSelect={(next) => updateInvoiceStatus(id, next)}
+    />
   )
 }

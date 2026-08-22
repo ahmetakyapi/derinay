@@ -28,6 +28,19 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
+      /**
+       * Opaklık ölçeği — Tailwind'in varsayılanı yalnızca 0,5,10,20,25,30,40,50,
+       * 60,70,75,80,90,95,100 içerir. Bu projenin görsel dili aradaki ince
+       * değerlere dayanıyor (ikon rozeti /12, saç çizgisi /15, hover zemini /8).
+       * Ölçekte OLMAYAN bir değer için `bg-emerald-500/12` HİÇ CSS ÜRETMEZ —
+       * sınıf sessizce yok sayılır, rozet zeminsiz kalır. Bu yüzden kullandığımız
+       * ara adımlar burada tanımlı; yeni bir ara değer kullanmadan önce buraya ekle.
+       */
+      opacity: {
+        2: '0.02', 3: '0.03', 4: '0.04', 6: '0.06', 7: '0.07', 8: '0.08',
+        12: '0.12', 15: '0.15', 18: '0.18', 35: '0.35', 45: '0.45',
+        55: '0.55', 65: '0.65', 85: '0.85',
+      },
       // Fallback zinciri CSS değişkeninin İÇİNDE (globals.css :root) —
       // burada tek kaynak kullanılır, iki yerde fallback tutulmaz.
       fontFamily: {

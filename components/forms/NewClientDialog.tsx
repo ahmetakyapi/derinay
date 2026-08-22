@@ -9,8 +9,15 @@ import { AvatarPicker } from '@/components/forms/AvatarPicker'
 import { TagInput } from '@/components/forms/TagInput'
 import { Field, Input, Select } from '@/components/ui/Field'
 import { createClient } from '@/app/actions/clients'
-import { CLIENT_COLORS, CLIENT_STATUSES, CLIENT_STATUS_LABEL, type ClientColor, type ClientStatus } from '@/lib/constants'
-import { CLIENT_COLOR_BG } from '@/lib/constants'
+import {
+  CLIENT_COLORS,
+  CLIENT_COLOR_BG,
+  CLIENT_COLOR_LABEL,
+  CLIENT_STATUSES,
+  CLIENT_STATUS_LABEL,
+  type ClientColor,
+  type ClientStatus,
+} from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 export function NewClientDialog() {
@@ -42,6 +49,12 @@ export function NewClientDialog() {
         tags,
       })
       if (!res.ok) return setError(res.error ?? 'Bir hata oluştu')
+      // Kontrollü alanlar sıfırlanmazsa dialog bir dahaki açılışta yarı dolu geliyor
+      setName('')
+      setAvatar(null)
+      setTags([])
+      setColor('indigo')
+      setError(null)
       setOpen(false)
       router.refresh()
     })
@@ -56,7 +69,7 @@ export function NewClientDialog() {
         <UserPlus className="h-4 w-4" /> Danışan Ekle
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Danışan" description="Danışan bilgilerini girin">
+      <Modal open={open} onClose={() => setOpen(false)} title="Yeni Danışan" description="Danışan bilgilerini gir">
         <form onSubmit={onSubmit} className="space-y-4">
           <AvatarPicker name={name} color={color} value={avatar} onChange={setAvatar} />
 
@@ -105,7 +118,8 @@ export function NewClientDialog() {
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
-                  aria-label={c}
+                  aria-label={CLIENT_COLOR_LABEL[c]}
+                  aria-pressed={color === c}
                   className={cn(
                     'h-8 w-8 rounded-lg bg-gradient-to-br transition-all',
                     CLIENT_COLOR_BG[c],

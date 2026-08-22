@@ -101,7 +101,7 @@ export function StatCard({
               )}
             >
               {change === 0 ? <Minus className="h-3 w-3" /> : rising ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-              {Math.abs(change).toFixed(0)}%
+              %{Math.abs(change).toFixed(0)}
             </span>
           )}
           {hint && <span className="text-slate-500 dark:text-slate-400">{hint}</span>}

@@ -55,6 +55,9 @@ export default async function AnalyticsPage({
     ? Math.round((a.sessionStats.noShow / a.sessionStats.total) * 100)
     : 0
   const maxClient = a.topClients[0]?.amount ?? 0
+  // net > 0 şartı yanıltıcıydı: her ayı zararla kapatan bir yılda veri VAR ama
+  // kart "henüz veri yok" diyordu. Veri varlığını kayıt varlığından türet.
+  const hasYearData = a.totals.income > 0 || a.totals.expense > 0
   const methodMax = Math.max(...a.methodTotals.map((m) => m.amount), 1)
 
   const sessionBars = [
@@ -126,10 +129,10 @@ export default async function AnalyticsPage({
         />
         <StatCard
           label="En İyi Ay"
-          value={a.bestMonth.net > 0 ? a.bestMonth.fullLabel : '—'}
+          value={hasYearData ? a.bestMonth.fullLabel : '—'}
           icon={<Sparkles className="h-5 w-5" />}
           accent="amber"
-          hint={a.bestMonth.net > 0 ? `${formatTRY(a.bestMonth.net, { compact: true })} net` : 'henüz veri yok'}
+          hint={hasYearData ? `${formatTRY(a.bestMonth.net, { compact: true })} net` : 'henüz veri yok'}
         />
       </div>
 

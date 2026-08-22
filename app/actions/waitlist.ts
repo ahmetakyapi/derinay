@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { revalidateClients } from '@/lib/revalidate'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { waitlist, clients } from '@/lib/schema'
@@ -51,8 +52,9 @@ export async function convertWaitlist(id: string) {
 
   await db.delete(waitlist).where(eq(waitlist.id, id))
 
+  // ⌘K danışan listesi layout seviyesinde çekiliyor → revalidateClients() şart,
+  // tek tek yol tazelemek yeni danışanı komut paletine getirmiyordu.
+  revalidateClients()
   revalidatePath('/dashboard/waitlist')
-  revalidatePath('/dashboard/clients')
-  revalidatePath('/dashboard')
   return { ok: true, clientId: created.id }
 }

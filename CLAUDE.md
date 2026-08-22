@@ -118,8 +118,12 @@ components/
                    # yeni grafik → bileşeni yaz + lazy.tsx'e dynamic export ekle
   theme/           # ThemeColorSync — <meta theme-color>'ı uygulama temasıyla eşler
   forms/           # New*Dialog, EditClientDialog, NoteForm (tür+duygu), AvatarPicker, InvoiceStatusSelect
-  ui/              # GlassCard, Button, Chip, Modal, Field(Input/Select/Textarea), StatCard,
-                   # StatusBadge, Avatar, EmptyState, DeleteButton
+  ui/              # GlassCard, Modal, Field(Input/Select/Textarea), StatCard, SubmitButton,
+                   # StatusBadge, StatusPillSelect, Avatar, EmptyState, DeleteButton, ConfirmDialog,
+                   # AnimatedNumber
+                   # (Button/Chip SİLİNDİ — hiçbir yerden import edilmiyordu; form gönderimi
+                   #  için SubmitButton, pill rozetler için doğrudan Tailwind kullanılıyor)
+  marketing/       # PanelPreview — landing'deki panel önizlemesi (ekran görüntüsü DEĞİL, kodla çizilir)
   invoice/         # PrintButton
 scripts/seed.ts    # Demo veri üretimi
 ```
@@ -202,6 +206,12 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   + Tailwind ile; **hardcoded hex yok**.
 - **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
   `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
+- **Opaklık ölçeği (KRİTİK)**: Tailwind'in varsayılan `opacity` ölçeği yalnızca
+  `0,5,10,20,25,30,40,50,60,70,75,80,90,95,100` içerir. Ölçekte OLMAYAN bir değer için
+  `bg-emerald-500/12` **hiç CSS üretmez** — sınıf sessizce yok sayılır, rozet zeminsiz kalır.
+  Bu projenin görsel dili ara değerlere dayandığı için `tailwind.config.ts` →
+  `theme.extend.opacity` içinde `2,3,4,6,7,8,12,15,18,35,45,55,65,85` tanımlıdır.
+  **Yeni bir ara değer kullanmadan önce oraya ekle** (ya da `/[0.12]` arbitrary yaz).
 - **Bileşen envanteri** (önce bunları kullan, yenisini yazma):
   - Kart başlık: `<PageHeader eyebrow title subtitle action />` — `eyebrow` = galeri bölüm
     etiketi (**Klinik / Finans / Yaşam**, sidebar gruplarıyla aynı); `title` ReactNode alır
@@ -213,7 +223,14 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
     (backdrop-filter'lı .glass atalar fixed'i hapseder; modalı asla portalsız render etme).
     Mobilde otomatik **bottom-sheet** (alttan açılır, tutamaç + safe-area payı) — sm+ ortalanmış kart.
   - Form alanları: `<Field label><Input/Select/Textarea/></Field>`
-  - Silme: `<DeleteButton action={fn.bind(null,id)} redirectTo? confirmText? />`
+  - Silme: `<DeleteButton action={fn.bind(null,id)} redirectTo? confirmText? />` —
+    `confirmText` ReactNode alır; kişi adı geçiyorsa `<span className="sensitive">` ile sar
+  - Form gönderimi: `<SubmitButton pending={...}>Kaydet</SubmitButton>` (spinner + `aria-busy`
+    dahil) — elle indigo submit düğmesi YAZMA
+  - Satır içi durum değiştirme: `<StatusPillSelect …>` (SessionStatusSelect / InvoiceStatusSelect
+    bunun üzerine kurulu; prop senkronu + chevron + hata geri alma tek yerde)
+  - Onay: `<ConfirmDialog open onClose onConfirm title description confirmLabel tone? icon? />`
+    — yıkıcı VE geri alınamaz her işlem (silme, danışana çevirme, geri yükleme) onay ister
   - Boş durum: `<EmptyState icon title description action />`
   - Grafik: `AreaTrendChart / CategoryDonut / MonthlyBar / TaxRadial`
 - **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel…) + `EASE`.
@@ -296,8 +313,25 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 10. Hardcoded renk/magic number yok; token + named constant kullan.
 11. **tailwind.config `content` listesinde `./lib/**` OLMALI** — `CLIENT_COLOR_BG`, `MOOD_BG` gibi
     sınıf haritaları lib'de; listeden çıkarsa o sınıflar üretilmez (görünmez avatar bug'ı).
-12. PDF = tarayıcı print: fatura `/invoices/[id]/print`, yıllık rapor `/reports/[year]/print`
+12. PDF = tarayıcı print: makbuz `/invoices/[id]/print`, yıllık rapor `/reports/[year]/print`
     (`?auto=1` otomatik diyalog). Yeni rapor eklerken bu deseni kopyala.
+13. **Ölçek dışı opaklık sessizce ölür** — `bg-*/12`, `border-*/15` gibi değerler
+    `tailwind.config.ts` → `theme.extend.opacity` içinde tanımlı DEĞİLSE hiç CSS üretilmez.
+    "Rozet zeminsiz görünüyor" hatasında ilk buraya bak. (Bkz. §7 Opaklık ölçeği.)
+14. **`aria-label` / `title` / `placeholder` gizlilik filtresinden MUAF** — `html.privacy`
+    yalnızca render edilmiş metni bulanıklaştırır. Danışan adını veya tutarı bu özniteliklere
+    yazma; ekranda bulanan değer orada düz metin sızar.
+15. **`desc()` metin sıralamasıdır** — `desc(priority)` ile 'normal' > 'high' çıkar ve
+    öncelikli kayıtlar listenin SONUNA düşer. Sıralama anlamı taşıyorsa açık
+    `sql\`case when … then 0 else 1 end\`` yaz.
+16. **`db.batch()` içinde insert sırası FK sırasıdır** — `clientNotes.goalId → clientGoals.id`
+    olduğu için hedefler notlardan ÖNCE eklenmeli; tek FK ihlali tüm geri yüklemeyi düşürür.
+17. **Modal efekt bağımlılığına `onClose` koyma** — her render'da yeni closure gelir, efekt
+    yeniden kurulur ve her tuş vuruşunda odak ilk öğeye kaçar. Ref'te tut, bağımlılık `[open]`.
+18. **Gizlilik modu iki katmanlı**: `app/layout.tsx`'teki engelleyici script `html.privacy`
+    sınıfını ilk boyamadan önce koyar (bulanıklık saf CSS, hidrasyonu beklemez); React state
+    SSR ile aynı değerle (`false`) başlar ve mount sonrası senkronlanır. State'i DOM'dan
+    başlatma — hidrasyon uyuşmazlığı üretir.
 
 ---
 

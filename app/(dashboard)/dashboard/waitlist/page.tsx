@@ -62,7 +62,7 @@ export default async function WaitlistPage() {
                   </div>
 
                   <div className="flex items-center justify-end gap-2">
-                    <ConvertWaitlistButton id={e.id} />
+                    <ConvertWaitlistButton id={e.id} name={e.name} />
                     <DeleteButton action={deleteWaitlist.bind(null, e.id)} confirmText={<><span className="sensitive">{e.name}</span> listeden silinecek.</>} />
                   </div>
                 </div>

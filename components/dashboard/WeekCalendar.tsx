@@ -1,11 +1,6 @@
 import Link from 'next/link'
+import { CLIENT_COLOR_DOT } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-
-const DOT: Record<string, string> = {
-  indigo: 'bg-indigo-400', emerald: 'bg-emerald-400', sky: 'bg-sky-400',
-  violet: 'bg-violet-400', amber: 'bg-amber-400', rose: 'bg-rose-400',
-  teal: 'bg-teal-400', cyan: 'bg-cyan-400',
-}
 
 type Item = {
   id: string
@@ -54,7 +49,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
                       )}
                     >
                       <div className="flex items-center gap-1.5">
-                        <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', DOT[s.colorTag] ?? DOT.indigo)} />
+                        <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', CLIENT_COLOR_DOT[s.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                         <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-200">{s.time}</span>
                       </div>
                       <p className={cn('sensitive mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300', dim && 'line-through')}>
