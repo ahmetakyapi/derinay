@@ -177,9 +177,12 @@ html.dark :focus-visible {
   /* ══ PARA BİRİMİ TUZAĞI ══════════════════════════════════════════════
      Schibsted Grotesk'in U+20BA (₺) glifi ÇİFT ÇİZGİLİ £ olarak çizilmiş —
      Türk lirası işareti değil. IBM Plex Mono doğru glifi taşıyor.
-     Bu yüzden PARA GÖSTEREN HER YER `font-mono` OLMAK ZORUNDA; display veya
-     gövde ailesinde yazılan bir tutar yanlış para birimi gösterir.
-     (Bu kural zaten hizalama için de gerekliydi — `tabular-nums` ile birlikte.)
+     ÇÖZÜLDÜ, kaçınılarak değil: yukarıdaki 'DerinayLira' @font-face yalnız
+     U+20BA taşıyan bir alt küme ve hem --font-sans hem --font-display
+     listesinin EN BAŞINDA duruyor. Bu yüzden ₺ hangi ailede yazılırsa
+     yazılsın doğru çizilir; tutarı font-mono'ya taşımak artık zorunlu değil,
+     yalnızca sütun hizası için tercih edilir.
+     KURAL: bu iki listenin başındaki 'DerinayLira' KALDIRILMAZ.
      ═══════════════════════════════════════════════════════════════════════ */
 
   /* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
@@ -189,7 +192,13 @@ html.dark :focus-visible {
   .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.032em;
-    font-variant-numeric: tabular-nums;
+    /* tabular-nums BURAYA YAZILMAZ. Schibsted Grotesk'in `tnum` özelliği
+       yalnız rakamlara değil NOKTALAMAYA da dokunuyor: comma → comma.tf
+       (543 → 1300 birim), period → period.tf (574 → 1300). Yani her başlık
+       virgülü ve noktası, tam bir boşluktan (520 birim) daha geniş bir
+       rakam yuvası kadar yer kaplıyor ve "Defter Önce , Fatura" gibi
+       okunuyordu. Başlıklar metindir, sütun değil — hizalanacak rakam
+       sütunları zaten IBM Plex Mono + tabular-nums kullanır (bkz. CLAUDE.md §7). */
   }
   /* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
      Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı

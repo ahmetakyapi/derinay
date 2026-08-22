@@ -11,6 +11,7 @@ import { BloomMark } from '@/components/brand/BloomMark'
 // menü satırı sessizce hiçbir şey yapmaz (eski #features/#how böyleydi).
 const NAV_LINKS = [
   { label: 'Neler Var', href: '#panel' },
+  { label: 'Seans Defteri', href: '#defter' },
   { label: 'Finans', href: '#finans' },
   { label: 'Güvenlik', href: '#guven' },
 ]

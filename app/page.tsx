@@ -24,6 +24,7 @@ import { BrushSweep, BrushPull } from '@/components/brand/Brush'
 import { PanelPreview } from '@/components/marketing/PanelPreview'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
 import { ReceiptPreview } from '@/components/marketing/ReceiptPreview'
+import { NotePreview } from '@/components/marketing/NotePreview'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -46,9 +47,9 @@ const CAPABILITIES = [
   { icon: Users, title: 'Danışan Dosyası', body: 'İletişim, etiket, seans ücreti, onam durumu ve tüm geçmiş tek kartta.' },
   { icon: CalendarRange, title: 'Ajanda', body: 'Haftalık saat ızgarası. Seansı sürükleyip bırak; çakışmayı panel söyler.' },
   { icon: StickyNote, title: 'Seans Defteri', body: 'Tür ve duygu etiketli notlar, SOAP şablonları, zamanla çıkan duygu izleği.' },
-  { icon: Wallet, title: 'Gelir & Gider', body: 'Kategori bazlı hareketler, sabit kalemleri tek tıkla sonraki aya kopyalama.' },
-  { icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzu bir ekranda kesilir, tarayıcıdan PDF çıkar.' },
-  { icon: PieChart, title: 'Analiz & Rapor', body: 'Yıllık akış, kümülatif birikim, muhasebeciye giden tek dosya.' },
+  { icon: Wallet, title: 'Gelir & Gider', body: 'Kategori bazlı hareketler; kira, abonelik gibi sabit kalemler tek tıkla sonraki aya kopyalanır.' },
+  { icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzu tek ekranda kesilir; numara sıradan devam eder.' },
+  { icon: PieChart, title: 'Analiz & Rapor', body: 'Yıllık akış, biriken bakiye ve muhasebeciye giden tek dosyalık rapor.' },
 ] as const
 
 const DAY_MOMENTS = [
@@ -60,12 +61,12 @@ const DAY_MOMENTS = [
   {
     time: 'Seans Arası',
     title: 'Defteri Tutarken',
-    body: 'Not, tür ve duygu ile birlikte düşer. Yarım kalırsa taslak korunur. Duygu izleği zamanla bir eğriye dönüşür; ilerlemeyi anlatmak için hafıza gerekmez.',
+    body: 'Danışan çıkar çıkmaz not düşersin — iki dakika sürer. Aklında kalan cümle, kapıdan çıkmadan yerine geçmiş olur.',
   },
   {
     time: 'Ay Sonu',
     title: 'Hesabı Kapatırken',
-    body: 'Makbuzlar, tahsilat ve vergi tek sayfada toplanır. Muhasebeciye giden yıllık rapor tarayıcıdan çıkar; kurulacak bir program yok.',
+    body: 'Kimin ödediği, kimin geciktiği ve ne kadar vergi biriktiği tek sayfada durur. Muhasebeciye gidecek yıllık rapor bir tuşla çıkar.',
   },
 ] as const
 
@@ -124,9 +125,9 @@ export default function Home() {
               variants={fadeUp}
               className="font-display text-[3rem] font-bold leading-[0.98] tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[4.25rem] md:text-[5.25rem]"
             >
-              Pratiğini yönet,
+              Pratiğini Yönet,
               <br />
-              kafanı{' '}
+              Kafanı{' '}
               <span className="relative inline-block">
                 <motion.span
                   aria-hidden
@@ -139,7 +140,7 @@ export default function Home() {
                 >
                   <BrushSweep className="h-full w-full" />
                 </motion.span>
-                <span className="relative text-indigo-700 dark:text-indigo-300">dinlendir</span>
+                <span className="relative text-indigo-700 dark:text-indigo-300">Dinlendir</span>
               </span>
             </motion.h1>
 
@@ -147,8 +148,8 @@ export default function Home() {
               variants={fadeUp}
               className="mx-auto mt-8 max-w-xl text-[1.0625rem] leading-[1.75] text-slate-500 dark:text-slate-300 sm:text-lg"
             >
-              Danışanların, ajandan, seans defterin ve tüm finansın tek yerde. Sakin, sade ve
-              yalnızca senin için kurulmuş bir çalışma masası.
+              Danışanların, ajandan, seans defterin ve finansın tek yerde. Tek kişilik bir
+              pratiğin ihtiyacı kadar — sakin, sade, dağınıklıktan uzak bir çalışma masası.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -186,7 +187,7 @@ export default function Home() {
               className="pointer-events-none absolute -bottom-6 left-1/2 h-10 w-2/3 -translate-x-1/2 rounded-[100%] bg-slate-900/10 blur-2xl dark:bg-black/50"
             />
             <p className="mt-7 text-center text-xs text-slate-400">
-              Ekran görüntüsü değil — panelin kendisi, örnek verilerle çizildi.
+              Örnek verilerle çizildi — buradaki hiçbir isim ve tutar gerçek değil.
             </p>
           </motion.div>
         </section>
@@ -196,12 +197,12 @@ export default function Home() {
         <section id="panel" className="relative z-10 scroll-mt-24 px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
             <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-              Bir pratiğin döndüğü{' '}
-              <span className="text-indigo-700 dark:text-indigo-300">her şey</span> burada
+              Bir Pratiğin Döndüğü{' '}
+              <span className="text-indigo-700 dark:text-indigo-300">Her Şey</span> Burada
             </h2>
             <p className="mt-6 max-w-xl text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
-              Ayrı ayrı defterler, tablolar ve klasörler yerine tek panel. Hepsi birbirini bilir:
-              seansı kaydettiğinde takvim, gelir ve danışan dosyası birlikte güncellenir.
+              Ayrı defterler, tablolar ve klasörler yerine tek panel — hepsi birbirini bilir.
+              Bir seansı tamamladığında takvim, danışan dosyası ve paket kullanımı aynı anda güncellenir.
             </p>
 
             <div className="mt-16 grid gap-x-14 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -222,9 +223,9 @@ export default function Home() {
         <section className="relative z-10 border-y border-slate-500/10 bg-[rgba(var(--paper),0.4)] px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
             <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-              Panel günü okur,
+              Panel Günü Okur,
               <br />
-              sen <span className="text-indigo-700 dark:text-indigo-300">aramazsın</span>
+              Sen <span className="text-indigo-700 dark:text-indigo-300">Aramazsın</span>
             </h2>
             <div className="mt-16 grid gap-12 sm:grid-cols-3 sm:gap-10">
               {DAY_MOMENTS.map((m) => (
@@ -242,6 +243,35 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Seans Defteri ───────────────────────────────────────────────
+            Ürünün klinik ağırlık merkezi. Finans bölümünün karşı ağırlığı:
+            panel bir faturalama aracı değil, önce bir defter. */}
+        <section id="defter" className="relative z-10 scroll-mt-24 px-6 py-28 sm:py-36">
+          <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-16">
+            <div className="lg:col-span-7">
+              <PreviewFrame caption="derinay · seans defteri">
+                <NotePreview />
+              </PreviewFrame>
+            </div>
+
+            <div className="mt-14 lg:col-span-5 lg:mt-0">
+              <h2 className="font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
+                Defter Önce, <span className="text-indigo-700 dark:text-indigo-300">Fatura</span> Sonra
+              </h2>
+              <div className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
+                <p>
+                  Her not bir tür ve bir duyguyla kaydedilir. SOAP, ilk görüşme ve BDT şablonları
+                  hazır bekler; yazarken yarım kalırsa taslak korunur, sekmeyi kapatsan bile kaybolmaz.
+                </p>
+                <p>
+                  Haftalar biriktikçe duygu izleği bir eğriye dönüşür. Tedavi hedefleri ve ölçek
+                  puanları aynı sayfada durur — ilerlemeyi anlatmak için hafızana yüklenmen gerekmez.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Finans ──────────────────────────────────────────────────────
             Mevzuat detayı YALNIZCA burada ve gövde metninin içinde geçer;
             başlık faydayı söyler. */}
@@ -249,12 +279,12 @@ export default function Home() {
           <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-16">
             <div className="lg:col-span-5">
               <h2 className="font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-                Hesap <span className="text-indigo-700 dark:text-indigo-300">kendiliğinden</span> çıkar
+                Hesap <span className="text-indigo-700 dark:text-indigo-300">Kendiliğinden</span> Çıkar
               </h2>
               <div className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
                 <p>
                   Danışanı seç, ücreti yaz. Makbuz bir ekranda kesilir; numara sıradan devam eder,
-                  önizleme açılır, Yazdır dediğinde PDF çıkar. Ayrıca kurulacak bir program yok.
+                  önizleme açılır, Yazdır dediğinde PDF çıkar. Kurulacak ek bir program yok.
                 </p>
                 <p>
                   Arkada KDV, stopaj ve tahmini gelir vergisi sen istemeden hesaplanır. Vadesi geçen
@@ -275,7 +305,7 @@ export default function Home() {
         <section id="guven" className="relative z-10 scroll-mt-24 border-t border-slate-500/10 bg-[rgba(var(--paper),0.35)] px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
             <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-              Veri <span className="text-indigo-700 dark:text-indigo-300">sende</span> kalır
+              Veri <span className="text-indigo-700 dark:text-indigo-300">Sende</span> Kalır
             </h2>
             <p className="mt-6 max-w-xl text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
               Bir psikoloğun tuttuğu kayıt, tuttuğu en hassas kayıttır. Derinay bunu bir vaat olarak
@@ -299,7 +329,7 @@ export default function Home() {
         <section className="relative z-10 mx-auto max-w-3xl px-6 py-32 text-center sm:py-40">
           <ShieldCheck aria-hidden className="mx-auto h-6 w-6 text-amber-500/70" />
           <h2 className="mt-8 font-display text-[2.25rem] font-bold leading-[1.05] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3rem]">
-            Bugün <span className="text-indigo-700 dark:text-indigo-300">düzeni</span> kurmaya başla
+            Bugün <span className="text-indigo-700 dark:text-indigo-300">Düzeni</span> Kurmaya Başla
           </h2>
           <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
             Danışanlarını ekle, ilk seansını yaz, gerisini panel tutsun.

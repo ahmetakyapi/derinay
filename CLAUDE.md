@@ -89,7 +89,9 @@ Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` �
 app/
   layout.tsx                       # ThemeProvider + ThemeColorSync, Schibsted Grotesk + IBM Plex Mono (subset latin+latin-ext), metadataBase/OG/noindex
   globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
-  page.tsx                         # Landing (hero/özellikler/CTA) — 'use client'
+  page.tsx                         # Landing — 'use client'. Bölüm sırası: hero → #panel (neler var)
+                                   # → gün → #defter (seans defteri) → #finans → #guven → kapanış.
+                                   # Yeni bölüm eklersen Header'daki NAV_LINKS'e de çapa ekle.
   error.tsx / not-found.tsx        # Atölye dilinde hata sınırı + 404 (Next varsayılanı ASLA görünmesin)
   manifest.ts                      # PWA manifesti (ana ekrana ekleme — standalone, /dashboard)
   opengraph-image.tsx              # OG kartı (ImageResponse — sıkı grotesk manşet, mürekkep damgası)
@@ -137,7 +139,10 @@ components/
                    # AnimatedNumber
                    # (Button/Chip SİLİNDİ — hiçbir yerden import edilmiyordu; form gönderimi
                    #  için SubmitButton, pill rozetler için doğrudan Tailwind kullanılıyor)
-  marketing/       # PanelPreview — landing'deki panel önizlemesi (ekran görüntüsü DEĞİL, kodla çizilir)
+  marketing/       # Landing panel kesitleri — ekran görüntüsü DEĞİL, kodla çizilir:
+                   #   PreviewFrame (ortak cam çerçeve) + PanelPreview / NotePreview / ReceiptPreview.
+                   # Kural: rakam ve etiketler uygulamanın KENDİ kaynağından türer
+                   # (calcMakbuz, MOOD_BG/MOOD_LABEL, NOTE_KIND_LABEL) — elle yazılmaz ki kesit yalan söylemesin.
   invoice/         # PrintButton
 scripts/seed.ts    # Demo veri üretimi
 ```
@@ -381,6 +386,19 @@ Tipik akış (örnek: yeni bir varlık/sekme):
     sınıfını ilk boyamadan önce koyar (bulanıklık saf CSS, hidrasyonu beklemez); React state
     SSR ile aynı değerle (`false`) başlar ve mount sonrası senkronlanır. State'i DOM'dan
     başlatma — hidrasyon uyuşmazlığı üretir.
+
+19. **`tabular-nums` başlık ailesine YAZILMAZ** — Schibsted Grotesk'in `tnum`
+    özelliği yalnız rakamları değil noktalamayı da değiştirir: `comma → comma.tf`
+    (543 → 1300 birim), `period → period.tf` (574 → 1300). Bir başlıktaki her
+    virgül/nokta tam bir boşluktan (520 birim) geniş bir rakam yuvası kadar yer
+    kaplar ve "Defter Önce , Fatura" diye okunur. Rakam sütunu hizalaması gereken
+    yer `font-mono` kullanır; `.font-display` düz metindir. (Doğrulama:
+    `fontTools.ttLib` ile GSUB'daki `tnum` lookup'ına bak — tahmin etme.)
+
+20. **₺ artık font-mono'ya bağlı DEĞİL** — `globals.css`'teki `DerinayLira`
+    @font-face yalnız `U+20BA` taşıyan bir alt küme ve `--font-sans` /
+    `--font-display` listelerinin **en başında** durur. Bu iki listeden
+    kaldırılırsa ₺ tekrar çift çizgili `£` olarak çizilir.
 
 ---
 
