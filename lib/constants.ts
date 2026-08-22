@@ -265,6 +265,16 @@ export const BUSINESS_FIELD_LABELS: Partial<Record<keyof BusinessInfo, string>> 
 export const REMINDER_TEMPLATE_DEFAULT =
   'Merhaba {ad} 🌿 {tarih} saatindeki seansımızı hatırlatmak isterim. Görüşmek üzere! — {terapist}'
 
+/**
+ * Tahsilat hatırlatması — bekleyen bakiye için ayrı, daha ölçülü bir metin.
+ * Seans hatırlatmasıyla AYNI şablon kullanılamaz: biri randevu, diğeri para.
+ * `{tarih}` burada bugünün tarihidir; tutar bilinçli olarak YAZILMAZ —
+ * WhatsApp'a rakam düşürmek gizlilik açısından gereksiz risk.
+ */
+export const DEBT_REMINDER_TEMPLATE_DEFAULT =
+  'Merhaba {ad}, bekleyen bir ödemeniz göründüğünü fark ettim. Uygun olduğunuzda ' +
+  'birlikte bakabiliriz. İyi günler — {terapist}'
+
 // Uygulama kimliği — panelde/oturumda görünen sabit marka adı.
 // Kullanıcının kendi adı Ayarlar → İşletme Kimliği'nden gelir (BUSINESS.owner),
 // burada KİŞİ adı tutulmaz.

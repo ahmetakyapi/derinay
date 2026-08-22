@@ -5,6 +5,9 @@ import { settings } from '@/lib/schema'
 import { revalidateSettings } from '@/lib/revalidate'
 import { BUSINESS, type BusinessInfo } from '@/lib/constants'
 
+/** Hangi hatırlatma şablonu — anahtarları ayrı tutulur */
+export type ReminderKind = 'session' | 'debt'
+
 /** Vergi oranlarını kaydet (settings 'tax' anahtarı) — tüm hesaplamalar bunu okur */
 export async function saveTaxSettings(input: { kdvRate: number; stopajRate: number; incomeTaxRate: number }) {
   const rates = [input.kdvRate, input.stopajRate, input.incomeTaxRate]
@@ -67,15 +70,25 @@ export async function saveBusinessInfo(input: Partial<BusinessInfo>) {
   return { ok: true }
 }
 
-/** Hatırlatma mesajı şablonunu kaydet (Neon settings tablosu — upsert) */
-export async function saveReminderTemplate(value: string) {
+/**
+ * Hatırlatma şablonunu kaydet (Neon settings tablosu — upsert).
+ *
+ * `kind` ŞART: iki ayrı şablon var (seans hatırlatması ve tahsilat hatırlatması)
+ * ve ikisi de aynı diyalogdan düzenlenebiliyor. Anahtar ayrılmazsa borç metnini
+ * kaydetmek seans metninin üzerine yazardı.
+ */
+export async function saveReminderTemplate(value: string, kind: ReminderKind = 'session') {
   const v = value.trim()
   if (!v) return { ok: false, error: 'Şablon boş olamaz' }
-  if (!v.includes('{tarih}')) return { ok: false, error: 'Şablonda {tarih} yer tutucusu bulunmalı' }
+  // {tarih} yalnız SEANS şablonunda anlamlı — borç metni bir randevu bildirmez
+  if (kind === 'session' && !v.includes('{tarih}')) {
+    return { ok: false, error: 'Şablonda {tarih} yer tutucusu bulunmalı' }
+  }
 
+  const key = kind === 'debt' ? 'debt_reminder_template' : 'reminder_template'
   await db
     .insert(settings)
-    .values({ key: 'reminder_template', value: v, updatedAt: new Date() })
+    .values({ key, value: v, updatedAt: new Date() })
     .onConflictDoUpdate({ target: settings.key, set: { value: v, updatedAt: new Date() } })
 
   revalidateSettings()

@@ -5,7 +5,7 @@ import { db } from './db'
 import { clients, transactions, invoices, payments, sessions, clientNotes, settings, waitlist, sessionPackages, clientScores, clientDocuments, clientGoals } from './schema'
 import { monthKey, monthKeyToLabel } from './format'
 import { taxSeries, type PeriodInput } from './finance'
-import { REMINDER_TEMPLATE_DEFAULT, APP, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
+import { REMINDER_TEMPLATE_DEFAULT, DEBT_REMINDER_TEMPLATE_DEFAULT, APP, BUSINESS, TAX, type BusinessInfo, type ClientStatus, type TxType, type TxScope } from './constants'
 
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
@@ -513,30 +513,57 @@ export async function getDashboardReminders() {
 // ─── Bekleyen tahsilat — danışan başına bakiye (faturalanan − ödenen) ─────────
 export async function getOutstandingBalances() {
   noStore()
-  const [clientRows, invs, pays] = await Promise.all([
-    db.select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl }).from(clients),
+  const [clientRows, invs] = await Promise.all([
+    db
+      .select({ id: clients.id, name: clients.name, phone: clients.phone, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
+      .from(clients),
     db.select().from(invoices),
-    db.select().from(payments),
   ])
 
-  const invoiced = new Map<string, number>()
-  invs
-    .filter((i) => i.clientId && i.status !== 'draft')
-    .forEach((i) => invoiced.set(i.clientId!, (invoiced.get(i.clientId!) ?? 0) + num(i.total)))
-  const paid = new Map<string, number>()
-  pays.forEach((p) => paid.set(p.clientId, (paid.get(p.clientId) ?? 0) + num(p.amount)))
-
+  /**
+   * BAKİYE MAKBUZ DURUMUNDAN TÜRER — ödeme kayıtlarından değil.
+   *
+   * Eskiden bakiye "taslak olmayan makbuz toplamı − ödeme kaydı toplamı" idi;
+   * bir makbuzu 'Ödendi' işaretlemek bakiyeyi KAPATMIYORDU, ayrıca ödeme kaydı
+   * girmek gerekiyordu. İkisini birden yapan kullanıcı ise borcu iki kez
+   * kapatmış oluyordu. Tek ve öğretilebilir kural: **açık makbuz = borç**.
+   * Ödemeler ayrı bir defterdir (tahsilat geçmişi, yöntem dağılımı).
+   */
+  const openStatuses = new Set(['sent', 'overdue'])
   const today = iso(new Date())
+  const byClient = new Map<string, { total: number; oldestDue: string | null }>()
+
+  for (const i of invs) {
+    if (!i.clientId || !openStatuses.has(i.status)) continue
+    const cur = byClient.get(i.clientId) ?? { total: 0, oldestDue: null }
+    cur.total += num(i.total)
+    // Yaşlandırma için en ESKİ vade — alacağın kaç gündür beklediğini o söyler
+    if (i.dueDate && (!cur.oldestDue || i.dueDate < cur.oldestDue)) cur.oldestDue = i.dueDate
+    byClient.set(i.clientId, cur)
+  }
+
+  const daysBetween = (from: string) =>
+    Math.max(0, Math.floor((Date.parse(today) - Date.parse(from)) / 86_400_000))
+
+  const balances = clientRows
+    .map((c) => {
+      const row = byClient.get(c.id)
+      if (!row || row.total <= 0.005) return null
+      const overdueDays = row.oldestDue && row.oldestDue < today ? daysBetween(row.oldestDue) : 0
+      return { ...c, outstanding: row.total, overdueDays }
+    })
+    .filter((c): c is NonNullable<typeof c> => c !== null)
+    // Önce en uzun bekleyen, sonra en büyük tutar — kovalama sırası budur
+    .sort((a, b) => b.overdueDays - a.overdueDays || b.outstanding - a.outstanding)
+
   const overdue = invs.filter(
     (i) => i.status === 'overdue' || (i.status === 'sent' && i.dueDate !== null && i.dueDate < today),
   )
 
   return {
-    balances: clientRows
-      .map((c) => ({ ...c, outstanding: (invoiced.get(c.id) ?? 0) - (paid.get(c.id) ?? 0) }))
-      .filter((c) => c.outstanding > 0.005)
-      .sort((a, b) => b.outstanding - a.outstanding)
-      .slice(0, 6),
+    balances: balances.slice(0, 6),
+    balanceTotal: balances.reduce((s, b) => s + b.outstanding, 0),
+    balanceCount: balances.length,
     overdueCount: overdue.length,
     overdueTotal: overdue.reduce((s, i) => s + num(i.total), 0),
   }
@@ -974,9 +1001,21 @@ export async function getReminderTemplate(): Promise<string> {
  * Hatırlatma mesajı için gereken her şey: şablon + `{terapist}` yerine yazılacak ad.
  * Ad, Ayarlar → İşletme Kimliği'nden gelir (kodda kişi adı tutulmaz).
  */
-export async function getReminderConfig(): Promise<{ template: string; therapist: string }> {
-  const [template, business] = await Promise.all([getReminderTemplate(), getBusinessInfo()])
-  return { template, therapist: business.owner.trim() || business.name.trim() }
+export async function getReminderConfig(): Promise<{
+  template: string
+  debtTemplate: string
+  therapist: string
+}> {
+  const [template, business, debtRow] = await Promise.all([
+    getReminderTemplate(),
+    getBusinessInfo(),
+    db.select().from(settings).where(eq(settings.key, 'debt_reminder_template')),
+  ])
+  return {
+    template,
+    debtTemplate: debtRow[0]?.value ?? DEBT_REMINDER_TEMPLATE_DEFAULT,
+    therapist: business.owner.trim() || business.name.trim(),
+  }
 }
 
 // ─── Bekleme listesi ─────────────────────────────────────────────────────────

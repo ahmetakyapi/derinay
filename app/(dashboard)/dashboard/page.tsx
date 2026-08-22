@@ -472,29 +472,71 @@ export default async function DashboardPage({
         </section>
       </div>
 
-      {/* Bekleyen tahsilat — tam genişlik */}
+      {/* Bekleyen tahsilat — kovalama aracı: en uzun bekleyen üstte */}
       <section className="glass mt-6 rounded-2xl p-5">
-        <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
-          <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
+        <h2 className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <span className="flex items-center gap-2">
+            <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
+          </span>
+          {out.balanceCount > 0 && (
+            <span className="sensitive font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
+              {formatTRY(out.balanceTotal, { compact: true })}
+              <span className="ml-1.5 font-sans text-[11px] font-medium text-slate-400">
+                · {out.balanceCount} danışan
+              </span>
+            </span>
+          )}
         </h2>
         {out.balances.length ? (
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-            {out.balances.map((b) => (
-              <Link
-                key={b.id}
-                href={`/dashboard/clients/${b.id}`}
-                className="group flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-amber-500/40"
-              >
-                <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
-                <span className="sensitive min-w-0 flex-1 truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-amber-700 dark:text-slate-200 dark:group-hover:text-amber-300">
-                  {b.name}
-                </span>
-                <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
-                  {formatTRY(b.outstanding, { compact: true })}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {out.balances.map((b) => (
+                <div
+                  key={b.id}
+                  className="group flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-amber-500/40"
+                >
+                  <Link href={`/dashboard/clients/${b.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                    <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
+                    <span className="min-w-0 flex-1">
+                      <span className="sensitive block truncate text-sm font-medium text-slate-700 transition-colors group-hover:text-amber-700 dark:text-slate-200 dark:group-hover:text-amber-300">
+                        {b.name}
+                      </span>
+                      {/* Yaşlandırma: alacağın kaç gündür beklediği, tutardan önce gelir */}
+                      <span
+                        className={cn(
+                          'block text-[11px] font-medium',
+                          b.overdueDays >= 30
+                            ? 'text-rose-600 dark:text-rose-400'
+                            : b.overdueDays > 0
+                              ? 'text-amber-600 dark:text-amber-400'
+                              : 'text-slate-400',
+                        )}
+                      >
+                        {b.overdueDays > 0 ? `${b.overdueDays} gündür gecikmiş` : 'vadesi gelmedi'}
+                      </span>
+                    </span>
+                  </Link>
+                  <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                    {formatTRY(b.outstanding, { compact: true })}
+                  </span>
+                  {/* Tek tıkla hatırlatma — kart artık gösterge değil, araç */}
+                  <ReminderButton
+                    clientName={b.name}
+                    phone={b.phone}
+                    date={new Date().toISOString()}
+                    template={reminder.debtTemplate}
+                    therapist={reminder.therapist}
+                    kind="debt"
+                    className="shrink-0"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[11px] text-slate-400">
+              Borç, <strong>açık makbuzlardan</strong> hesaplanır. Bir makbuzu “Ödendi”
+              işaretlediğinde bakiyeden düşer.
+            </p>
+          </>
         ) : (
           <p className="py-4 text-center text-sm text-slate-400">
             Tüm tahsilatlar tamamlandı — defter temiz ✨

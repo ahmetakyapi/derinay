@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Copy, Check, MessageCircle, Save, Send } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Field'
-import { saveReminderTemplate } from '@/app/actions/settings'
+import { saveReminderTemplate, type ReminderKind } from '@/app/actions/settings'
 import { cn } from '@/lib/utils'
 
 /** "05xx xxx xx xx" → "905xxxxxxxxx" (wa.me formatı) */
@@ -42,6 +42,7 @@ export function ReminderButton({
   date,
   template,
   therapist,
+  kind = 'session',
   className,
 }: {
   clientName: string
@@ -50,6 +51,8 @@ export function ReminderButton({
   template: string
   /** `{terapist}` yerine yazılacak ad — Ayarlar → İşletme Kimliği'nden gelir */
   therapist: string
+  /** Hangi şablon düzenleniyor — kaydetme AYRI anahtara gider */
+  kind?: ReminderKind
   className?: string
 }) {
   const [open, setOpen] = useState(false)
@@ -76,7 +79,7 @@ export function ReminderButton({
   function saveTemplate() {
     setError(null)
     start(async () => {
-      const res = await saveReminderTemplate(draft)
+      const res = await saveReminderTemplate(draft, kind)
       if (!res.ok) return setError(res.error ?? 'Kaydedilemedi')
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
@@ -92,8 +95,8 @@ export function ReminderButton({
           setDraft(template)
           setOpen(true)
         }}
-        aria-label="Seans hatırlatması gönder"
-        title="Seans Hatırlatması Gönder"
+        aria-label={kind === 'debt' ? 'Tahsilat hatırlatması gönder' : 'Seans hatırlatması gönder'}
+        title={kind === 'debt' ? 'Tahsilat Hatırlatması Gönder' : 'Seans Hatırlatması Gönder'}
         className={cn(
           'flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400',
           className,
@@ -105,7 +108,7 @@ export function ReminderButton({
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title="Seans Hatırlatması"
+        title={kind === 'debt' ? 'Tahsilat Hatırlatması' : 'Seans Hatırlatması'}
         description={
           <>
             <span className="sensitive">{clientName}</span> · mesajı düzenleyebilir, şablon olarak

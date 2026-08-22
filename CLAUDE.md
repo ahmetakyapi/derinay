@@ -169,6 +169,9 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
 - **settings** — anahtar-değer: `reminder_template` (hatırlatma), `business` (işletme/makbuz
   kimliği JSON) ve `tax` (vergi oranları JSON — kdvRate/stopajRate/incomeTaxRate).
   `getBusinessInfo()` / `getTaxSettings()` varsayılanların üstüne uygular; Ayarlar sayfasından düzenlenir.
+  Hatırlatma şablonu İKİ ayrı anahtardır: `reminder_template` (seans) ve
+  `debt_reminder_template` (tahsilat). `saveReminderTemplate(value, kind)` — `kind`
+  geçilmezse seans şablonu yazılır; borç metnini kaydederken 'debt' ŞART.
   Vergi hesapları (`taxSummary`) ve makbuz varsayılanları bu oranları okur. Ayrıca `income_goal`
   (aylık gelir hedefi — dashboard ilerleme bandı) ve `last_backup_at` anahtarları da burada.
 - **KDV beyanı = hesaplanan − indirilecek**: `lib/finance.ts` → `taxSeries()` aylık seriyi
@@ -177,6 +180,10 @@ Tüm para alanları `numeric(12,2)` (string döner → `Number()`). Her FK'de `o
   iki ekranın farklı "ödenecek vergi" göstermesine yol açardı. Zincir yılbaşından kurulur.
 - **Stopaj mahsubu**: makbuzda kesilen stopaj gelir vergisi tahmininden düşülür (negatife
   inmez — fazla kesinti iade/mahsup konusudur, tahmin onu yazmaz).
+- **Bekleyen tahsilat = AÇIK MAKBUZ**: `getOutstandingBalances` borcu makbuz DURUMUNDAN
+  türetir (`sent` + `overdue`), ödeme kayıtlarından değil. Eskiden "makbuz toplamı − ödeme
+  toplamı" idi: 'Ödendi' işaretlemek bakiyeyi kapatmıyor, ikisini birden yapan kullanıcı ise
+  borcu iki kez kapatıyordu. Ödemeler ayrı bir defterdir (tahsilat geçmişi, yöntem dağılımı).
 - **Otomatik vade**: `listInvoices`/`getDashboard` çağrılırken vadesi geçen 'sent' makbuzlar
   idempotent şekilde 'overdue' yapılır (`autoMarkOverdue`).
 - **Çakışma kontrolü**: `createSession`/`updateSessionTime` üst üste binen seansı engeller

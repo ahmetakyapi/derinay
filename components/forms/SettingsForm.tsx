@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Building2, MessageSquareText, Landmark, Target } from 'lucide-react'
+import { Check, Building2, MessageSquareText, Landmark, Target, HandCoins } from 'lucide-react'
 import { Field, Input, Textarea } from '@/components/ui/Field'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { saveBusinessInfo, saveReminderTemplate, saveTaxSettings, saveIncomeGoal } from '@/app/actions/settings'
@@ -23,7 +23,7 @@ function stripPlaceholders(b: BusinessInfo): BusinessInfo {
   return out
 }
 
-type SettingsSection = 'business' | 'reminder' | 'tax' | 'goal'
+type SettingsSection = 'business' | 'reminder' | 'debt' | 'tax' | 'goal'
 type Saved = SettingsSection | null
 
 /**
@@ -67,11 +67,13 @@ function SaveRow({
 export function SettingsForm({
   business,
   reminderTemplate,
+  debtTemplate,
   taxSettings,
   incomeGoal,
 }: {
   business: BusinessInfo
   reminderTemplate: string
+  debtTemplate: string
   taxSettings: TaxSettings
   incomeGoal: number
 }) {
@@ -79,6 +81,7 @@ export function SettingsForm({
   const [tax, setTax] = useState<TaxSettings>(taxSettings)
   const [goal, setGoal] = useState(incomeGoal)
   const [tpl, setTpl] = useState(reminderTemplate)
+  const [debtTpl, setDebtTpl] = useState(debtTemplate)
   // Bölüm bazlı durum: tek paylaşılan pending/error, bir formu kaydederken
   // dördünün de düğmesini kilitliyor ve hatayı sayfanın en altında gösteriyordu.
   const [error, setError] = useState<{ section: SettingsSection; message: string } | null>(null)
@@ -197,7 +200,7 @@ export function SettingsForm({
       </form>
 
       {/* Hatırlatma mesajı şablonu */}
-      <form onSubmit={submit('reminder', () => saveReminderTemplate(tpl))} className="glass rounded-2xl p-5 sm:p-6">
+      <form onSubmit={submit('reminder', () => saveReminderTemplate(tpl, 'session'))} className="glass rounded-2xl p-5 sm:p-6">
         <div className="mb-5 flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
             <MessageSquareText className="h-4 w-4" />
@@ -226,6 +229,41 @@ export function SettingsForm({
 
         <SaveRow section="reminder" busy={busy} saved={saved} error={error} />
       </form>
+      {/* Tahsilat hatırlatması — seans hatırlatmasından AYRI şablon */}
+      <form onSubmit={submit('debt', () => saveReminderTemplate(debtTpl, 'debt'))} className="glass rounded-2xl p-5 sm:p-6">
+        <div className="mb-5 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/12 text-amber-600 dark:text-amber-400">
+            <HandCoins className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+              Tahsilat Hatırlatması
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Bekleyen bakiye için gönderilen mesaj — Genel Bakış&apos;taki tahsilat kartından çıkar
+            </p>
+          </div>
+        </div>
+
+        <Field label="Şablon" hint="Tutar bilinçli olarak yazılmaz; mesaja rakam düşürmek gereksiz risk.">
+          <Textarea value={debtTpl} onChange={(e) => setDebtTpl(e.target.value)} rows={3} />
+        </Field>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {['{ad}', '{terapist}'].map((ph) => (
+            <button
+              key={ph}
+              type="button"
+              onClick={() => setDebtTpl((t) => `${t}${t.endsWith(' ') || !t ? '' : ' '}${ph}`)}
+              className="rounded-full border border-slate-500/20 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+            >
+              {ph}
+            </button>
+          ))}
+        </div>
+
+        <SaveRow section="debt" busy={busy} saved={saved} error={error} />
+      </form>
+
     </div>
   )
 }
