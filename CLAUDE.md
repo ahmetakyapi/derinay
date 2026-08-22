@@ -103,7 +103,8 @@ lib/
   schema.ts        # Drizzle tablolar + tip çıkarımı
   constants.ts     # Statüler, kategoriler, etiketler, renkler, BUSINESS/USER, TAX oranları
   queries.ts       # Tüm okuma fonksiyonları (server-only)
-  finance.ts       # calcMakbuz (KDV + stopaj — makbuzun TEK hesap yolu), estimateIncomeTax, taxSummary
+  finance.ts       # calcMakbuz (KDV + stopaj — makbuzun TEK hesap yolu), estimateIncomeTax,
+                   # taxSummary (kesilen stopajı gelir vergisinden MAHSUP eder)
   palette.ts       # Chart renkleri (CHART, CHART_SERIES) — Atölye paleti
   format.ts        # formatTRY, formatDate*, monthKey, durationSince, initials, pctChange
   quotes.ts        # Günün sözü (gün-deterministik) + greetingNow (Europe/Istanbul)

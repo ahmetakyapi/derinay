@@ -32,16 +32,32 @@ export function estimateIncomeTax(income: number, expense: number, rate: number 
   return round2(profit * (rate / 100))
 }
 
-/** Dönem vergi özeti */
+/**
+ * Dönem vergi özeti.
+ *
+ * STOPAJ MAHSUBU: Serbest meslek makbuzunda kesilen gelir vergisi stopajı, o
+ * gelirin vergisinden PEŞİN ödenmiş kısımdır — beyanda mahsup edilir. Panel
+ * bunu "yıllık gelir vergisinden mahsup" diye zaten YAZIYORDU ama toplam yükten
+ * DÜŞMÜYORDU; sonuç, ödenecek verginin olduğundan yüksek görünmesiydi.
+ *
+ * `incomeTaxGross` mahsup öncesi tahmin, `incomeTax` mahsup sonrası kalan
+ * (negatife düşmez — fazla kesinti iade/devir konusudur, bu tahmin onu yazmaz).
+ */
 export function taxSummary(args: {
   income: number
   expense: number
   kdvCollected: number
   incomeTaxRate?: number
+  /** Dönemde makbuzlardan kesilen stopaj toplamı */
+  stopajWithheld?: number
 }) {
-  const incomeTax = estimateIncomeTax(args.income, args.expense, args.incomeTaxRate)
+  const incomeTaxGross = estimateIncomeTax(args.income, args.expense, args.incomeTaxRate)
+  const credited = Math.min(incomeTaxGross, Math.max(args.stopajWithheld ?? 0, 0))
+  const incomeTax = round2(incomeTaxGross - credited)
   return {
     kdvCollected: args.kdvCollected,
+    incomeTaxGross,
+    stopajCredited: round2(credited),
     incomeTax,
     totalDue: round2(args.kdvCollected + incomeTax),
   }

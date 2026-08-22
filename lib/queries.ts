@@ -100,7 +100,17 @@ export async function getDashboard(monthsBack = 6) {
     .filter((i) => i.status !== 'draft' && monthKey(i.issueDate) === cur)
     .reduce((s, i) => s + num(i.kdvAmount), 0)
 
-  const tax = taxSummary({ income: curIncome, expense: curExpense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate })
+  // Kesilen stopaj gelir vergisinden mahsup edilir — KDV ile aynı taban (taslak hariç)
+  const stopajWithheld = allInvoices
+    .filter((i) => i.status !== 'draft' && monthKey(i.issueDate) === cur)
+    .reduce((s, i) => s + num(i.stopajAmount), 0)
+  const tax = taxSummary({
+    income: curIncome,
+    expense: curExpense,
+    kdvCollected,
+    incomeTaxRate: taxRates.incomeTaxRate,
+    stopajWithheld,
+  })
 
   // Aylık trend (son N ay)
   const trend: { key: string; label: string; income: number; expense: number; net: number }[] = []
@@ -658,7 +668,8 @@ export async function getTaxOverview(monthsBack = 6) {
   const now = new Date()
   const months: {
     key: string; label: string; income: number; expense: number
-    kdvCollected: number; stopajWithheld: number; incomeTax: number; totalDue: number
+    kdvCollected: number; stopajWithheld: number
+    incomeTaxGross: number; stopajCredited: number; incomeTax: number; totalDue: number
   }[] = []
 
   for (let i = monthsBack - 1; i >= 0; i--) {
@@ -669,7 +680,7 @@ export async function getTaxOverview(monthsBack = 6) {
     const monthInv = allInvoices.filter((iv) => iv.status !== 'draft' && monthKey(iv.issueDate) === k)
     const kdvCollected = monthInv.reduce((s, iv) => s + num(iv.kdvAmount), 0)
     const stopajWithheld = monthInv.reduce((s, iv) => s + num(iv.stopajAmount), 0)
-    const t = taxSummary({ income, expense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate })
+    const t = taxSummary({ income, expense, kdvCollected, incomeTaxRate: taxRates.incomeTaxRate, stopajWithheld })
     months.push({ key: k, label: monthKeyToLabel(k), income, expense, stopajWithheld, ...t })
   }
 
@@ -713,7 +724,16 @@ export async function getYearAnalytics(year: number) {
     const income = txs.filter((t) => t.type === 'income' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
     const expense = txs.filter((t) => t.type === 'expense' && t.date.startsWith(k)).reduce((s, t) => s + num(t.amount), 0)
     const kdv = invs.filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k)).reduce((s, i) => s + num(i.kdvAmount), 0)
-    const tax = taxSummary({ income, expense, kdvCollected: kdv, incomeTaxRate: taxRates.incomeTaxRate })
+    const stopaj = invs
+      .filter((i) => i.status !== 'draft' && i.issueDate.startsWith(k))
+      .reduce((s, i) => s + num(i.stopajAmount), 0)
+    const tax = taxSummary({
+      income,
+      expense,
+      kdvCollected: kdv,
+      incomeTaxRate: taxRates.incomeTaxRate,
+      stopajWithheld: stopaj,
+    })
     return { key: k, label: monthKeyToLabel(k), income, expense, net: income - expense, kdv, incomeTax: tax.incomeTax, totalDue: tax.totalDue }
   })
   let running = 0

@@ -47,7 +47,10 @@ export default async function TaxesPage() {
       icon: TrendingUp,
       tone: 'text-rose-600 dark:text-rose-400',
       bg: 'bg-rose-500/10',
-      hint: `net kârın %${taxRates.incomeTaxRate}'i (tahmini)`,
+      hint:
+        current.stopajCredited > 0
+          ? `${formatTRY(current.incomeTaxGross, { compact: true })} tahmin − ${formatTRY(current.stopajCredited, { compact: true })} stopaj mahsubu`
+          : `net kârın %${taxRates.incomeTaxRate}'i (tahmini)`,
     },
     {
       label: 'Toplam Yük',
@@ -64,7 +67,7 @@ export default async function TaxesPage() {
           icon: Scissors,
           tone: 'text-emerald-600 dark:text-emerald-400',
           bg: 'bg-emerald-500/10',
-          hint: 'yıllık gelir vergisinden mahsup',
+          hint: 'gelir vergisinden düşüldü',
         }]
       : []),
   ]
@@ -139,7 +142,10 @@ export default async function TaxesPage() {
                 <p>
                   Gelir vergisi, net kâr üzerinden <strong>%{taxRates.incomeTaxRate}</strong> ile
                   hesaplanan basitleştirilmiş bir tahmindir; resmi beyan yerine geçmez. KDV, taslak
-                  dışındaki makbuzlardan toplanır. Oranları <strong>Ayarlar</strong>&apos;dan değiştirebilirsin.
+                  dışındaki makbuzlardan toplanır. Makbuzlarında kesilen <strong>stopaj</strong>, o
+                  gelirin vergisinden peşin ödenmiş kısımdır ve bu tahminden düşülür — fazla kesinti
+                  varsa iade/mahsup konusu olduğu için buraya yazılmaz.
+                  Oranları <strong>Ayarlar</strong>&apos;dan değiştirebilirsin.
                 </p>
               </div>
             </div>
