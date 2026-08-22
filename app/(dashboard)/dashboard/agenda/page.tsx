@@ -69,7 +69,6 @@ export default async function AgendaPage({
     return (
       <>
         <PageHeader
-          eyebrow="Klinik"
           title="Ajanda"
           subtitle={`${m.total} seans · ${formatMonth(monthDate)}`}
           action={
@@ -187,7 +186,6 @@ export default async function AgendaPage({
   return (
     <>
       <PageHeader
-        eyebrow="Klinik"
         title="Ajanda"
         subtitle={`${total} seans · ${weekRange}`}
         action={

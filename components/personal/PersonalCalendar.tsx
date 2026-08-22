@@ -188,7 +188,7 @@ export function PersonalCalendar({
           dayItems.length ? (
             <>
               {dayItems.length} harcama ·{' '}
-              <span className="sensitive">{formatTRY(dayItems.reduce((s, i) => s + i.amount, 0))}</span>
+              <span className="sensitive font-mono tabular-nums">{formatTRY(dayItems.reduce((s, i) => s + i.amount, 0))}</span>
             </>
           ) : (
             'Bu güne kişisel harcama ekle'
@@ -222,7 +222,7 @@ export function PersonalCalendar({
                     className="h-7 w-7 shrink-0"
                     confirmText={
                       <>
-                        {it.category} · <span className="sensitive">{formatTRY(it.amount)}</span> kaydı silinecek.
+                        {it.category} · <span className="sensitive font-mono tabular-nums">{formatTRY(it.amount)}</span> kaydı silinecek.
                       </>
                     }
                   />

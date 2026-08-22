@@ -9,11 +9,28 @@
    Fontlar next/font ile yüklenir (layout.tsx) — burada @import YOK.
    ════════════════════════════════════════════════════════════════════════ */
 
+/* ─── ₺ düzeltmesi ────────────────────────────────────────────────────────
+   Schibsted Grotesk'in U+20BA glifi ÇİFT ÇİZGİLİ £ olarak çizilmiş; Türk
+   lirası işareti değil. Tek glifli bu alt küme (IBM Plex Mono, 556 bayt)
+   yığının BAŞINA konur ve YALNIZCA U+20BA'yı kapsar — diğer bütün
+   karakterler yine Schibsted'den gelir. Böylece ₺ nerede yazılırsa yazılsın
+   (etiket, gövde, başlık) doğru çizilir. Bkz. public/fonts/README.txt
+   ──────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'DerinayLira';
+  src: url('/fonts/lira.woff2') format('woff2');
+  unicode-range: U+20BA;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Tipografi tokenları — next/font `-face` değişkenlerini sarar (layout.tsx).
-     Display ile sans AYNI aileyi işaret eder; fark ağırlık + tracking'ten gelir. */
-  --font-sans: var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
+     Display ile sans AYNI aileyi işaret eder; fark ağırlık + tracking'ten gelir.
+     'DerinayLira' en başta: yalnız ₺ için devreye girer (yukarıdaki not). */
+  --font-sans: 'DerinayLira', var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-display: 'DerinayLira', var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Palet çapaları (Tailwind config ile senkron) */
@@ -156,6 +173,14 @@ html.dark :focus-visible {
 
 /* ─── Components ────────────────────────────────────────────────────────── */
 @layer components {
+
+  /* ══ PARA BİRİMİ TUZAĞI ══════════════════════════════════════════════
+     Schibsted Grotesk'in U+20BA (₺) glifi ÇİFT ÇİZGİLİ £ olarak çizilmiş —
+     Türk lirası işareti değil. IBM Plex Mono doğru glifi taşıyor.
+     Bu yüzden PARA GÖSTEREN HER YER `font-mono` OLMAK ZORUNDA; display veya
+     gövde ailesinde yazılan bir tutar yanlış para birimi gösterir.
+     (Bu kural zaten hizalama için de gerekliydi — `tabular-nums` ile birlikte.)
+     ═══════════════════════════════════════════════════════════════════════ */
 
   /* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
      Ağırlık SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın.

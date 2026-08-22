@@ -10,17 +10,16 @@ import {
   StickyNote,
   PieChart,
   ArrowRight,
-  Sparkles,
   ShieldCheck,
   Calculator,
   HeartHandshake,
 } from 'lucide-react'
 import { useSpotlight } from '@/hooks/useSpotlight'
-import { CHART } from '@/lib/palette'
-import { fadeUp, staggerContainer, EASE } from '@/lib/variants'
+import { brushWipe, fadeUp, staggerContainer, EASE } from '@/lib/variants'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { BloomArt } from '@/components/art/BloomArt'
+import { BrushSweep } from '@/components/brand/Brush'
 import { PanelPreview } from '@/components/marketing/PanelPreview'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -54,165 +53,98 @@ export default function Home() {
           <BloomArt className="absolute -left-8 bottom-24 hidden h-72 w-56 opacity-70 lg:block" delay={0.6} />
         </div>
 
-        {/* Hero */}
-        <section className="relative z-10 flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 pb-16 pt-24 text-center">
-          <motion.div variants={staggerContainer(0.12)} initial="hidden" animate="visible" className="max-w-3xl">
-            <motion.div variants={fadeUp} className="mb-6 flex justify-center">
-              <span className="chip">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                Psikologların Sakin Çalışma Masası
-              </span>
-            </motion.div>
-
+        {/* ── Hero ────────────────────────────────────────────────────────
+            TASARIM NOTU: iddia ve ÜRÜN tek sahnede. Eskiden hero'da küçük
+            soyut bir maket, sayfanın ortasında da ayrı bir "Panele Bir Bakış"
+            bölümü vardı; ikisi de aynı şeyi yarım yamalak söylüyordu. Artık
+            manşetin hemen altında geniş, gerçek panel duruyor — ziyaretçi ilk
+            ekranda ürünü görüyor. Rozet/kicker yok: manşet kendi ağırlığını
+            taşır. Tek yazarlı hareket: panel yükselip yerine oturur. */}
+        <section className="relative z-10 px-6 pb-20 pt-28 sm:pt-32">
+          <motion.div
+            variants={staggerContainer(0.09)}
+            initial="hidden"
+            animate="visible"
+            className="mx-auto max-w-3xl text-center"
+          >
             <motion.h1
               variants={fadeUp}
-              className="mb-6 font-display text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl"
+              className="font-display text-[2.75rem] font-bold leading-[1.04] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-6xl md:text-[4.25rem]"
             >
-              Pratiğini Yönet,{' '}
-              <span className="relative inline-block text-indigo-700 dark:text-indigo-300">
-                Kafanı Dinlendir
-                {/* El çizimi fırça vurgusu — çizilerek belirir */}
-                <svg
-                  className="absolute -bottom-2 left-0 w-full text-amber-500/70"
-                  viewBox="0 0 200 9"
-                  fill="none"
-                  preserveAspectRatio="none"
+              Pratiğini yönet,
+              <br />
+              kafanı{' '}
+              <span className="relative inline-block">
+                {/* Boya sürüşü kelimenin ARKASINDA, taban hizasında — jest
+                    manşetle aynı anda gelir; ayrı bir efekt değil, aynı an. */}
+                <motion.span
                   aria-hidden
+                  variants={brushWipe}
+                  className="pointer-events-none absolute inset-x-[-4%] bottom-[0.1em] top-[0.44em] origin-left text-amber-500"
                 >
-                  <motion.path
-                    d="M2 6.5C40 2.5 120 1.5 198 5.5"
-                    stroke="currentColor"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.1, delay: 0.9, ease: EASE }}
-                  />
-                </svg>
+                  <BrushSweep className="h-full w-full" />
+                </motion.span>
+                <span className="relative text-indigo-700 dark:text-indigo-300">dinlendir</span>
               </span>
+              .
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
-              className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-300 sm:text-lg"
+              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-300 sm:text-lg"
             >
-              Gelir-gider, serbest meslek makbuzu, KDV-stopaj ve vergi takibi, danışan notları
-              ve ödemeler — hepsi tek, huzurlu bir panelde. Danışanlarına odaklan, gerisini Derinay&apos;a bırak.
+              Gelir-gider, serbest meslek makbuzu, KDV-stopaj, danışan notları ve ödemeler —
+              hepsi tek, sakin bir panelde.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-4">
+            <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/dashboard"
-                className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-600/40 active:scale-95"
+                className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-600/40 active:scale-[0.98]"
               >
                 Panele Git
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a
                 href="#features"
-                className="glass rounded-xl px-6 py-3 text-sm font-semibold text-slate-600 transition-all hover:text-slate-900 dark:text-slate-300 dark:hover:text-white active:scale-95"
+                className="inline-flex items-center rounded-xl px-5 py-3.5 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline dark:text-slate-300 dark:hover:text-white"
               >
                 Özellikleri Gör
               </a>
             </motion.div>
           </motion.div>
 
-          {/* Soyut panel önizlemesi — yüzen tuval */}
+          {/* Ürün — sahnenin ağırlık merkezi */}
           <motion.div
-            initial={{ opacity: 0, y: 48 }}
+            initial={{ opacity: 0, y: 56 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.5, ease: EASE }}
-            className="relative z-10 mt-16 w-full max-w-xl"
+            transition={{ duration: 1, delay: 0.35, ease: EASE }}
+            className="relative mx-auto mt-16 w-full max-w-5xl"
           >
-            <div className="animate-float-slow motion-reduce:animate-none">
-              <GlassCard tilt glow className="p-5 text-left sm:p-6">
-                {/* Pencere başlığı */}
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-                  </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
-                    derinay · genel bakış
-                  </span>
-                </div>
-
-                {/* Mini KPI'lar */}
-                <div className="mb-5 grid grid-cols-3 gap-3">
-                  {[
-                    { label: 'Gelir', value: '₺48,2B', bar: 'from-emerald-500/80' },
-                    { label: 'Gider', value: '₺15,5B', bar: 'from-rose-500/80' },
-                    { label: 'Net', value: '₺32,7B', bar: 'from-indigo-500/80' },
-                  ].map((k) => (
-                    <div key={k.label} className="relative overflow-hidden rounded-xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
-                      <span className={`absolute left-3 top-0 h-[2.5px] w-8 rounded-b-full bg-gradient-to-r ${k.bar} to-transparent`} />
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{k.label}</p>
-                      <p className="mt-1 font-display text-base font-semibold tracking-tight text-slate-900 dark:text-white">
-                        {k.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Mini akış grafiği — çizilerek belirir */}
-                <div className="relative h-24 overflow-hidden rounded-xl border border-slate-500/10 bg-slate-500/[0.03] px-2">
-                  <svg className="h-full w-full" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden>
-                    <defs>
-                      <linearGradient id="lpFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={CHART.primary} stopOpacity="0.25" />
-                        <stop offset="100%" stopColor={CHART.primary} stopOpacity="0.02" />
-                      </linearGradient>
-                    </defs>
-                    <motion.path
-                      d="M0 70 C40 62, 60 44, 95 48 S150 70, 185 56 S240 18, 280 26 S350 42, 400 22"
-                      fill="none"
-                      stroke={CHART.primary}
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.6, delay: 0.4, ease: EASE }}
-                    />
-                    <path
-                      d="M0 70 C40 62, 60 44, 95 48 S150 70, 185 56 S240 18, 280 26 S350 42, 400 22 L400 90 L0 90 Z"
-                      fill="url(#lpFill)"
-                    />
-                  </svg>
-                  <span className="absolute right-3 top-2 font-mono text-[9px] uppercase tracking-[0.14em] text-slate-400">
-                    12 aylık akış
-                  </span>
-                </div>
-
-                {/* Mini hafta şeridi */}
-                <div className="mt-4 grid grid-cols-7 gap-1.5">
-                  {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((d, i) => (
-                    <div
-                      key={d}
-                      className={`rounded-lg border px-1 py-1.5 text-center ${
-                        i === 2
-                          ? 'border-indigo-500/40 bg-indigo-500/[0.07]'
-                          : 'border-slate-500/10'
-                      }`}
-                    >
-                      <p className="text-[8px] font-bold uppercase text-slate-400">{d}</p>
-                      <div className="mt-1 flex justify-center gap-0.5">
-                        {Array.from({ length: [2, 1, 3, 2, 1, 0, 0][i] }).map((_, j) => (
-                          <span
-                            key={j}
-                            className={`h-1 w-1 rounded-full ${['bg-indigo-400', 'bg-emerald-400', 'bg-amber-400'][j % 3]}`}
-                          />
-                        ))}
-                        {[2, 1, 3, 2, 1, 0, 0][i] === 0 && <span className="h-1 w-1 rounded-full bg-slate-500/20" />}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
+            {/* Zemin ışıması — panelin altından yükselen kâğıt sıcaklığı */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-10 -top-10 bottom-8 -z-10 bg-gradient-to-b from-indigo-500/10 via-amber-500/[0.06] to-transparent blur-3xl"
+            />
+            <div className="glass overflow-hidden rounded-2xl p-1.5 shadow-2xl shadow-slate-900/10 dark:shadow-black/50">
+              <div className="flex items-center gap-1.5 px-3 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+                <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                  derinay · genel bakış
+                </span>
+              </div>
+              {/* Ekran görüntüsü DEĞİL — kodla çizilir (bkz. PanelPreview) */}
+              <div className="overflow-hidden rounded-xl bg-[rgba(var(--paper),0.35)]">
+                <PanelPreview />
+              </div>
             </div>
-            {/* Tuval gölgesi */}
-            <div className="pointer-events-none absolute -bottom-8 left-1/2 h-10 w-3/4 -translate-x-1/2 rounded-[100%] bg-slate-900/10 blur-2xl dark:bg-black/40" />
+            {/* Tuval gölgesi — paneli kâğıttan ayırır */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-6 left-1/2 h-10 w-2/3 -translate-x-1/2 rounded-[100%] bg-slate-900/10 blur-2xl dark:bg-black/50"
+            />
           </motion.div>
         </section>
 
@@ -258,7 +190,7 @@ export default function Home() {
                   <v.icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <h3 className="font-display text-base font-semibold tracking-tight text-slate-900 dark:text-white">
+                  <h3 className="font-display text-base font-bold tracking-tight text-slate-900 dark:text-white">
                     {v.title}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{v.desc}</p>
@@ -279,7 +211,7 @@ export default function Home() {
           >
             <motion.h2
               variants={fadeUp}
-              className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
+              className="font-display text-3xl font-bold tracking-[-0.04em] text-slate-900 dark:text-white sm:text-[2.5rem]"
             >
               Pratiğin İçin <span className="text-indigo-700 dark:text-indigo-300">Her Şey</span>
             </motion.h2>
@@ -295,72 +227,20 @@ export default function Home() {
             viewport={{ once: true, margin: '-80px' }}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {FEATURES.map((f, i) => (
+            {/* Numaralandırma YOK: sıra hiçbir bilgi taşımıyordu, yalnız süstü. */}
+            {FEATURES.map((f) => (
               <motion.div key={f.title} variants={fadeUp}>
-                <GlassCard tilt glow className="group h-full p-6">
-                  <div className="mb-4 flex items-start justify-between">
-                    <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 ${f.accent}`}>
-                      <f.icon className="h-5 w-5" />
-                    </span>
-                    {/* Galeri plaketi numarası */}
-                    <span className="font-mono text-xs font-semibold tabular-nums text-slate-300 transition-colors group-hover:text-amber-500 dark:text-slate-600 dark:group-hover:text-amber-400">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <h3 className="mb-2 font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+                <GlassCard glow className="group h-full p-6">
+                  <span className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105 ${f.accent}`}>
+                    <f.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mb-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                     {f.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{f.desc}</p>
                 </GlassCard>
               </motion.div>
             ))}
-          </motion.div>
-        </section>
-
-        {/* Panele bir bakış — kodla çizilen önizleme (ekran görüntüsü değil) */}
-        <section className="relative z-10 mx-auto max-w-6xl px-6 py-16">
-          <motion.div
-            variants={staggerContainer(0.08)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            className="mb-10 text-center"
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
-            >
-              Panele Bir <span className="text-indigo-700 dark:text-indigo-300">Bakış</span>
-            </motion.h2>
-            <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
-              Gelir, seans takvimi ve vergi — hepsi tek, sakin bir ekranda.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 48 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.8, ease: EASE }}
-            className="relative"
-          >
-            {/* Çerçeve ışıması */}
-            <div className="pointer-events-none absolute -inset-x-8 -top-8 bottom-0 -z-10 bg-gradient-to-b from-indigo-500/10 via-amber-500/5 to-transparent blur-3xl" />
-            {/* Tarayıcı tuvali */}
-            <div className="glass overflow-hidden rounded-2xl p-1.5 shadow-2xl">
-              <div className="flex items-center gap-1.5 px-3 py-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-                <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
-                  derinay · genel bakış
-                </span>
-              </div>
-              {/* Ekran görüntüsü DEĞİL — kodla çizilir. Bkz. PanelPreview başlığı. */}
-              <div className="overflow-hidden rounded-xl bg-[rgba(var(--paper),0.35)]">
-                <PanelPreview />
-              </div>
-            </div>
           </motion.div>
         </section>
 
@@ -383,7 +263,7 @@ export default function Home() {
                 <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/12 font-display text-base font-bold text-amber-600 dark:text-amber-400">
                   {i + 1}
                 </span>
-                <h3 className="mb-2 font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+                <h3 className="mb-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                   {s.title}
                 </h3>
                 <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{s.desc}</p>
@@ -406,7 +286,7 @@ export default function Home() {
             <span className="pointer-events-none absolute left-6 top-5 select-none font-display text-6xl font-bold text-amber-500/15" aria-hidden>
               “
             </span>
-            <h2 className="relative font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            <h2 className="relative font-display text-2xl font-bold tracking-[-0.04em] text-slate-900 dark:text-white sm:text-4xl">
               Bugün <span className="text-indigo-700 dark:text-indigo-300">Düzeni</span> Kurmaya Başla
             </h2>
             <p className="relative mx-auto mt-3 max-w-md text-slate-500 dark:text-slate-300">

@@ -40,7 +40,6 @@ export default async function BackupPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Yaşam"
         title="Yedekleme"
         subtitle="Verilerin senin — istediğin an indir, güvende hisset"
         action={

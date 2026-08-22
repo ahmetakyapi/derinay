@@ -116,7 +116,6 @@ export default async function FinancesPage({
   return (
     <>
       <PageHeader
-        eyebrow="Finans"
         title="Gelir & Gider"
         subtitle="Kliniğin finansal hareketleri — ay ay, gün gün"
         action={
@@ -315,7 +314,7 @@ function SummaryCard({
     <div className="glass rounded-2xl p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{label}</p>
       <div className="mt-2 flex flex-wrap items-baseline gap-2">
-        <p className={cn('sensitive font-display text-2xl font-semibold tracking-tight', valueCls)}>{formatTRY(value)}</p>
+        <p className={cn('sensitive font-mono text-xl font-bold tabular-nums', valueCls)}>{formatTRY(value)}</p>
         {change !== null && (
           <span
             className={cn(

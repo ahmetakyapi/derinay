@@ -9,11 +9,14 @@
 
 export function HeaderSkeleton({ action = true }: { action?: boolean }) {
   return (
-    <div className="mb-7 flex items-end justify-between gap-4">
-      <div className="space-y-2.5">
-        <div className="skeleton h-2.5 w-24" />
-        <div className="skeleton h-7 w-52" />
-        <div className="skeleton h-3.5 w-64" />
+    <div className="mb-8 flex items-start justify-between gap-4">
+      <div className="flex gap-3.5 sm:gap-4">
+        {/* PageHeader'daki ölçü çizgisi */}
+        <div className="skeleton mt-1 w-[2px] rounded-full" />
+        <div className="space-y-2.5">
+          <div className="skeleton h-8 w-56" />
+          <div className="skeleton h-3.5 w-72" />
+        </div>
       </div>
       {action && <div className="skeleton h-10 w-28 rounded-xl" />}
     </div>

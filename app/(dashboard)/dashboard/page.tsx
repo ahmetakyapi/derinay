@@ -74,7 +74,6 @@ export default async function DashboardPage({
   return (
     <>
       <PageHeader
-        eyebrow={formatWeekdayLong(new Date())}
         title={
           owner.firstName ? (
             <>
@@ -85,7 +84,7 @@ export default async function DashboardPage({
             greetingNow()
           )
         }
-        subtitle={`${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
+        subtitle={`${formatWeekdayLong(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
         action={<QuickAddMenu clients={clients} />}
       />
 

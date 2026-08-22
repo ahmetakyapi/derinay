@@ -137,14 +137,10 @@ export default async function OgImage() {
         >
           {TITLE}
         </div>
-        {/* Fırça vurgusu — başlık altındaki el çizimi jest */}
-        <svg width="220" height="16" viewBox="0 0 64 8" fill="none" preserveAspectRatio="none">
-          <path
-            d="M1.5 5.8C13 2.4 38 1.6 62.5 4.6"
-            stroke="rgba(179,137,46,0.85)"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-          />
+        {/* Boya sürüşü — uygulamadaki BrushSweep ile AYNI geometri (dolgu,
+            stroke değil): marka jesti her yüzeyde aynı el izini taşır. */}
+        <svg width="360" height="58" viewBox="0 0 320 64" fill="rgba(179,137,46,0.62)" preserveAspectRatio="none">
+          <path d="M4 40C22 22 62 12 118 15C172 18 218 24 262 15C288 10 306 12 318 18L315 39C298 34 282 39 264 43C240 49 208 54 170 51C124 47 82 56 42 58C26 59 12 56 2 51Z" />
         </svg>
         <div
           style={{

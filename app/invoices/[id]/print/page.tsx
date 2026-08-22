@@ -99,7 +99,7 @@ export default async function InvoicePrintPage({
                 <p className="font-semibold">Psikolojik danışmanlık hizmeti</p>
                 {inv.note && <p className="mt-0.5 text-xs text-slate-500">{inv.note}</p>}
               </td>
-              <td className="py-4 text-right font-medium">{formatTRY(inv.subtotal)}</td>
+              <td className="py-4 text-right font-mono font-medium tabular-nums">{formatTRY(inv.subtotal)}</td>
             </tr>
           </tbody>
         </table>

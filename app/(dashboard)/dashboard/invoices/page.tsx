@@ -74,13 +74,12 @@ export default async function InvoicesPage({
   return (
     <>
       <PageHeader
-        eyebrow="Finans"
         title="Makbuzlar"
         subtitle={
           <>
-            {invoices.length} makbuz · <span className="sensitive">{formatTRY(totalBilled, { compact: true })}</span> kesildi ·{' '}
-            <span className="sensitive">{formatTRY(totalKdv, { compact: true })}</span> KDV
-            {totalStopaj > 0 && <> · <span className="sensitive">{formatTRY(totalStopaj, { compact: true })}</span> stopaj</>}
+            {invoices.length} makbuz · <span className="sensitive font-mono tabular-nums">{formatTRY(totalBilled, { compact: true })}</span> kesildi ·{' '}
+            <span className="sensitive font-mono tabular-nums">{formatTRY(totalKdv, { compact: true })}</span> KDV
+            {totalStopaj > 0 && <> · <span className="sensitive font-mono tabular-nums">{formatTRY(totalStopaj, { compact: true })}</span> stopaj</>}
           </>
         }
         action={<NewInvoiceDialog clients={clients} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />}
@@ -94,7 +93,7 @@ export default async function InvoicesPage({
             <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
               <Receipt className="h-3.5 w-3.5 text-amber-500" /> Toplam Tahsil Edilen
             </p>
-            <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-4xl">
+            <p className="sensitive mt-1.5 font-mono text-[1.75rem] font-bold tabular-nums text-emerald-600 dark:text-emerald-400 sm:text-4xl">
               {formatTRY(paidTotal)}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -224,7 +223,7 @@ export default async function InvoicesPage({
                     </div>
 
                     <div className="sensitive hidden shrink-0 text-right text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:block">
-                      <span className="block">Brüt {formatTRY(i.subtotal, { compact: true })}</span>
+                      <span className="block">Brüt <span className="font-mono tabular-nums">{formatTRY(i.subtotal, { compact: true })}</span></span>
                       <span className="block">
                         KDV %{i.kdvRate}
                         {i.stopajAmount > 0 ? ` · stopaj −${formatTRY(i.stopajAmount, { compact: true })}` : ''}

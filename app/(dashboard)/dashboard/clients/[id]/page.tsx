@@ -134,7 +134,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     </span>
                   )}
                   <span className="sensitive inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                    <CreditCard className="h-3 w-3 text-slate-400" /> {formatTRY(client.sessionFee)} / seans
+                    <CreditCard className="h-3 w-3 text-slate-400" />
+                    <span className="font-mono tabular-nums">{formatTRY(client.sessionFee)}</span> / seans
                   </span>
                 </div>
 
@@ -245,7 +246,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {activePackage.used} kullanıldı
-                {activePackage.pricePaid > 0 && <> · <span className="sensitive">{formatTRY(activePackage.pricePaid)}</span></>}
+                {activePackage.pricePaid > 0 && <> · <span className="sensitive font-mono tabular-nums">{formatTRY(activePackage.pricePaid)}</span></>}
               </p>
             </div>
             <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-500/10">

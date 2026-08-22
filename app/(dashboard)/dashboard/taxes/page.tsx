@@ -72,7 +72,6 @@ export default async function TaxesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Finans"
         title="Vergiler"
         subtitle="Toplanan KDV ve tahmini gelir vergisi — muhasebecine hazır"
         action={

@@ -66,11 +66,10 @@ export default async function PaymentsPage({
   return (
     <>
       <PageHeader
-        eyebrow="Finans"
         title="Ödemeler"
         subtitle={
           <>
-            {payments.length} tahsilat · <span className="sensitive">{formatTRY(total, { compact: true })}</span> toplam
+            {payments.length} tahsilat · <span className="sensitive font-mono tabular-nums">{formatTRY(total, { compact: true })}</span> toplam
           </>
         }
         action={<NewPaymentDialog clients={clients} />}
@@ -83,7 +82,7 @@ export default async function PaymentsPage({
           <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
             <Wallet className="h-3.5 w-3.5 text-emerald-500" /> Toplam Tahsilat
           </p>
-          <p className="sensitive mt-1.5 font-display text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-4xl">
+          <p className="sensitive mt-1.5 font-mono text-[1.75rem] font-bold tabular-nums text-emerald-600 dark:text-emerald-400 sm:text-4xl">
             {formatTRY(total)}
           </p>
 

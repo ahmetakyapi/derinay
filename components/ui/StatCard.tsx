@@ -77,7 +77,8 @@ export function StatCard({
             {label}
           </p>
           {/* sensitive: gizlilik modunda tutarlar da bulanır */}
-          <p className="sensitive mt-2 font-display text-[1.35rem] font-semibold leading-none tracking-tight text-slate-900 dark:text-white sm:text-[1.7rem]">
+          {/* font-mono ŞART: display ailesinin ₺ glifi yanlış (bkz. globals.css) */}
+          <p className="sensitive mt-2 font-mono text-[1.3rem] font-bold leading-none tracking-tight tabular-nums text-slate-900 dark:text-white sm:text-[1.6rem]">
             {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
           </p>
         </div>

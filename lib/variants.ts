@@ -53,3 +53,17 @@ export const modalPanel = {
   visible: { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.28, ease: EASE } },
   exit:    { opacity: 0, scale: 0.98, y: 28, transition: { duration: 0.18 } },
 }
+
+/**
+ * Fırça sürüşü — soldan sağa boyanır. Manşetin kendi stagger'ı içinde çalışır,
+ * yani AYRI bir efekt değil; aynı anın parçası. `scaleX` kullanılır çünkü
+ * clip-path animasyonu Safari'de fırça kenarında titriyor.
+ */
+export const brushWipe = {
+  hidden: { scaleX: 0, opacity: 0 },
+  visible: {
+    scaleX: 1,
+    opacity: 1,
+    transition: { duration: 0.75, delay: 0.15, ease: EASE },
+  },
+}

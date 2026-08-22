@@ -85,24 +85,24 @@ export default async function ReportPrintPage({
             {a.months.map((m) => (
               <tr key={m.key}>
                 <td className="py-2 font-medium">{m.label}</td>
-                <td className="py-2 text-right tabular-nums">{formatTRY(m.income)}</td>
-                <td className="py-2 text-right tabular-nums">{formatTRY(m.expense)}</td>
-                <td className="py-2 text-right font-semibold tabular-nums">{formatTRY(m.net)}</td>
-                <td className="py-2 text-right tabular-nums">{formatTRY(m.kdv)}</td>
-                <td className="py-2 text-right tabular-nums">{formatTRY(m.incomeTax)}</td>
-                <td className="py-2 text-right font-semibold tabular-nums">{formatTRY(m.totalDue)}</td>
+                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.income)}</td>
+                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.expense)}</td>
+                <td className="py-2 text-right font-mono font-semibold tabular-nums">{formatTRY(m.net)}</td>
+                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.kdv)}</td>
+                <td className="py-2 text-right font-mono tabular-nums">{formatTRY(m.incomeTax)}</td>
+                <td className="py-2 text-right font-mono font-semibold tabular-nums">{formatTRY(m.totalDue)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-slate-300 font-bold">
               <td className="py-2.5">Toplam</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.income)}</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.expense)}</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.net)}</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.kdv)}</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.tax - a.totals.kdv)}</td>
-              <td className="py-2.5 text-right tabular-nums">{formatTRY(a.totals.tax)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.income)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.expense)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.net)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.kdv)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.tax - a.totals.kdv)}</td>
+              <td className="py-2.5 text-right font-mono tabular-nums">{formatTRY(a.totals.tax)}</td>
             </tr>
           </tfoot>
         </table>
@@ -117,7 +117,7 @@ export default async function ReportPrintPage({
                 {a.expenseByCategory.map((c) => (
                   <li key={c.category} className="flex justify-between gap-4 py-1.5">
                     <span className="min-w-0 truncate">{c.category}</span>
-                    <span className="shrink-0 tabular-nums">{formatTRY(c.amount)}</span>
+                    <span className="shrink-0 font-mono tabular-nums">{formatTRY(c.amount)}</span>
                   </li>
                 ))}
               </ul>
@@ -132,7 +132,7 @@ export default async function ReportPrintPage({
                 {a.incomeByCategory.map((c) => (
                   <li key={c.category} className="flex justify-between gap-4 py-1.5">
                     <span className="min-w-0 truncate">{c.category}</span>
-                    <span className="shrink-0 tabular-nums">{formatTRY(c.amount)}</span>
+                    <span className="shrink-0 font-mono tabular-nums">{formatTRY(c.amount)}</span>
                   </li>
                 ))}
               </ul>
@@ -147,7 +147,7 @@ export default async function ReportPrintPage({
                   <span>
                     {PAYMENT_METHOD_LABEL[m.method]} <span className="text-slate-400">({m.count})</span>
                   </span>
-                  <span className="tabular-nums">{formatTRY(m.amount)}</span>
+                  <span className="font-mono tabular-nums">{formatTRY(m.amount)}</span>
                 </li>
               ))}
             </ul>

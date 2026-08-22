@@ -70,7 +70,6 @@ export default async function AnalyticsPage({
   return (
     <>
       <PageHeader
-        eyebrow="Finans"
         title="Analiz"
         subtitle={`${year} yılının finansal hikâyesi — ay ay, kalem kalem`}
         action={
