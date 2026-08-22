@@ -10,9 +10,9 @@ import { BloomMark } from '@/components/brand/BloomMark'
 // Landing bölümleriyle BİREBİR eşleşmeli — var olmayan bir çapaya bağlanan
 // menü satırı sessizce hiçbir şey yapmaz (eski #features/#how böyleydi).
 const NAV_LINKS = [
-  { label: 'Makbuz', href: '#makbuz' },
-  { label: 'Vergi', href: '#vergi' },
-  { label: 'Veri Güvenliği', href: '#emanet' },
+  { label: 'Neler Var', href: '#panel' },
+  { label: 'Finans', href: '#finans' },
+  { label: 'Güvenlik', href: '#guven' },
 ]
 
 export default function Header() {
