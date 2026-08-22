@@ -34,6 +34,7 @@ import { BloomMark } from '@/components/brand/BloomMark'
 import { PageTransition } from '@/components/dashboard/PageTransition'
 import { CommandPalette } from '@/components/dashboard/CommandPalette'
 import { logoutAction } from '@/app/actions/auth'
+import { clearAllNoteDrafts } from '@/hooks/useNoteDraft'
 
 // Gruplu navigasyon — galeri katalogu gibi bölümlenmiş
 const NAV_GROUPS = [
@@ -391,7 +392,7 @@ export function DashboardShell({
               <div>
                 <ThemeToggle className="h-10 w-full" />
               </div>
-              <form action={logoutAction}>
+              <form action={logoutAction} onSubmit={clearAllNoteDrafts}>
                 <button
                   type="submit"
                   aria-label="Çıkış yap"
@@ -482,7 +483,7 @@ export function DashboardShell({
                 </div>
                 <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
                   <OwnerCard owner={owner} onNavigate={() => setOpen(false)}>
-                    <form action={logoutAction}>
+                    <form action={logoutAction} onSubmit={clearAllNoteDrafts}>
                       <button
                         type="submit"
                         aria-label="Çıkış yap"
