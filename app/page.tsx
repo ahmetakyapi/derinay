@@ -10,11 +10,6 @@ import {
   FileText,
   Wallet,
   PieChart,
-  ShieldCheck,
-  DatabaseBackup,
-  EyeOff,
-  Lock,
-  FileDown,
 } from 'lucide-react'
 import { useSpotlight } from '@/hooks/useSpotlight'
 import { brushWipe, fadeUp, staggerContainer, EASE } from '@/lib/variants'
@@ -39,29 +34,67 @@ import Footer from '@/components/layout/Footer'
  * yarısı boşluktur; "sakin panel" vaadini sayfanın kendisi taşır.
  *
  * TEK YAZARLI HAREKET: sol kenardaki mürekkep omurgası kaydırmayla boyanır.
- * Bölümlerin ayrı giriş animasyonu YOK.
+ * Bölümlerin ayrı giriş animasyonu YOK. Sayfanın tepesindeki üç renkli
+ * degrade ilerleme çubuğu KALDIRILDI: aynı bilgiyi omurga zaten taşıyordu
+ * (iki ilerleme göstergesi) ve çok duraklı degrade tek vurgu rengi kuralını
+ * deliyordu.
+ *
+ * BÖLÜM DÜZENİ TEKRAR ETMEZ (taste-skill denetimi). Her bölüm kendi
+ * yapısını içeriğinden alır:
+ *   panel  → panelin KENDİ gezinme gruplarına (Klinik / Finans) bölünmüş liste
+ *   gün    → zaman çizgisi; sıra gerçek bilgi taşır (sabah → ay sonu)
+ *   defter → kesit solda, metin sağda
+ *   finans → metin solda, kesit sağda
+ *   güven  → taahhüt satırları; terim solda, karşılığı sağda
+ * Eskiden panel/gün/güven ÜÇÜ de aynı "saç çizgisi + ızgara" düzeniydi.
+ *
+ * VURGU TEK YERDE: indigo vurgu sözcüğü yalnız manşette, fırça sürüşüyle
+ * birlikte. Eskiden yedi başlığın hepsinde vardı; yedi kez tekrarlanan vurgu
+ * vurgu olmaktan çıkıp tik hâline geliyordu.
  */
 
-/** Panelin içindekiler — kart ızgarası değil, editoryal liste */
-const CAPABILITIES = [
-  { icon: Users, title: 'Danışan Dosyası', body: 'İletişim, etiket, seans ücreti, onam durumu ve tüm geçmiş tek kartta.' },
-  { icon: CalendarRange, title: 'Ajanda', body: 'Haftalık saat ızgarası. Seansı sürükleyip bırak; çakışmayı panel söyler.' },
-  { icon: StickyNote, title: 'Seans Defteri', body: 'Tür ve duygu etiketli notlar, SOAP şablonları, zamanla çıkan duygu izleği.' },
-  { icon: Wallet, title: 'Gelir & Gider', body: 'Kategori bazlı hareketler; kira, abonelik gibi sabit kalemler tek tıkla sonraki aya kopyalanır.' },
-  { icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzu tek ekranda kesilir; numara sıradan devam eder.' },
-  { icon: PieChart, title: 'Analiz & Rapor', body: 'Yıllık akış, biriken bakiye ve muhasebeciye giden tek dosyalık rapor.' },
+/** Bölüm açılış başlığı — tam genişlik, sayfanın en büyük ikinci sesi */
+const H2_SECTION =
+  'font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]'
+/** Sahne başlığı — kesitin yanındaki dar sütun; açılışlardan bir kademe küçük */
+const H2_SCENE =
+  'font-display text-[2rem] font-bold leading-[1.05] tracking-[-0.04em] text-slate-900 dark:text-white sm:text-[2.5rem]'
+
+/**
+ * Panelin içindekiler — panelin KENDİ kenar çubuğu gruplarına göre ayrılmış.
+ * Gruplar uydurma değil: `DashboardShell` içindeki NAV_GROUPS ile aynı adları
+ * taşır, yani ziyaretçi panele girdiğinde aynı ikiliyi bulur.
+ */
+const CAPABILITY_GROUPS = [
+  {
+    group: 'Klinik',
+    items: [
+      { icon: Users, title: 'Danışan Dosyası', body: 'İletişim, etiket, seans ücreti, onam durumu ve tüm geçmiş tek kartta.' },
+      { icon: CalendarRange, title: 'Ajanda', body: 'Haftalık saat ızgarası. Seansı sürükleyip bırak; çakışmayı panel söyler.' },
+      { icon: StickyNote, title: 'Seans Defteri', body: 'Tür ve duygu etiketli notlar, SOAP şablonları, zamanla çıkan duygu izleği.' },
+    ],
+  },
+  {
+    group: 'Finans',
+    items: [
+      { icon: Wallet, title: 'Gelir & Gider', body: 'Kategori bazlı hareketler; kira, abonelik gibi sabit kalemler tek tıkla sonraki aya kopyalanır.' },
+      { icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzu tek ekranda kesilir; numara sıradan devam eder.' },
+      { icon: PieChart, title: 'Analiz & Rapor', body: 'Yıllık akış, biriken bakiye ve muhasebeciye giden tek dosyalık rapor.' },
+    ],
+  },
 ] as const
 
+/** Günün üç durağı. SIRA bilgi taşır, o yüzden zaman çizgisi olarak çizilir. */
 const DAY_MOMENTS = [
   {
     time: 'Sabah',
     title: 'Günü Açarken',
-    body: 'Bugünün seansları, notu eksik kalan geçen haftaki kayıt, bitmek üzere olan paket ve sessizleşen danışan — hepsi karşılama ekranında. Aramana gerek yok.',
+    body: 'Bugünün seansları, notu eksik kalan kayıt, bitmek üzere olan paket ve sessizleşen danışan. Hepsi karşılama ekranında; aramana gerek yok.',
   },
   {
     time: 'Seans Arası',
     title: 'Defteri Tutarken',
-    body: 'Danışan çıkar çıkmaz not düşersin — iki dakika sürer. Aklında kalan cümle, kapıdan çıkmadan yerine geçmiş olur.',
+    body: 'Danışan çıkar çıkmaz not düşersin, iki dakika sürer. Aklında kalan cümle, kapıdan çıkmadan yerine geçmiş olur.',
   },
   {
     time: 'Ay Sonu',
@@ -70,11 +103,12 @@ const DAY_MOMENTS = [
   },
 ] as const
 
+/** Veri taahhütleri. Sıra taşımaz, sayım taşımaz: ikon almazlar, satır olurlar. */
 const TRUST = [
-  { icon: Lock, title: 'Parola Kilidi', body: 'Panel tek parolayla açılır. Danışan verisi giriş yapılmadan hiçbir yolla görünmez.' },
-  { icon: EyeOff, title: 'Gizlilik Modu', body: 'Tek kısayolla isimler, iletişim ve tutarlar bulanır. Danışan karşı koltuktayken ekranı çevirebilirsin.' },
-  { icon: DatabaseBackup, title: 'Yedek ve Geri Yükleme', body: 'Tüm veri tek dosyada iner, on bir tablo ayrı CSV olarak alınır. Geri yükleme tek işlemdir: ya hepsi ya hiçbiri.' },
-  { icon: FileDown, title: 'Belge Senin Deponda', body: 'Onam formu, test ve rapor dosyaları panele yüklenmez; yalnızca kendi bulutundaki bağlantısı tutulur.' },
+  { title: 'Parola Kilidi', body: 'Panel tek parolayla açılır. Danışan verisi giriş yapılmadan hiçbir yolla görünmez.' },
+  { title: 'Gizlilik Modu', body: 'Tek kısayolla isimler, iletişim ve tutarlar bulanır. Danışan karşı koltuktayken ekranı çevirebilirsin.' },
+  { title: 'Yedek ve Geri Yükleme', body: 'Tüm veri tek dosyada iner, on bir tablo ayrı CSV olarak alınır. Geri yükleme tek işlemdir: ya hepsi ya hiçbiri.' },
+  { title: 'Belge Senin Deponda', body: 'Onam formu, test ve rapor dosyaları panele yüklenmez; yalnızca kendi bulutundaki bağlantısı tutulur.' },
 ] as const
 
 export default function Home() {
@@ -84,25 +118,19 @@ export default function Home() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <motion.div
-        aria-hidden
-        style={{ scaleX: progress }}
-        className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-gradient-to-r from-indigo-500 via-amber-400 to-rose-400"
-      />
       <Header />
 
-      <main id="lp-main" tabIndex={-1} className="relative min-h-screen overflow-hidden outline-none">
+      <main id="lp-main" tabIndex={-1} className="relative min-h-[100dvh] overflow-hidden outline-none">
         <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
 
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
           <div className="absolute -left-24 top-32 h-72 w-72 animate-float rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none" />
           <div className="absolute right-[-80px] top-64 h-80 w-80 animate-float-slow rounded-full bg-amber-500/10 blur-3xl motion-reduce:animate-none" />
-          <div className="absolute bottom-40 left-1/3 h-64 w-64 rounded-full bg-rose-500/8 blur-3xl" />
           <BloomMark className="absolute -right-16 top-[38%] hidden h-[34rem] w-[34rem] -translate-y-1/2 -rotate-12 text-slate-900/[0.035] dark:text-white/[0.04] lg:block" />
           <BloomArt className="absolute -left-8 bottom-24 hidden h-72 w-56 opacity-70 lg:block" delay={0.6} />
         </div>
 
-        {/* Mürekkep omurgası — sayfanın tek yazarlı hareketi */}
+        {/* Mürekkep omurgası — sayfanın tek yazarlı hareketi ve tek ilerleme göstergesi */}
         <motion.div
           aria-hidden
           style={{ scaleY: progress }}
@@ -113,8 +141,17 @@ export default function Home() {
 
         {/* ── Hero ─────────────────────────────────────────────────────────
             Manşet FAYDAYI söyler. Mevzuat sözcüğü (KDV, stopaj) burada geçmez;
-            onların yeri finans bölümü. */}
-        <section className="relative z-10 px-6 pb-24 pt-32 sm:pb-32 sm:pt-40">
+            onların yeri finans bölümü.
+
+            ORTALI DÜZEN BİLİNÇLİ: taste-skill ortalı kahramanı `DESIGN_VARIANCE > 4`
+            için genel olarak elemeyi söyler ama "mesajın kendisi tasarım olan"
+            manifesto kahramanını istisna tutar. Burada durum bu: tek jest fırça
+            sürüşü, tek ses manşet. Ayrıca mod "Redesign · Preserve" — tanınan
+            kahramanı bozmak yeniden tasarım değil, kimlik silme olurdu.
+
+            ÜST PAY: pt-24 (skill tavanı). Eski pt-40 manşeti ekranın ortasına
+            düşürüyor, ilk bakışta düğmeyi kırpıyordu. */}
+        <section className="relative z-10 px-6 pb-24 pt-24 sm:pb-32">
           <motion.div
             variants={staggerContainer(0.1)}
             initial="hidden"
@@ -149,7 +186,7 @@ export default function Home() {
               className="mx-auto mt-8 max-w-xl text-[1.0625rem] leading-[1.75] text-slate-500 dark:text-slate-300 sm:text-lg"
             >
               Danışanların, ajandan, seans defterin ve finansın tek yerde. Tek kişilik bir
-              pratiğin ihtiyacı kadar — sakin, sade, dağınıklıktan uzak bir çalışma masası.
+              pratiğin ihtiyacı kadar sakin bir çalışma masası.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -179,66 +216,82 @@ export default function Home() {
               aria-hidden
               className="pointer-events-none absolute -inset-x-10 -top-10 bottom-8 -z-10 bg-gradient-to-b from-indigo-500/10 via-amber-500/[0.06] to-transparent blur-3xl"
             />
+            {/* "Örnek veri" damgası çerçevenin kendi plaketinde duruyor; eskiden
+                burada ayrı bir satırdı ve kahramanın metin öğesi sayısını taşırıyordu. */}
             <PreviewFrame caption="derinay · genel bakış">
               <PanelPreview />
             </PreviewFrame>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -bottom-6 left-1/2 h-10 w-2/3 -translate-x-1/2 rounded-[100%] bg-slate-900/10 blur-2xl dark:bg-black/50"
-            />
-            <p className="mt-7 text-center text-xs text-slate-400">
-              Örnek verilerle çizildi — buradaki hiçbir isim ve tutar gerçek değil.
-            </p>
           </motion.div>
         </section>
 
         {/* ── Panelde ne var ──────────────────────────────────────────────
-            Kart ızgarası DEĞİL: saç çizgisiyle ayrılmış editoryal liste. */}
+            Panelin kendi gezinme grupları: Klinik ve Finans. Altı maddelik düz
+            bir ızgara yerine iki anlamlı küme; ziyaretçi panele girdiğinde aynı
+            ikiliyi kenar çubuğunda bulur. */}
         <section id="panel" className="relative z-10 scroll-mt-24 px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
-            <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-              Bir Pratiğin Döndüğü{' '}
-              <span className="text-indigo-700 dark:text-indigo-300">Her Şey</span> Burada
-            </h2>
+            <h2 className={`max-w-3xl ${H2_SECTION}`}>Bir Pratiğin Döndüğü Her Şey Burada</h2>
             <p className="mt-6 max-w-xl text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
-              Ayrı defterler, tablolar ve klasörler yerine tek panel — hepsi birbirini bilir.
-              Bir seansı tamamladığında takvim, danışan dosyası ve paket kullanımı aynı anda güncellenir.
+              Ayrı defterler, tablolar ve klasörler yerine tek panel. Bir seansı tamamladığında
+              takvim, danışan dosyası ve paket kullanımı aynı anda güncellenir.
             </p>
 
-            <div className="mt-16 grid gap-x-14 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-              {CAPABILITIES.map((c) => (
-                <div key={c.title} className="border-t border-slate-500/15 pt-6">
-                  <c.icon aria-hidden className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="mt-4 font-display text-xl font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
-                    {c.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{c.body}</p>
+            <div className="mt-16 grid gap-x-16 gap-y-14 lg:grid-cols-2">
+              {CAPABILITY_GROUPS.map((g) => (
+                <div key={g.group}>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">{g.group}</p>
+                  <ul className="mt-5 space-y-7">
+                    {g.items.map((c) => (
+                      <li key={c.title} className="flex gap-4">
+                        <c.icon aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                        <div className="min-w-0">
+                          <h3 className="font-display text-lg font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
+                            {c.title}
+                          </h3>
+                          <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{c.body}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Gün ─────────────────────────────────────────────────────── */}
+        {/* ── Gün ───────────────────────────────────────────────────────────
+            ZAMAN ÇİZGİSİ. Sabah → seans arası → ay sonu gerçek bir sıradır, o
+            yüzden düğümlü sürekli bir çizgi olarak çizilir ve <ol> ile işaretlenir.
+            Duraklar mürekkep tonunda: altın vurgu manşetin fırçasına ayrıldı. */}
         <section className="relative z-10 border-y border-slate-500/10 bg-[rgba(var(--paper),0.4)] px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
-            <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
+            <h2 className={`max-w-3xl ${H2_SECTION}`}>
               Panel Günü Okur,
               <br />
-              Sen <span className="text-indigo-700 dark:text-indigo-300">Aramazsın</span>
+              Sen Aramazsın
             </h2>
-            <div className="mt-16 grid gap-12 sm:grid-cols-3 sm:gap-10">
-              {DAY_MOMENTS.map((m) => (
-                <div key={m.time} className="border-t border-slate-500/15 pt-6">
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400">
-                    {m.time}
-                  </p>
-                  <h3 className="mt-3 font-display text-xl font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
-                    {m.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{m.body}</p>
-                </div>
-              ))}
+
+            <div className="relative mt-16">
+              {/* Durakları birbirine bağlayan sürekli çizgi (sm+) */}
+              <div aria-hidden className="absolute inset-x-0 top-0 hidden h-px bg-slate-500/20 sm:block" />
+              <ol className="grid gap-12 sm:grid-cols-3 sm:gap-10">
+                {DAY_MOMENTS.map((m) => (
+                  <li
+                    key={m.time}
+                    className="relative border-t border-slate-500/15 pt-6 sm:border-t-0 sm:pt-9"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-0 hidden h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-slate-900/45 dark:bg-white/40 sm:block"
+                    />
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{m.time}</p>
+                    <h3 className="mt-2.5 font-display text-xl font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
+                      {m.title}
+                    </h3>
+                    <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{m.body}</p>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </section>
@@ -255,9 +308,7 @@ export default function Home() {
             </div>
 
             <div className="mt-14 lg:col-span-5 lg:mt-0">
-              <h2 className="font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-                Defter Önce, <span className="text-indigo-700 dark:text-indigo-300">Fatura</span> Sonra
-              </h2>
+              <h2 className={H2_SCENE}>Defter Önce, Fatura Sonra</h2>
               <div className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
                 <p>
                   Her not bir tür ve bir duyguyla kaydedilir. SOAP, ilk görüşme ve BDT şablonları
@@ -265,7 +316,7 @@ export default function Home() {
                 </p>
                 <p>
                   Haftalar biriktikçe duygu izleği bir eğriye dönüşür. Tedavi hedefleri ve ölçek
-                  puanları aynı sayfada durur — ilerlemeyi anlatmak için hafızana yüklenmen gerekmez.
+                  puanları aynı sayfada durur. İlerlemeyi anlatmak için hafızana yüklenmen gerekmez.
                 </p>
               </div>
             </div>
@@ -274,13 +325,12 @@ export default function Home() {
 
         {/* ── Finans ──────────────────────────────────────────────────────
             Mevzuat detayı YALNIZCA burada ve gövde metninin içinde geçer;
-            başlık faydayı söyler. */}
+            başlık faydayı söyler. Kesit bu kez sağda: aynı bölünmüş düzenin
+            üst üste üçüncü kez tekrarı yasak, ikincisi ayna olarak serbest. */}
         <section id="finans" className="relative z-10 scroll-mt-24 px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-16">
             <div className="lg:col-span-5">
-              <h2 className="font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-                Hesap <span className="text-indigo-700 dark:text-indigo-300">Kendiliğinden</span> Çıkar
-              </h2>
+              <h2 className={H2_SCENE}>Hesap Kendiliğinden Çıkar</h2>
               <div className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
                 <p>
                   Danışanı seç, ücreti yaz. Makbuz bir ekranda kesilir; numara sıradan devam eder,
@@ -301,35 +351,40 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Emanet ──────────────────────────────────────────────────── */}
+        {/* ── Emanet ────────────────────────────────────────────────────────
+            TAAHHÜT SATIRLARI: terim solda, karşılığı sağda. Kart da değil,
+            ikonlu ızgara da değil — imzalanmış bir taahhüt gibi okunsun diye.
+            Saç çizgisi yalnız grubun ÜSTÜNDE; her satırın altına çizgi çekmek
+            bunu bir şartname tablosuna çevirirdi. */}
         <section id="guven" className="relative z-10 scroll-mt-24 border-t border-slate-500/10 bg-[rgba(var(--paper),0.35)] px-6 py-28 sm:py-36">
           <div className="mx-auto max-w-6xl">
-            <h2 className="max-w-3xl font-display text-[2.25rem] font-bold leading-[1.02] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3.25rem]">
-              Veri <span className="text-indigo-700 dark:text-indigo-300">Sende</span> Kalır
-            </h2>
+            <h2 className={`max-w-3xl ${H2_SECTION}`}>Veri Sende Kalır</h2>
             <p className="mt-6 max-w-xl text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
               Bir psikoloğun tuttuğu kayıt, tuttuğu en hassas kayıttır. Derinay bunu bir vaat olarak
               değil, arayüzün kendisi olarak çözer.
             </p>
-            <div className="mt-16 grid gap-x-14 gap-y-12 sm:grid-cols-2">
+
+            <dl className="mt-16 border-t border-slate-500/15">
               {TRUST.map((t) => (
-                <div key={t.title} className="border-t border-slate-500/15 pt-6">
-                  <t.icon aria-hidden className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="mt-4 font-display text-xl font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
+                <div key={t.title} className="grid gap-2 py-8 sm:grid-cols-12 sm:gap-10">
+                  <dt className="font-display text-lg font-bold tracking-[-0.03em] text-slate-900 dark:text-white sm:col-span-4">
                     {t.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.body}</p>
+                  </dt>
+                  <dd className="text-[15px] leading-[1.7] text-slate-500 dark:text-slate-400 sm:col-span-8">
+                    {t.body}
+                  </dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
         </section>
 
-        {/* ── Kapanış ─────────────────────────────────────────────────── */}
+        {/* ── Kapanış ───────────────────────────────────────────────────────
+            Başlığın üstündeki kalkan ikonu KALDIRILDI: güvenlik bölümünün
+            işaretiydi, kapanış çağrısında hiçbir şey söylemiyordu. */}
         <section className="relative z-10 mx-auto max-w-3xl px-6 py-32 text-center sm:py-40">
-          <ShieldCheck aria-hidden className="mx-auto h-6 w-6 text-amber-500/70" />
-          <h2 className="mt-8 font-display text-[2.25rem] font-bold leading-[1.05] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3rem]">
-            Bugün <span className="text-indigo-700 dark:text-indigo-300">Düzeni</span> Kurmaya Başla
+          <h2 className="font-display text-[2.25rem] font-bold leading-[1.05] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[3rem]">
+            Bugün Düzeni Kurmaya Başla
           </h2>
           <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
             Danışanlarını ekle, ilk seansını yaz, gerisini panel tutsun.

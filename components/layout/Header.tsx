@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
+
+/** Başlığın cam zemine geçtiği kaydırma eşiği (px) */
+const SCROLL_THRESHOLD = 10
 
 // Landing bölümleriyle BİREBİR eşleşmeli — var olmayan bir çapaya bağlanan
 // menü satırı sessizce hiçbir şey yapmaz (eski #features/#how böyleydi).
@@ -22,12 +25,18 @@ export default function Header() {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [mounted, setMounted]       = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-    const fn = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
+  useEffect(() => setMounted(true), [])
+
+  /* Kaydırma durumu Motion'ın `scrollY` değerinden okunur.
+     `window.addEventListener('scroll', ...)` KULLANILMAZ: her kaydırma
+     karesinde çalışır, toplanmaz ve React ağacını gereksiz yere döndürür.
+     `useMotionValueEvent` render döngüsünün dışında dinler; burada yalnız
+     eşik geçildiğinde bir boolean state değişir. */
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    const past = y > SCROLL_THRESHOLD
+    setScrolled((prev) => (prev === past ? prev : past))
+  })
 
   // Mobil menü modal gibi davranıyor: Esc ile kapansın
   useEffect(() => {

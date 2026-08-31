@@ -63,7 +63,7 @@ export function LoginForm({
           role="alert"
           className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-3 py-2 text-sm text-rose-600 dark:text-rose-400"
         >
-          Parola hatalı — tekrar dene.
+          Parola hatalı. Tekrar dene.
         </p>
       )}
 

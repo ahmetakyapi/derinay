@@ -299,6 +299,20 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   `prefers-reduced-motion` CSS'te + Framer'da `MotionConfig reducedMotion="user"` (Shell & landing),
   `viewportFit: 'cover'` + `env(safe-area-inset-*)` payları (topbar/tabbar/drawer).
 - **İmleç**: özel cursor YOK — normal mouse. Tekrar ekleme.
+- **Soluk metin kontrastı (ÖLÇÜLDÜ)**: tek başına `text-slate-400` fildişi
+  kâğıt üstünde **2.87:1** verir — WCAG AA (4.5:1) altında kalır. Soluk küçük
+  metnin doğru ikilisi **`text-slate-500 dark:text-slate-400`**: açıkta 4.77:1,
+  koyuda 6.29:1. `dark:text-slate-500` de koyuda 3.78:1 ile düşer, kullanma.
+  Plaket, künye, mikro etiket ve alıntı imzası bu ikiliyi kullanır.
+- **Landing bölüm düzeni TEKRAR ETMEZ** (taste-skill kuralı): her bölüm yapısını
+  içeriğinden alır — `#panel` panelin kendi gezinme gruplarına (Klinik/Finans)
+  bölünmüş liste, gün bölümü zaman çizgisi (`<ol>`, sıra gerçek bilgi taşır),
+  `#defter`/`#finans` aynalı ikili kesit (üst üste en fazla İKİ tane),
+  `#guven` taahhüt satırları (`<dl>`, saç çizgisi yalnız grubun üstünde).
+  Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
+- **Vurgu sözcüğü yalnız manşette**: `text-indigo-700 dark:text-indigo-300` ile
+  boyanan başlık sözcüğü landing'de TEK yerde, fırça sürüşüyle birlikte durur.
+  Her başlıkta tekrarlanınca vurgu olmaktan çıkıp tike dönüşüyordu.
 
 ---
 
@@ -399,6 +413,18 @@ Tipik akış (örnek: yeni bir varlık/sekme):
     @font-face yalnız `U+20BA` taşıyan bir alt küme ve `--font-sans` /
     `--font-display` listelerinin **en başında** durur. Bu iki listeden
     kaldırılırsa ₺ tekrar çift çizgili `£` olarak çizilir.
+
+21. **`window.addEventListener('scroll', …)` YASAK** — her kaydırma karesinde
+    çalışır, toplanmaz ve React ağacını gereksizce döndürür. Yerine Framer'ın
+    `useScroll()` + `useMotionValueEvent()` (Header'daki desen) ya da
+    IntersectionObserver kullan. Aynı yasak `window.scrollY`yi state'e yazan
+    ilerleme hesapları için de geçerli.
+22. **Sahte ekran görüntüsü borcu** — `components/marketing/*Preview` bileşenleri
+    ürünü `<div>`lerle çizer. taste-skill bunu açıkça yasaklıyor (§4.8/§9.E) ve
+    çözümü gerçek yakalanmış ekran görüntüsü. Mimio'da bu yapıldı
+    (`scripts/capture-app-shots.mjs`, playwright + demo tohum). Derinay'da
+    yapılmadı çünkü `db:seed` TÜM tabloları siliyor; önce ayrı bir demo
+    veritabanı gerekiyor. Bu kesitlere yeni sahte veri EKLEME.
 
 ---
 

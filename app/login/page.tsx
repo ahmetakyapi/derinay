@@ -18,6 +18,8 @@ export default async function LoginPage({
   const session = await auth()
   if (session?.user) redirect('/dashboard')
 
+  const quote = quoteOfTheDay()
+
   async function login(formData: FormData) {
     'use server'
     try {
@@ -33,7 +35,7 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+    <main className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-6">
       {/* Suluboya lekeleri + orkide filigranı */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -59,9 +61,14 @@ export default async function LoginPage({
 
         <LoginForm action={login} hasError={Boolean(searchParams.error)} />
 
-        <p className="mt-6 text-center font-display text-xs italic text-slate-400">
-          &ldquo;{quoteOfTheDay().text}&rdquo;
-        </p>
+        {/* Alıntı imzasız duruyordu; `quoteOfTheDay()` yazarı zaten taşıyor.
+            Kaynağı olmayan alıntı süs olur, kaynağı olan söz olur. */}
+        <figure className="mt-6 text-center">
+          <blockquote className="font-display text-xs italic text-slate-500 dark:text-slate-400">
+            &ldquo;{quote.text}&rdquo;
+          </blockquote>
+          <figcaption className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">{quote.author}</figcaption>
+        </figure>
       </div>
     </main>
   )

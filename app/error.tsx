@@ -23,22 +23,22 @@ export default function AppError({
   }, [error])
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6">
+    <main className="flex min-h-[100dvh] items-center justify-center px-6">
       <div className="surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
         <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
           <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500 ring-2 ring-[var(--bg)]" />
         </div>
-        <p className="mb-1.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600/90 dark:text-amber-400/90">
-          <span aria-hidden className="text-amber-500/70">✦</span> Beklenmedik bir aksama
-        </p>
+        {/* Üstteki "Beklenmedik bir aksama" etiketi KALDIRILDI: başlığın
+            söylediğini ikinci kez söylüyordu ve dekoratif ✦ işareti taşıyordu.
+            Hata ekranında her öğe tek iş yapar. */}
         <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Bir şeyler ters gitti
         </h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Geçici bir sorun olabilir — tekrar denemek çoğu zaman yeterlidir.
+          Geçici bir sorun olabilir. Tekrar denemek çoğu zaman yeterlidir.
           {error.digest && (
-            <span className="mt-1 block font-mono text-xs text-slate-400">kod: {error.digest}</span>
+            <span className="mt-1 block font-mono text-xs text-slate-500 dark:text-slate-400">kod: {error.digest}</span>
           )}
         </p>
         <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">

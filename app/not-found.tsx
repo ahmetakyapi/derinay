@@ -7,15 +7,16 @@ export const metadata = { title: 'Sayfa Bulunamadı' }
 /** 404 — galeri dilinde: "bu duvarda böyle bir eser yok". */
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-6">
+    <main className="flex min-h-[100dvh] items-center justify-center px-6">
       <div className="surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
         <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
           <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
         </div>
-        <p className="mb-1.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600/90 dark:text-amber-400/90">
-          <span aria-hidden className="text-amber-500/70">✦</span> 404
-        </p>
+        {/* Durum kodu gerçek bilgi taşır, kalsın; ama dekoratif ✦ işareti ve
+            geniş harf aralıklı etiket biçimi gitti (her bölüm başlığının üstüne
+            konan o mikro etiketin ta kendisiydi). */}
+        <p className="mb-1.5 font-mono text-xs text-slate-500 dark:text-slate-400">404</p>
         <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Bu duvarda böyle bir eser yok
         </h1>
