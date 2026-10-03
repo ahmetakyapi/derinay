@@ -58,9 +58,14 @@ export default function Header() {
         İçeriğe Atla
       </a>
 
+      {/* TELEFONDA KAYDIRMADAN ÖNCE DE OPAK (3 Ekim 2026). Saydam başlıkta iOS 26
+          Safari durum çubuğunun altına kendi "kenar efektini" uyguluyor ve
+          altından geçen içeriği bulanıklaştırıyordu: sayfanın üstü buğulu
+          görünüyordu. Opak zeminde Safari düz rengi kullanıyor. Masaüstünde
+          saydam kalıyor; orada bu efekt yok. */}
       <header
         className={`fixed inset-x-0 top-0 z-50 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-all duration-300 ${
-          scrolled ? 'glass shadow-xl shadow-black/10' : 'bg-transparent'
+          scrolled ? 'glass shadow-xl shadow-black/10' : 'border-b border-slate-500/10 bg-[var(--bg)] md:border-transparent md:bg-transparent'
         }`}
       >
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">

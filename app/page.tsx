@@ -124,8 +124,8 @@ export default function Home() {
         <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
 
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div className="absolute -left-24 top-32 h-72 w-72 animate-float rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none" />
-          <div className="absolute right-[-80px] top-64 h-80 w-80 animate-float-slow rounded-full bg-amber-500/10 blur-3xl motion-reduce:animate-none" />
+          <div className="absolute -left-24 top-32 hidden h-72 w-72 animate-float md:block rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none" />
+          <div className="absolute right-[-80px] top-64 hidden h-80 w-80 animate-float-slow md:block rounded-full bg-amber-500/10 blur-3xl motion-reduce:animate-none" />
           <BloomMark className="absolute -right-16 top-[38%] hidden h-[34rem] w-[34rem] -translate-y-1/2 -rotate-12 text-slate-900/[0.035] dark:text-white/[0.04] lg:block" />
           <BloomArt className="absolute -left-8 bottom-24 hidden h-72 w-56 opacity-70 lg:block" delay={0.6} />
         </div>
