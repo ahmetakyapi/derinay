@@ -16,14 +16,16 @@ import { lineDraw } from '@/lib/variants'
 const H2_SCENE =
   'font-display text-[clamp(2.3rem,4.4vw,3.6rem)] font-bold leading-[0.98] tracking-[-0.05em] text-slate-900 dark:text-white'
 
-/** Kesit kaydırmayla kendi hızında süzülür ve hafifçe döner */
-function FloatingFrame({ children, tilt = 3 }: { children: React.ReactNode; tilt?: number }) {
+/**
+ * Kesit kaydırmayla kendi hızında süzülür. DÖNMEZ: döndürülen kesitteki
+ * küçük metin dinlenme hâlinde bile yumuşak/bulanık rasterleşiyordu.
+ */
+function FloatingFrame({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], [90, -90])
-  const rotate = useTransform(scrollYProgress, [0, 0.5, 1], [tilt, 0, -tilt / 2])
   return (
-    <motion.div ref={ref} style={{ y, rotate }}>
+    <motion.div ref={ref} style={{ y }}>
       <Reveal variant="clip">{children}</Reveal>
     </motion.div>
   )
@@ -35,7 +37,7 @@ export function NotebookScene() {
     <section id="defter" className="relative z-10 scroll-mt-24 px-6 py-28 sm:px-10 sm:py-40">
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-20">
         <div className="lg:col-span-7">
-          <FloatingFrame tilt={-3}>
+          <FloatingFrame>
             <PreviewFrame caption="derinay · seans defteri">
               <NotePreview />
             </PreviewFrame>
@@ -86,7 +88,7 @@ export function FinanceScene() {
         </div>
 
         <div className="mt-16 lg:col-span-7 lg:mt-0">
-          <FloatingFrame tilt={3}>
+          <FloatingFrame>
             <PreviewFrame caption="derinay · yeni makbuz">
               <ReceiptPreview />
             </PreviewFrame>

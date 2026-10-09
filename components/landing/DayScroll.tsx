@@ -57,7 +57,7 @@ function MomentCard({
   const Icon = m.icon
   return (
     <article
-      className="glass relative flex h-[min(34rem,70vh)] w-[min(34rem,78vw)] shrink-0 flex-col overflow-hidden rounded-[2rem] p-8 max-md:h-auto max-md:w-full sm:p-10"
+      className="glass glass-static relative flex h-[min(34rem,70vh)] w-[min(34rem,78vw)] shrink-0 flex-col overflow-hidden rounded-[2rem] p-8 max-md:h-auto max-md:w-full sm:p-10"
       style={{ backgroundImage: `radial-gradient(120% 90% at 100% 0%, ${m.wash}, transparent 60%)` }}
     >
       <motion.span

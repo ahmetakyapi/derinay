@@ -46,8 +46,8 @@ export default async function LoginPage({
         className="panel-wipe dark relative hidden flex-col justify-between overflow-hidden bg-indigo-950 p-12 text-[var(--ink)] lg:flex xl:p-16"
       >
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-32 -top-32 h-[30rem] w-[30rem] rounded-full bg-indigo-500/20 blur-[110px]" />
-          <div className="absolute -bottom-40 right-0 h-[26rem] w-[26rem] rounded-full bg-amber-500/10 blur-[100px]" />
+          <div className="absolute -left-32 -top-32 h-[30rem] w-[30rem] bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
+          <div className="absolute -bottom-40 right-0 h-[26rem] w-[26rem] bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
           <BloomMark className="slow-spin absolute -right-48 top-1/2 h-[44rem] w-[44rem] -translate-y-1/2 text-white/[0.035]" />
         </div>
 

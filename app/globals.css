@@ -226,6 +226,14 @@ html.dark :focus-visible {
       0 18px 40px -16px rgba(0, 0, 0, 0.5);
   }
 
+  /* Kayan/hareketli kartlar: arkasında bulanacak bir şey yok, ama
+     backdrop-filter her karede yeniden hesaplanıyordu (yatay gün sahnesi). */
+  .glass-static {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: linear-gradient(180deg, rgba(var(--paper), 0.98), rgba(var(--paper), 0.9));
+  }
+
   /* Güçlü yüzey (modal, panel, drawer) */
   .surface {
     background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.92));

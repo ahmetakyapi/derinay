@@ -96,7 +96,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={schibsted.className}>
+      {/* body'ye `schibsted.className` VERİLMEZ: next/font sınıfı font-family'yi
+          doğrudan Schibsted'e kilitler ve globals.css'teki `var(--font-sans)`
+          yığınını (başında ₺ alt kümesi DerinayLira) ezer — ₺ her yerde £ gibi
+          çiziliyordu. Aile `--font-sans-face` değişkeniyle html'den gelir. */}
+      <body>
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <ThemeColorSync />

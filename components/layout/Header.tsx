@@ -76,7 +76,11 @@ export default function Header() {
           altından geçen içeriği bulanıklaştırıyordu. Masaüstünde saydam kalıyor. */}
       <motion.header
         initial={{ y: '-100%' }}
-        animate={{ y: introDone && (!hidden || menuOpen) ? '0%' : '-100%' }}
+        // Gizliyken saydamlaşır da: `.glass` gölgesi ekranın üst kenarından
+        // aşağı sızıp gri bir şerit bırakıyordu.
+        animate={
+          introDone && (!hidden || menuOpen) ? { y: '0%', opacity: 1 } : { y: '-100%', opacity: introDone ? 0 : 1 }
+        }
         transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: introDone && !scrolled ? 0.5 : 0 }}
         className={`fixed inset-x-0 top-0 z-50 h-[calc(4.5rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-500 ${
           scrolled && !menuOpen

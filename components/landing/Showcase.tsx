@@ -51,8 +51,8 @@ export function Showcase() {
       <motion.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950">
         {/* Suluboya ışığı */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-[120px]" />
-          <div className="absolute -bottom-40 right-0 h-[28rem] w-[28rem] rounded-full bg-amber-500/10 blur-[100px]" />
+          <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
+          <div className="absolute -bottom-40 right-0 h-[28rem] w-[28rem] bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-28 sm:px-10 sm:pb-32 sm:pt-36">
