@@ -144,7 +144,7 @@ lib/
   variants.ts      # Framer Motion varyantları + EASE
 components/
   motion/          # HAREKET SİSTEMİ (bkz. §7): RouteTransition (perde + mürekkep çizgisi, kök layout),
-                   # Preloader + intro.ts (açılış perdesi durumu), SmoothScroll (Lenis), RevealText
+                   # Preloader ("Galeri Penceresi" açılışı, sayaçsız) + intro.ts (açılış durumu), SmoothScroll (Lenis), RevealText
                    # (kelime maskesi), Reveal (görünüme girince), Magnetic, VelocityMarquee
   landing/         # Landing bölümleri: Hero, Showcase, CapabilityIndex, DayScroll, Scenes (defter/finans/
                    # güven/kapanış). layout/Header + layout/Footer da landing'e özeldir.
@@ -279,7 +279,7 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 - **Title Case KURALI (metin yazarken ilk bakılacak yer)**:
   **Title Case olan** — sayfa/bölüm/kart başlıkları, **ALT BAŞLIKLAR** (`PageHeader`
   `subtitle`, landing'de başlığın hemen altındaki tek satırlık giriş cümlesi, kahraman
-  alt başlığı, bölüm künyeleri `(02) Panelin İçi`, plaket/künye yazıları), modal başlıkları,
+  alt başlığı), modal başlıkları,
   düğme ve bağlantı metinleri, form alanı etiketleri (`<Field label>`), sekme adları, menü
   satırları, durum/kategori/filtre rozetleri (`lib/constants.ts` sözlükleri),
   tablo başlıkları, eylem adı veren `title` ipuçları. (Alt başlık kuralı sahibinin
@@ -345,9 +345,20 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 - **Kenar çubuğu**: aktif satır zemini `layoutId="nav-active"` ile satırdan satıra kayar;
   masaüstü + çekmece aynı anda bağlı olabildiği için her `NavList` kendi `LayoutGroup id`'sinde.
   Mobil sekme çubuğunda `layoutId="tab-active"`.
-- **Açılış perdesi** (`Preloader`, yalnız landing): oturumda BİR kez. Layout'taki engelleyici
-  script `sessionStorage['derinay:intro']` varsa `html.intro-seen` koyar, CSS perdeyi ilk
-  boyamadan gizler. Kahraman `useIntroDone()` ile perde kalkarken oynar.
+- **Açılış — "Galeri Penceresi"** (`Preloader`, yalnız landing): oturumda BİR kez, ~2 sn.
+  SAYAÇ YOK (000→100 yüzde sayacı sahibinin isteğiyle kaldırıldı, Ekim 2026 — sahibinin
+  diğer sitelerinde de aynı sayaç vardı; her site kendi açılışını taşır, geri getirme).
+  Kâğıt üstünde kemerli pencerenin çerçevesi çizilir → çam gökyüzü aşağıdan dolar → altın
+  güneş ufka iner, su çizgileri açılır → orkide kendini çizer → "Derinay" + altın nokta
+  yükselir → kâğıtta kemer biçiminde bir DELİK büyür (`clip-path: path(evenodd, …)`, her
+  karede JS ile; kenarında altın saç teli), resim çözülür ve pencereden sayfa görünür;
+  kahraman bu sırada oynar. Kurulum SAF CSS (`.intro-*` keyframe'leri, globals.css) —
+  ilk boyamada başlar, hidrasyonu beklemez; çıkış altın noktanın animasyonu bitince
+  (`getAnimations()[0].finished`). Yalnız transform/opacity/clip-path/stroke-dashoffset.
+  Tıklama/tuş beklemeden açar. Layout'taki engelleyici script `sessionStorage['derinay:intro']`
+  varsa `html.intro-seen` koyar, CSS perdeyi ilk boyamadan gizler (yenilemede perde yok).
+  Hareket azaltmada CSS gizler. JS hiç çalışmazsa `.preloader`'daki `intro-failsafe`
+  4.6 sn'de perdeyi kaldırır. Kahraman `useIntroDone()` ile perde açılırken oynar.
 - **Lenis yalnız landing'de** (`SmoothScroll`). Panelde iç kaydırma alanları çok; yerel kalır.
 - **Tema geçişi**: `useThemeTransition` — View Transitions API ile tıklanan noktadan açılan
   daire; sınıf geri çağrı İÇİNDE elle değişir (next-themes efekti geç kalır).
@@ -376,8 +387,12 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   sahne (yükseklik ÖLÇÜLÜR; telefonda dikey), `#defter`/`#finans` aynalı ikili kesit
   (üst üste en fazla İKİ tane), `#guven` taahhüt satırları (`<dl>`, gece adası).
   Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
-- **Bölüm künyesi YOK**: bölüm başlıklarının üstündeki küçük mono `(0N) Ad` etiketleri
-  sahibinin isteğiyle KALDIRILDI (Ekim 2026) — geri ekleme. Başlık tek başına açar.
+- **Bölüm künyesi / eyebrow YOK**: başlıkların üstündeki küçük mono `(0N) Ad`, `No. 01 …`
+  türü etiketler, `PageHeader` üstü grup adı ve kart içi `01 / 03` sayaçları sahibinin
+  isteğiyle KALDIRILDI (Ekim 2026: "hem okunmuyor hem kötü görünüyor") — landing'de de
+  panelde de geri ekleme. Başlık tek başına açar; gerçek bilgi taşıyan satır (tarih,
+  sayım, selamlama) başlığın ALTINDA `subtitle` olarak durur. İşlevsel etiketler
+  (form etiketi, KPI/tablo başlığı, çip/rozet, menü) bu kuralın dışında.
 - **Dil: günlük Türkçe.** Landing ve giriş metinleri herkesin konuştuğu kelimelerle yazılır.
   KULLANMA: "pratik" (muayenehane anlamında — günlük dilde "kullanışlı" demek), "atölye",
   "emanet", "künye/plaket" gibi yapay ya da eski ifadeler, "parola" (→ "şifre"), "duygu

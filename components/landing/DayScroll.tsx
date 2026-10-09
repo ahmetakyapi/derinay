@@ -67,10 +67,11 @@ function MomentCard({
       >
         0{i + 1}
       </motion.span>
-      <div className="flex items-center justify-between font-mono text-[13px] text-slate-600 dark:text-slate-400">
-        <span>0{i + 1} / 03</span>
-        <span className="rounded-full border border-slate-500/25 px-3 py-1">{m.time}</span>
-      </div>
+      {/* Kartın tek künyesi: anın adı (çip). Eski "01 / 03" sayacı dev arka
+          plan numarasını tekrar ediyordu — kaldırıldı. */}
+      <span className="self-start rounded-full border border-slate-500/25 px-3 py-1 text-[13px] font-medium text-slate-600 dark:text-slate-400">
+        {m.time}
+      </span>
       <Icon aria-hidden strokeWidth={1.25} className="mt-10 h-16 w-16 text-indigo-600 dark:text-indigo-300 sm:h-20 sm:w-20" />
       <div className="relative mt-auto pt-10">
         <h3 className="font-display text-[1.85rem] font-bold leading-[1.05] tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[2.6rem]">

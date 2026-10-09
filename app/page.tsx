@@ -21,7 +21,7 @@ import { NotebookScene, FinanceScene, TrustScene, Closing } from '@/components/l
  * Sayfa bir broşür değil, kaydırmayla oynanan bir sergi. Her bölüm kendi
  * HAREKETİNİ ve kendi DÜZENİNİ içeriğinden alır; hiçbiri tekrar etmez:
  *
- *   açılış    → oturumda bir kez: orkide açar, sayaç 100'e çıkar, perde kalkar
+ *   açılış    → oturumda bir kez: galeri penceresi kurulur, kemer açılıp sayfaya dönüşür
  *   kahraman  → ekranı dolduran manşet; iki satır kaydırmada zıt yönlere açılır
  *   bant      → kaydırma hızına duyarlı, dolu/kontur dönüşümlü kayan sözcükler
  *   vitrin    → gece adası: çam zemin kenarlardan genişler, kesit yatıktan düzleşir
