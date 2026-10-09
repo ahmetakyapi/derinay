@@ -88,7 +88,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
               type="button"
               onClick={() => setKind(k)}
               className={cn(
-                'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all',
+                'rounded-full border px-2.5 py-1 text-xs font-semibold transition-all',
                 kind === k
                   ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
                   : 'border-slate-500/20 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
@@ -159,7 +159,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge label={NOTE_KIND_LABEL[note.kind]} tone={NOTE_KIND_TONE[note.kind]} />
             {note.mood && (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
                 <span className={cn('h-2.5 w-2.5 rounded-full', MOOD_BG[note.mood])} />
                 {MOOD_LABEL[note.mood]}
               </span>
@@ -167,13 +167,13 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             {note.goalTitle && (
               <span
                 title={`Hedef: ${note.goalTitle}`}
-                className="inline-flex max-w-[220px] items-center gap-1 truncate rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                className="inline-flex max-w-[220px] items-center gap-1 truncate rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300"
               >
                 🎯 <span className="truncate">{note.goalTitle}</span>
               </span>
             )}
           </div>
-          <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+          <p className="mt-2 font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
             {formatDateTime(note.createdAt)}
           </p>
         </div>

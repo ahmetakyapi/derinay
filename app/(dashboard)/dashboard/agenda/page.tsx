@@ -20,9 +20,9 @@ function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?:
           <span className={cn('mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg', t.bg, t.tone)}>
             <t.icon className="h-4 w-4" />
           </span>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{t.label}</p>
+          <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">{t.label}</p>
           <p className={cn('mt-0.5 font-display text-lg font-semibold tracking-tight', t.sensitive && 'sensitive', t.tone)}>{t.value}</p>
-          {t.hint && <p className="mt-0.5 text-[11px] text-slate-400">{t.hint}</p>}
+          {t.hint && <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{t.hint}</p>}
         </div>
       ))}
     </div>
@@ -101,7 +101,7 @@ export default async function AgendaPage({
         <div className="glass rounded-2xl p-3 sm:p-4">
           <div className="mb-2 grid grid-cols-7 gap-1 sm:gap-2">
             {WEEKDAYS.map((w) => (
-              <div key={w} className="py-1 text-center text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-[11px]">
+              <div key={w} className="py-1 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
                 {w}
               </div>
             ))}
@@ -126,25 +126,25 @@ export default async function AgendaPage({
                     <span className={cn(
                       'font-bold leading-none',
                       isToday
-                        ? 'flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] text-white'
-                        : 'text-[11px] text-slate-500 dark:text-slate-300 sm:text-xs',
+                        ? 'flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-xs text-white'
+                        : 'text-xs text-slate-500 dark:text-slate-300',
                     )}>
                       {day}
                     </span>
                     {items.length > 0 && (
-                      <span className="text-[9px] font-bold text-slate-400 sm:text-[10px]">{items.length}</span>
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{items.length}</span>
                     )}
                   </div>
                   <div className="hidden flex-1 flex-col gap-0.5 sm:flex">
                     {items.slice(0, 3).map((it) => (
-                      <span key={it.id} className="flex items-center gap-1 truncate rounded bg-slate-500/[0.06] px-1 py-0.5 text-[9px] text-slate-600 dark:text-slate-300">
+                      <span key={it.id} className="flex items-center gap-1 truncate rounded bg-slate-500/[0.06] px-1 py-0.5 text-xs text-slate-600 dark:text-slate-300">
                         <span className={cn('h-1 w-1 shrink-0 rounded-full', CLIENT_COLOR_DOT[it.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                         <span className="font-mono font-semibold">{it.time}</span>
                         <span className="sensitive truncate">{it.clientName}</span>
                       </span>
                     ))}
                     {items.length > 3 && (
-                      <span className="text-[9px] text-slate-400">+{items.length - 3} daha</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">+{items.length - 3} daha</span>
                     )}
                   </div>
                   {/* Mobil: nokta dizisi */}

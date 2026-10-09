@@ -27,7 +27,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
             )}
           >
             <div className="mb-2 flex items-baseline justify-between">
-              <span className={cn('text-[11px] font-semibold uppercase', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
+              <span className={cn('text-xs font-semibold', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400')}>
                 {d.label}
               </span>
               <span className={cn('relative text-sm font-bold', isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300')}>
@@ -50,7 +50,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
                     >
                       <div className="flex items-center gap-1.5">
                         <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', CLIENT_COLOR_DOT[s.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
-                        <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-200">{s.time}</span>
+                        <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-200">{s.time}</span>
                       </div>
                       <p className={cn('sensitive mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300', dim && 'line-through')}>
                         {s.clientName}
@@ -64,7 +64,7 @@ export function WeekCalendar({ days, todayKey }: { days: Day[]; todayKey: string
                   )
                 })
               ) : (
-                <span className="mt-auto text-center text-[11px] text-slate-300 dark:text-slate-600">—</span>
+                <span className="mt-auto text-center text-xs text-slate-300 dark:text-slate-600">—</span>
               )}
             </div>
           </div>

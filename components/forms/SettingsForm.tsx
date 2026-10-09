@@ -172,7 +172,7 @@ export function SettingsForm({
             <Input type="number" min="0" max="60" step="1" value={tax.incomeTaxRate} onChange={setRate('incomeTaxRate')} required />
           </Field>
         </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+        <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
           KDV ve stopaj yeni makbuzun varsayılanı olur (makbuz kesilirken değiştirilebilir).
           Gelir vergisi oranı, panel ve Vergiler sayfasındaki tahmini anında günceller.
         </p>
@@ -220,7 +220,7 @@ export function SettingsForm({
               key={ph}
               type="button"
               onClick={() => setTpl((t) => `${t}${t.endsWith(' ') || !t ? '' : ' '}${ph}`)}
-              className="rounded-full border border-slate-500/20 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+              className="rounded-full border border-slate-500/20 px-2.5 py-1 font-mono text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
             >
               {ph}
             </button>
@@ -254,7 +254,7 @@ export function SettingsForm({
               key={ph}
               type="button"
               onClick={() => setDebtTpl((t) => `${t}${t.endsWith(' ') || !t ? '' : ' '}${ph}`)}
-              className="rounded-full border border-slate-500/20 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
+              className="rounded-full border border-slate-500/20 px-2.5 py-1 font-mono text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300"
             >
               {ph}
             </button>

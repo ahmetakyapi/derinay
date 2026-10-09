@@ -67,7 +67,7 @@ function MomentCard({
       >
         0{i + 1}
       </motion.span>
-      <div className="flex items-center justify-between font-mono text-[11px] text-slate-500 dark:text-slate-400">
+      <div className="flex items-center justify-between font-mono text-[13px] text-slate-600 dark:text-slate-400">
         <span>0{i + 1} / 03</span>
         <span className="rounded-full border border-slate-500/25 px-3 py-1">{m.time}</span>
       </div>
@@ -147,7 +147,7 @@ export function DayScroll() {
           <div className="relative h-px bg-slate-500/20">
             <motion.div style={{ scaleX: scrollYProgress }} className="nav-ink absolute inset-0 origin-left" />
           </div>
-          <div className="mt-3 flex justify-between font-mono text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="mt-3 flex justify-between text-sm font-medium text-slate-600 dark:text-slate-400">
             <span>Sabah</span>
             <span>Seans Arası</span>
             <span>Ay Sonu</span>

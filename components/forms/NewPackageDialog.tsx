@@ -74,7 +74,7 @@ export function NewPackageDialog({
             <input type="checkbox" name="recordIncome" defaultChecked className="h-4 w-4 rounded accent-indigo-600" />
             <span>
               <span className="font-semibold">Tutarı gelir olarak da kaydet</span>
-              <span className="block text-xs text-slate-400">finans & vergiye yansısın (ayrıca ödeme eklemeyeceksen işaretle)</span>
+              <span className="block text-xs text-slate-500 dark:text-slate-400">finans & vergiye yansısın (ayrıca ödeme eklemeyeceksen işaretle)</span>
             </span>
           </label>
 

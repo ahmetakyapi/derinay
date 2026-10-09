@@ -153,7 +153,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                 autoComplete="off"
                 className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
               />
-              <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 sm:block">ESC</kbd>
+              <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs text-slate-500 dark:text-slate-400 sm:block">ESC</kbd>
             </div>
 
             {/* Sonuçlar */}
@@ -186,7 +186,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                       </span>
                     )}
                     <span className={cn('flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', r.client && 'sensitive')}>{r.label}</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{r.group}</span>
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{r.group}</span>
                     {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-300" />}
                   </button>
                 ))

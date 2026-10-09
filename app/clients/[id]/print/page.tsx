@@ -64,14 +64,14 @@ export default async function ClientFilePrintPage({
           </div>
           <div className="text-right">
             <h1 className="text-lg font-extrabold uppercase tracking-wide text-slate-400">Danışan Dosyası</h1>
-            <p className="text-xs text-slate-400">{formatDate(new Date().toISOString())} itibarıyla</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(new Date().toISOString())} itibarıyla</p>
           </div>
         </div>
 
         {/* Kimlik */}
         <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Danışan</p>
+            <p className="mb-1 text-[13px] font-semibold text-slate-600">Danışan</p>
             <p className="text-xl font-bold">{client.name}</p>
             <p className="mt-1 text-slate-500">
               {[client.email, client.phone].filter(Boolean).join(' · ') || '—'}
@@ -119,7 +119,7 @@ export default async function ClientFilePrintPage({
         {/* Tedavi hedefleri */}
         {goals.length > 0 && (
           <section className="mt-8">
-            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-xs font-bold uppercase tracking-wide text-slate-400">
+            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-[13px] font-semibold text-slate-600">
               Tedavi Hedefleri
             </h2>
             <ul className="space-y-1 text-sm">
@@ -136,7 +136,7 @@ export default async function ClientFilePrintPage({
         {/* İlerleme ölçümleri */}
         {scores.length > 0 && (
           <section className="mt-8">
-            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-xs font-bold uppercase tracking-wide text-slate-400">
+            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-[13px] font-semibold text-slate-600">
               İlerleme Ölçümleri
             </h2>
             <table className="w-full text-sm">
@@ -153,14 +153,14 @@ export default async function ClientFilePrintPage({
               </tbody>
             </table>
             {scores.length > 12 && (
-              <p className="mt-1 text-xs text-slate-400">… ve {scores.length - 12} eski ölçüm</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">… ve {scores.length - 12} eski ölçüm</p>
             )}
           </section>
         )}
 
         {/* Seans geçmişi */}
         <section className="mt-8">
-          <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-xs font-bold uppercase tracking-wide text-slate-400">
+          <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-[13px] font-semibold text-slate-600">
             Seans Geçmişi ({sessions.length})
           </h2>
           <table className="w-full text-sm">
@@ -175,20 +175,20 @@ export default async function ClientFilePrintPage({
             </tbody>
           </table>
           {sessions.length > 40 && (
-            <p className="mt-1 text-xs text-slate-400">… ve {sessions.length - 40} eski seans</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">… ve {sessions.length - 40} eski seans</p>
           )}
         </section>
 
         {/* Seans Defteri */}
         {notes.length > 0 && (
           <section className="mt-8">
-            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-xs font-bold uppercase tracking-wide text-slate-400">
-              Seans Defteri ({notes.length} not)
+            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-[13px] font-semibold text-slate-600">
+              Seans Defteri ({notes.length} Not)
             </h2>
             <div className="space-y-4">
               {notes.map((n) => (
                 <div key={n.id} className="break-inside-avoid rounded-lg border border-slate-100 p-3.5">
-                  <p className="mb-1 text-xs text-slate-400">
+                  <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
                     {formatDateTimeLong(String(n.createdAt))} · {NOTE_KIND_LABEL[n.kind]}
                     {n.mood ? ` · duygu: ${MOOD_LABEL[n.mood]}` : ''}
                   </p>
@@ -203,7 +203,7 @@ export default async function ClientFilePrintPage({
         {/* Ödeme özeti */}
         {payments.length > 0 && (
           <section className="mt-8">
-            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-xs font-bold uppercase tracking-wide text-slate-400">
+            <h2 className="mb-2 border-b border-slate-200 pb-1.5 text-[13px] font-semibold text-slate-600">
               Ödemeler ({payments.length})
             </h2>
             <table className="w-full text-sm">
@@ -218,13 +218,13 @@ export default async function ClientFilePrintPage({
               </tbody>
             </table>
             {payments.length > 20 && (
-              <p className="mt-1 text-xs text-slate-400">… ve {payments.length - 20} eski ödeme</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">… ve {payments.length - 20} eski ödeme</p>
             )}
           </section>
         )}
 
         {/* Alt bilgi — gizlilik */}
-        <div className="mt-12 border-t border-slate-200 pt-5 text-center text-xs text-slate-400">
+        <div className="mt-12 border-t border-slate-200 pt-5 text-center text-xs text-slate-500 dark:text-slate-400">
           <p className="font-semibold text-slate-500">GİZLİ — Bu dosya özel nitelikli kişisel veri içerir.</p>
           <p className="mt-1">
             {BUSINESS.name} · {BUSINESS.owner || OWNER_PLACEHOLDER} tarafından {formatDate(new Date().toISOString())} tarihinde oluşturulmuştur.

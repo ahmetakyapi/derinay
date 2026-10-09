@@ -98,7 +98,7 @@ export function RestoreCard() {
           </p>
         )}
 
-        <p className="mt-3 text-[11px] leading-relaxed text-slate-400">
+        <p className="mt-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
           İşlem atomiktir: geri yükleme yarıda kesilirse hiçbir veri değişmez. Yine de geri
           yüklemeden önce mevcut durumun tam yedeğini almanı öneririz.
         </p>

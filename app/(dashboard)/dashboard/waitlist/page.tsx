@@ -45,7 +45,7 @@ export default async function WaitlistPage() {
                       <div className="flex items-center gap-2">
                         <p className="sensitive truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{e.name}</p>
                         {high && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
                             <Sparkles className="h-3 w-3" /> Öncelik
                           </span>
                         )}

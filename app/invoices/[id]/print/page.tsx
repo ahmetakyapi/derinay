@@ -66,19 +66,19 @@ export default async function InvoicePrintPage({
         {/* Taraflar + tarihler */}
         <div className="mt-8 grid grid-cols-2 gap-8 text-sm">
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Makbuz Edilen</p>
+            <p className="mb-1 text-[13px] font-semibold text-slate-600">Makbuz Edilen</p>
             <p className="font-bold">{inv.clientName ?? 'Genel müşteri'}</p>
             {inv.clientEmail && <p className="text-slate-500">{inv.clientEmail}</p>}
             {inv.clientPhone && <p className="text-slate-500">{inv.clientPhone}</p>}
           </div>
           <div className="text-right">
             <div className="mb-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Düzenleme tarihi</p>
+              <p className="text-[13px] font-semibold text-slate-600">Düzenleme Tarihi</p>
               <p className="font-semibold">{formatDate(inv.issueDate)}</p>
             </div>
             {inv.dueDate && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Vade tarihi</p>
+                <p className="text-[13px] font-semibold text-slate-600">Vade Tarihi</p>
                 <p className="font-semibold">{formatDate(inv.dueDate)}</p>
               </div>
             )}
@@ -88,7 +88,7 @@ export default async function InvoicePrintPage({
         {/* Kalemler */}
         <table className="mt-10 w-full text-sm">
           <thead>
-            <tr className="border-b-2 border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
+            <tr className="border-b-2 border-slate-200 text-left text-[13px] text-slate-600">
               <th className="pb-3 font-semibold">Açıklama</th>
               <th className="pb-3 text-right font-semibold">Tutar</th>
             </tr>
@@ -140,7 +140,7 @@ export default async function InvoicePrintPage({
         )}
 
         {/* Alt bilgi */}
-        <div className="mt-14 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
+        <div className="mt-14 border-t border-slate-200 pt-6 text-center text-xs text-slate-500 dark:text-slate-400">
           <p>{BUSINESS.taxOffice} V.D. · VKN/TCKN: {BUSINESS.taxId}</p>
           <p className="mt-1">Bu belge {BUSINESS.name} üzerinden oluşturulmuştur. Bizi tercih ettiğiniz için teşekkürler.</p>
         </div>

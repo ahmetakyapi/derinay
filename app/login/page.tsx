@@ -65,7 +65,7 @@ export default async function LoginPage({
           <blockquote className="title-mask font-display text-[1.9rem] font-medium italic leading-[1.2] tracking-[-0.03em] text-slate-50 xl:text-[2.2rem]">
             &ldquo;{quote.text}&rdquo;
           </blockquote>
-          <figcaption className="subtitle-rise mt-5 flex items-center gap-3 font-mono text-xs text-slate-400">
+          <figcaption className="subtitle-rise mt-5 flex items-center gap-3 text-sm font-medium text-slate-300">
             <span className="h-px w-8 bg-amber-400/70" />
             {quote.author}
           </figcaption>
@@ -79,7 +79,7 @@ export default async function LoginPage({
           <div className="absolute -right-20 bottom-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
         </div>
 
-        <div className="relative flex items-center justify-between font-mono text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="relative flex items-center justify-between text-[13px] font-medium text-slate-600 dark:text-slate-400">
           <Link href="/" className="group inline-flex items-center gap-2 hover:text-slate-900 dark:hover:text-white">
             <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-1" />
             Ana Sayfa
@@ -110,7 +110,7 @@ export default async function LoginPage({
             <blockquote className="font-display text-sm italic text-slate-500 dark:text-slate-400">
               &ldquo;{quote.text}&rdquo;
             </blockquote>
-            <figcaption className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">{quote.author}</figcaption>
+            <figcaption className="mt-1.5 text-[13px] text-slate-500 dark:text-slate-400">{quote.author}</figcaption>
           </figure>
         </div>
       </section>

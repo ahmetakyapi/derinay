@@ -74,7 +74,7 @@ export function StatCard({
     >
       <div className="relative z-10 flex items-start justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+          <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">
             {label}
           </p>
           {/* sensitive: gizlilik modunda tutarlar da bulanır */}

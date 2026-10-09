@@ -81,7 +81,7 @@ export function TagInput({
               type="button"
               onClick={() => add(s)}
               className={cn(
-                'inline-flex items-center gap-1 rounded-full border border-slate-500/20 px-2 py-1 text-[11px] font-medium text-slate-500',
+                'inline-flex items-center gap-1 rounded-full border border-slate-500/20 px-2 py-1 text-xs font-medium text-slate-500',
                 'transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300',
               )}
             >

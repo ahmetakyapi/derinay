@@ -163,7 +163,7 @@ export function AgendaWeek({
                 )}
               >
                 <div className="flex items-center justify-center gap-1.5">
-                  <span className={cn('text-[10px] font-bold uppercase tracking-wide', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
+                  <span className={cn('text-xs font-semibold', isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400')}>
                     {d.label}
                   </span>
                   <span
@@ -177,7 +177,7 @@ export function AgendaWeek({
                     {d.dayNum}
                   </span>
                 </div>
-                <span className={cn('mt-0.5 block text-[10px] font-medium', d.items.length ? 'text-slate-400' : 'text-transparent')}>
+                <span className={cn('mt-0.5 block text-xs font-medium', d.items.length ? 'text-slate-500 dark:text-slate-400' : 'text-transparent')}>
                   {d.items.length ? `${d.items.length} seans` : '·'}
                 </span>
               </div>
@@ -191,7 +191,7 @@ export function AgendaWeek({
             {hours.map((h) => (
               <span
                 key={h}
-                className="absolute right-2 -translate-y-1/2 font-mono text-[10px] text-slate-400"
+                className="absolute right-2 -translate-y-1/2 font-mono text-xs text-slate-500 dark:text-slate-400"
                 style={{ top: (h * 60 - DAY_START) }}
               >
                 {pad(h)}:00
@@ -285,13 +285,13 @@ export function AgendaWeek({
                     <span aria-hidden className={cn('pointer-events-none absolute inset-0', t.bg)} />
                     <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', t.bar)} />
                     <div className="relative flex items-center gap-1 pl-1.5">
-                      <span className={cn('font-mono text-[10px] font-bold', t.text)}>{it.time}</span>
+                      <span className={cn('font-mono text-xs font-bold', t.text)}>{it.time}</span>
                       {height >= 56 && (
-                        <span className="text-[9px] font-medium text-slate-400">· {it.durationMin}dk</span>
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">· {it.durationMin}dk</span>
                       )}
                       <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
                     </div>
-                    <p className={cn('sensitive relative truncate pl-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
+                    <p className={cn('sensitive relative truncate pl-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
                       {it.clientName}
                     </p>
                   </div>
@@ -301,7 +301,7 @@ export function AgendaWeek({
           ))}
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-500/10 px-4 py-2 text-[11px] text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-500/10 px-4 py-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="inline-flex items-center gap-1.5">
             <GripVertical className="h-3 w-3" /> Seansı sürükleyerek gün/saat değiştir · tıklayarak detayını aç
           </span>
@@ -319,11 +319,11 @@ export function AgendaWeek({
             className={cn('glass rounded-2xl p-4', d.key === todayKey && 'ring-1 ring-indigo-500/40')}
           >
             <h3 className="mb-2.5 flex items-baseline gap-2">
-              <span className={cn('text-xs font-bold uppercase tracking-wide', d.key === todayKey ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400')}>
+              <span className={cn('text-sm font-semibold', d.key === todayKey ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400')}>
                 {d.label}
               </span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{d.dayNum}</span>
-              {d.key === todayKey && <span className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">bugün</span>}
+              {d.key === todayKey && <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">Bugün</span>}
             </h3>
             {d.items.length ? (
               <ul className="space-y-1.5">
@@ -350,7 +350,7 @@ export function AgendaWeek({
                 })}
               </ul>
             ) : (
-              <p className="py-2 text-center text-xs text-slate-400">Seans yok</p>
+              <p className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">Seans yok</p>
             )}
           </section>
         ))}

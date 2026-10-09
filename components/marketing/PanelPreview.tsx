@@ -74,7 +74,7 @@ export function PanelPreview() {
             <span
               key={n.label}
               className={cn(
-                'flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] font-medium',
+                'flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium',
                 n.active
                   ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
                   // Pasif satır: açık temada 500, koyu temada 400 (aydınlanır).
@@ -93,15 +93,15 @@ export function PanelPreview() {
       <div className="min-w-0 flex-1 p-4 sm:p-5">
         <div className="mb-4 flex items-end justify-between gap-3">
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-600/90 dark:text-amber-400/90">
+            <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
               ✦ Çarşamba, 17 Haziran
             </p>
             <p className="mt-1 font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
               Günaydın
             </p>
-            <p className="mt-0.5 text-[11px] text-slate-400">6 aktif danışan · bu hafta 9 seans</p>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">6 Aktif Danışan · Bu Hafta 9 Seans</p>
           </div>
-          <span className="hidden shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-[11px] font-semibold text-white sm:block">
+          <span className="hidden shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white sm:block">
             + Ekle
           </span>
         </div>
@@ -111,7 +111,7 @@ export function PanelPreview() {
           {KPIS.map((k) => (
             <div key={k.label} className="rounded-xl border border-slate-500/10 bg-[rgba(var(--paper),0.55)] p-2.5">
               <div className="flex items-start justify-between gap-1">
-                <p className="text-[8px] font-semibold uppercase tracking-[0.08em] text-slate-400">{k.label}</p>
+                <p className="text-xs font-medium text-slate-600 dark:text-slate-400">{k.label}</p>
                 <span className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded-md', k.bg, k.tone)}>
                   <k.icon className="h-3 w-3" />
                 </span>
@@ -122,7 +122,7 @@ export function PanelPreview() {
               {k.delta && (
                 <p
                   className={cn(
-                    'mt-0.5 font-mono text-[9px] font-semibold tabular-nums',
+                    'mt-0.5 font-mono text-xs font-semibold tabular-nums',
                     k.up ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400',
                   )}
                 >
@@ -137,10 +137,10 @@ export function PanelPreview() {
         <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-3">
           <div className="rounded-xl border border-slate-500/10 bg-[rgba(var(--paper),0.55)] p-3 lg:col-span-2">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-slate-400">
+              <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">
                 Gelir &amp; Gider Akışı
               </p>
-              <span className="flex items-center gap-2 text-[8px] text-slate-400">
+              <span className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Gelir
                 </span>
@@ -179,7 +179,7 @@ export function PanelPreview() {
           </div>
 
           <div className="rounded-xl border border-slate-500/10 bg-[rgba(var(--paper),0.55)] p-3">
-            <p className="mb-2 text-[8px] font-bold uppercase tracking-[0.12em] text-slate-400">
+            <p className="mb-2 text-[13px] font-semibold text-slate-700 dark:text-slate-200">
               Bu Haftanın Seansları
             </p>
             <div className="grid grid-cols-7 gap-1">
@@ -191,10 +191,10 @@ export function PanelPreview() {
                     d.today ? 'border-indigo-500/40 bg-indigo-500/[0.07]' : 'border-slate-500/10',
                   )}
                 >
-                  <p className="text-[7px] font-bold uppercase text-slate-400">{d.day}</p>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{d.day}</p>
                   <p
                     className={cn(
-                      'font-mono text-[9px] font-bold tabular-nums',
+                      'font-mono text-[11px] font-bold tabular-nums',
                       d.today ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-500 dark:text-slate-400',
                     )}
                   >
@@ -215,7 +215,7 @@ export function PanelPreview() {
             <div className="mt-3 space-y-1.5 border-t border-slate-500/10 pt-2.5">
               {['09:00', '13:00', '16:00'].map((t, i) => (
                 <div key={t} className="flex items-center gap-1.5">
-                  <span className="font-mono text-[9px] font-bold text-slate-400">{t}</span>
+                  <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{t}</span>
                   <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', DOTS[i % DOTS.length])} />
                   <span className="h-1.5 flex-1 rounded-full bg-slate-500/10" />
                 </div>

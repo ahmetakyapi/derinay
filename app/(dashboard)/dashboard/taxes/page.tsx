@@ -104,7 +104,7 @@ export default async function TaxesPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Radial özet + lejant */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="mb-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             Bu Ay Ödenecek
           </h2>
           <TaxRadial kdv={current.kdvPayable} incomeTax={current.incomeTax} />
@@ -136,13 +136,13 @@ export default async function TaxesPage() {
                 <span className={cn('mb-3 flex h-10 w-10 items-center justify-center rounded-xl', b.bg, b.tone)}>
                   <b.icon className="h-5 w-5" />
                 </span>
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+                <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">
                   {b.label}
                 </p>
                 <p className={cn('sensitive mt-1.5 font-display text-2xl font-semibold tracking-tight', b.tone)}>
                   {formatTRY(b.value)}
                 </p>
-                <p className="mt-auto pt-2 text-[11px] text-slate-400">{b.hint}</p>
+                <p className="mt-auto pt-2 text-xs text-slate-500 dark:text-slate-400">{b.hint}</p>
               </div>
             ))}
 
@@ -171,7 +171,7 @@ export default async function TaxesPage() {
       {/* Vergi yükü trendi */}
       <section className="glass mt-6 rounded-2xl p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             Vergi Yükü Trendi
           </h2>
           <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
@@ -184,13 +184,13 @@ export default async function TaxesPage() {
 
       {/* Aylık döküm — bu ay vurgulu, dönem toplamı altta */}
       <section className="glass mt-6 overflow-hidden rounded-2xl">
-        <h2 className="border-b border-slate-500/10 px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+        <h2 className="border-b border-slate-500/10 px-5 py-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
           Aylık Döküm
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="text-left text-xs text-slate-500 dark:text-slate-400">
+              <tr className="text-left text-[13px] text-slate-600 dark:text-slate-400">
                 <th className="px-5 py-2.5 font-medium">Ay</th>
                 <th className="px-5 py-2.5 text-right font-medium">Gelir</th>
                 <th className="px-5 py-2.5 text-right font-medium">Gider</th>
@@ -214,7 +214,7 @@ export default async function TaxesPage() {
                       <span className="flex items-center gap-2">
                         {longLabel(m.key)}
                         {isCurrent && (
-                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
                             Bu Ay
                           </span>
                         )}

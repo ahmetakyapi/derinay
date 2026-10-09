@@ -12,14 +12,14 @@ import { cn } from '@/lib/utils'
  *    Atölye dilinin değil, şablonun işareti. (2) Küçük bir yalan — Derinay bir
  *    masaüstü uygulaması değil, o şerit hiçbir yerde yok.
  *  - Yerine GALERİ PLAKETİ geldi: kesit temiz durur, künye altına iner. Müzede
- *    etiket eserin yanındadır, üstünde değil. Küçük harf mono + geniş harf
- *    aralığı; sessiz ve okunur.
+ *    etiket eserin yanındadır, üstünde değil. Sans, normal harf aralığı,
+ *    13px — sessiz ama okunur (eski 10px geniş aralıklı mono okunmuyordu, Ekim 2026).
  *  - "örnek veri" damgası ARTIK ÇERÇEVENİN İÇİNDE. Eskiden yalnız hero'nun
  *    altında ayrı bir cümle olarak duruyordu; seans defteri ve makbuz kesitleri
  *    de uydurma isim ve tutar gösterdiği halde damgasızdı. Künye çerçeveye
  *    bağlanınca uyarı, uydurmanın olduğu yerde durur — üç kesitte de.
  *
- * Türkçe notu: `uppercase` KULLANILMAZ. Küçük harf plaket hem daha sessiz
+ * Türkçe notu: `uppercase` KULLANILMAZ. Title Case plaket hem daha sessiz
  * okunur hem de i → I dönüşümü riskini tümüyle ortadan kaldırır (bkz. CLAUDE.md §7).
  *
  * Renk `text-slate-500 dark:text-slate-400`; tek başına `text-slate-400` DEĞİL.
@@ -41,7 +41,7 @@ export function PreviewFrame({
       <div className="glass overflow-hidden rounded-2xl p-1.5 shadow-2xl shadow-slate-900/10 dark:shadow-black/50">
         <div className="overflow-hidden rounded-xl bg-[rgba(var(--paper),0.35)]">{children}</div>
       </div>
-      <figcaption className="mt-4 flex items-baseline justify-between gap-6 border-t border-slate-500/15 pt-2.5 font-mono text-[10px] tracking-[0.18em] text-slate-500 dark:text-slate-400">
+      <figcaption className="mt-4 flex items-baseline justify-between gap-6 border-t border-slate-500/15 pt-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-400">
         <span className="truncate">{caption}</span>
         <span className="shrink-0">Örnek Veri</span>
       </figcaption>

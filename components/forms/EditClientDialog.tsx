@@ -146,7 +146,7 @@ export function EditClientDialog({
             <input type="checkbox" name="consentGiven" defaultChecked={client.consentGiven} className="h-4 w-4 rounded accent-indigo-600" />
             <span>
               <span className="font-semibold">KVKK aydınlatma / onam alındı</span>
-              <span className="block text-xs text-slate-400">danışan onayını kayda geç</span>
+              <span className="block text-xs text-slate-500 dark:text-slate-400">danışan onayını kayda geç</span>
             </span>
           </label>
 

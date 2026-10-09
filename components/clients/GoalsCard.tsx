@@ -57,11 +57,11 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
   return (
     <section className="glass rounded-2xl p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
           <Target className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Tedavi Hedefleri
         </h2>
         {goals.length > 0 && (
-          <span className="text-xs font-semibold text-slate-400">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
             {achieved}/{goals.length} tamamlandı
           </span>
         )}
@@ -154,7 +154,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
       </form>
       {error && <p role="alert" className="mt-2 text-sm text-rose-500">{error}</p>}
       {!goals.length && (
-        <p className="mt-2 text-[11px] text-slate-400">
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Danışanla birlikte belirlediğin hedefleri ekle — tamamlandıkça ilerleme görünür.
         </p>
       )}

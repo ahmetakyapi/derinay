@@ -137,7 +137,7 @@ export default async function DashboardPage({
                   <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
                   <span className="sensitive text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
                   <span className={cn(
-                    'rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums',
+                    'rounded-full px-1.5 py-0.5 text-xs font-bold tabular-nums',
                     b.daysUntil === 0
                       ? 'bg-amber-500 text-white'
                       : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
@@ -147,7 +147,7 @@ export default async function DashboardPage({
                 </Link>
               ))}
               {birthdays.length > BIRTHDAY_PREVIEW && (
-                <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
                   +{birthdays.length - BIRTHDAY_PREVIEW} daha
                 </span>
               )}
@@ -200,7 +200,7 @@ export default async function DashboardPage({
       {incomeGoal > 0 && (
         <div className="glass mt-4 rounded-2xl px-5 py-4">
           <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-            <span className="font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            <span className="text-[13px] font-semibold text-slate-600 dark:text-slate-300">
               Aylık Hedef
             </span>
             <span className="sensitive font-mono tabular-nums text-slate-600 dark:text-slate-300">
@@ -232,7 +232,7 @@ export default async function DashboardPage({
       {/* Haftalık seans takvimi */}
       <section className="glass mt-6 rounded-2xl p-5">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <CalendarDays className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> {weekTitle}
           </h2>
           <div className="flex items-center gap-2">
@@ -271,7 +271,7 @@ export default async function DashboardPage({
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Bugünkü program */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="mb-4 flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <CalendarClock className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Bugün
           </h2>
           {rem.todaySessions.length ? (
@@ -306,13 +306,13 @@ export default async function DashboardPage({
           {/* Yarın — tek tık WhatsApp hatırlatması (no-show kıran ritüel) */}
           {rem.tomorrowSessions.length > 0 && (
             <div className="mt-4 border-t border-slate-500/10 pt-3.5">
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                Yarın · hatırlatma gönder
+              <p className="mb-2 text-[13px] font-medium text-slate-600 dark:text-slate-400">
+                Yarın · Hatırlatma Gönder
               </p>
               <ul className="space-y-1.5">
                 {rem.tomorrowSessions.map((s) => (
                   <li key={s.id} className="flex items-center gap-2.5 rounded-lg px-1.5 py-1">
-                    <span className="w-10 shrink-0 font-mono text-[11px] font-bold text-slate-400">{s.time}</span>
+                    <span className="w-11 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
                     <span className="sensitive min-w-0 flex-1 truncate text-[13px] text-slate-600 dark:text-slate-300">{s.clientName}</span>
                     <ReminderButton clientName={s.clientName} phone={s.clientPhone} date={s.dateIso} template={reminder.template} therapist={reminder.therapist} />
                   </li>
@@ -324,10 +324,10 @@ export default async function DashboardPage({
 
         {/* Hatırlatmalar */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="mb-4 flex items-center justify-between text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <span className="flex items-center gap-2"><Activity className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Hatırlatmalar</span>
             {reminderCount > 0 && (
-              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">{reminderCount}</span>
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300">{reminderCount}</span>
             )}
           </h2>
           {reminderCount ? (
@@ -338,7 +338,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400"><StickyNote className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.missingNotes.length} seansın notu eksik</p>
-                      <p className="sensitive truncate text-xs text-slate-400">{[...new Set(rem.missingNotes.map((m) => m.clientName))].slice(0, 3).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">{[...new Set(rem.missingNotes.map((m) => m.clientName))].slice(0, 3).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400">→</span>
                   </Link>
@@ -350,7 +350,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400"><Package className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.endingPackages.length} danışanın paketi bitiyor</p>
-                      <p className="sensitive truncate text-xs text-slate-400">{rem.endingPackages.slice(0, 3).map((p) => `${p.clientName} (${p.remaining})`).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">{rem.endingPackages.slice(0, 3).map((p) => `${p.clientName} (${p.remaining})`).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-rose-600 dark:text-rose-400">→</span>
                   </Link>
@@ -362,7 +362,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><Activity className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.staleScores.length} danışanda ölçüm zamanı</p>
-                      <p className="sensitive truncate text-xs text-slate-400">{rem.staleScores.slice(0, 3).map((s) => `${s.clientName} (${s.daysSince}g)`).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">{rem.staleScores.slice(0, 3).map((s) => `${s.clientName} (${s.daysSince}g)`).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-emerald-600 dark:text-emerald-400">→</span>
                   </Link>
@@ -374,7 +374,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400"><ShieldAlert className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{rem.missingConsent.length} danışanda onam eksik</p>
-                      <p className="sensitive truncate text-xs text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
+                      <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">{rem.missingConsent.slice(0, 3).map((c) => c.clientName).join(', ')}</p>
                     </div>
                     <span className="shrink-0 text-xs font-semibold text-sky-600 dark:text-sky-400">→</span>
                   </Link>
@@ -393,7 +393,7 @@ export default async function DashboardPage({
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                         {rem.silentClients.length} danışan sessizleşti
                       </p>
-                      <p className="sensitive truncate text-xs text-slate-400">
+                      <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">
                         {rem.silentClients.slice(0, 3).map((c) => `${c.clientName} (${c.daysSince}g)`).join(', ')}
                       </p>
                     </div>
@@ -407,7 +407,7 @@ export default async function DashboardPage({
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400"><DatabaseBackup className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Yedek alma zamanı</p>
-                      <p className="truncate text-xs text-slate-400">
+                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                         {rem.backupStale.daysAgo === null ? 'henüz hiç tam yedek alınmadı' : `son yedek ${rem.backupStale.daysAgo} gün önce`}
                       </p>
                     </div>
@@ -426,7 +426,7 @@ export default async function DashboardPage({
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gelir & Gider Akışı</h2>
+            <h2 className="text-[15px] font-semibold text-slate-700 dark:text-slate-200">Gelir & Gider Akışı</h2>
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" /> Gelir
@@ -440,7 +440,7 @@ export default async function DashboardPage({
         </section>
 
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Gider Kategorileri</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200">Gider Kategorileri</h2>
           {d.categoryBreakdown.length ? (
             <CategoryDonut data={d.categoryBreakdown} />
           ) : (
@@ -451,13 +451,13 @@ export default async function DashboardPage({
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Aylık Net</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200">Aylık Net</h2>
           <MonthlyBar data={d.trend} />
         </section>
 
         {/* Son işlemler */}
         <section className="glass rounded-2xl p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">Son İşlemler</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200">Son İşlemler</h2>
           {d.recent.length ? (
             <ul className="space-y-3">
               {d.recent.map((t) => {
@@ -497,14 +497,14 @@ export default async function DashboardPage({
 
       {/* Bekleyen tahsilat — kovalama aracı: en uzun bekleyen üstte */}
       <section className="glass mt-6 rounded-2xl p-5">
-        <h2 className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+        <h2 className="mb-4 flex flex-wrap items-center justify-between gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
           <span className="flex items-center gap-2">
             <HandCoins className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Bekleyen Tahsilat
           </span>
           {out.balanceCount > 0 && (
             <span className="sensitive font-mono text-[13px] font-bold tabular-nums text-amber-600 dark:text-amber-400">
               {formatTRY(out.balanceTotal, { compact: true })}
-              <span className="ml-1.5 font-sans text-[11px] font-medium text-slate-400">
+              <span className="ml-1.5 font-sans text-xs font-medium text-slate-500 dark:text-slate-400">
                 · {out.balanceCount} danışan
               </span>
             </span>
@@ -527,7 +527,7 @@ export default async function DashboardPage({
                       {/* Yaşlandırma: alacağın kaç gündür beklediği, tutardan önce gelir */}
                       <span
                         className={cn(
-                          'block text-[11px] font-medium',
+                          'block text-xs font-medium',
                           b.overdueDays >= 30
                             ? 'text-rose-600 dark:text-rose-400'
                             : b.overdueDays > 0
@@ -555,7 +555,7 @@ export default async function DashboardPage({
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-[11px] text-slate-400">
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
               Borç, <strong>açık makbuzlardan</strong> hesaplanır. Bir makbuzu “Ödendi”
               işaretlediğinde bakiyeden düşer.
             </p>

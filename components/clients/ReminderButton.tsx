@@ -141,7 +141,7 @@ export function ReminderButton({
 
           {/* Önizleme */}
           <div className="note-paper rounded-xl p-3.5">
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Önizleme</p>
+            <p className="mb-1 text-[13px] font-medium text-slate-600 dark:text-slate-400">Önizleme</p>
             {/* Mesaj danışanın adını içerir */}
             <p className="sensitive whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-200">{message}</p>
           </div>

@@ -106,11 +106,11 @@ export function AvatarPicker({
           {value ? 'Fotoğrafı Değiştir' : 'Fotoğraf Ekle'}
         </button>
         {error ? (
-          <p role="alert" className="mt-1.5 text-[11px] font-medium text-rose-600 dark:text-rose-400">
+          <p role="alert" className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
             {error}
           </p>
         ) : (
-          <p className="mt-1.5 text-[11px] text-slate-400">Opsiyonel — yoksa baş harfler görünür</p>
+          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Opsiyonel — yoksa baş harfler görünür</p>
         )}
       </div>
 

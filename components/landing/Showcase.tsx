@@ -84,7 +84,7 @@ export function Showcase() {
                 <dt className="font-mono text-[3.5rem] font-medium leading-none tracking-[-0.04em] text-slate-50 sm:text-[4.5rem]">
                   <CountUp to={f.n} />
                 </dt>
-                <dd className="mt-3 font-mono text-[11px] text-slate-400">{f.label}</dd>
+                <dd className="mt-3 text-sm font-medium text-slate-300">{f.label}</dd>
               </div>
             ))}
           </dl>

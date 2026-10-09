@@ -117,24 +117,24 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
                   {client.consentGiven ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                       <ShieldCheck className="h-3 w-3" /> Onam alındı
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
                       <ShieldAlert className="h-3 w-3" /> Onam eksik
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                     <CalendarClock className="h-3 w-3 text-slate-400" /> {durationSince(client.startDate)}
                   </span>
                   {client.birthDate && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                       <Cake className="h-3 w-3 text-amber-500" />
                       {formatDayMonth(client.birthDate)}
                     </span>
                   )}
-                  <span className="sensitive inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                  <span className="sensitive inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                     <CreditCard className="h-3 w-3 text-slate-400" />
                     <span className="font-mono tabular-nums">{formatTRY(client.sessionFee)}</span> / seans
                   </span>
@@ -154,7 +154,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                       <Link
                         key={t}
                         href={`/dashboard/clients?tag=${encodeURIComponent(t)}`}
-                        className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 dark:text-indigo-300"
+                        className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 dark:text-indigo-300"
                       >
                         #{t}
                       </Link>
@@ -221,7 +221,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       {/* Seans Paketi — ön ödemeli kullanım takibi */}
       <section className="glass mb-6 rounded-2xl p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <Package className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Paketi
           </h2>
           <div className="flex items-center gap-2">
@@ -256,7 +256,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 style={{ width: `${pkgPct}%` }}
               />
             </div>
-            <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span>{formatDate(activePackage.purchaseDate)} tarihli</span>
               {(pkgLow || pkgDone) && (
                 <span className={cn('font-semibold', pkgDone ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400')}>
@@ -279,7 +279,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         <div className="space-y-6">
           {/* Duygu Takibi */}
           <section className="glass rounded-2xl p-5">
-            <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <h2 className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
               <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Duygu Takibi
             </h2>
             <MoodTrail
@@ -295,7 +295,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {/* İlerleme Ölçümü — ölçek puanı eğrisi */}
           <section className="glass rounded-2xl p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
                 <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" /> İlerleme Ölçümü
               </h2>
               <NewScoreDialog clientId={client.id} lastLabel={scoreLabel ?? undefined} />
@@ -305,7 +305,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <>
                 {scoreSeries.length >= 2 && (
                   <>
-                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{scoreLabel}</p>
+                    <p className="mb-1 text-[13px] font-medium text-slate-600 dark:text-slate-400">{scoreLabel}</p>
                     <ScoreTrend data={scoreSeries} max={scoreMax} />
                   </>
                 )}
@@ -316,7 +316,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                         {s.value}{s.scaleMax ? <span className="text-slate-400">/{s.scaleMax}</span> : null}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-slate-600 dark:text-slate-300">{s.label}</span>
-                      <span className="shrink-0 text-xs text-slate-400">{formatDate(s.date)}</span>
+                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{formatDate(s.date)}</span>
                       <DeleteButton action={deleteScore.bind(null, s.id, client.id)} className="h-7 w-7" />
                     </li>
                   ))}
@@ -335,7 +335,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {/* Seanslar */}
           <section className="glass rounded-2xl p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
                 <CheckCircle2 className="h-4 w-4 text-sky-500 dark:text-sky-400" /> Seanslar
               </h2>
               <NewSessionDialog clientId={client.id} defaultFee={client.sessionFee} />
@@ -361,7 +361,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <p className="py-4 text-center text-sm text-slate-400">Seans kaydı yok.</p>
             )}
             {sessions.length > SESSION_PREVIEW && (
-              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
                 +{sessions.length - SESSION_PREVIEW} seans daha ·{' '}
                 <Link href="/dashboard/agenda" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
                   Ajandada Gör
@@ -372,7 +372,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
           {/* Ödemeler */}
           <section className="glass rounded-2xl p-5">
-            <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <h2 className="mb-4 flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
               <CreditCard className="h-4 w-4 text-emerald-500 dark:text-emerald-400" /> Ödemeler
             </h2>
             {payments.length ? (
@@ -390,7 +390,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <p className="py-4 text-center text-sm text-slate-400">Ödeme kaydı yok.</p>
             )}
             {payments.length > LEDGER_PREVIEW && (
-              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
                 +{payments.length - LEDGER_PREVIEW} ödeme daha
               </p>
             )}
@@ -398,7 +398,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
           {/* Makbuzlar */}
           <section className="glass rounded-2xl p-5">
-            <h2 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <h2 className="mb-4 flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
               <Receipt className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Makbuzlar
             </h2>
             {invoices.length ? (
@@ -425,7 +425,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <p className="py-4 text-center text-sm text-slate-400">Makbuz yok.</p>
             )}
             {invoices.length > LEDGER_PREVIEW && (
-              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-400">
+              <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
                 +{invoices.length - LEDGER_PREVIEW} makbuz daha ·{' '}
                 <Link href="/dashboard/invoices" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-300">
                   Tümünü Gör
@@ -437,7 +437,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {/* Belgeler — bağlantı referansları (dosya kullanıcının deposunda) */}
           <section className="glass rounded-2xl p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
                 <Paperclip className="h-4 w-4 text-violet-500 dark:text-violet-400" /> Belgeler
               </h2>
               <NewDocumentDialog clientId={client.id} />
@@ -479,7 +479,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       {/* Seans Defteri */}
       <section className="glass mt-6 overflow-hidden rounded-[1.5rem]">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
-          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri
           </h2>
           <div className="flex flex-wrap items-center gap-2">
@@ -503,7 +503,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-bold tracking-[0.01em] text-slate-700 dark:text-slate-200">Kayıtlar</p>
               {latestNoteAt && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Son kayıt <span className="font-semibold text-slate-500 dark:text-slate-300">{latestNoteAt}</span>
                 </p>
               )}
@@ -546,9 +546,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 function Stat({ label, value, tone, sub, sensitive }: { label: string; value: string; tone: string; sub?: string; sensitive?: boolean }) {
   return (
     <div className="glass rounded-2xl p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">{label}</p>
       <p className={cn('mt-1 font-display text-xl font-semibold tracking-tight', sensitive && 'sensitive', tone)}>{value}</p>
-      {sub && <p className="mt-0.5 text-[11px] font-medium text-rose-500/90 dark:text-rose-400/90">{sub}</p>}
+      {sub && <p className="mt-0.5 text-xs font-medium text-rose-500/90 dark:text-rose-400/90">{sub}</p>}
     </div>
   )
 }

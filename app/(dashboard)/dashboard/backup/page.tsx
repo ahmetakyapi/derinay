@@ -86,7 +86,7 @@ export default async function BackupPage() {
       </a>
 
       {/* CSV'ler */}
-      <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+      <h2 className="mb-3 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
         Tablo Bazlı CSV (Excel Uyumlu)
       </h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -110,7 +110,7 @@ export default async function BackupPage() {
 
       {/* Geri yükleme — tehlikeli bölge */}
       <div className="mt-8">
-        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+        <h2 className="mb-3 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
           Geri Yükleme
         </h2>
         <RestoreCard />

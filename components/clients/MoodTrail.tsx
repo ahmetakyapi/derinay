@@ -21,7 +21,7 @@ export function MoodTrail({
 }) {
   if (!entries.length) {
     return (
-      <p className="py-3 text-center text-xs text-slate-400">
+      <p className="py-3 text-center text-xs text-slate-500 dark:text-slate-400">
         Not eklerken duygu seçersen danışanın seyri burada görünür.
       </p>
     )
@@ -44,7 +44,7 @@ export function MoodTrail({
                   MOOD_HEIGHT[e.mood],
                 )}
               />
-              <span className="text-[10px] uppercase tracking-[0.12em] text-slate-400">
+              <span className="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
                 {formatDateShort(e.date)}
               </span>
             </div>
@@ -53,7 +53,7 @@ export function MoodTrail({
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         {MOODS.map((m) => (
-          <span key={m} className="inline-flex items-center gap-1 text-[10px] text-slate-400">
+          <span key={m} className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
             <span className={cn('h-1.5 w-1.5 rounded-full', MOOD_BG[m])} />
             {MOOD_LABEL[m]}
           </span>

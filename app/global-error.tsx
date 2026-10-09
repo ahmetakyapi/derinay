@@ -49,11 +49,9 @@ export default function GlobalError({
           <p
             style={{
               margin: 0,
-              fontSize: '0.65rem',
-              fontWeight: 700,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#b3892e',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              color: '#8a6a22',
             }}
           >
             ✦ Derinay

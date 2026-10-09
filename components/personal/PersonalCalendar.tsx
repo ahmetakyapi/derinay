@@ -90,7 +90,7 @@ export function PersonalCalendar({
         {/* Hafta günleri */}
         <div className="mb-2 grid grid-cols-7 gap-1 sm:gap-2">
           {WEEKDAYS.map((w) => (
-            <div key={w} className="py-1 text-center text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-[11px]">
+            <div key={w} className="py-1 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
               {w}
             </div>
           ))}
@@ -123,8 +123,8 @@ export function PersonalCalendar({
                     className={cn(
                       'font-bold leading-none',
                       isToday
-                        ? 'flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] text-white sm:h-6 sm:w-6 sm:text-[11px]'
-                        : 'text-[11px] text-slate-500 dark:text-slate-300 sm:text-xs',
+                        ? 'flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-xs text-white sm:h-6 sm:w-6'
+                        : 'text-xs text-slate-500 dark:text-slate-300',
                     )}
                   >
                     {day}
@@ -140,10 +140,10 @@ export function PersonalCalendar({
                         <span key={it.id} className="h-1 w-1 rounded-full bg-rose-500/70" />
                       ))}
                       {data.items.length > 4 && (
-                        <span className="text-[8px] leading-none text-slate-400">+{data.items.length - 4}</span>
+                        <span className="text-xs font-medium leading-none text-slate-500 dark:text-slate-400">+{data.items.length - 4}</span>
                       )}
                     </div>
-                    <p className="sensitive truncate font-mono text-[9px] font-bold tabular-nums text-rose-700 dark:text-rose-300 sm:text-[11px]">
+                    <p className="sensitive truncate text-xs font-bold tracking-[-0.02em] text-rose-700 dark:text-rose-300 sm:font-mono sm:tracking-normal sm:tabular-nums">
                       {formatTRY(data.total, { compact: true })}
                     </p>
                   </div>
@@ -156,7 +156,7 @@ export function PersonalCalendar({
         </div>
 
         {/* Isı lejantı */}
-        <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-slate-400">
+        <div className="mt-3 flex items-center justify-end gap-1.5 text-xs text-slate-500 dark:text-slate-400">
           <span>az</span>
           {[0.06, 0.11, 0.18].map((a) => (
             <span
@@ -261,7 +261,7 @@ export function PersonalCalendar({
                   type="button"
                   onClick={() => setCategory(active ? '' : c)}
                   className={cn(
-                    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[11px] font-semibold transition-all',
+                    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition-all',
                     active
                       ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
                       : 'border-slate-500/20 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:hover:text-slate-300',

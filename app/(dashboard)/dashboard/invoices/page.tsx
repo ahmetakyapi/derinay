@@ -90,7 +90,7 @@ export default async function InvoicesPage({
         <BloomArt className="pointer-events-none absolute -right-4 -top-6 hidden h-44 w-32 opacity-40 sm:block" delay={0.4} />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+            <p className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
               <Receipt className="h-3.5 w-3.5 text-amber-500" /> Toplam Tahsil Edilen
             </p>
             <p className="sensitive mt-1.5 font-mono text-[1.75rem] font-bold tabular-nums text-emerald-600 dark:text-emerald-400 sm:text-4xl">
@@ -102,7 +102,7 @@ export default async function InvoicesPage({
           </div>
           <div className="shrink-0 sm:text-right">
             <p className="font-display text-2xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">%{collectionRate}</p>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">tahsilat oranı</p>
+            <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">Tahsilat Oranı</p>
           </div>
         </div>
         {/* Tahsilat ilerleme çubuğu */}
@@ -134,11 +134,11 @@ export default async function InvoicesPage({
                 <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl transition-transform group-hover:scale-110', m.bg, m.tone)}>
                   <m.icon className="h-4 w-4" />
                 </span>
-                <span className="rounded-full bg-slate-500/10 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                <span className="rounded-full bg-slate-500/10 px-2 py-0.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {countByStatus(st)}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+              <p className="mt-3 text-[13px] font-medium text-slate-600 dark:text-slate-400">
                 {m.label}
               </p>
               <p className={cn('sensitive mt-0.5 font-display text-lg font-semibold tracking-tight', m.tone)}>
@@ -177,10 +177,10 @@ export default async function InvoicesPage({
         {visible.length ? (
           <>
             <header className="flex items-center justify-between border-b border-slate-500/10 px-5 py-3.5 sm:px-6">
-              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <h2 className="text-[15px] font-semibold text-slate-700 dark:text-slate-200">
                 {status ? `${STATUS_META[status].label} Makbuzlar` : 'Tüm Makbuzlar'}
               </h2>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 {filtered ? `${visible.length} / ${invoices.length} kayıt` : `${invoices.length} kayıt`}
               </span>
             </header>
@@ -206,7 +206,7 @@ export default async function InvoicesPage({
                           <p className="sensitive truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
                             {i.clientName ?? 'Genel'}
                           </p>
-                          <p className="truncate font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                          <p className="truncate font-mono text-xs text-slate-500 dark:text-slate-400">
                             {i.number} · {formatDate(i.issueDate)}
                             {i.dueDate ? ` · vade ${formatDate(i.dueDate)}` : ''}
                           </p>
@@ -222,7 +222,7 @@ export default async function InvoicesPage({
                       </span>
                     </div>
 
-                    <div className="sensitive hidden shrink-0 text-right text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:block">
+                    <div className="sensitive hidden shrink-0 text-right text-xs leading-snug text-slate-500 dark:text-slate-400 md:block">
                       <span className="block">Brüt <span className="font-mono tabular-nums">{formatTRY(i.subtotal, { compact: true })}</span></span>
                       <span className="block">
                         KDV %{i.kdvRate}

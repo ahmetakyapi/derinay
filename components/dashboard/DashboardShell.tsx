@@ -101,7 +101,7 @@ function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
               href={item.href}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-[10px] font-semibold transition-colors',
+                'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-xs font-semibold transition-colors',
                 active
                   ? 'text-indigo-700 dark:text-indigo-300'
                   : 'text-slate-500 active:text-slate-700 dark:text-slate-400 dark:active:text-slate-200',
@@ -138,7 +138,7 @@ function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
           onClick={onOpenMenu}
           aria-label="Tüm menü"
           className={cn(
-            'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-[10px] font-semibold transition-colors',
+            'relative flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-xs font-semibold transition-colors',
             !anyTabActive
               ? 'text-indigo-700 dark:text-indigo-300'
               : 'text-slate-500 active:text-slate-700 dark:text-slate-400 dark:active:text-slate-200',
@@ -168,7 +168,7 @@ function Brand() {
         <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           {APP.name}
         </span>
-        <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <span className="mt-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
           {APP.tagline}
         </span>
       </div>
@@ -197,7 +197,7 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
         <div key={group.label}>
           <p
             style={{ animationDelay: `${100 + n * 35}ms` }}
-            className="nav-in mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
+            className="nav-in mb-1 px-3 text-[13px] font-semibold text-slate-500 dark:text-slate-400"
           >
             {group.label}
           </p>
@@ -395,7 +395,7 @@ export function DashboardShell({
           >
             <Search className="h-4 w-4" />
             <span className="flex-1 text-left">Ara…</span>
-            <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
+            <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs">⌘K</kbd>
           </button>
           <NavList id="sidebar" />
         </div>

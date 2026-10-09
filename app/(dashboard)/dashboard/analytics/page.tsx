@@ -32,7 +32,7 @@ const METHOD_ICON: Record<PaymentMethod, typeof Banknote> = {
 
 function SectionTitle({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <h2 className={cn('text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200', className)}>
+    <h2 className={cn('text-[15px] font-semibold text-slate-700 dark:text-slate-200', className)}>
       {children}
     </h2>
   )
@@ -204,7 +204,7 @@ export default async function AnalyticsPage({
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400">
                 <TrendingDown className="h-3.5 w-3.5" />
               </span>
-              <p className="min-w-0 flex-1 text-[11px] leading-tight text-slate-600 dark:text-slate-300">
+              <p className="min-w-0 flex-1 text-xs leading-tight text-slate-600 dark:text-slate-300">
                 İptal + gelmeyen seanslarda kaçan gelir
               </p>
               <span className="sensitive shrink-0 font-mono text-[13px] font-bold tabular-nums text-rose-600 dark:text-rose-400">
@@ -282,7 +282,7 @@ export default async function AnalyticsPage({
                     <span className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-200">
                       <Icon className="h-4 w-4 text-slate-400" />
                       {PAYMENT_METHOD_LABEL[m.method]}
-                      <span className="text-[11px] text-slate-400">({m.count})</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">({m.count})</span>
                     </span>
                     <span className="sensitive shrink-0 font-mono text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
                       {formatTRY(m.amount, { compact: true })}
@@ -313,7 +313,7 @@ export default async function AnalyticsPage({
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-slate-400">Henüz gelir verisi yok.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Henüz gelir verisi yok.</p>
             )}
           </div>
         </section>

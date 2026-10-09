@@ -254,8 +254,13 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   Gövde ile başlık aynı aileyi kullanır; ayrım **ağırlık + optik sıkılıktan** gelir —
   `font-display` yalnızca tracking'i daraltır (`-0.032em`, 3xl+ için `-0.04em`), ağırlık
   SET ETMEZ (çağrı yerindeki `font-semibold/bold` kazanır). Tutar/tablo rakamı = IBM Plex Mono
-  + `tabular-nums`. Bölüm başlıkları galeri etiketi stili:
-  `text-xs font-bold uppercase tracking-[0.12em]`.
+  + `tabular-nums`. **Küçük etiket okunurluğu (sahibinin isteği, Ekim 2026)**: kart/bölüm
+  başlıkları `text-[15px] font-semibold` normal harf (eski `text-xs uppercase tracking-[0.12em]`
+  galeri etiketi okunmuyordu — geri getirme). KPI/meta/çip/tablo başlığı etiketleri sans,
+  normal harf, en az 12px (tipik `text-[13px] font-medium text-slate-600 dark:text-slate-400`),
+  harf aralığı ~0. `uppercase` ve geniş `tracking-[0.1em+]` küçük metinde KULLANILMAZ; 12px altı
+  metin yok (avatar baş harfleri hariç). Mono yalnız gerçek sayısal içerikte (tutar, tarih, saat,
+  sayaç, makbuz no) ve ≥12px, ek tracking olmadan.
   **Dekoratif italik YOK** — italik yalnızca gerçek alıntıda (Günün Sözü, giriş ekranı sözü)
   ve not/açıklama satırında kullanılır. TEK İSTİSNA: **vurgu yüzü Fraunces italik**
   (`font-serif`, `--font-serif-face`, SOFT ekseni 100) — yalnız landing manşetinin vurgu

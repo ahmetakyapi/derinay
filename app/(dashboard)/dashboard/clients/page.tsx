@@ -127,12 +127,12 @@ export default async function ClientsPage({
               {c.tags.length > 0 && (
                 <div className="mt-2.5 flex flex-wrap gap-1">
                   {c.tags.slice(0, 3).map((t) => (
-                    <span key={t} className="rounded-full bg-indigo-500/8 px-2 py-0.5 text-[10px] font-semibold text-indigo-700/80 dark:bg-indigo-400/10 dark:text-indigo-300/90">
+                    <span key={t} className="rounded-full bg-indigo-500/8 px-2 py-0.5 text-xs font-semibold text-indigo-700/80 dark:bg-indigo-400/10 dark:text-indigo-300/90">
                       #{t}
                     </span>
                   ))}
                   {c.tags.length > 3 && (
-                    <span className="text-[10px] text-slate-400">+{c.tags.length - 3}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">+{c.tags.length - 3}</span>
                   )}
                 </div>
               )}

@@ -97,7 +97,7 @@ export function Preloader() {
         transition={{ duration: 0.95, ease: EASE_IN_OUT }}
       >
         {/* Üst künye */}
-        <div className="flex items-center justify-between px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:px-10">
+        <div className="flex items-center justify-between px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] text-[13px] font-medium text-slate-600 dark:text-slate-400 sm:px-10">
           <span>Yükleniyor</span>
           <span>Danışan · Seans · Finans</span>
         </div>

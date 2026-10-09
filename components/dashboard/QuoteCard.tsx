@@ -20,7 +20,7 @@ export function QuoteCard({ quote }: { quote: Quote }) {
           <QuoteIcon className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-600/90 dark:text-amber-400/90">
+          <p className="mb-1 text-sm font-semibold text-amber-700 dark:text-amber-300">
             Günün Sözü
           </p>
           <blockquote className="font-display text-lg italic leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">

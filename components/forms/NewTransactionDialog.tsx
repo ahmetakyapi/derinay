@@ -153,7 +153,7 @@ export function NewTransactionDialog({
                     aria-pressed={kdvRate === r}
                     onClick={() => setKdvRate(r)}
                     className={cn(
-                      'rounded-full border px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums transition-colors',
+                      'rounded-full border px-2.5 py-1 font-mono text-xs font-semibold tabular-nums transition-colors',
                       kdvRate === r
                         ? 'border-indigo-500/50 bg-indigo-500/12 text-indigo-700 dark:text-indigo-300'
                         : 'border-slate-500/20 text-slate-500 hover:border-slate-500/40 dark:text-slate-400',
@@ -163,7 +163,7 @@ export function NewTransactionDialog({
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-[11px] leading-snug text-slate-400">
+              <p className="mt-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
                 {kdvRate > 0 && Number(amount) > 0 ? (
                   <>
                     Girdiğin tutar KDV dahil sayılır — içinden{' '}
@@ -191,7 +191,7 @@ export function NewTransactionDialog({
             />
             <span>
               <span className="font-semibold">Her ay tekrarlanır</span>
-              <span className="block text-xs text-slate-400">kira, abonelik gibi sabit kalemler — tek tıkla sonraki aya kopyalanır</span>
+              <span className="block text-xs text-slate-500 dark:text-slate-400">kira, abonelik gibi sabit kalemler — tek tıkla sonraki aya kopyalanır</span>
             </span>
           </label>
 

@@ -46,14 +46,14 @@ export function NotePreview() {
       {/* Not kartı */}
       <div className="rounded-xl border border-slate-500/12 bg-[rgba(var(--paper),0.72)] p-3.5">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="rounded-full border border-indigo-500/40 bg-indigo-500/12 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300">
+          <span className="rounded-full border border-indigo-500/40 bg-indigo-500/12 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
             {NOTE_KIND_LABEL.session}
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/15 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/15 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
             <span className={cn('h-2 w-2 rounded-full', MOOD_BG[LATEST.mood])} />
             {MOOD_LABEL[LATEST.mood]}
           </span>
-          <span className="ml-auto font-mono text-[10px] tabular-nums text-slate-400">{LATEST.day} 14:00</span>
+          <span className="ml-auto font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">{LATEST.day} 14:00</span>
         </div>
 
         <p className="mt-2.5 font-display text-sm font-bold tracking-tight text-slate-900 dark:text-white">
@@ -69,12 +69,12 @@ export function NotePreview() {
 
       {/* Duygu izleği */}
       <div className="mt-3 rounded-xl border border-slate-500/12 bg-[rgba(var(--paper),0.55)] p-3.5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Duygu İzleği</p>
+        <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">Duygu İzleği</p>
         <div className="mt-3 flex items-end gap-3">
           {TRAIL.map((t) => (
             <div key={t.day} className="flex flex-1 flex-col items-center gap-1.5">
               <span className={cn('block w-3 rounded-full', MOOD_BG[t.mood], MOOD_H[t.mood])} />
-              <span className="font-mono text-[8px] text-slate-400">{t.day}</span>
+              <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{t.day}</span>
             </div>
           ))}
         </div>
@@ -83,10 +83,10 @@ export function NotePreview() {
       {/* Hedef — tedavi planının hafif hâli */}
       <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-slate-500/12 px-3 py-2.5">
         <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-        <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-slate-700 dark:text-slate-200">
+        <span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-700 dark:text-slate-200">
           Uyku düzenini iyileştirmek
         </span>
-        <span className="shrink-0 rounded-full border border-emerald-500/40 bg-emerald-500/12 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+        <span className="shrink-0 rounded-full border border-emerald-500/40 bg-emerald-500/12 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
           Tamamlandı
         </span>
       </div>

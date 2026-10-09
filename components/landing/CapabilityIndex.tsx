@@ -15,12 +15,12 @@ import { lineDraw } from '@/lib/variants'
  * soldan çizilir. Sol sütun (başlık) masaüstünde yapışkandır.
  */
 const ITEMS = [
-  { group: 'klinik', icon: Users, title: 'Danışan Dosyası', body: 'İletişim bilgileri, seans ücreti, onam formu ve tüm geçmiş tek sayfada.' },
-  { group: 'klinik', icon: CalendarRange, title: 'Ajanda', body: 'Haftalık takvim. Seansı sürükleyip taşı; çakışma olursa panel uyarır.' },
-  { group: 'klinik', icon: StickyNote, title: 'Seans Defteri', body: 'Her seansa not ekle, ruh halini işaretle; zamanla gidişatı grafikte gör.' },
-  { group: 'finans', icon: Wallet, title: 'Gelir & Gider', body: 'Gelir ve giderlerini kategoriye göre tut; kira gibi sabit ödemeler tek tıkla sonraki aya geçer.' },
-  { group: 'finans', icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzunu tek ekranda hazırla; makbuz numarası otomatik ilerler.' },
-  { group: 'finans', icon: PieChart, title: 'Analiz & Rapor', body: 'Yıl boyu gelir-gider grafiği ve muhasebecine gönderebileceğin hazır rapor.' },
+  { group: 'Klinik', icon: Users, title: 'Danışan Dosyası', body: 'İletişim bilgileri, seans ücreti, onam formu ve tüm geçmiş tek sayfada.' },
+  { group: 'Klinik', icon: CalendarRange, title: 'Ajanda', body: 'Haftalık takvim. Seansı sürükleyip taşı; çakışma olursa panel uyarır.' },
+  { group: 'Klinik', icon: StickyNote, title: 'Seans Defteri', body: 'Her seansa not ekle, ruh halini işaretle; zamanla gidişatı grafikte gör.' },
+  { group: 'Finans', icon: Wallet, title: 'Gelir & Gider', body: 'Gelir ve giderlerini kategoriye göre tut; kira gibi sabit ödemeler tek tıkla sonraki aya geçer.' },
+  { group: 'Finans', icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzunu tek ekranda hazırla; makbuz numarası otomatik ilerler.' },
+  { group: 'Finans', icon: PieChart, title: 'Analiz & Rapor', body: 'Yıl boyu gelir-gider grafiği ve muhasebecine gönderebileceğin hazır rapor.' },
 ] as const
 
 export function CapabilityIndex() {
@@ -60,7 +60,7 @@ export function CapabilityIndex() {
                 delay={0.05}
                 className="relative grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-4 px-1 py-8 sm:grid-cols-[3.5rem_1fr_6rem_auto] sm:px-4 sm:py-10"
               >
-                <span className="pt-2 font-mono text-xs text-slate-500 transition-colors duration-500 group-hover:text-amber-300 dark:text-slate-400">
+                <span className="pt-2 font-mono text-[13px] text-slate-600 transition-colors duration-500 group-hover:text-amber-300 dark:text-slate-400">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div className="min-w-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3">
@@ -71,7 +71,7 @@ export function CapabilityIndex() {
                     {c.body}
                   </p>
                 </div>
-                <span className="hidden pt-3 font-mono text-[11px] text-slate-500 transition-colors duration-500 group-hover:text-slate-300 dark:text-slate-400 sm:block">
+                <span className="hidden pt-3 text-[13px] font-medium text-slate-600 transition-colors duration-500 group-hover:text-slate-300 dark:text-slate-400 sm:block">
                   {c.group}
                 </span>
                 <c.icon

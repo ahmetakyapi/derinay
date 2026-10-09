@@ -117,7 +117,7 @@ export default async function PersonalPage({
             <span className={cn('mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg', s.bg, s.tone)}>
               <s.icon className="h-4 w-4" />
             </span>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+            <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">
               {s.label}
             </p>
             {/* title, .sensitive filtresinden muaftır — para değerini oraya yazma */}
@@ -127,7 +127,7 @@ export default async function PersonalPage({
             >
               {s.value}
             </p>
-            <p className="mt-0.5 text-[11px] text-slate-400">{s.hint}</p>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{s.hint}</p>
           </div>
         ))}
       </div>
@@ -138,7 +138,7 @@ export default async function PersonalPage({
         </div>
 
         <section className="glass flex h-full flex-col rounded-2xl p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+          <h2 className="mb-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             Kategori Dağılımı
           </h2>
           {data.categoryBreakdown.length ? (
@@ -155,10 +155,10 @@ export default async function PersonalPage({
       {data.items.length > 0 && (
         <section className="glass mt-5 overflow-hidden rounded-2xl">
           <header className="flex items-center justify-between border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
-            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+            <h2 className="text-[15px] font-semibold text-slate-700 dark:text-slate-200">
               Aylık Harcama
             </h2>
-            <span className="text-xs text-slate-400">{data.items.length} harcama</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{data.items.length} harcama</span>
           </header>
 
           {(() => {
@@ -178,7 +178,7 @@ export default async function PersonalPage({
               return (
                 <div key={day}>
                   <div className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2 sm:px-5">
-                    <span className="text-xs font-bold tracking-wide text-slate-600 dark:text-slate-300">
+                    <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">
                       {dayLabel(day)}
                     </span>
                     <span className="sensitive font-mono text-xs font-semibold tabular-nums text-rose-600 dark:text-rose-400">

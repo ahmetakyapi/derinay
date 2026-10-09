@@ -81,7 +81,7 @@ export default function Footer() {
           ))}
         </p>
 
-        <div className="mt-6 flex flex-col justify-between gap-2 font-mono text-[11px] text-slate-400 sm:flex-row">
+        <div className="mt-6 flex flex-col justify-between gap-2 text-[13px] text-slate-400 sm:flex-row">
           <span>© {new Date().getFullYear()} Derinay</span>
           <span>Tüm Hakları Saklıdır</span>
         </div>

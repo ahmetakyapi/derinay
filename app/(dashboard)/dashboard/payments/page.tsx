@@ -79,7 +79,7 @@ export default async function PaymentsPage({
       <div className="glass relative mb-6 overflow-hidden rounded-2xl p-5 sm:p-6">
         <BloomArt className="pointer-events-none absolute -right-4 -top-6 hidden h-44 w-32 opacity-40 sm:block" delay={0.4} />
         <div className="relative">
-          <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+          <p className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
             <Wallet className="h-3.5 w-3.5 text-emerald-500" /> Toplam Tahsilat
           </p>
           <p className="sensitive mt-1.5 font-mono text-[1.75rem] font-bold tabular-nums text-emerald-600 dark:text-emerald-400 sm:text-4xl">
@@ -120,7 +120,7 @@ export default async function PaymentsPage({
                     <m.icon className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+                    <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">
                       {m.label} · {m.count}
                     </p>
                     <p className="sensitive font-mono text-sm font-bold tabular-nums text-slate-900 dark:text-white">
@@ -162,10 +162,10 @@ export default async function PaymentsPage({
         {visible.length ? (
           <>
             <header className="flex items-center justify-between gap-3 border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
-              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
+              <h2 className="text-[15px] font-semibold text-slate-700 dark:text-slate-200">
                 {method ? `${PAYMENT_METHOD_LABEL[method]} Tahsilatları` : 'Tahsilat Geçmişi'}
               </h2>
-              <span className="shrink-0 text-xs text-slate-400">
+              <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
                 {filtered ? (
                   <>
                     {visible.length} / {payments.length} kayıt ·{' '}
@@ -200,7 +200,7 @@ export default async function PaymentsPage({
                       )}
                       <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
                         <span className="shrink-0">{formatDate(p.date)}</span>
-                        <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold', meta.bg, meta.tone)}>
+                        <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold', meta.bg, meta.tone)}>
                           <meta.icon className="h-3 w-3" />
                           {PAYMENT_METHOD_LABEL[p.method]}
                         </span>
