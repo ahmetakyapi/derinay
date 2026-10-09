@@ -73,10 +73,10 @@ function MomentCard({
       </div>
       <Icon aria-hidden strokeWidth={1.25} className="mt-10 h-16 w-16 text-indigo-600 dark:text-indigo-300 sm:h-20 sm:w-20" />
       <div className="relative mt-auto pt-10">
-        <h3 className="font-display text-[2.2rem] font-bold leading-[1] tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[2.8rem]">
+        <h3 className="font-display text-[1.85rem] font-bold leading-[1.05] tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[2.6rem]">
           {m.title}
         </h3>
-        <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-slate-500 dark:text-slate-400">{m.body}</p>
+        <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-slate-600 dark:text-slate-400">{m.body}</p>
       </div>
     </article>
   )
@@ -111,7 +111,7 @@ export function DayScroll() {
     <section
       id="gun"
       ref={section}
-      className="relative z-10 scroll-mt-0"
+      className="band-sand relative z-10 scroll-mt-0"
       style={dist ? { height: `calc(100vh + ${dist}px)` } : undefined}
     >
       <div className="md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-center md:overflow-hidden">
@@ -122,14 +122,13 @@ export function DayScroll() {
         >
           {/* Giriş levhası */}
           <div className="shrink-0 md:w-[min(40rem,70vw)] md:pr-12">
-            <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(03) Bir Gün</p>
-            <h2 className="mt-5 font-display text-[clamp(2.6rem,6vw,5.8rem)] font-bold leading-[0.95] tracking-[-0.055em] text-slate-900 dark:text-white">
+            <h2 className="font-display text-[clamp(2.4rem,4.4vw,4.3rem)] font-bold leading-[1.02] tracking-[-0.055em] text-slate-900 dark:text-white">
               <RevealText text="Panel Günü Okur," />
               <br />
               <RevealText text="Sen Aramazsın" delay={0.12} />
             </h2>
             <Reveal delay={0.25}>
-              <p className="mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
+              <p className="mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
                 Üç Durak, Bir Gün. Kaydırdıkça Sabahtan Ay Sonuna Yürürsün.
               </p>
             </Reveal>

@@ -26,6 +26,11 @@
 }
 
 :root {
+  /* Yüz tokenları — fontsource'un SABİT aile adları (layout.tsx'teki nota bak) */
+  --font-sans-face: 'Schibsted Grotesk Variable';
+  --font-mono-face: 'IBM Plex Mono';
+  --font-serif-face: 'Fraunces Variable';
+
   /* Tipografi tokenları — next/font `-face` değişkenlerini sarar (layout.tsx).
      Display ile sans AYNI aileyi işaret eder; fark ağırlık + tracking'ten gelir.
      'DerinayLira' en başta: yalnız ₺ için devreye girer (yukarıdaki not). */
@@ -43,8 +48,10 @@
   --clay: 187, 96, 62;       /* terracotta — gider */
   --mist: 94, 128, 163;      /* pus mavisi */
 
-  /* Light — kâğıt galeri */
-  --bg: #f6f2e9;
+  /* Light — kâğıt galeri. Zemin bir ton sıcak ve derin: beyaz kâğıt kartlar
+     üstünde artık "bej üstüne bej" değil, ayrışarak durur. */
+  --bg: #f4eee2;
+  --sand: 236, 227, 209;     /* bant zemini — bölümler arası ritim */
   --ink: #2c2a25;
   --paper: 255, 253, 247;
   --line: 60, 55, 40;        /* hairline border tabanı */
@@ -54,6 +61,7 @@
    altlık) açık temada bile kendi alt ağacını koyu temaya alır. */
 html.dark, .dark {
   /* Dark — gece galerisi */
+  --sand: 9, 13, 16;
   --bg: #04070d;
   --ink: #e4e1d8;
   --paper: 13, 18, 20;
@@ -95,8 +103,8 @@ body {
   color: var(--ink);
   /* Suluboya yıkamaları — çam, altın, kil, pus */
   background:
-    radial-gradient(1100px 700px at 12% -8%,  rgba(var(--pine), 0.10), transparent 60%),
-    radial-gradient(900px 600px  at 96% 2%,   rgba(var(--gold), 0.09), transparent 55%),
+    radial-gradient(1100px 700px at 12% -8%,  rgba(var(--pine), 0.12), transparent 60%),
+    radial-gradient(900px 600px  at 96% 2%,   rgba(var(--gold), 0.13), transparent 55%),
     radial-gradient(1000px 800px at 70% 112%, rgba(var(--clay), 0.07), transparent 60%),
     radial-gradient(800px 600px  at -10% 84%, rgba(var(--mist), 0.06), transparent 55%),
     var(--bg);
@@ -133,6 +141,18 @@ html.privacy .sensitive {
   /* pointer-events: none KULLANMA — .sensitive bir <Link>/<a> üzerindeyse
      tıklamayı öldürür ("detay sayfasına gitmiyor" bug'ı). Görsel bulanıklık
      yeterli; tıklanabilirlik korunur. */
+}
+
+/* ─── Satır kırılımı: tek kelime alt satıra düşmesin ─────────────────────
+   Başlıklar satırlara DENGELİ bölünür (balance), paragraflar son satırda
+   yalnız kalan kelimeyi önler (pretty). Desteklemeyen tarayıcı yok sayar. */
+h1, h2, h3, h4, dt, figcaption { text-wrap: balance; }
+p, dd, li, blockquote { text-wrap: pretty; }
+
+/* Bant zemini — landing'de bölümler arası ritim (açıkta kum, koyuda gece) */
+.band-sand {
+  background-color: rgb(var(--sand));
+  box-shadow: inset 0 1px 0 rgba(var(--line), 0.08), inset 0 -1px 0 rgba(var(--line), 0.08);
 }
 
 /* ─── Selection ─────────────────────────────────────────────────────────── */
@@ -215,11 +235,15 @@ html.dark :focus-visible,
 
   /* Kâğıt kart — light'ta sıcak kâğıt, dark'ta mürekkep camı */
   .glass {
-    background: linear-gradient(180deg, rgba(var(--paper), 0.92), rgba(var(--paper), 0.74));
-    border: 1px solid rgba(var(--line), 0.09);
+    /* Açık temada kâğıt daha dolu ve kenarı daha net: eski 0.74 alt ton
+       zeminle karışıyor, kart "yıkanmış" görünüyordu. İki katlı gölge —
+       yakın keskin + uzak yumuşak — kâğıdı masadan kaldırır. */
+    background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.88));
+    border: 1px solid rgba(var(--line), 0.12);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.65),
-      0 20px 44px -20px rgba(var(--line), 0.22);
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(var(--line), 0.06),
+      0 24px 48px -24px rgba(var(--line), 0.3);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }

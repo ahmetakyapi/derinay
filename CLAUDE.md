@@ -101,7 +101,7 @@ Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` �
 
 ```
 app/
-  layout.tsx                       # ThemeProvider + ThemeColorSync, Schibsted Grotesk + IBM Plex Mono (subset latin+latin-ext), metadataBase/OG/noindex
+  layout.tsx                       # ThemeProvider + ThemeColorSync + RouteTransition, fontsource yüzleri (Schibsted/Plex Mono/Fraunces), metadataBase/OG/noindex
   globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
   page.tsx                         # Landing — 'use client', yalnız BİLEŞİMDİR (bölümler components/landing/).
                                    # Sıra: açılış perdesi → kahraman → hız bandı → vitrin (gece adası)
@@ -262,8 +262,10 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   sözcüğü "Dinlendir"de. Kahraman manşeti iki satır, üç ses: `font-extrabold` grotesk
   komut + `font-normal` soluk grotesk ("Kafanı") + serif italik çam vurgu. Serif'i gövdeye,
   panele veya ikinci bir başlığa taşıma — vurgu tek yerde durur.
-  TUZAK: `next/font` `variable` adı CSS token adıyla aynı olursa dairesel referans oluşur —
-  bu yüzden next/font tarafında `--font-sans-face` / `--font-mono-face` soneki kullanılır.
+  **Yükleme: fontsource paketleri, next/font DEĞİL** (`@fontsource-variable/schibsted-grotesk`,
+  `@fontsource-variable/fraunces` soft-italic, `@fontsource/ibm-plex-mono`) — layout.tsx'te CSS
+  import'u; `--font-*-face` tokenları globals.css'te SABİT aile adlarıyla. next/font Vercel'de
+  sunucu HTML'i ile CSS arasında farklı sınıf hash'i üretti ve site Times'a düştü (bkz. §10/30).
 - **Chart renkleri**: `lib/palette.ts` (`CHART`, `CHART_SERIES`) — chart bileşenine hex yazma.
 - Renkler `globals.css` CSS değişkenleri (`--pine/--sage/--gold/--clay/--mist`, `--paper/--line`)
   + Tailwind ile; **hardcoded hex yok**.
@@ -369,8 +371,14 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   sahne (yükseklik ÖLÇÜLÜR; telefonda dikey), `#defter`/`#finans` aynalı ikili kesit
   (üst üste en fazla İKİ tane), `#guven` taahhüt satırları (`<dl>`, gece adası).
   Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
-- **Bölüm künyesi**: her landing bölümü küçük mono `(0N) Ad` künyesiyle açılır
-  (Title Case) — sergi kataloğu numaralandırması.
+- **Bölüm künyesi YOK**: bölüm başlıklarının üstündeki küçük mono `(0N) Ad` etiketleri
+  sahibinin isteğiyle KALDIRILDI (Ekim 2026) — geri ekleme. Başlık tek başına açar.
+- **Satır kırılımı**: tek kelime alt satıra düşmez. `globals.css` başlıklara
+  `text-wrap: balance`, paragraflara `text-wrap: pretty` verir; başlık puntosu da sütuna
+  sığacak şekilde seçilir (manşetler `leading` ≥ 1.0 — Türkçe kuyruk/şapkalar değmesin).
+- **Açık tema ritmi**: zemin `--bg #f4eee2`; `#gun` ve `#finans` bölümleri `.band-sand`
+  (kum bant, `--sand`) üstünde — kâğıt / gece / kum sırası tekdüzeliği kırar. Landing gövde
+  metni `text-slate-600 dark:text-slate-400` (500 açıkta soluk okunuyordu).
 - **Kahraman**: iki sütun — solda üç ayrı satır manşet (leading 1.06, satır arası pay;
   eski tek blok 0.9 satır aralığı "ğ" kuyruğunu alt satıra değdiriyordu), sağda kemerli
   "galeri penceresi" (çam gökyüzü, inen altın güneş, ufuk çizgileri, `BloomArt tone="night"`)
@@ -512,6 +520,10 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 29. **Sunucu HTML'inde görünmesi gereken kabuğa Framer `initial` koyma** — `opacity:0`
     SSR'a yazılır, JS gecikirse/çökerse menü boş kalır. Kabuk girişleri CSS (`.shell-in`,
     `.nav-in`). Hareket eden kartta `.glass-static` (backdrop-filter yok) kullan.
+30. **next/font'a geri dönme** — Vercel derlemesinde sunucu HTML'i `__variable_e8b673`,
+    CSS `__variable_15f804` üretti; `--font-sans-face` tanımsız kaldı, canlı site Times New
+    Roman'a düştü (yerelde tekrar etmiyordu). Fontlar fontsource'tan, aile adları sabit.
+    Canlıda kontrol: `getComputedStyle(document.body).fontFamily` Schibsted göstermeli.
 
 ---
 

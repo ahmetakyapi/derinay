@@ -1,51 +1,29 @@
 import type { Metadata, Viewport } from 'next'
-import { Schibsted_Grotesk, IBM_Plex_Mono, Fraunces } from 'next/font/google'
+// Fontlar fontsource paketlerinden, SABİT aile adlarıyla (bkz. not aşağıda)
+import '@fontsource-variable/schibsted-grotesk/wght.css'
+import '@fontsource-variable/schibsted-grotesk/wght-italic.css'
+import '@fontsource-variable/fraunces/soft-italic.css'
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/500.css'
+import '@fontsource/ibm-plex-mono/600.css'
+import '@fontsource/ibm-plex-mono/700.css'
 import { ThemeProvider } from 'next-themes'
 import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
 import { RouteTransition } from '@/components/motion/RouteTransition'
 import './globals.css'
 
 /**
- * Tipografi — ekosistem yığını (bkz. ~/dev-starter, Mimio & Açılış Zili):
- * TEK aile **Schibsted Grotesk** hem gövde hem başlık; ayrım ağırlık ve optik
- * sıkılıktan gelir (`.font-display` → daha dar tracking). Rakamlar IBM Plex Mono.
+ * Tipografi — Schibsted Grotesk (gövde + başlık), IBM Plex Mono (rakam),
+ * Fraunces italik (yalnız manşet vurgusu). Aileler globals.css'teki
+ * `--font-*-face` tokenlarına SABİT adlarla bağlanır.
  *
- * `weight` listesi VERİLMEZ — aile değişken (400–900); Tailwind'in
- * font-medium/semibold/bold sınıfları ekseni doğrudan kullanır.
- * latin-ext — Türkçe karakterler (ş, ğ, ı, İ, ç, ö, ü) için zorunlu.
- *
- * TUZAK: next/font `variable` adı, globals.css'teki token adıyla AYNI olursa
- * dairesel referans oluşur (--font-sans: var(--font-sans)) ve sessizce çöker.
- * Bu yüzden burada `-face` soneki kullanılır.
+ * NEDEN next/font DEĞİL (9 Ekim 2026): Vercel derlemesinde next/font'un sunucu
+ * HTML'ine yazdığı `__variable_xxx` sınıf hash'i ile CSS'te tanımladığı hash
+ * FARKLI çıktı (HTML e8b673, CSS 15f804). `--font-sans-face` hiç tanımlanmadı,
+ * canlı site Times New Roman'a düştü. Yerel derlemede tutarlıydı — yani
+ * ortama bağlı, tekrar üretilemeyen bir kırılma. fontsource dosyaları pakette,
+ * aile adları sabit: hash yok, eşleşmeyecek bir şey yok.
  */
-const schibsted = Schibsted_Grotesk({
-  subsets: ['latin', 'latin-ext'],
-  style: ['normal', 'italic'],
-  variable: '--font-sans-face',
-  display: 'swap',
-})
-
-/**
- * Vurgu yüzü — YALNIZ landing manşetinin vurgu sözcüğünde (ve benzeri tek
- * kelimelik editoryal vurgularda). Grotesk'in yanında yumuşak (SOFT ekseni)
- * bir serif italik, başlığa el yazısı sıcaklığı katar. Gövdede KULLANILMAZ.
- */
-const fraunces = Fraunces({
-  subsets: ['latin', 'latin-ext'],
-  style: ['italic'],
-  axes: ['SOFT', 'opsz'],
-  variable: '--font-serif-face',
-  display: 'swap',
-})
-
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ['latin', 'latin-ext'],
-  // 700 ŞART: tutar/rozet rakamlarında `font-mono font-bold` yaygın kullanılıyor;
-  // ağırlık yüklenmezse tarayıcı sentetik kalın üretir ve rakamlar bulanıklaşır.
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-mono-face',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   // metadataBase — OG/canonical URL'lerin mutlak çözülmesi için (prod uyarısını da susturur)
@@ -92,7 +70,6 @@ export default function RootLayout({
     <html
       lang="tr"
       suppressHydrationWarning
-      className={`${schibsted.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}
     >
       <head>
         {/*
