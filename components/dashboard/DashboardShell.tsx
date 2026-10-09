@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useTheme } from 'next-themes'
-import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig, LayoutGroup } from 'framer-motion'
 import {
   LayoutDashboard,
   LineChart,
@@ -18,8 +17,6 @@ import {
   Landmark,
   Settings,
   Search,
-  Sun,
-  Moon,
   Menu,
   X,
   LogOut,
@@ -35,6 +32,8 @@ import { PageTransition } from '@/components/dashboard/PageTransition'
 import { CommandPalette } from '@/components/dashboard/CommandPalette'
 import { logoutAction } from '@/app/actions/auth'
 import { clearAllNoteDrafts } from '@/hooks/useNoteDraft'
+import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton'
+import { EASE_OUT_EXPO } from '@/lib/variants'
 
 // Gruplu navigasyon — galeri katalogu gibi bölümlenmiş
 const NAV_GROUPS = [
@@ -109,7 +108,22 @@ function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
                   : 'text-slate-500 active:text-slate-700 dark:text-slate-400 dark:active:text-slate-200',
               )}
             >
-              <item.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />
+              {/* Aktif sekme: çam şerit sekmeden sekmeye KAYAR (layoutId) */}
+              {active && (
+                <motion.span
+                  layoutId="tab-active"
+                  aria-hidden
+                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  className="absolute inset-x-3 top-0 h-[2.5px] rounded-b-full bg-gradient-to-r from-indigo-500 to-amber-500"
+                />
+              )}
+              <motion.span
+                animate={{ y: active ? -1 : 0, scale: active ? 1.08 : 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                className="flex"
+              >
+                <item.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />
+              </motion.span>
               {item.label}
               <span
                 aria-hidden
@@ -163,72 +177,95 @@ function Brand() {
   )
 }
 
-function NavList({ onNavigate }: { onNavigate?: () => void }) {
+/**
+ * Gezinme listesi.
+ *  - Aktif satırın zemini bir satırdan ötekine KAYAR (`layoutId`). Masaüstü
+ *    kenar çubuğu ile mobil çekmece aynı anda bağlı olabildiği için her örnek
+ *    kendi `LayoutGroup` kimliğinde durur; yoksa iki liste aynı zemini
+ *    birbirinden kapmaya çalışırdı.
+ *  - Kabuk ilk kez kurulduğunda satırlar sırayla soldan süzülür (sayfa
+ *    gezinmesinde kabuk yeniden kurulmaz, yani bu yalnız ilk açılışta oynar).
+ */
+function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
   const pathname = usePathname()
+  let n = 0
   return (
+    <LayoutGroup id={id}>
     <nav className="flex flex-col gap-4">
       {NAV_GROUPS.map((group) => (
         <div key={group.label}>
-          <p className="mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400/80">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 + n * 0.035 }}
+            className="mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500/80 dark:text-slate-400/80"
+          >
             {group.label}
-          </p>
+          </motion.p>
           <div className="flex flex-col gap-0.5">
             {group.items.map((item) => {
+              const order = n++
               const active =
                 item.href === '/dashboard'
                   ? pathname === '/dashboard'
                   : pathname.startsWith(item.href)
               return (
-                <Link
+                <motion.div
                   key={item.href}
+                  initial={{ opacity: 0, x: -14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.12 + order * 0.035 }}
+                >
+                <Link
                   href={item.href}
                   onClick={onNavigate}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all',
+                    'group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-300',
                     active
-                      ? 'bg-indigo-500/10 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300'
-                      : 'text-slate-500 hover:bg-slate-500/8 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
+                      ? 'text-indigo-700 dark:text-indigo-300'
+                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
                   )}
                 >
-                  {active && (
-                    <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-indigo-500 to-amber-500" />
+                  {active ? (
+                    <motion.span
+                      layoutId="nav-active"
+                      aria-hidden
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                      className="absolute inset-0 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/10"
+                    >
+                      <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-indigo-500 to-amber-500" />
+                    </motion.span>
+                  ) : (
+                    // Üstüne gelince zemin soldan dolar
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 origin-left scale-x-0 rounded-xl bg-slate-500/8 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"
+                    />
                   )}
                   <item.icon
                     className={cn(
-                      'h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110',
+                      'relative h-[18px] w-[18px] shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-rotate-6 group-hover:scale-110',
                       active && 'text-indigo-600 dark:text-indigo-300',
                     )}
                   />
-                  {item.label}
+                  <span className="relative transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5">
+                    {item.label}
+                  </span>
                 </Link>
+                </motion.div>
               )
             })}
           </div>
         </div>
       ))}
     </nav>
+    </LayoutGroup>
   )
 }
 
 function ThemeToggle({ className }: { className?: string }) {
-  const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDark = mounted ? resolvedTheme === 'dark' : false
-
-  return (
-    <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      aria-label="Tema değiştir"
-      className={cn(
-        'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-amber-500/50 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400',
-        className,
-      )}
-    >
-      {mounted && (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
-    </button>
-  )
+  return <ThemeToggleButton className={className} />
 }
 
 type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
@@ -346,7 +383,12 @@ export function DashboardShell({
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex">
+      <motion.aside
+        initial={{ x: -24, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
+        className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex"
+      >
         {/* min-h-0 + overflow-y-auto: kısa ekranlarda (13" dizüstü) menü kesilmesin,
             alttaki kimlik kartı her zaman görünür kalsın */}
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
@@ -362,7 +404,7 @@ export function DashboardShell({
             <span className="flex-1 text-left">Ara…</span>
             <kbd className="rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
           </button>
-          <NavList />
+          <NavList id="sidebar" />
         </div>
         <div className="shrink-0 pt-3">
           {/* Galeri ayracı */}
@@ -405,7 +447,7 @@ export function DashboardShell({
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Mobile topbar — safe-area (çentik) payı */}
       {/* Yükseklik çentik payını İÇERİR — sabit h-16 üstüne pt eklenince
@@ -453,10 +495,10 @@ export function DashboardShell({
               role="dialog"
               aria-modal="true"
               aria-label="Gezinme menüsü"
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 32 }}
+              initial={{ x: '-100%', borderTopRightRadius: 48, borderBottomRightRadius: 48 }}
+              animate={{ x: 0, borderTopRightRadius: 24, borderBottomRightRadius: 24 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 260, damping: 30 }}
               onClick={(e) => e.stopPropagation()}
               className="surface absolute inset-y-0 left-0 flex w-72 flex-col overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
             >
@@ -471,7 +513,7 @@ export function DashboardShell({
                 </button>
               </div>
               <div className="flex-1">
-                <NavList onNavigate={() => setOpen(false)} />
+                <NavList id="drawer" onNavigate={() => setOpen(false)} />
               </div>
 
               {/* Kullanıcı kartı + çıkış — masaüstü sidebar'daki kimlik bloğunun mobil hali */}

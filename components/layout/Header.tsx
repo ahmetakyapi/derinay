@@ -2,52 +2,65 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
-import { useTheme } from 'next-themes'
-import { Sun, Moon, Menu, X } from 'lucide-react'
+import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
+import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton'
+import { useIntroDone } from '@/components/motion/intro'
+import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 
 /** Başlığın cam zemine geçtiği kaydırma eşiği (px) */
 const SCROLL_THRESHOLD = 10
+/** Bu kadar aşağıdayken aşağı kaydırma başlığı gizler (px) */
+const HIDE_AFTER = 480
 
 // Landing bölümleriyle BİREBİR eşleşmeli — var olmayan bir çapaya bağlanan
 // menü satırı sessizce hiçbir şey yapmaz (eski #features/#how böyleydi).
 const NAV_LINKS = [
   { label: 'Neler Var', href: '#panel' },
+  { label: 'Gün', href: '#gun' },
   { label: 'Seans Defteri', href: '#defter' },
   { label: 'Finans', href: '#finans' },
   { label: 'Güvenlik', href: '#guven' },
 ]
 
+/**
+ * Landing başlığı.
+ *  - Aşağı kaydırınca çekilir, yukarı kaydırınca geri gelir (okuma alanı açılır).
+ *  - Bağlantılar "yuvarlanır": üzerine gelince metin yukarı kayar, kopyası
+ *    alttan gelir (`.roll`, globals.css).
+ *  - Telefonda menü tam ekran perdedir; düğmenin köşesinden daire olarak
+ *    açılır, bağlantılar büyük puntoyla sırayla yükselir.
+ */
 export default function Header() {
-  const { resolvedTheme, setTheme } = useTheme()
-  const [scrolled, setScrolled]     = useState(false)
-  const [menuOpen, setMenuOpen]     = useState(false)
-  const [mounted, setMounted]       = useState(false)
-
-  useEffect(() => setMounted(true), [])
+  const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const introDone = useIntroDone()
 
   /* Kaydırma durumu Motion'ın `scrollY` değerinden okunur.
-     `window.addEventListener('scroll', ...)` KULLANILMAZ: her kaydırma
-     karesinde çalışır, toplanmaz ve React ağacını gereksiz yere döndürür.
-     `useMotionValueEvent` render döngüsünün dışında dinler; burada yalnız
-     eşik geçildiğinde bir boolean state değişir. */
+     `window.addEventListener('scroll', ...)` KULLANILMAZ (bkz. CLAUDE.md §10). */
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', (y) => {
     const past = y > SCROLL_THRESHOLD
     setScrolled((prev) => (prev === past ? prev : past))
+    const prev = scrollY.getPrevious() ?? 0
+    const hide = y > HIDE_AFTER && y > prev
+    setHidden((h) => (h === hide ? h : hide))
   })
 
-  // Mobil menü modal gibi davranıyor: Esc ile kapansın
+  // Mobil menü modal gibi davranıyor: Esc ile kapansın, arka plan kilitlensin
   useEffect(() => {
     if (!menuOpen) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false)
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
   }, [menuOpen])
-
-  // Varsayılan tema artık light — mount öncesi de light varsay
-  const isDark = mounted ? resolvedTheme === 'dark' : false
 
   return (
     <>
@@ -60,106 +73,130 @@ export default function Header() {
 
       {/* TELEFONDA KAYDIRMADAN ÖNCE DE OPAK (3 Ekim 2026). Saydam başlıkta iOS 26
           Safari durum çubuğunun altına kendi "kenar efektini" uyguluyor ve
-          altından geçen içeriği bulanıklaştırıyordu: sayfanın üstü buğulu
-          görünüyordu. Opak zeminde Safari düz rengi kullanıyor. Masaüstünde
-          saydam kalıyor; orada bu efekt yok. */}
-      <header
-        className={`fixed inset-x-0 top-0 z-50 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-all duration-300 ${
-          scrolled ? 'glass shadow-xl shadow-black/10' : 'border-b border-slate-500/10 bg-[var(--bg)] md:border-transparent md:bg-transparent'
+          altından geçen içeriği bulanıklaştırıyordu. Masaüstünde saydam kalıyor. */}
+      <motion.header
+        initial={{ y: '-100%' }}
+        animate={{ y: introDone && (!hidden || menuOpen) ? '0%' : '-100%' }}
+        transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: introDone && !scrolled ? 0.5 : 0 }}
+        className={`fixed inset-x-0 top-0 z-50 h-[calc(4.5rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-500 ${
+          scrolled && !menuOpen
+            ? `glass ${hidden ? '' : 'shadow-xl shadow-black/5'}`
+            : 'border-b border-slate-500/10 bg-[var(--bg)] md:border-transparent md:bg-transparent'
         }`}
       >
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <Link href="/" className="group flex items-center gap-2.5">
-              {/* Mürekkep damgası — orkide işareti + altın nokta */}
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-300 group-hover:rotate-3 dark:bg-slate-50">
-                <BloomMark className="h-5 w-5 text-amber-50 transition-transform duration-500 group-hover:rotate-[72deg] dark:text-slate-900" />
-                <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
-              </div>
-              <span className="font-display text-lg font-semibold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-300">
-                Derinay
-              </span>
-            </Link>
-          </motion.div>
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 sm:px-10">
+          <Link href="/" className="group relative z-[70] flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
+            {/* Mürekkep damgası — orkide işareti + altın nokta */}
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-500 group-hover:rotate-[8deg] dark:bg-slate-50">
+              <BloomMark className="h-5 w-5 text-amber-50 transition-transform duration-700 group-hover:rotate-[144deg] dark:text-slate-900" />
+              <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
+            </div>
+            <span className="font-display text-lg font-bold tracking-[-0.04em] text-slate-900 dark:text-slate-100">
+              Derinay
+            </span>
+          </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-7 lg:flex">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                className="group text-[13px] font-semibold text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
               >
-                {link.label}
+                <span className="roll">
+                  <span data-t={link.label}>{link.label}</span>
+                </span>
               </a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              aria-label="Tema değiştir"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-all hover:border-indigo-500/50 hover:text-indigo-400 dark:text-slate-400"
-            >
-              {mounted && (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
-            </button>
+          <div className="relative z-[70] flex items-center gap-2">
+            <ThemeToggleButton />
 
             <Link
               href="/dashboard"
-              className="hidden rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 sm:inline-flex"
+              className="group hidden items-center gap-1.5 rounded-full bg-slate-900 py-2 pl-4 pr-3 text-[13px] font-semibold text-slate-50 transition-colors hover:bg-indigo-700 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-indigo-200 sm:inline-flex"
             >
-              Panele Git
+              <span className="roll">
+                <span data-t="Panele Git">Panele Git</span>
+              </span>
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-45" />
             </Link>
 
+            {/* Hamburger — iki çizgi çarpıya döner */}
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Menü"
+              aria-label={menuOpen ? 'Menüyü kapat' : 'Menü'}
               aria-expanded={menuOpen}
               aria-controls="landing-mobile-menu"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 md:hidden"
+              className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-700 dark:text-slate-200 lg:hidden"
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <span
+                className={`absolute h-[1.5px] w-5 bg-current transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                  menuOpen ? 'rotate-45' : '-translate-y-[4px]'
+                }`}
+              />
+              <span
+                className={`absolute h-[1.5px] w-5 bg-current transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                  menuOpen ? '-rotate-45' : 'translate-y-[4px]'
+                }`}
+              />
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      {menuOpen && (
-        <>
-          {/* Dışına tıklayınca kapansın */}
-          <div
-            aria-hidden
-            onClick={() => setMenuOpen(false)}
-            className="fixed inset-0 z-30 md:hidden"
-          />
+      <AnimatePresence>
+        {menuOpen && (
           <motion.div
             id="landing-mobile-menu"
             role="dialog"
             aria-modal="true"
             aria-label="Gezinme menüsü"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="surface fixed inset-x-4 top-[calc(5rem+env(safe-area-inset-top))] z-40 rounded-2xl p-4 md:hidden"
+            initial={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.2rem)' }}
+            animate={{ clipPath: 'circle(150% at calc(100% - 2.6rem) 2.2rem)' }}
+            exit={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.2rem)' }}
+            transition={{ duration: 0.8, ease: EASE_IN_OUT }}
+            className="fixed inset-0 z-[45] flex flex-col bg-[var(--bg)] px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(6.5rem+env(safe-area-inset-top))] lg:hidden"
           >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-500/10 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-              >
-                {link.label}
-              </a>
-            ))}
-            <Link
-              href="/dashboard"
-              onClick={() => setMenuOpen(false)}
-              className="mt-2 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+            <nav className="flex flex-1 flex-col justify-center">
+              {NAV_LINKS.map((link, i) => (
+                <span key={link.href} className="block overflow-hidden border-b border-slate-500/15">
+                  <motion.a
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    initial={{ y: '100%' }}
+                    animate={{ y: '0%' }}
+                    exit={{ y: '100%' }}
+                    transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.25 + i * 0.06 }}
+                    className="flex items-baseline justify-between py-4 font-display text-[2.4rem] font-bold leading-none tracking-[-0.05em] text-slate-900 dark:text-white"
+                  >
+                    {link.label}
+                    <span className="font-mono text-xs font-medium tracking-normal text-slate-500 dark:text-slate-400">
+                      0{i + 1}
+                    </span>
+                  </motion.a>
+                </span>
+              ))}
+            </nav>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT_EXPO }}
             >
-              Panele Git
-            </Link>
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-between rounded-full bg-indigo-600 px-6 py-4 text-sm font-semibold text-white"
+              >
+                Panele Git
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
           </motion.div>
-        </>
-      )}
+        )}
+      </AnimatePresence>
     </>
   )
 }

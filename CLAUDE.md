@@ -26,7 +26,7 @@ sakin ve görsel bir arayüzde toplamak.
 |--------|-------|-----|
 | Framework | Next.js 14 App Router | Server Component varsayılan |
 | Stil | Tailwind CSS 3 (`darkMode: 'class'`) | `postcss.config.js` ŞART (yoksa derlenmez) |
-| Animasyon | Framer Motion 11 | GSAP yok. EASE = `[0.22,1,0.36,1]` |
+| Animasyon | Framer Motion 11 + Lenis (yalnız landing) | GSAP yok. `EASE_OUT_EXPO` (giriş) + `EASE_IN_OUT` (perde) — bkz. §7 Hareket Sistemi |
 | Grafik | Recharts | `components/charts/` altında, hepsi `'use client'`. Sayfalar **`charts/lazy`den import eder** (dynamic, ssr:false — Recharts ana pakete girmez) |
 | DB | Neon Postgres + Drizzle ORM | `@neondatabase/serverless` (pg değil) |
 | Tema | next-themes | **light varsayılan** ("kâğıt galeri") + dark ("gece galerisi") — enableSystem kapalı |
@@ -89,8 +89,10 @@ Kurulum: `.env.local` içine `DATABASE_URL` (Neon) → `db:push` → `db:seed` �
 app/
   layout.tsx                       # ThemeProvider + ThemeColorSync, Schibsted Grotesk + IBM Plex Mono (subset latin+latin-ext), metadataBase/OG/noindex
   globals.css                      # tema tokenları, .glass/.surface/.chip/.field, print + dark/light
-  page.tsx                         # Landing — 'use client'. Bölüm sırası: hero → #panel (neler var)
-                                   # → gün → #defter (seans defteri) → #finans → #guven → kapanış.
+  page.tsx                         # Landing — 'use client', yalnız BİLEŞİMDİR (bölümler components/landing/).
+                                   # Sıra: açılış perdesi → kahraman → hız bandı → vitrin (gece adası)
+                                   # → #panel (dizin) → #gun (yatay kayan sahne) → #defter → #finans
+                                   # → #guven (gece adası) → kapanış → altlık.
                                    # Yeni bölüm eklersen Header'daki NAV_LINKS'e de çapa ekle.
   error.tsx / not-found.tsx        # Atölye dilinde hata sınırı + 404 (Next varsayılanı ASLA görünmesin)
   manifest.ts                      # PWA manifesti (ana ekrana ekleme — standalone, /dashboard)
@@ -127,12 +129,18 @@ lib/
   utils.ts         # cn()
   variants.ts      # Framer Motion varyantları + EASE
 components/
+  motion/          # HAREKET SİSTEMİ (bkz. §7): RouteTransition (perde + mürekkep çizgisi, kök layout),
+                   # Preloader + intro.ts (açılış perdesi durumu), SmoothScroll (Lenis), RevealText
+                   # (kelime maskesi), Reveal (görünüme girince), Magnetic, VelocityMarquee
+  landing/         # Landing bölümleri: Hero, Showcase, CapabilityIndex, DayScroll, Scenes (defter/finans/
+                   # güven/kapanış). layout/Header + layout/Footer da landing'e özeldir.
   dashboard/       # DashboardShell (sidebar/topbar/drawer), PageHeader, PageTransition, WeekCalendar
   clients/         # NoteCard (Seans Defteri kartı), MoodTrail (duygu izleği)
   charts/          # AreaTrendChart, CategoryDonut, MonthlyBar, TaxRadial, CumulativeArea ('use client')
                    # lazy.tsx = TEK GİRİŞ: sayfalar grafikleri buradan import eder (dynamic+iskelet);
                    # yeni grafik → bileşeni yaz + lazy.tsx'e dynamic export ekle
-  theme/           # ThemeColorSync — <meta theme-color>'ı uygulama temasıyla eşler
+  theme/           # ThemeColorSync — <meta theme-color>'ı uygulama temasıyla eşler;
+                   # ThemeToggleButton — landing + panelin ORTAK tema düğmesi (hooks/useThemeTransition)
   forms/           # New*Dialog, EditClientDialog, NoteForm (tür+duygu), AvatarPicker, InvoiceStatusSelect
   ui/              # GlassCard, Modal, Field(Input/Select/Textarea), StatCard, SubmitButton,
                    # StatusBadge, StatusPillSelect, Avatar, EmptyState, DeleteButton, ConfirmDialog,
@@ -287,8 +295,37 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
     — yıkıcı VE geri alınamaz her işlem (silme, danışana çevirme, geri yükleme) onay ister
   - Boş durum: `<EmptyState icon title description action />`
   - Grafik: `AreaTrendChart / CategoryDonut / MonthlyBar / TaxRadial`
-- **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel…) + `EASE`.
-  Rotalar arası geçiş `PageTransition` ile otomatik.
+- **Animasyon**: `lib/variants.ts` (fadeUp, staggerContainer, modalPanel, maskUp, clipUp, lineDraw…).
+  Ayrıntı aşağıda, **Hareket Sistemi**.
+
+### Hareket Sistemi — "Atölye Sahnesi" (Ekim 2026 revizyonu)
+
+İki eğri: `EASE_OUT_EXPO` `[0.16,1,0.3,1]` içeri giren her şey; `EASE_IN_OUT`
+`[0.76,0,0.24,1]` perde/örtü/sahne değişimi. CSS karşılıkları `--ease-out-expo` / `--ease-in-out`.
+
+- **Rota geçişi iki ölçekli** (`components/motion/RouteTransition.tsx`, kök layout'ta):
+  BÖLGE değişince (landing ↔ /login ↔ /dashboard) tam ekran iki katlı çam PERDE + varılan
+  yerin adı; PANEL İÇİ gezinmede perde YOK, tepede mürekkep çizgisi (`.nav-ink`) akar.
+  Mekanizma: belge düzeyinde YAKALAMA evresinde tıklama dinlenir, bölge değişiyorsa
+  `preventDefault()` — next/link `defaultPrevented` görünce kendi gezinmesini yapmaz —
+  perde kapanınca `router.push`. 7 sn emniyet zamanlayıcısı perdeyi her koşulda kaldırır.
+- **Panel sayfa girişi saf CSS**: `PageTransition` kabı `.page-enter`; sayfanın üst düzey
+  blokları `page-rise` ile kademeli yükselir. `PageHeader` başlığı `.title-mask`, fırça
+  `.brush-draw`, alt satır `.subtitle-rise`. KPI kartları `.stat-rise`. Hepsi
+  `animation-fill-mode: backwards` — bitince transform KALMAZ (kalsa `fixed` çocuklar hapsolur).
+- **Kenar çubuğu**: aktif satır zemini `layoutId="nav-active"` ile satırdan satıra kayar;
+  masaüstü + çekmece aynı anda bağlı olabildiği için her `NavList` kendi `LayoutGroup id`'sinde.
+  Mobil sekme çubuğunda `layoutId="tab-active"`.
+- **Açılış perdesi** (`Preloader`, yalnız landing): oturumda BİR kez. Layout'taki engelleyici
+  script `sessionStorage['derinay:intro']` varsa `html.intro-seen` koyar, CSS perdeyi ilk
+  boyamadan gizler. Kahraman `useIntroDone()` ile perde kalkarken oynar.
+- **Lenis yalnız landing'de** (`SmoothScroll`). Panelde iç kaydırma alanları çok; yerel kalır.
+- **Tema geçişi**: `useThemeTransition` — View Transitions API ile tıklanan noktadan açılan
+  daire; sınıf geri çağrı İÇİNDE elle değişir (next-themes efekti geç kalır).
+- **Gece adası**: `.dark` sınıfı tek başına da token'ları koyuya çevirir (`html.dark, .dark`).
+  Landing'de vitrin, güven ve altlık açık temada bile koyu alt ağaçtır; içine `text-[var(--ink)]`.
+- **Hareket azaltma**: CSS animasyonları + gecikmeler sıfırlanır, perde ve Lenis atlanır,
+  Framer `MotionConfig reducedMotion="user"`.
 - **Marka**: mürekkep damgası — `bg-slate-900` kare + orkide işareti (`BloomMark`) + altın nokta
   (Shell, Header ve fatura print'te aynı kimlik).
 - **Navigasyon**: `DashboardShell` içinde `NAV_GROUPS` (Klinik / Finans / Yaşam) — düz `NAV` dizisi değil.
@@ -305,11 +342,13 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   koyuda 6.29:1. `dark:text-slate-500` de koyuda 3.78:1 ile düşer, kullanma.
   Plaket, künye, mikro etiket ve alıntı imzası bu ikiliyi kullanır.
 - **Landing bölüm düzeni TEKRAR ETMEZ** (taste-skill kuralı): her bölüm yapısını
-  içeriğinden alır — `#panel` panelin kendi gezinme gruplarına (Klinik/Finans)
-  bölünmüş liste, gün bölümü zaman çizgisi (`<ol>`, sıra gerçek bilgi taşır),
-  `#defter`/`#finans` aynalı ikili kesit (üst üste en fazla İKİ tane),
-  `#guven` taahhüt satırları (`<dl>`, saç çizgisi yalnız grubun üstünde).
+  VE hareketini içeriğinden alır — vitrin genişleyen gece adası, `#panel` numaralı
+  sergi dizini (yapışkan başlık + hover'da mürekkep dolgu), `#gun` yatay kayan sabit
+  sahne (yükseklik ÖLÇÜLÜR; telefonda dikey), `#defter`/`#finans` aynalı ikili kesit
+  (üst üste en fazla İKİ tane), `#guven` taahhüt satırları (`<dl>`, gece adası).
   Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
+- **Bölüm künyesi**: her landing bölümü küçük mono `(0N) ad` künyesiyle açılır
+  (sentence case, küçük harf) — sergi kataloğu numaralandırması.
 - **Vurgu sözcüğü yalnız manşette**: `text-indigo-700 dark:text-indigo-300` ile
   boyanan başlık sözcüğü landing'de TEK yerde, fırça sürüşüyle birlikte durur.
   Her başlıkta tekrarlanınca vurgu olmaktan çıkıp tike dönüşüyordu.
@@ -425,6 +464,15 @@ Tipik akış (örnek: yeni bir varlık/sekme):
     (`scripts/capture-app-shots.mjs`, playwright + demo tohum). Derinay'da
     yapılmadı çünkü `db:seed` TÜM tabloları siliyor; önce ayrı bir demo
     veritabanı gerekiyor. Bu kesitlere yeni sahte veri EKLEME.
+23. **`overflow-hidden` yapışkanı öldürür** — `position: sticky` (landing dizin başlığı,
+    `#gun` sahnesi) atalardan biri `overflow: hidden` ise çalışmaz (o ata kaydırma kabı
+    olur). Yatay taşmayı kesmek için `overflow-x-clip` kullan (landing `<main>`).
+24. **Framer animasyonu CSS hover transform'unu ezer** — `animate={{ y: 0 }}` bitince
+    satır içi `transform: none` bırakır; `hover:-translate-y-1` artık çalışmaz. Hover'da
+    kalkan bir kartın girişini CSS keyframe (`backwards` dolgu) ile yap (bkz. StatCard).
+25. **Panel içi `<a>` tıklamasını durdurma** — RouteTransition yakalama evresinde dinler;
+    bölge değişmiyorsa yalnız çizgiyi başlatır, `preventDefault` ETMEZ. Yeni bir tam ekran
+    bölge eklenirse `zoneOf()`'a yaz, yoksa perde oynamaz.
 
 ---
 

@@ -1,20 +1,23 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
-import { EASE } from '@/lib/variants'
 
-/** Rotalar arası yumuşak içerik geçişi. */
+/**
+ * Rotalar arası içerik geçişi.
+ *
+ * Kap her yol adında yeniden kurulur (`key`), sayfanın ÜST DÜZEY blokları
+ * (başlık, KPI şeridi, kartlar…) `.page-enter` ile sırayla yükselir —
+ * bkz. globals.css "Panel sayfa girişi". Saf CSS: Framer'a sayfa başına
+ * düzinelerce hareket değeri kurdurmaktan ucuz, ve dolgu `backwards`
+ * olduğu için bitince hiçbir transform geride kalmaz.
+ *
+ * Tepedeki mürekkep çizgisi ayrı: RouteTransition (kök layout).
+ */
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   return (
-    <motion.div
-      key={pathname}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.32, ease: EASE }}
-    >
+    <div key={pathname} className="page-enter">
       {children}
-    </motion.div>
+    </div>
   )
 }

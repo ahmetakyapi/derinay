@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
+import { RouteTransition } from '@/components/motion/RouteTransition'
 import './globals.css'
 
 /**
@@ -89,7 +90,9 @@ export default function RootLayout({
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('derinay:privacy')==='1')document.documentElement.classList.add('privacy')}catch(e){}`,
+            // İkinci parça: açılış perdesi oturumda bir kez — görüldüyse
+            // `intro-seen` ilk boyamadan önce perdeyi CSS ile gizler.
+            __html: `try{if(localStorage.getItem('derinay:privacy')==='1')document.documentElement.classList.add('privacy')}catch(e){}try{if(sessionStorage.getItem('derinay:intro'))document.documentElement.classList.add('intro-seen')}catch(e){}`,
           }}
         />
       </head>
@@ -97,6 +100,7 @@ export default function RootLayout({
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <ThemeColorSync />
+          <RouteTransition />
           {children}
         </ThemeProvider>
       </body>

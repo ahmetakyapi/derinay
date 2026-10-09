@@ -30,17 +30,19 @@ export function PageHeader({
   return (
     <div className={cn('mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between', className)}>
       <div className="flex min-w-0 gap-3.5 sm:gap-4">
-        <BrushPull className="mt-1 w-[7px] shrink-0 self-stretch text-slate-900/80 dark:text-white/70" />
+        <BrushPull className="brush-draw mt-1 w-[7px] shrink-0 self-stretch text-slate-900/80 dark:text-white/70" />
         <div className="min-w-0">
-          <h1 className="font-display text-[1.9rem] font-bold leading-[1.1] text-slate-900 dark:text-white sm:text-[2.15rem]">
+          {/* Başlık maskeden yükselir, fırça yukarıdan aşağı boyanır, alt satır
+              ardından gelir — saf CSS (Server Component), bkz. globals.css */}
+          <h1 className="title-mask font-display text-[2rem] font-bold leading-[1.08] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[2.5rem]">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{subtitle}</p>
+            <p className="subtitle-rise mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{subtitle}</p>
           )}
         </div>
       </div>
-      {action && <div className="shrink-0 sm:pt-1">{action}</div>}
+      {action && <div className="subtitle-rise shrink-0 sm:pt-1">{action}</div>}
     </div>
   )
 }

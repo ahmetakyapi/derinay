@@ -48,7 +48,9 @@
   --line: 60, 55, 40;        /* hairline border tabanı */
 }
 
-html.dark {
+/* `.dark` tek başına da çalışır: landing'deki gece adaları (vitrin, güven,
+   altlık) açık temada bile kendi alt ağacını koyu temaya alır. */
+html.dark, .dark {
   /* Dark — gece galerisi */
   --bg: #04070d;
   --ink: #e4e1d8;
@@ -76,6 +78,7 @@ a, button, [role='button'], input, select, textarea, label {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
     transition-duration: 0.01ms !important;
   }
 }
@@ -217,7 +220,7 @@ html.dark :focus-visible {
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
-  html.dark .glass {
+  .dark .glass {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 18px 40px -16px rgba(0, 0, 0, 0.5);
@@ -261,13 +264,13 @@ html.dark :focus-visible {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .field::placeholder { color: rgba(var(--line), 0.42); }
-  html.dark .field::placeholder { color: rgba(var(--line), 0.38); }
+  .dark .field::placeholder { color: rgba(var(--line), 0.38); }
   .field:focus {
     outline: none;
     border-color: rgba(var(--pine), 0.6);
     box-shadow: 0 0 0 3px rgba(var(--pine), 0.16);
   }
-  html.dark .field:focus {
+  .dark .field:focus {
     border-color: rgba(var(--pine-soft), 0.55);
     box-shadow: 0 0 0 3px rgba(var(--pine-soft), 0.14);
   }
@@ -288,7 +291,7 @@ html.dark :focus-visible {
     font-weight: 600;
     color: rgba(var(--line), 0.78);
   }
-  html.dark .field-label { color: rgba(var(--line), 0.7); }
+  .dark .field-label { color: rgba(var(--line), 0.7); }
 
   /* Tarih/saat alanının yerli takvim ikonu light'ta neredeyse görünmez;
      dark'ta ise beyaz parlar. İkisini de mürekkep tonuna çek. */
@@ -297,7 +300,7 @@ html.dark :focus-visible {
     cursor: pointer;
   }
   .field::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
-  html.dark .field::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
+  .dark .field::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
 
   /* iOS Safari, 16px altındaki input'a odaklanınca sayfayı zoom'lar —
      mobilde alan yazısını 16px'e sabitleyerek istenmeyen zoom'u engelle */
@@ -317,7 +320,7 @@ html.dark :focus-visible {
     border: 1px solid rgba(var(--line), 0.1);
     box-shadow: 0 10px 24px -14px rgba(var(--line), 0.25);
   }
-  html.dark .note-paper {
+  .dark .note-paper {
     box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
   }
 
@@ -334,7 +337,7 @@ html.dark :focus-visible {
       inset 0 1px 0 rgba(255, 255, 255, 0.5),
       0 18px 36px -24px rgba(var(--line), 0.28);
   }
-  html.dark .note-studio {
+  .dark .note-studio {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 18px 36px -24px rgba(0, 0, 0, 0.55);
@@ -354,7 +357,7 @@ html.dark :focus-visible {
       inset 0 1px 0 rgba(255, 255, 255, 0.55),
       0 16px 32px -24px rgba(var(--line), 0.32);
   }
-  html.dark .note-paper-rich {
+  .dark .note-paper-rich {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 16px 32px -24px rgba(0, 0, 0, 0.6);
@@ -399,21 +402,163 @@ html.dark :focus-visible {
   @keyframes shimmer {
     100% { transform: translateX(100%); }
   }
+  /* İskelet 150ms GECİKMEYLE belirir: hızlı gezinmede bir kare yanıp sönen
+     gri kutular yerine doğrudan içerik görünür. */
+  @keyframes skel-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
   .skeleton {
     position: relative;
     overflow: hidden;
     background: rgba(var(--line), 0.07);
     border-radius: 0.5rem;
+    animation: skel-in 0.5s ease 0.15s backwards;
   }
+  /* Kâğıt üstünden geçen ışık — çapraz, yavaş, sıcak. Düz yatay şerit
+     "yükleniyor çubuğu" gibi okunuyordu; çapraz süpürme atölye ışığına benzer. */
   .skeleton::after {
     content: '';
     position: absolute;
     inset: 0;
     transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(var(--paper), 0.55), transparent);
-    animation: shimmer 1.5s infinite;
+    background: linear-gradient(105deg, transparent 20%, rgba(var(--paper), 0.7) 45%, rgba(var(--gold), 0.08) 55%, transparent 80%);
+    animation: shimmer 1.8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
   }
-  html.dark .skeleton::after {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  .dark .skeleton::after {
+    background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.06) 45%, rgba(var(--gold), 0.05) 55%, transparent 80%);
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   HAREKET SİSTEMİ v2 — "Atölye Sahnesi"
+   Framer Motion'ın taşıdığı işler bileşenlerde; burada YALNIZCA saf CSS
+   ile çözülen, Server Component'lerde de çalışması gereken parçalar var.
+   Tümü `prefers-reduced-motion` altında yukarıdaki genel kuralla söner.
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ─── Lenis (yalnız landing'de çalışır) ─────────────────────────────────── */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ─── Açılış perdesi ────────────────────────────────────────────────────
+   Oturumda bir kez oynar. `html.intro-seen` sınıfını layout'taki engelleyici
+   script İLK BOYAMADAN önce koyar — böylece ikinci ziyarette perde bir kare
+   bile görünmez (gizlilik modundaki desenin aynısı). */
+html.intro-seen .preloader { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .preloader { display: none; }
+}
+
+/* ─── Tema geçişi: tıklanan noktadan açılan daire (View Transitions) ───── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ─── Panel sayfa girişi ─────────────────────────────────────────────────
+   PageTransition her rotada `.page-enter` kabını yeniden kurar; sayfanın
+   üst düzey blokları sırayla yükselir. `backwards` dolgusu BİLİNÇLİ:
+   animasyon bitince transform kalkar — kalsaydı içerideki `fixed` öğeler
+   (alt pil, toast) kaba hapsolurdu (bkz. Modal portal notu). */
+@keyframes page-rise {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.page-enter > * {
+  animation: page-rise 0.75s var(--ease-out-expo) backwards;
+}
+.page-enter > *:nth-child(1) { animation-delay: 0ms; }
+.page-enter > *:nth-child(2) { animation-delay: 70ms; }
+.page-enter > *:nth-child(3) { animation-delay: 130ms; }
+.page-enter > *:nth-child(4) { animation-delay: 190ms; }
+.page-enter > *:nth-child(5) { animation-delay: 240ms; }
+.page-enter > *:nth-child(6) { animation-delay: 290ms; }
+.page-enter > *:nth-child(7) { animation-delay: 330ms; }
+.page-enter > *:nth-child(n+8) { animation-delay: 370ms; }
+
+/* KPI kartları kendi aralarında da kademelenir */
+.stat-rise { animation: page-rise 0.8s var(--ease-out-expo) 0.1s backwards; }
+.stat-rise:nth-child(2) { animation-delay: 0.17s; }
+.stat-rise:nth-child(3) { animation-delay: 0.24s; }
+.stat-rise:nth-child(4) { animation-delay: 0.31s; }
+.stat-rise:nth-child(n+5) { animation-delay: 0.38s; }
+
+/* Sayfa başlığı maskeden yükselir; fırça çekişi yukarıdan aşağı boyanır.
+   clip-path kullanılır, overflow DEĞİL: gizlilik modunda başlıktaki isim
+   bulanır ve overflow:hidden bulanıklığın kenarını keserdi. Animasyon
+   bitince clip-path kalkar (dolgu `backwards`). */
+@keyframes title-mask {
+  from { opacity: 0; transform: translate3d(0, 55%, 0); clip-path: inset(0 0 100% 0); }
+  to   { opacity: 1; transform: none; clip-path: inset(-20% -5% -20% -5%); }
+}
+.title-mask { animation: title-mask 0.9s var(--ease-out-expo) 0.08s backwards; }
+@keyframes brush-draw {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+.brush-draw { transform-origin: top; animation: brush-draw 0.9s var(--ease-in-out) backwards; }
+@keyframes fade-rise {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.subtitle-rise { animation: fade-rise 0.8s var(--ease-out-expo) 0.25s backwards; }
+
+/* Aşağı ok — "kaydır" işareti, nefes alır gibi */
+@keyframes nudge {
+  0%, 100% { transform: translateY(-3px); }
+  50%      { transform: translateY(3px); }
+}
+
+/* Giriş ekranının gece paneli soldan perde gibi açılır */
+@keyframes panel-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.panel-wipe { animation: panel-wipe 1.2s var(--ease-in-out) backwards; }
+@keyframes slow-spin {
+  to { rotate: 360deg; }
+}
+.slow-spin { animation: slow-spin 90s linear infinite; }
+
+/* Bağımsız ekranlar (404, hata) için tek kart girişi */
+@keyframes card-rise {
+  from { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.card-rise { animation: card-rise 0.9s var(--ease-out-expo) backwards; }
+
+/* ─── Yuvarlanan bağlantı metni ──────────────────────────────────────────
+   <span class="roll"><span data-t="Metin">Metin</span></span> — üzerine
+   gelince metin yukarı kayar, aynısı alttan gelir. */
+.roll {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: top;
+}
+.roll > span {
+  display: inline-block;
+  transition: transform 0.55s var(--ease-out-expo);
+}
+.roll > span::after {
+  content: attr(data-t);
+  position: absolute;
+  left: 0;
+  top: 100%;
+}
+.group:hover .roll > span,
+.roll:hover > span { transform: translateY(-100%); }
+
+/* Mürekkep gezinti çizgisi — rota yüklenirken ekranın tepesinde */
+.nav-ink {
+  background: linear-gradient(90deg, rgba(var(--pine), 0.95), rgba(var(--gold), 0.9));
+  box-shadow: 0 0 12px rgba(var(--gold), 0.45);
 }

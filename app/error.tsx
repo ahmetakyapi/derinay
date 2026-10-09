@@ -24,7 +24,7 @@ export default function AppError({
 
   return (
     <main className="flex min-h-[100dvh] items-center justify-center px-6">
-      <div className="surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
+      <div className="card-rise surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
         <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
           <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500 ring-2 ring-[var(--bg)]" />

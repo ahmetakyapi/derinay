@@ -1,9 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { fadeUp } from '@/lib/variants'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 
 type Accent = 'emerald' | 'rose' | 'indigo' | 'amber' | 'sky'
@@ -61,13 +59,16 @@ export function StatCard({
   const isGood = change == null || change === 0 ? null : goodDirection === 'up' ? change > 0 : change < 0
 
   return (
-    <motion.div
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
+    // Giriş CSS ile (`.stat-rise`, kardeş sırasına göre kademeli). Framer
+    // KULLANILMAZ: bittiğinde satır içi `transform: none` bırakıyor ve
+    // aşağıdaki hover kalkışını eziyordu.
+    <div
       className={cn(
-        'glass group relative overflow-hidden rounded-2xl p-4 sm:p-5',
+        'stat-rise glass group relative overflow-hidden rounded-2xl p-4 sm:p-5',
+        // Üstüne gelince kart hafifçe kalkar, köşedeki renk hâlesi büyür
+        'transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-2xl',
         'before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:h-28 before:w-28 before:rounded-full before:blur-2xl before:content-[""]',
+        'before:transition-transform before:duration-700 before:ease-[cubic-bezier(0.16,1,0.3,1)] hover:before:scale-[2.2]',
         a.glow,
       )}
     >
@@ -82,7 +83,12 @@ export function StatCard({
             {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
           </p>
         </div>
-        <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10', a.icon)}>
+        <span
+          className={cn(
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-rotate-6 group-hover:scale-110 sm:h-10 sm:w-10',
+            a.icon,
+          )}
+        >
           {icon}
         </span>
       </div>
@@ -108,6 +114,6 @@ export function StatCard({
           {hint && <span className="text-slate-500 dark:text-slate-400">{hint}</span>}
         </div>
       ) : null}
-    </motion.div>
+    </div>
   )
 }

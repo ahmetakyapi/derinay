@@ -71,16 +71,25 @@ export function LoginForm({
         type="submit"
         disabled={pending}
         aria-busy={pending}
-        className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-[0.98] disabled:opacity-70"
+        className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-indigo-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-transform active:scale-[0.98] disabled:opacity-70"
       >
+        {/* Mürekkep dolgu aşağıdan yükselir */}
+        <span
+          aria-hidden
+          className="absolute inset-0 origin-bottom scale-y-0 bg-slate-900 transition-transform duration-[600ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 dark:bg-indigo-500"
+        />
         {pending ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Kontrol Ediliyor…
+            <span className="relative flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Kontrol Ediliyor…
+            </span>
           </>
         ) : (
           <>
-            Panele Gir
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            <span className="relative flex items-center gap-2">
+              Panele Gir
+              <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+            </span>
           </>
         )}
       </button>
