@@ -24,7 +24,7 @@ export default async function SettingsPage() {
     <>
       <PageHeader
         title="Ayarlar"
-        subtitle="İşletme kimliğin, vergi oranların, hatırlatma şablonun ve veri yönetimi"
+        subtitle="İşletme Kimliğin, Vergi Oranların, Hatırlatma Şablonun ve Veri Yönetimi"
       />
 
       <div className="mx-auto max-w-3xl">

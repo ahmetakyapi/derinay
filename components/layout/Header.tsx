@@ -129,11 +129,11 @@ export default function Header() {
             <ThemeToggleButton />
 
             <Link
-              href="/dashboard"
+              href="/login"
               className="group hidden items-center gap-1.5 rounded-full bg-slate-900 py-2 pl-4 pr-3 text-[13px] font-semibold text-slate-50 transition-colors hover:bg-indigo-700 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-indigo-200 sm:inline-flex"
             >
               <span className="roll">
-                <span data-t="Panele Git">Panele Git</span>
+                <span data-t="Giriş Yap">Giriş Yap</span>
               </span>
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-45" />
             </Link>
@@ -207,11 +207,11 @@ export default function Header() {
               transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT_EXPO }}
             >
               <Link
-                href="/dashboard"
+                href="/login"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-between rounded-full bg-indigo-600 px-6 py-4 text-sm font-semibold text-white"
               >
-                Panele Git
+                Giriş Yap
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </motion.div>

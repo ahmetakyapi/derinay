@@ -98,8 +98,8 @@ export function Preloader() {
       >
         {/* Üst künye */}
         <div className="flex items-center justify-between px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:px-10">
-          <span>atölye açılıyor</span>
-          <span>klinik pratik · tek masa</span>
+          <span>Atölye Açılıyor</span>
+          <span>Klinik Pratik · Tek Masa</span>
         </div>
 
         {/* Orkide — beş yaprak sırayla açar, yavaşça döner */}

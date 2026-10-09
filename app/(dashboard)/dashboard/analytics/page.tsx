@@ -71,7 +71,7 @@ export default async function AnalyticsPage({
     <>
       <PageHeader
         title="Analiz"
-        subtitle={`${year} yılının finansal hikâyesi — ay ay, kalem kalem`}
+        subtitle={`${year} Yılının Finansal Hikâyesi — Ay Ay, Kalem Kalem`}
         action={
           <div className="flex items-center gap-2">
             <Link

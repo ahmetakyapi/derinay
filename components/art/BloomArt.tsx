@@ -9,7 +9,18 @@ import { cn } from '@/lib/utils'
  * Mürekkeple çizilir gibi belirir (pathLength). Çok düşük opaklıkta,
  * göze batmadan sanatsal bir doku katar.
  */
-export function BloomArt({ className, delay = 0.4 }: { className?: string; delay?: number }) {
+export function BloomArt({
+  className,
+  delay = 0.4,
+  tone = 'paper',
+}: {
+  className?: string
+  delay?: number
+  /** 'night': koyu çam zemin üstü — sap ve yapraklar açık çam tonuna geçer */
+  tone?: 'paper' | 'night'
+}) {
+  const leaf = tone === 'night' ? 'var(--pine-soft)' : 'var(--pine)'
+  const k = tone === 'night' ? 1.9 : 1
   const draw = (i: number) => ({
     initial: { pathLength: 0, opacity: 0 },
     whileInView: { pathLength: 1, opacity: 1 },
@@ -38,7 +49,7 @@ export function BloomArt({ className, delay = 0.4 }: { className?: string; delay
       {/* Sap */}
       <motion.path
         d="M70 176 C66 140 78 116 72 86 C68 64 80 40 92 18"
-        stroke="rgba(var(--pine), 0.42)"
+        stroke={`rgba(${leaf}, ${0.42 * k})`}
         strokeWidth="1.8"
         strokeLinecap="round"
         {...draw(0)}
@@ -46,28 +57,28 @@ export function BloomArt({ className, delay = 0.4 }: { className?: string; delay
       {/* Yapraklar */}
       <motion.path
         d="M71 132 C54 130 44 120 41 106 C56 109 67 118 71 132 Z"
-        stroke="rgba(var(--pine), 0.36)"
+        stroke={`rgba(${leaf}, ${0.36 * k})`}
         strokeWidth="1.5"
         strokeLinejoin="round"
         {...draw(1)}
       />
       <motion.path
         d="M73 100 C88 95 95 84 95 71 C82 77 74 87 73 100 Z"
-        stroke="rgba(var(--pine), 0.32)"
+        stroke={`rgba(${leaf}, ${0.32 * k})`}
         strokeWidth="1.5"
         strokeLinejoin="round"
         {...draw(2)}
       />
       {/* Açmış çiçek — üst */}
-      {bloom(93, 18, 12, 3, 'rgba(var(--gold), 0.5)')}
-      <motion.circle cx="93" cy="18" r="2.4" fill="rgba(var(--gold), 0.5)" {...draw(4)} />
+      {bloom(93, 18, 12, 3, `rgba(var(--gold), ${0.5 * k})`)}
+      <motion.circle cx="93" cy="18" r="2.4" fill={`rgba(var(--gold), ${0.5 * k})`} {...draw(4)} />
       {/* Açmış çiçek — orta */}
-      {bloom(58, 64, 9, 5, 'rgba(var(--clay), 0.4)')}
-      <motion.circle cx="58" cy="64" r="1.9" fill="rgba(var(--clay), 0.42)" {...draw(6)} />
+      {bloom(58, 64, 9, 5, `rgba(var(--clay), ${0.4 * k})`)}
+      <motion.circle cx="58" cy="64" r="1.9" fill={`rgba(var(--clay), ${0.42 * k})`} {...draw(6)} />
       {/* Tomurcuk */}
       <motion.path
         d="M70 108 C66 102 67 95 72 90 C77 95 76 103 70 108 Z"
-        stroke="rgba(var(--pine), 0.4)"
+        stroke={`rgba(${leaf}, ${0.4 * k})`}
         strokeWidth="1.4"
         strokeLinejoin="round"
         {...draw(7)}

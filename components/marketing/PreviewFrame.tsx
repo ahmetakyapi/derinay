@@ -43,7 +43,7 @@ export function PreviewFrame({
       </div>
       <figcaption className="mt-4 flex items-baseline justify-between gap-6 border-t border-slate-500/15 pt-2.5 font-mono text-[10px] tracking-[0.18em] text-slate-500 dark:text-slate-400">
         <span className="truncate">{caption}</span>
-        <span className="shrink-0">örnek veri</span>
+        <span className="shrink-0">Örnek Veri</span>
       </figcaption>
     </figure>
   )

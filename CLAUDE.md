@@ -252,11 +252,15 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
 - **Yüzey sınıfları** (globals.css): `.glass` (kart), `.surface` (modal), `.chip` (pill),
   `.field`/`.field-label` (form). Hepsi dark+light varyantlı.
 - **Title Case KURALI (metin yazarken ilk bakılacak yer)**:
-  **Title Case olan** — sayfa/bölüm/kart başlıkları, modal başlıkları, düğme ve
-  bağlantı metinleri, form alanı etiketleri (`<Field label>`), sekme adları, menü
+  **Title Case olan** — sayfa/bölüm/kart başlıkları, **ALT BAŞLIKLAR** (`PageHeader`
+  `subtitle`, landing'de başlığın hemen altındaki tek satırlık giriş cümlesi, kahraman
+  alt başlığı, bölüm künyeleri `(02) Panelin İçi`, plaket/künye yazıları), modal başlıkları,
+  düğme ve bağlantı metinleri, form alanı etiketleri (`<Field label>`), sekme adları, menü
   satırları, durum/kategori/filtre rozetleri (`lib/constants.ts` sözlükleri),
-  tablo başlıkları, eylem adı veren `title` ipuçları.
-  **Cümle düzeninde kalan** — gövde ve açıklama metni, `subtitle`, modal
+  tablo başlıkları, eylem adı veren `title` ipuçları. (Alt başlık kuralı sahibinin
+  isteğiyle Ekim 2026'da eklendi.)
+  **Cümle düzeninde kalan** — çok cümleli gövde ve açıklama metni (landing'de defter/finans
+  paragrafları, kart açıklamaları), modal
   `description`, `placeholder`, `hint`, boş durum cümleleri ("Bu ay gider yok"),
   onay sorusu başlıkları ("Seans silinsin mi?"), hata sayfası cümleleri
   ("Bir şeyler ters gitti"), mono mikro etiketler ("son 1 ay", "3 gün önce").
@@ -347,8 +351,14 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   sahne (yükseklik ÖLÇÜLÜR; telefonda dikey), `#defter`/`#finans` aynalı ikili kesit
   (üst üste en fazla İKİ tane), `#guven` taahhüt satırları (`<dl>`, gece adası).
   Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
-- **Bölüm künyesi**: her landing bölümü küçük mono `(0N) ad` künyesiyle açılır
-  (sentence case, küçük harf) — sergi kataloğu numaralandırması.
+- **Bölüm künyesi**: her landing bölümü küçük mono `(0N) Ad` künyesiyle açılır
+  (Title Case) — sergi kataloğu numaralandırması.
+- **Kahraman**: iki sütun — solda üç ayrı satır manşet (leading 1.06, satır arası pay;
+  eski tek blok 0.9 satır aralığı "ğ" kuyruğunu alt satıra değdiriyordu), sağda kemerli
+  "galeri penceresi" (çam gökyüzü, inen altın güneş, ufuk çizgileri, `BloomArt tone="night"`)
+  ve çevresinde panel bölümlerini adlandıran süzülen cam çipler. Çiplerde uydurma rakam YOK.
+- **Giriş kişinin seçimi**: landing'deki çağrılar `/login`'e gider ("Giriş Yap" /
+  "Panele Giriş Yap"); PWA `start_url` `/` — uygulama hiçbir girişte kendiliğinden login'e açılmaz.
 - **Vurgu sözcüğü yalnız manşette**: `text-indigo-700 dark:text-indigo-300` ile
   boyanan başlık sözcüğü landing'de TEK yerde, fırça sürüşüyle birlikte durur.
   Her başlıkta tekrarlanınca vurgu olmaktan çıkıp tike dönüşüyordu.

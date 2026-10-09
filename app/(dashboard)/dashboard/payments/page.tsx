@@ -69,7 +69,7 @@ export default async function PaymentsPage({
         title="Ödemeler"
         subtitle={
           <>
-            {payments.length} tahsilat · <span className="sensitive font-mono tabular-nums">{formatTRY(total, { compact: true })}</span> toplam
+            {payments.length} Tahsilat · <span className="sensitive font-mono tabular-nums">{formatTRY(total, { compact: true })}</span> Toplam
           </>
         }
         action={<NewPaymentDialog clients={clients} />}

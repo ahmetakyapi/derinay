@@ -82,9 +82,9 @@ export default async function LoginPage({
         <div className="relative flex items-center justify-between font-mono text-[11px] text-slate-500 dark:text-slate-400">
           <Link href="/" className="group inline-flex items-center gap-2 hover:text-slate-900 dark:hover:text-white">
             <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-1" />
-            ana sayfa
+            Ana Sayfa
           </Link>
-          <span>güvenli giriş</span>
+          <span>Güvenli Giriş</span>
         </div>
 
         <div className="page-enter relative mx-auto my-auto w-full max-w-sm py-16">
@@ -98,7 +98,7 @@ export default async function LoginPage({
             Hoş Geldin
           </h1>
           <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-            {APP.name} · pratiğinin sakin çalışma masası
+            {APP.name} · Pratiğinin Sakin Çalışma Masası
           </p>
 
           <div className="mt-10">

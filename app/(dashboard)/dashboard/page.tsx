@@ -86,7 +86,7 @@ export default async function DashboardPage({
             greetingNow()
           )
         }
-        subtitle={`${formatWeekdayLong(new Date())} · ${d.activeClientCount} aktif danışan · bu hafta ${weekTotal} seans`}
+        subtitle={`${formatWeekdayLong(new Date())} · ${d.activeClientCount} Aktif Danışan · Bu Hafta ${weekTotal} Seans`}
         action={<QuickAddMenu clients={clients} />}
       />
 

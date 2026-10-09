@@ -11,7 +11,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'Derinay',
     description:
       'Psikologlar için gelir-gider, fatura, vergi ve danışan takibini tek panelde toplayan sakin finans yönetimi.',
-    start_url: '/dashboard',
+    // Ana ekrandan açılınca önce landing; giriş kişinin kendi seçimi
+    start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
     background_color: '#f6f2e9',

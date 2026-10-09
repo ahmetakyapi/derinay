@@ -89,7 +89,7 @@ export default async function TaxesPage() {
     <>
       <PageHeader
         title="Vergiler"
-        subtitle="Toplanan KDV ve tahmini gelir vergisi — muhasebecine hazır"
+        subtitle="Toplanan KDV ve Tahmini Gelir Vergisi — Muhasebecine Hazır"
         action={
           <Link
             href={`/reports/${year}/print`}

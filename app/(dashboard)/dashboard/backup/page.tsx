@@ -41,7 +41,7 @@ export default async function BackupPage() {
     <>
       <PageHeader
         title="Yedekleme"
-        subtitle="Verilerin senin — istediğin an indir, güvende hisset"
+        subtitle="Verilerin Senin — İstediğin An İndir, Güvende Hisset"
         action={
           <span
             className={cn(

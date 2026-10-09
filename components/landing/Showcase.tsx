@@ -11,9 +11,9 @@ import { RevealText } from '@/components/motion/RevealText'
  * 12 ekran (DashboardShell NAV_GROUPS), 3 bölüm (Klinik/Finans/Yaşam), 1 parola.
  */
 const FACTS = [
-  { n: 12, label: 'ekran, tek kenar çubuğunda' },
-  { n: 3, label: 'bölüm: klinik, finans, yaşam' },
-  { n: 1, label: 'parola, başka hesap yok' },
+  { n: 12, label: 'Ekran, Tek Kenar Çubuğunda' },
+  { n: 3, label: 'Bölüm: Klinik, Finans, Yaşam' },
+  { n: 1, label: 'Parola, Başka Hesap Yok' },
 ] as const
 
 function CountUp({ to }: { to: number }) {
@@ -66,14 +66,14 @@ export function Showcase() {
               <RevealText text="Sakin Bir Gün" delay={0.12} className="text-slate-400" />
             </h2>
             <p className="max-w-sm text-[15px] leading-[1.75] text-slate-300 md:col-span-4 md:justify-self-end">
-              Danışan, ajanda, defter ve finans aynı kenar çubuğunda. Bir ekrandan ötekine
-              geçerken bağlam kaybolmaz; tıkladığın şey hep bir adım ötede.
+              Danışan, Ajanda, Defter ve Finans Aynı Kenar Çubuğunda. Tıkladığın Şey Hep Bir Adım
+              Ötede.
             </p>
           </div>
 
           <div className="mt-16 [perspective:1800px] sm:mt-20">
             <motion.div style={still ? undefined : { scale, rotateX, y, transformOrigin: 'center top' }}>
-              <PreviewFrame caption="derinay · genel bakış">
+              <PreviewFrame caption="Derinay · Genel Bakış">
                 <PanelPreview />
               </PreviewFrame>
             </motion.div>

@@ -121,7 +121,7 @@ export default async function FinancesPage({
     <>
       <PageHeader
         title="Gelir & Gider"
-        subtitle="Kliniğin finansal hareketleri — ay ay, gün gün"
+        subtitle="Kliniğin Finansal Hareketleri — Ay Ay, Gün Gün"
         action={
           <div className="flex flex-wrap items-center gap-2">
             <CopyRecurringButton month={month} />

@@ -77,9 +77,9 @@ export default async function InvoicesPage({
         title="Makbuzlar"
         subtitle={
           <>
-            {invoices.length} makbuz · <span className="sensitive font-mono tabular-nums">{formatTRY(totalBilled, { compact: true })}</span> kesildi ·{' '}
+            {invoices.length} Makbuz · <span className="sensitive font-mono tabular-nums">{formatTRY(totalBilled, { compact: true })}</span> Kesildi ·{' '}
             <span className="sensitive font-mono tabular-nums">{formatTRY(totalKdv, { compact: true })}</span> KDV
-            {totalStopaj > 0 && <> · <span className="sensitive font-mono tabular-nums">{formatTRY(totalStopaj, { compact: true })}</span> stopaj</>}
+            {totalStopaj > 0 && <> · <span className="sensitive font-mono tabular-nums">{formatTRY(totalStopaj, { compact: true })}</span> Stopaj</>}
           </>
         }
         action={<NewInvoiceDialog clients={clients} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />}

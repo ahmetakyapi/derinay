@@ -39,14 +39,14 @@ export function NotebookScene() {
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-20">
         <div className="lg:col-span-7">
           <FloatingFrame>
-            <PreviewFrame caption="derinay · seans defteri">
+            <PreviewFrame caption="Derinay · Seans Defteri">
               <NotePreview />
             </PreviewFrame>
           </FloatingFrame>
         </div>
 
         <div className="mt-16 lg:col-span-5 lg:mt-0">
-          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(04) seans defteri</p>
+          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(04) Seans Defteri</p>
           <h2 className={`mt-5 ${H2_SCENE}`}>
             <RevealText text="Defter Önce, Fatura Sonra" />
           </h2>
@@ -72,7 +72,7 @@ export function FinanceScene() {
     <section id="finans" className="relative z-10 scroll-mt-24 px-6 py-28 sm:px-10 sm:py-40">
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-20">
         <div className="lg:col-span-5">
-          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(05) finans</p>
+          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(05) Finans</p>
           <h2 className={`mt-5 ${H2_SCENE}`}>
             <RevealText text="Hesap Kendiliğinden Çıkar" />
           </h2>
@@ -90,7 +90,7 @@ export function FinanceScene() {
 
         <div className="mt-16 lg:col-span-7 lg:mt-0">
           <FloatingFrame>
-            <PreviewFrame caption="derinay · yeni makbuz">
+            <PreviewFrame caption="Derinay · Yeni Makbuz">
               <ReceiptPreview />
             </PreviewFrame>
           </FloatingFrame>
@@ -134,14 +134,14 @@ export function TrustScene() {
       </motion.div>
 
       <div className="relative mx-auto max-w-7xl">
-        <p className="font-mono text-[11px] text-slate-400">(06) emanet</p>
+        <p className="font-mono text-[11px] text-slate-400">(06) Emanet</p>
         <h2 className="mt-5 max-w-4xl font-display text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-[0.92] tracking-[-0.06em] text-slate-50">
           <RevealText text="Veri Sende Kalır" />
         </h2>
         <Reveal delay={0.15}>
           <p className="mt-7 max-w-xl text-[15.5px] leading-[1.75] text-slate-300">
-            Bir psikoloğun tuttuğu kayıt, tuttuğu en hassas kayıttır. Derinay bunu bir vaat olarak
-            değil, arayüzün kendisi olarak çözer.
+            Bir Psikoloğun Tuttuğu Kayıt, Tuttuğu En Hassas Kayıttır. Derinay Bunu Vaatle Değil,
+            Arayüzün Kendisiyle Çözer.
           </p>
         </Reveal>
 
@@ -180,7 +180,7 @@ export function Closing() {
     <section className="relative z-10 px-6 py-32 sm:px-10 sm:py-48">
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-14 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(07) başlangıç</p>
+          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(07) Başlangıç</p>
           <h2 className="mt-5 max-w-4xl font-display text-[clamp(2.8rem,7.4vw,7.2rem)] font-bold leading-[0.92] tracking-[-0.06em] text-slate-900 dark:text-white">
             <RevealText text="Bugün Düzeni" />
             <br />
@@ -188,7 +188,7 @@ export function Closing() {
           </h2>
           <Reveal delay={0.2}>
             <p className="mt-7 max-w-md text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
-              Danışanlarını ekle, ilk seansını yaz, gerisini panel tutsun.
+              Danışanlarını Ekle, İlk Seansını Yaz, Gerisini Panel Tutsun.
             </p>
           </Reveal>
         </div>
@@ -196,7 +196,7 @@ export function Closing() {
         <Reveal variant="scale" delay={0.25} className="shrink-0">
           <Magnetic strength={0.4}>
             <Link
-              href="/dashboard"
+              href="/login"
               className="group relative flex h-40 w-40 items-center justify-center overflow-hidden rounded-full bg-indigo-600 text-white shadow-2xl shadow-indigo-600/30 sm:h-48 sm:w-48"
             >
               <span
@@ -205,7 +205,7 @@ export function Closing() {
               />
               <span className="relative flex flex-col items-center gap-2 text-sm font-semibold transition-colors duration-500 group-hover:text-slate-900">
                 <ArrowUpRight className="h-6 w-6 transition-transform duration-700 group-hover:rotate-45" />
-                Panele Git
+                Giriş Yap
               </span>
             </Link>
           </Magnetic>

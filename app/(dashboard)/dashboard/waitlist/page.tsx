@@ -20,7 +20,7 @@ export default async function WaitlistPage() {
     <>
       <PageHeader
         title="Bekleme Listesi"
-        subtitle={`${entries.length} başvuru${highCount ? ` · ${highCount} yüksek öncelik` : ''} — uygun slot açıldığında danışana çevir`}
+        subtitle={`${entries.length} Başvuru${highCount ? ` · ${highCount} Yüksek Öncelik` : ''} — Uygun Slot Açıldığında Danışana Çevir`}
         action={<NewWaitlistDialog />}
       />
 

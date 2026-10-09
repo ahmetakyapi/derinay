@@ -21,21 +21,21 @@ import { Reveal } from '@/components/motion/Reveal'
  */
 const MOMENTS = [
   {
-    time: 'sabah',
+    time: 'Sabah',
     icon: Sunrise,
     title: 'Günü Açarken',
     body: 'Bugünün seansları, notu eksik kalan kayıt, bitmek üzere olan paket ve sessizleşen danışan. Hepsi karşılama ekranında; aramana gerek yok.',
     wash: 'rgba(var(--gold), 0.16)',
   },
   {
-    time: 'seans arası',
+    time: 'Seans Arası',
     icon: NotebookPen,
     title: 'Defteri Tutarken',
     body: 'Danışan çıkar çıkmaz not düşersin, iki dakika sürer. Aklında kalan cümle, kapıdan çıkmadan yerine geçmiş olur.',
     wash: 'rgba(var(--pine), 0.16)',
   },
   {
-    time: 'ay sonu',
+    time: 'Ay Sonu',
     icon: MoonStar,
     title: 'Hesabı Kapatırken',
     body: 'Kimin ödediği, kimin geciktiği ve ne kadar vergi biriktiği tek sayfada durur. Muhasebeciye gidecek yıllık rapor bir tuşla çıkar.',
@@ -122,7 +122,7 @@ export function DayScroll() {
         >
           {/* Giriş levhası */}
           <div className="shrink-0 md:w-[min(40rem,70vw)] md:pr-12">
-            <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(03) bir gün</p>
+            <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(03) Bir Gün</p>
             <h2 className="mt-5 font-display text-[clamp(2.6rem,6vw,5.8rem)] font-bold leading-[0.95] tracking-[-0.055em] text-slate-900 dark:text-white">
               <RevealText text="Panel Günü Okur," />
               <br />
@@ -130,7 +130,7 @@ export function DayScroll() {
             </h2>
             <Reveal delay={0.25}>
               <p className="mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
-                Üç durak, bir gün. Kaydırdıkça sabahtan ay sonuna yürürsün.
+                Üç Durak, Bir Gün. Kaydırdıkça Sabahtan Ay Sonuna Yürürsün.
               </p>
             </Reveal>
           </div>
@@ -149,9 +149,9 @@ export function DayScroll() {
             <motion.div style={{ scaleX: scrollYProgress }} className="nav-ink absolute inset-0 origin-left" />
           </div>
           <div className="mt-3 flex justify-between font-mono text-[11px] text-slate-500 dark:text-slate-400">
-            <span>sabah</span>
-            <span>seans arası</span>
-            <span>ay sonu</span>
+            <span>Sabah</span>
+            <span>Seans Arası</span>
+            <span>Ay Sonu</span>
           </div>
         </div>
       </div>

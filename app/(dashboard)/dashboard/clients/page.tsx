@@ -39,7 +39,7 @@ export default async function ClientsPage({
     <>
       <PageHeader
         title="Danışanlar"
-        subtitle={q || status || tag ? `${clients.length} sonuç` : `${clients.length} kayıtlı danışan`}
+        subtitle={q || status || tag ? `${clients.length} Sonuç` : `${clients.length} Kayıtlı Danışan`}
         action={<NewClientDialog />}
       />
 

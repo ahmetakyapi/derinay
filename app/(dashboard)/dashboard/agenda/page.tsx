@@ -70,7 +70,7 @@ export default async function AgendaPage({
       <>
         <PageHeader
           title="Ajanda"
-          subtitle={`${m.total} seans · ${formatMonth(monthDate)}`}
+          subtitle={`${m.total} Seans · ${formatMonth(monthDate)}`}
           action={
             <div className="flex flex-wrap items-center gap-2">
               <ViewToggle view="month" />
@@ -187,7 +187,7 @@ export default async function AgendaPage({
     <>
       <PageHeader
         title="Ajanda"
-        subtitle={`${total} seans · ${weekRange}`}
+        subtitle={`${total} Seans · ${weekRange}`}
         action={
           <div className="flex flex-wrap items-center gap-2">
             <ViewToggle view="week" />

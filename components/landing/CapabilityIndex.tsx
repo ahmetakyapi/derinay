@@ -29,14 +29,14 @@ export function CapabilityIndex() {
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-32">
-            <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(02) panelin içi</p>
+            <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">(02) Panelin İçi</p>
             <h2 className="mt-5 font-display text-[clamp(2.3rem,4.6vw,3.8rem)] font-bold leading-[0.98] tracking-[-0.05em] text-slate-900 dark:text-white">
               <RevealText text="Bir Pratiğin Döndüğü Her Şey Burada" stagger={0.05} />
             </h2>
             <Reveal delay={0.2}>
               <p className="mt-6 max-w-sm text-[15.5px] leading-[1.75] text-slate-500 dark:text-slate-400">
-                Ayrı defterler, tablolar ve klasörler yerine tek panel. Bir seansı tamamladığında takvim,
-                danışan dosyası ve paket kullanımı aynı anda güncellenir.
+                Ayrı Defterler, Tablolar ve Klasörler Yerine Tek Panel. Seans Bittiğinde Takvim, Dosya ve
+                Paket Aynı Anda Güncellenir.
               </p>
             </Reveal>
           </div>
