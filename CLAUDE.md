@@ -373,14 +373,20 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   Yeni bölüm eklerken var olan bir düzeni üçüncü kez kullanma.
 - **Bölüm künyesi YOK**: bölüm başlıklarının üstündeki küçük mono `(0N) Ad` etiketleri
   sahibinin isteğiyle KALDIRILDI (Ekim 2026) — geri ekleme. Başlık tek başına açar.
-- **Satır kırılımı**: tek kelime alt satıra düşmez. `globals.css` başlıklara
+- **Dil: günlük Türkçe.** Landing ve giriş metinleri herkesin konuştuğu kelimelerle yazılır.
+  KULLANMA: "pratik" (muayenehane anlamında — günlük dilde "kullanışlı" demek), "atölye",
+  "emanet", "künye/plaket" gibi yapay ya da eski ifadeler, "parola" (→ "şifre"), "duygu
+  izleği" (→ "ruh hali takibi"), "sessizleşen danışan" (→ "bir süredir gelmeyen danışan").
+  Edebi kurgu cümleler ("Panel Günü Okur, Sen Aramazsın") yerine düz ve net cümle.
+- **Satır kırılımı** (kahraman HARİÇ): tek kelime alt satıra düşmez. `globals.css` başlıklara
   `text-wrap: balance`, paragraflara `text-wrap: pretty` verir; başlık puntosu da sütuna
   sığacak şekilde seçilir (manşetler `leading` ≥ 1.0 — Türkçe kuyruk/şapkalar değmesin).
 - **Açık tema ritmi**: zemin `--bg #f4eee2`; `#gun` ve `#finans` bölümleri `.band-sand`
   (kum bant, `--sand`) üstünde — kâğıt / gece / kum sırası tekdüzeliği kırar. Landing gövde
   metni `text-slate-600 dark:text-slate-400` (500 açıkta soluk okunuyordu).
-- **Kahraman**: iki sütun — solda üç ayrı satır manşet (leading 1.06, satır arası pay;
-  eski tek blok 0.9 satır aralığı "ğ" kuyruğunu alt satıra değdiriyordu), sağda kemerli
+- **Kahraman**: iki sütun — solda HER EKRANDA TAM İKİ SATIR manşet ("İşini Düzenle," /
+  "Kafanı Dinlendir"): satırlar `whitespace-nowrap`, global `text-wrap: balance` kahramana
+  UYGULANMAZ (`[text-wrap:wrap]`), punto vw ile sütuna sığacak şekilde ölçeklenir; sağda kemerli
   "galeri penceresi" (çam gökyüzü, inen altın güneş, ufuk çizgileri, `BloomArt tone="night"`)
   ve çevresinde panel bölümlerini adlandıran süzülen cam çipler. Çiplerde uydurma rakam YOK.
 - **Giriş kişinin seçimi**: landing'deki çağrılar `/login`'e gider ("Giriş Yap" /

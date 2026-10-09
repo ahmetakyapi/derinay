@@ -33,7 +33,7 @@ function zoneOf(path: string): Zone {
 }
 
 const ZONE_LABEL: Record<Zone, string> = {
-  home: 'Atölye',
+  home: 'Ana Sayfa',
   auth: 'Giriş',
   app: 'Panel',
   other: 'Derinay',

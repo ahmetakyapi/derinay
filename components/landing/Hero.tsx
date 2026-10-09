@@ -55,7 +55,7 @@ const CHIPS = [
 ] as const
 
 const TRUST = [
-  { icon: Lock, label: 'Tek Parola' },
+  { icon: Lock, label: 'Şifreyle Korunur' },
   { icon: EyeOff, label: 'Gizlilik Modu' },
   { icon: DatabaseBackup, label: 'Tam Yedek' },
 ] as const
@@ -187,16 +187,6 @@ function GalleryWindow({ play }: { play: boolean }) {
         </motion.div>
       </motion.div>
 
-      {/* Plaket */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={play ? { opacity: 1 } : undefined}
-        transition={{ duration: 1, delay: 1.8 }}
-        className="absolute -bottom-9 left-0 right-0 flex justify-between font-mono text-[10px] tracking-[0.18em] text-slate-500 dark:text-slate-400"
-      >
-        <span>No. 01</span>
-        <span>Sakin Bir Gün Batımı</span>
-      </motion.p>
 
       {CHIPS.map((c, i) => (
         <Chip key={c.label} chip={c} i={i} play={play} mx={mx} my={my} />
@@ -232,17 +222,21 @@ export function Hero() {
               <span className="absolute inset-0 animate-ping rounded-full bg-amber-500/60 motion-reduce:animate-none" />
               <span className="relative h-2.5 w-2.5 rounded-full bg-amber-500" />
             </span>
-            Psikologlar İçin Pratik Yönetimi
+            Psikologlar İçin Danışan ve Finans Takibi
           </motion.div>
 
           {/* İki satır, üç ses: kalın grotesk komut, ince soluk "Kafanı", serif
               italik çam rengi vurgu. Tek ailede dört satırlık blok tekdüze ve
               ağır duruyordu; ağırlık + yüz karşıtlığı manşeti zenginleştirir. */}
-          <h1 className="mt-8 font-display text-[clamp(2.75rem,5.6vw,5.9rem)] leading-[1.08] text-slate-900 dark:text-white">
-            <span className="block font-extrabold tracking-[-0.055em]">
-              <RevealText text="Pratiğini Yönet," play={play} stagger={0.08} duration={1.1} delay={0.15} />
+          {/* HER EKRANDA TAM İKİ SATIR. Satırlar `whitespace-nowrap` ve
+              `text-wrap: wrap` (global balance kuralı kahramana uygulanmaz);
+              punto sütuna sığacak şekilde vw ile ölçeklenir: en uzun satır
+              ≈7em → telefonda (100vw-48px)/7, lg'de sütun genişliği/7. */}
+          <h1 className="mt-8 font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 [text-wrap:wrap] dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
+            <span className="block whitespace-nowrap font-extrabold tracking-[-0.055em]">
+              <RevealText text="İşini Düzenle," play={play} stagger={0.08} duration={1.1} delay={0.15} />
             </span>
-            <span className="mt-[0.06em] block">
+            <span className="mt-[0.06em] block whitespace-nowrap">
               <RevealText
                 text="Kafanı"
                 play={play}
@@ -278,10 +272,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={play ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.75 }}
-            className="mt-8 max-w-[34rem] text-[1.125rem] font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
+            className="mt-8 max-w-[34rem] text-[1.125rem] [text-wrap:wrap] font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
           >
-            <span className="text-slate-900 dark:text-white">Danışan, Ajanda, Seans Defteri ve Finans</span>{' '}
-            Tek Yerde. Pratiğinin İhtiyacı Kadar Sakin Bir Çalışma Masası.
+            <span className="text-slate-900 dark:text-white">Danışanların, Randevuların, Seans Notların ve Gelirlerin</span>{' '}
+            Tek Bir Yerde. Sade, Hızlı ve Kullanması Kolay.
           </motion.p>
 
           <motion.div

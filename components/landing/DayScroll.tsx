@@ -23,22 +23,22 @@ const MOMENTS = [
   {
     time: 'Sabah',
     icon: Sunrise,
-    title: 'Günü Açarken',
-    body: 'Bugünün seansları, notu eksik kalan kayıt, bitmek üzere olan paket ve sessizleşen danışan. Hepsi karşılama ekranında; aramana gerek yok.',
+    title: 'Güne Başlarken',
+    body: 'Bugünün seansları, notu eksik kalan görüşmeler, bitmek üzere olan paketler ve bir süredir gelmeyen danışanlar. Hepsi ana ekranda; aramana gerek yok.',
     wash: 'rgba(var(--gold), 0.16)',
   },
   {
     time: 'Seans Arası',
     icon: NotebookPen,
-    title: 'Defteri Tutarken',
-    body: 'Danışan çıkar çıkmaz not düşersin, iki dakika sürer. Aklında kalan cümle, kapıdan çıkmadan yerine geçmiş olur.',
+    title: 'Not Alırken',
+    body: 'Danışan çıkar çıkmaz notunu yazarsın, iki dakika sürer. Aklındakiler unutulmadan kaydedilmiş olur.',
     wash: 'rgba(var(--pine), 0.16)',
   },
   {
     time: 'Ay Sonu',
     icon: MoonStar,
-    title: 'Hesabı Kapatırken',
-    body: 'Kimin ödediği, kimin geciktiği ve ne kadar vergi biriktiği tek sayfada durur. Muhasebeciye gidecek yıllık rapor bir tuşla çıkar.',
+    title: 'Hesap Zamanı',
+    body: 'Kimin ödediği, kimin geciktiği ve ne kadar vergi ödeyeceğin tek sayfada. Muhasebecine göndereceğin rapor tek tıkla hazır.',
     wash: 'rgba(var(--clay), 0.14)',
   },
 ] as const
@@ -123,13 +123,13 @@ export function DayScroll() {
           {/* Giriş levhası */}
           <div className="shrink-0 md:w-[min(40rem,70vw)] md:pr-12">
             <h2 className="font-display text-[clamp(2.4rem,4.4vw,4.3rem)] font-bold leading-[1.02] tracking-[-0.055em] text-slate-900 dark:text-white">
-              <RevealText text="Panel Günü Okur," />
+              <RevealText text="Günün Her Anında" />
               <br />
-              <RevealText text="Sen Aramazsın" delay={0.12} />
+              <RevealText text="Yanında" delay={0.12} />
             </h2>
             <Reveal delay={0.25}>
               <p className="mt-6 max-w-md text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
-                Üç Durak, Bir Gün. Kaydırdıkça Sabahtan Ay Sonuna Yürürsün.
+                Sabahtan Ay Sonuna Kadar Panel Seninle Birlikte Çalışır.
               </p>
             </Reveal>
           </div>

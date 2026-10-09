@@ -98,7 +98,7 @@ export default async function LoginPage({
             Hoş Geldin
           </h1>
           <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-            {APP.name} · Pratiğinin Sakin Çalışma Masası
+            {APP.name} · Danışan ve Finans Takibi
           </p>
 
           <div className="mt-10">

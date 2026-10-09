@@ -15,12 +15,12 @@ import { lineDraw } from '@/lib/variants'
  * soldan çizilir. Sol sütun (başlık) masaüstünde yapışkandır.
  */
 const ITEMS = [
-  { group: 'klinik', icon: Users, title: 'Danışan Dosyası', body: 'İletişim, etiket, seans ücreti, onam durumu ve tüm geçmiş tek kartta.' },
-  { group: 'klinik', icon: CalendarRange, title: 'Ajanda', body: 'Haftalık saat ızgarası. Seansı sürükleyip bırak; çakışmayı panel söyler.' },
-  { group: 'klinik', icon: StickyNote, title: 'Seans Defteri', body: 'Tür ve duygu etiketli notlar, SOAP şablonları, zamanla çıkan duygu izleği.' },
-  { group: 'finans', icon: Wallet, title: 'Gelir & Gider', body: 'Kategori bazlı hareketler; sabit kalemler tek tıkla sonraki aya kopyalanır.' },
-  { group: 'finans', icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzu tek ekranda kesilir; numara sıradan devam eder.' },
-  { group: 'finans', icon: PieChart, title: 'Analiz & Rapor', body: 'Yıllık akış, biriken bakiye ve muhasebeciye giden tek dosyalık rapor.' },
+  { group: 'klinik', icon: Users, title: 'Danışan Dosyası', body: 'İletişim bilgileri, seans ücreti, onam formu ve tüm geçmiş tek sayfada.' },
+  { group: 'klinik', icon: CalendarRange, title: 'Ajanda', body: 'Haftalık takvim. Seansı sürükleyip taşı; çakışma olursa panel uyarır.' },
+  { group: 'klinik', icon: StickyNote, title: 'Seans Defteri', body: 'Her seansa not ekle, ruh halini işaretle; zamanla gidişatı grafikte gör.' },
+  { group: 'finans', icon: Wallet, title: 'Gelir & Gider', body: 'Gelir ve giderlerini kategoriye göre tut; kira gibi sabit ödemeler tek tıkla sonraki aya geçer.' },
+  { group: 'finans', icon: FileText, title: 'Makbuz', body: 'Serbest meslek makbuzunu tek ekranda hazırla; makbuz numarası otomatik ilerler.' },
+  { group: 'finans', icon: PieChart, title: 'Analiz & Rapor', body: 'Yıl boyu gelir-gider grafiği ve muhasebecine gönderebileceğin hazır rapor.' },
 ] as const
 
 export function CapabilityIndex() {
@@ -30,12 +30,11 @@ export function CapabilityIndex() {
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-32">
             <h2 className="font-display text-[clamp(2.3rem,4.6vw,3.8rem)] font-bold leading-[1.04] tracking-[-0.05em] text-slate-900 dark:text-white">
-              <RevealText text="Bir Pratiğin Döndüğü Her Şey Burada" stagger={0.05} />
+              <RevealText text="İşin İçin Gereken Her Şey Burada" stagger={0.05} />
             </h2>
             <Reveal delay={0.2}>
               <p className="mt-6 max-w-sm text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
-                Ayrı Defterler, Tablolar ve Klasörler Yerine Tek Panel. Seans Bittiğinde Takvim, Dosya ve
-                Paket Aynı Anda Güncellenir.
+                Ayrı Defterler, Tablolar ve Klasörler Yerine Tek Panel. Bir Seansı Bitirdiğinde Takvim ve Danışan Dosyası Kendiliğinden Güncellenir.
               </p>
             </Reveal>
           </div>

@@ -37,7 +37,7 @@ import { NotebookScene, FinanceScene, TrustScene, Closing } from '@/components/l
  * Hareket azaltma tercihinde perde atlanır, Lenis kapanır, dönüşümler durur.
  */
 
-const MARQUEE_A = ['Danışan Dosyası', 'Ajanda', 'Seans Defteri', 'Duygu İzleği', 'Tedavi Hedefleri']
+const MARQUEE_A = ['Danışan Dosyası', 'Ajanda', 'Seans Defteri', 'Ruh Hali Takibi', 'Tedavi Hedefleri']
 const MARQUEE_B = ['Makbuz', 'Gelir & Gider', 'Vergi', 'Analiz', 'Yedek']
 
 function MarqueeRow({ words, velocity }: { words: string[]; velocity: number }) {

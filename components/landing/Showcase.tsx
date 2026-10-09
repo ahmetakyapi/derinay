@@ -11,9 +11,9 @@ import { RevealText } from '@/components/motion/RevealText'
  * 12 ekran (DashboardShell NAV_GROUPS), 3 bölüm (Klinik/Finans/Yaşam), 1 parola.
  */
 const FACTS = [
-  { n: 12, label: 'Ekran, Tek Kenar Çubuğunda' },
-  { n: 3, label: 'Bölüm: Klinik, Finans, Yaşam' },
-  { n: 1, label: 'Parola, Başka Hesap Yok' },
+  { n: 12, label: 'Sayfa, Tek Menüde' },
+  { n: 3, label: 'Bölüm: Klinik, Finans, Kişisel' },
+  { n: 1, label: 'Şifre, Başka Hesap Gerekmez' },
 ] as const
 
 function CountUp({ to }: { to: number }) {
@@ -61,13 +61,12 @@ export function Showcase() {
         <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-28 sm:px-10 sm:pb-32 sm:pt-36">
           <div className="grid items-end gap-8 md:grid-cols-12">
             <h2 className="font-display text-[clamp(2.4rem,6vw,5.5rem)] font-bold leading-[1.02] tracking-[-0.055em] text-slate-50 md:col-span-8">
-              <RevealText text="Tek Masa," />
+              <RevealText text="Her Şey" />
               <br />
-              <RevealText text="Sakin Bir Gün" delay={0.12} className="text-slate-400" />
+              <RevealText text="Tek Ekranda" delay={0.12} className="text-slate-400" />
             </h2>
             <p className="max-w-sm text-[15px] leading-[1.75] text-slate-300 md:col-span-4 md:justify-self-end">
-              Danışan, Ajanda, Defter ve Finans Aynı Kenar Çubuğunda. Tıkladığın Şey Hep Bir Adım
-              Ötede.
+              Danışanlar, Ajanda, Notlar ve Finans Aynı Menüde. Aradığın Her Şey Bir Tık Uzağında.
             </p>
           </div>
 

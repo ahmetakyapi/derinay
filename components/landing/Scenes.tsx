@@ -51,12 +51,10 @@ export function NotebookScene() {
           </h2>
           <Reveal delay={0.15} className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
             <p>
-              Her not bir tür ve bir duyguyla kaydedilir. SOAP, ilk görüşme ve BDT şablonları hazır
-              bekler; yazarken yarım kalırsa taslak korunur, sekmeyi kapatsan bile kaybolmaz.
+              Her nota türünü ve danışanın ruh halini eklersin. SOAP, ilk görüşme ve BDT şablonları hazır; yarım kalan not otomatik kaydedilir, sayfayı kapatsan bile kaybolmaz.
             </p>
             <p>
-              Haftalar biriktikçe duygu izleği bir eğriye dönüşür. Tedavi hedefleri ve ölçek puanları
-              aynı sayfada durur. İlerlemeyi anlatmak için hafızana yüklenmen gerekmez.
+              Haftalar geçtikçe ruh hali notları bir grafiğe dönüşür. Tedavi hedefleri ve test puanları da aynı sayfada. Danışanın nasıl ilerlediğini aklında tutmak zorunda kalmazsın.
             </p>
           </Reveal>
         </div>
@@ -72,16 +70,14 @@ export function FinanceScene() {
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-20">
         <div className="lg:col-span-6">
           <h2 className={H2_SCENE}>
-            <RevealText text="Hesap Kendiliğinden Çıkar" />
+            <RevealText text="Hesapları Panel Yapar" />
           </h2>
           <Reveal delay={0.15} className="mt-7 space-y-4 text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
             <p>
-              Danışanı seç, ücreti yaz. Makbuz bir ekranda kesilir; numara sıradan devam eder,
-              önizleme açılır, Yazdır dediğinde PDF çıkar. Kurulacak ek bir program yok.
+              Danışanı seç, ücreti yaz. Makbuz tek ekranda hazırlanır, numarası otomatik verilir; Yazdır’a bastığında PDF olarak iner. Ayrıca bir program kurman gerekmez.
             </p>
             <p>
-              Arkada KDV, stopaj ve tahmini gelir vergisi sen istemeden hesaplanır. Vadesi geçen bir
-              makbuz sen sayfayı açtığın anda kendini gecikmiş işaretler; takip etmen gerekmez.
+              KDV, stopaj ve tahmini gelir vergisi arka planda kendiliğinden hesaplanır. Ödemesi geciken makbuzlar otomatik işaretlenir; ayrıca takip etmen gerekmez.
             </p>
           </Reveal>
         </div>
@@ -99,10 +95,10 @@ export function FinanceScene() {
 }
 
 const TRUST = [
-  { title: 'Parola Kilidi', body: 'Panel tek parolayla açılır. Danışan verisi giriş yapılmadan hiçbir yolla görünmez.' },
-  { title: 'Gizlilik Modu', body: 'Tek kısayolla isimler, iletişim ve tutarlar bulanır. Danışan karşı koltuktayken ekranı çevirebilirsin.' },
-  { title: 'Yedek ve Geri Yükleme', body: 'Tüm veri tek dosyada iner, on bir tablo ayrı CSV olarak alınır. Geri yükleme tek işlemdir: ya hepsi ya hiçbiri.' },
-  { title: 'Belge Senin Deponda', body: 'Onam formu, test ve rapor dosyaları panele yüklenmez; yalnızca kendi bulutundaki bağlantısı tutulur.' },
+  { title: 'Şifre Koruması', body: 'Panel şifreyle açılır. Giriş yapılmadan danışan bilgilerine hiçbir şekilde ulaşılamaz.' },
+  { title: 'Gizlilik Modu', body: 'Tek tuşla isimler, iletişim bilgileri ve tutarlar bulanıklaşır. Yanında biri varken ekranı rahatça gösterebilirsin.' },
+  { title: 'Yedek ve Geri Yükleme', body: 'Tüm verilerini tek dosya olarak ya da Excel’de açılan CSV dosyaları olarak indirebilirsin. Geri yükleme yarım kalmaz: ya hepsi yüklenir ya hiçbiri.' },
+  { title: 'Belgeler Senin Elinde', body: 'Onam formları ve raporlar panele yüklenmez; yalnızca Google Drive veya iCloud’daki bağlantıları saklanır.' },
 ] as const
 
 /**
@@ -133,12 +129,11 @@ export function TrustScene() {
 
       <div className="relative mx-auto max-w-7xl">
         <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-[1] tracking-[-0.06em] text-slate-50">
-          <RevealText text="Veri Sende Kalır" />
+          <RevealText text="Bilgilerin Güvende" />
         </h2>
         <Reveal delay={0.15}>
           <p className="mt-7 max-w-xl text-[15.5px] leading-[1.75] text-slate-300">
-            Bir Psikoloğun Tuttuğu Kayıt, Tuttuğu En Hassas Kayıttır. Derinay Bunu Vaatle Değil,
-            Arayüzün Kendisiyle Çözer.
+            Danışan Bilgileri En Hassas Bilgilerdir. Derinay Onları Korumak İçin Tasarlandı.
           </p>
         </Reveal>
 
@@ -178,13 +173,13 @@ export function Closing() {
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-14 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7.4vw,7.2rem)] font-bold leading-[1] tracking-[-0.06em] text-slate-900 dark:text-white">
-            <RevealText text="Bugün Düzeni" />
+            <RevealText text="Düzenini Kurmaya" />
             <br />
-            <RevealText text="Kurmaya Başla" delay={0.12} />
+            <RevealText text="Bugün Başla" delay={0.12} />
           </h2>
           <Reveal delay={0.2}>
             <p className="mt-7 max-w-md text-[15.5px] leading-[1.75] text-slate-600 dark:text-slate-400">
-              Danışanlarını Ekle, İlk Seansını Yaz, Gerisini Panel Tutsun.
+              Danışanlarını Ekle, İlk Seansını Planla; Gerisini Panel Halleder.
             </p>
           </Reveal>
         </div>

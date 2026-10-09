@@ -36,7 +36,7 @@ export function LoginForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <label className="block">
-        <span className="field-label">Parola</span>
+        <span className="field-label">Şifre</span>
         <div className="relative">
           <Lock className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -63,7 +63,7 @@ export function LoginForm({
           role="alert"
           className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-3 py-2 text-sm text-rose-600 dark:text-rose-400"
         >
-          Parola hatalı. Tekrar dene.
+          Şifre hatalı. Tekrar dene.
         </p>
       )}
 

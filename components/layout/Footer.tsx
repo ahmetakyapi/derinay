@@ -31,7 +31,7 @@ export default function Footer() {
           <div className="sm:col-span-6">
             <BloomMark className="h-8 w-8 text-amber-400" />
             <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-slate-300">
-              Tek Kişilik Bir Klinik Pratiğin Sakin Çalışma Masası.
+              Psikologlar İçin Danışan, Seans ve Finans Takibi.
             </p>
           </div>
           <nav className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm sm:col-span-6 sm:justify-self-end">
@@ -83,7 +83,7 @@ export default function Footer() {
 
         <div className="mt-6 flex flex-col justify-between gap-2 font-mono text-[11px] text-slate-400 sm:flex-row">
           <span>© {new Date().getFullYear()} Derinay</span>
-          <span>Psikologlar İçin Finans ve Danışan Takibi</span>
+          <span>Tüm Hakları Saklıdır</span>
         </div>
       </motion.div>
     </footer>
