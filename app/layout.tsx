@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google'
+import { Schibsted_Grotesk, IBM_Plex_Mono, Fraunces } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
 import { RouteTransition } from '@/components/motion/RouteTransition'
@@ -22,6 +22,19 @@ const schibsted = Schibsted_Grotesk({
   subsets: ['latin', 'latin-ext'],
   style: ['normal', 'italic'],
   variable: '--font-sans-face',
+  display: 'swap',
+})
+
+/**
+ * Vurgu yüzü — YALNIZ landing manşetinin vurgu sözcüğünde (ve benzeri tek
+ * kelimelik editoryal vurgularda). Grotesk'in yanında yumuşak (SOFT ekseni)
+ * bir serif italik, başlığa el yazısı sıcaklığı katar. Gövdede KULLANILMAZ.
+ */
+const fraunces = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  style: ['italic'],
+  axes: ['SOFT', 'opsz'],
+  variable: '--font-serif-face',
   display: 'swap',
 })
 
@@ -79,7 +92,7 @@ export default function RootLayout({
     <html
       lang="tr"
       suppressHydrationWarning
-      className={`${schibsted.variable} ${ibmPlexMono.variable}`}
+      className={`${schibsted.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}
     >
       <head>
         {/*

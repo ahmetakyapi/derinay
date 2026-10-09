@@ -235,22 +235,29 @@ export function Hero() {
             Psikologlar İçin Pratik Yönetimi
           </motion.div>
 
-          <h1 className="mt-8 font-display text-[clamp(2.9rem,6.4vw,6.4rem)] font-bold leading-[1.06] tracking-[-0.05em] text-slate-900 dark:text-white">
-            <span className="block">
+          {/* İki satır, üç ses: kalın grotesk komut, ince soluk "Kafanı", serif
+              italik çam rengi vurgu. Tek ailede dört satırlık blok tekdüze ve
+              ağır duruyordu; ağırlık + yüz karşıtlığı manşeti zenginleştirir. */}
+          <h1 className="mt-8 font-display text-[clamp(2.75rem,5.6vw,5.9rem)] leading-[1.08] text-slate-900 dark:text-white">
+            <span className="block font-extrabold tracking-[-0.055em]">
               <RevealText text="Pratiğini Yönet," play={play} stagger={0.08} duration={1.1} delay={0.15} />
             </span>
-            <span className="mt-[0.08em] block">
-              <RevealText text="Kafanı" play={play} delay={0.3} duration={1.1} />
-            </span>
-            <span className="mt-[0.08em] block">
+            <span className="mt-[0.06em] block">
+              <RevealText
+                text="Kafanı"
+                play={play}
+                delay={0.3}
+                duration={1.1}
+                className="font-normal tracking-[-0.05em] text-slate-500 dark:text-slate-400"
+              />{' '}
               <span className="relative inline-block">
                 <motion.span
                   aria-hidden
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: play ? 1 : 0 }}
                   transition={{ duration: 1, ease: EASE_IN_OUT, delay: 1.05 }}
-                  /* Fırça taban çizgisinin hemen altını yalar */
-                  className="pointer-events-none absolute inset-x-[-4%] bottom-[-0.04em] top-[0.66em] origin-left text-amber-500"
+                  /* Fırça serifin taban çizgisinin hemen altını yalar */
+                  className="pointer-events-none absolute inset-x-[-3%] bottom-[-0.02em] top-[0.7em] origin-left text-amber-500"
                 >
                   <BrushSweep className="h-full w-full" />
                 </motion.span>
@@ -259,7 +266,9 @@ export function Hero() {
                   play={play}
                   delay={0.42}
                   duration={1.1}
-                  className="relative text-indigo-700 dark:text-indigo-300"
+                  // İtalik çıkıntı kelime maskesinde kesilmesin: pay içteki kelimeye
+                  wordClassName={() => 'pr-[0.1em]'}
+                  className="relative font-serif text-[1.08em] font-normal italic tracking-[-0.02em] text-indigo-700 [font-variation-settings:'SOFT'_100] dark:text-indigo-300"
                 />
               </span>
             </span>
@@ -271,20 +280,20 @@ export function Hero() {
             transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.75 }}
             className="mt-8 max-w-[34rem] text-[1.125rem] font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
           >
-            Danışan, Ajanda, Seans Defteri ve Finans Tek Yerde. Pratiğinin İhtiyacı Kadar Sakin Bir
-            Çalışma Masası.
+            <span className="text-slate-900 dark:text-white">Danışan, Ajanda, Seans Defteri ve Finans</span>{' '}
+            Tek Yerde. Pratiğinin İhtiyacı Kadar Sakin Bir Çalışma Masası.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={play ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.9 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-4 sm:gap-4"
           >
             <Magnetic strength={0.25}>
               <Link
                 href="/login"
-                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-indigo-600 py-4 pl-7 pr-5 text-[15px] font-semibold text-white shadow-xl shadow-indigo-600/25"
+                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-indigo-600 py-4 pl-6 pr-4 sm:pl-7 sm:pr-5 text-[15px] font-semibold text-white shadow-xl shadow-indigo-600/25"
               >
                 <span
                   aria-hidden
@@ -300,7 +309,7 @@ export function Hero() {
             </Magnetic>
             <a
               href="#panel"
-              className="group inline-flex items-center gap-2.5 rounded-full px-3 py-4 text-[15px] font-semibold text-slate-700 dark:text-slate-200"
+              className="group inline-flex items-center gap-2.5 rounded-full px-2 py-4 text-[15px] font-semibold sm:px-3 text-slate-700 dark:text-slate-200"
             >
               <span className="roll">
                 <span data-t="Neler Var">Neler Var</span>

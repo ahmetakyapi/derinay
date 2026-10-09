@@ -32,6 +32,8 @@
   --font-sans: 'DerinayLira', var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-display: 'DerinayLira', var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Vurgu serifi — yalnız tek kelimelik manşet vurgusu (bkz. CLAUDE.md §7) */
+  --font-serif: var(--font-serif-face), Georgia, 'Times New Roman', serif;
 
   /* Palet çapaları (Tailwind config ile senkron) */
   --pine: 47, 99, 91;        /* birincil — çam/petrol */

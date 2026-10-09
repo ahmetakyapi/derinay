@@ -257,7 +257,11 @@ vergi sorguları **`scope='business'` ile filtreler** — kişisel harcama işi 
   + `tabular-nums`. Bölüm başlıkları galeri etiketi stili:
   `text-xs font-bold uppercase tracking-[0.12em]`.
   **Dekoratif italik YOK** — italik yalnızca gerçek alıntıda (Günün Sözü, giriş ekranı sözü)
-  ve not/açıklama satırında kullanılır.
+  ve not/açıklama satırında kullanılır. TEK İSTİSNA: **vurgu yüzü Fraunces italik**
+  (`font-serif`, `--font-serif-face`, SOFT ekseni 100) — yalnız landing manşetinin vurgu
+  sözcüğü "Dinlendir"de. Kahraman manşeti iki satır, üç ses: `font-extrabold` grotesk
+  komut + `font-normal` soluk grotesk ("Kafanı") + serif italik çam vurgu. Serif'i gövdeye,
+  panele veya ikinci bir başlığa taşıma — vurgu tek yerde durur.
   TUZAK: `next/font` `variable` adı CSS token adıyla aynı olursa dairesel referans oluşur —
   bu yüzden next/font tarafında `--font-sans-face` / `--font-mono-face` soneki kullanılır.
 - **Chart renkleri**: `lib/palette.ts` (`CHART`, `CHART_SERIES`) — chart bileşenine hex yazma.

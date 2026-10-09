@@ -49,6 +49,7 @@ const config: Config = {
         sans: ['var(--font-sans)'],
         mono: ['var(--font-mono)'],
         display: ['var(--font-display)'],
+        serif: ['var(--font-serif)'],
       },
       colors: {
         // Mürekkep — sıcak nötr skala
