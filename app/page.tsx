@@ -95,7 +95,6 @@ export default function Home() {
 
         {/* Hız bandı — kaydırma hızlandıkça hızlanır, yön değişince döner */}
         <div
-          aria-label="Panelde neler var"
           className="relative z-10 space-y-2 border-y border-slate-500/15 py-8 font-display text-[clamp(2.6rem,7vw,6.5rem)] font-bold leading-none tracking-[-0.05em] sm:py-12"
         >
           <MarqueeRow words={MARQUEE_A} velocity={-1.6} />

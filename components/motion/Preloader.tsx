@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 import { INTRO_KEY, markIntroDone } from './intro'
@@ -24,7 +24,10 @@ const WORD = 'Derinay'
  */
 export function Preloader() {
   const [phase, setPhase] = useState<'run' | 'exit' | 'gone'>('run')
-  const [count, setCount] = useState(0)
+  // Sayaç bir hareket değeri: her karede React yeniden çizmesin
+  const count = useMotionValue(0)
+  const countText = useTransform(count, (c) => String(Math.round(c)).padStart(3, '0'))
+  const countScale = useTransform(count, (c) => c / 100)
 
   useEffect(() => {
     const html = document.documentElement
@@ -42,7 +45,7 @@ export function Preloader() {
     const tick = (now: number) => {
       const p = Math.min((now - start) / COUNT_MS, 1)
       // Sayaç düzgün değil, nefes alır gibi: başta hızlı, sonda yavaş
-      setCount(Math.round((1 - Math.pow(1 - p, 2.4)) * 100))
+      count.set((1 - Math.pow(1 - p, 2.4)) * 100)
       if (p < 1) raf = requestAnimationFrame(tick)
       else timer = setTimeout(() => setPhase('exit'), 260)
     }
@@ -52,7 +55,7 @@ export function Preloader() {
       clearTimeout(timer)
       html.style.overflow = ''
     }
-  }, [])
+  }, [count])
 
   // Perde kalkmaya başlarken manşet de başlasın — üst üste binen iki hareket
   // tek bir sahne gibi okunur.
@@ -156,17 +159,14 @@ export function Preloader() {
               </motion.span>
             ))}
           </p>
-          <p className="font-mono text-[2.4rem] font-medium leading-none tabular-nums text-slate-900 dark:text-white sm:text-[4.5rem]">
-            {String(count).padStart(3, '0')}
-          </p>
+          <motion.p className="font-mono text-[2.4rem] font-medium leading-none tabular-nums text-slate-900 dark:text-white sm:text-[4.5rem]">
+            {countText}
+          </motion.p>
         </div>
 
         {/* İlerleme saç çizgisi */}
         <div className="absolute inset-x-0 bottom-0 h-[3px] bg-slate-500/10">
-          <div
-            className="nav-ink h-full origin-left"
-            style={{ transform: `scaleX(${count / 100})` }}
-          />
+          <motion.div className="nav-ink h-full origin-left" style={{ scaleX: countScale }} />
         </div>
       </motion.div>
     </div>

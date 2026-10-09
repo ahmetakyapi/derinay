@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { animate, motion, useInView, useMotionTemplate, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { animate, motion, useInView, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { PanelPreview } from '@/components/marketing/PanelPreview'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
 import { RevealText } from '@/components/motion/RevealText'
@@ -19,13 +19,15 @@ const FACTS = [
 function CountUp({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, margin: '0px 0px -15% 0px' })
-  const [v, setV] = useState(0)
+  // Değer bir hareket değerinde akar; React her karede yeniden çizmez
+  const v = useMotionValue(0)
+  const text = useTransform(v, (x) => String(Math.round(x)).padStart(2, '0'))
   useEffect(() => {
     if (!inView) return
-    const c = animate(0, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1], onUpdate: (x) => setV(Math.round(x)) })
+    const c = animate(v, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1] })
     return () => c.stop()
-  }, [inView, to])
-  return <span ref={ref}>{String(v).padStart(2, '0')}</span>
+  }, [inView, to, v])
+  return <motion.span ref={ref}>{text}</motion.span>
 }
 
 /**
@@ -38,6 +40,7 @@ function CountUp({ to }: { to: number }) {
  */
 export function Showcase() {
   const ref = useRef<HTMLElement>(null)
+  const still = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start start'] })
   const inset = useTransform(scrollYProgress, [0, 1], [7, 0])
   const radius = useTransform(scrollYProgress, [0, 1], [56, 0])
@@ -48,7 +51,7 @@ export function Showcase() {
 
   return (
     <section ref={ref} aria-label="Panelden bir kesit" className="dark relative z-10 text-[var(--ink)]">
-      <motion.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950">
+      <motion.div style={still ? undefined : { clipPath: clip }} className="relative overflow-hidden bg-indigo-950">
         {/* Suluboya ışığı */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
@@ -69,7 +72,7 @@ export function Showcase() {
           </div>
 
           <div className="mt-16 [perspective:1800px] sm:mt-20">
-            <motion.div style={{ scale, rotateX, y, transformOrigin: 'center top' }}>
+            <motion.div style={still ? undefined : { scale, rotateX, y, transformOrigin: 'center top' }}>
               <PreviewFrame caption="derinay · genel bakış">
                 <PanelPreview />
               </PreviewFrame>

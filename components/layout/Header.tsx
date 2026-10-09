@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
@@ -37,6 +37,8 @@ export default function Header() {
   const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const introDone = useIntroDone()
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   /* Kaydırma durumu Motion'ın `scrollY` değerinden okunur.
      `window.addEventListener('scroll', ...)` KULLANILMAZ (bkz. CLAUDE.md §10). */
@@ -56,9 +58,18 @@ export default function Header() {
     document.addEventListener('keydown', onKey)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    // Arkadaki sayfa klavye ve ekran okuyucu için devre dışı: Tab menüden
+    // kaçıp görünmeyen içeriğe düşmesin. Başlık (kapat düğmesi) erişilebilir kalır.
+    const behind = [document.getElementById('lp-main'), document.querySelector('footer')]
+    behind.forEach((el) => el?.setAttribute('inert', ''))
+    const t = setTimeout(() => menuRef.current?.querySelector('a')?.focus(), 50)
+    const toggle = toggleRef.current
     return () => {
+      clearTimeout(t)
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
+      behind.forEach((el) => el?.removeAttribute('inert'))
+      toggle?.focus({ preventScroll: true })
     }
   }, [menuOpen])
 
@@ -129,6 +140,7 @@ export default function Header() {
 
             {/* Hamburger — iki çizgi çarpıya döner */}
             <button
+              ref={toggleRef}
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? 'Menüyü kapat' : 'Menü'}
               aria-expanded={menuOpen}
@@ -153,9 +165,14 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            ref={menuRef}
             id="landing-mobile-menu"
+            /* aria-modal YOK: kapatma düğmesi başlıkta, diyaloğun dışında;
+               aria-modal onu VoiceOver'a erişilmez kılardı. Arka plan `inert`.
+               data-lenis-prevent: Lenis tekerleği yakalayıp arkadaki sayfayı
+               kaydırmasın (body overflow kilidi programatik kaydırmayı durdurmaz). */
+            data-lenis-prevent
             role="dialog"
-            aria-modal="true"
             aria-label="Gezinme menüsü"
             initial={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.2rem)' }}
             animate={{ clipPath: 'circle(150% at calc(100% - 2.6rem) 2.2rem)' }}

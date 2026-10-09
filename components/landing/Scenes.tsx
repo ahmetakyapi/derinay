@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
@@ -24,8 +24,9 @@ function FloatingFrame({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], [90, -90])
+  const still = useReducedMotion()
   return (
-    <motion.div ref={ref} style={{ y }}>
+    <motion.div ref={ref} style={still ? undefined : { y }}>
       <Reveal variant="clip">{children}</Reveal>
     </motion.div>
   )
@@ -114,6 +115,7 @@ export function TrustScene() {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const rotate = useTransform(scrollYProgress, [0, 1], [-30, 60])
+  const still = useReducedMotion()
 
   return (
     <section
@@ -123,8 +125,10 @@ export function TrustScene() {
     >
       <motion.div
         aria-hidden
-        style={{ rotate }}
-        className="pointer-events-none absolute -right-40 top-1/2 h-[46rem] w-[46rem] -translate-y-1/2 text-white/[0.035]"
+        // y: '-50%' style İÇİNDE: Framer satır içi transform yazınca Tailwind'in
+        // -translate-y-1/2 sınıfı eziliyor, mühür 23rem aşağı kayıyordu.
+        style={still ? { y: '-50%' } : { rotate, y: '-50%' }}
+        className="pointer-events-none absolute -right-40 top-1/2 h-[46rem] w-[46rem] text-white/[0.035]"
       >
         <BloomMark className="h-full w-full" />
       </motion.div>
@@ -144,16 +148,19 @@ export function TrustScene() {
         <dl className="mt-20">
           {TRUST.map((t, i) => (
             <div key={t.title} className="relative grid gap-3 py-9 sm:grid-cols-12 sm:gap-10">
-              <motion.span
-                aria-hidden
-                variants={lineDraw}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '0px 0px -8% 0px' }}
-                className="absolute inset-x-0 top-0 h-px origin-left bg-white/15"
-              />
-              <span className="font-mono text-xs text-amber-300/80 sm:col-span-1">{String(i + 1).padStart(2, '0')}</span>
-              <dt className="font-display text-[1.6rem] font-bold leading-tight tracking-[-0.04em] text-slate-50 sm:col-span-4 sm:text-[1.9rem]">
+              {/* <dl> satırında yalnız dt/dd olabilir: çizgi ve numara dt'nin içinde */}
+              <dt className="flex items-baseline gap-6 font-display text-[1.6rem] font-bold leading-tight tracking-[-0.04em] text-slate-50 sm:col-span-5 sm:gap-10 sm:text-[1.9rem]">
+                <motion.span
+                  aria-hidden
+                  variants={lineDraw}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '0px 0px -8% 0px' }}
+                  className="absolute inset-x-0 top-0 h-px origin-left bg-white/15"
+                />
+                <span aria-hidden className="w-6 shrink-0 font-mono text-xs font-normal tracking-normal text-amber-300/80">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
                 <RevealText text={t.title} />
               </dt>
               <dd className="text-[15.5px] leading-[1.75] text-slate-300 sm:col-span-7">

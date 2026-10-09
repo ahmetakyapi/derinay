@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowDown, ArrowUpRight } from 'lucide-react'
 import { BrushSweep } from '@/components/brand/Brush'
 import { BloomArt } from '@/components/art/BloomArt'
@@ -21,6 +21,8 @@ import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
  */
 export function Hero() {
   const play = useIntroDone()
+  // Kaydırmaya bağlı değerler MotionConfig'ten etkilenmez; hareket azaltmada elle kapatılır
+  const still = useReducedMotion()
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const x1 = useTransform(scrollYProgress, [0, 1], ['0vw', '-14vw'])
@@ -54,7 +56,7 @@ export function Hero() {
 
       {/* Orkide dalı — manşetin arkasında, kaydırmayla aşağı süzülür */}
       <motion.div
-        style={{ y: artY }}
+        style={still ? undefined : { y: artY }}
         className="pointer-events-none absolute right-[4%] top-[16%] h-60 w-44 opacity-60 sm:h-80 sm:w-60 lg:right-[6%] lg:top-[18%] lg:h-[26rem] lg:w-[20rem] lg:opacity-80"
         aria-hidden
       >
@@ -62,13 +64,13 @@ export function Hero() {
       </motion.div>
 
       <motion.h1
-        style={{ opacity: fade }}
+        style={still ? undefined : { opacity: fade }}
         className="mx-auto mt-auto w-full max-w-7xl pt-16 font-display text-[clamp(3.1rem,10.4vw,10.5rem)] font-bold leading-[0.9] tracking-[-0.06em] text-slate-900 dark:text-white"
       >
-        <motion.span style={{ x: x1 }} className="block">
+        <motion.span style={still ? undefined : { x: x1 }} className="block">
           <RevealText text="Pratiğini Yönet," play={play} stagger={0.08} duration={1.2} />
         </motion.span>
-        <motion.span style={{ x: x2 }} className="block sm:pl-[14%]">
+        <motion.span style={still ? undefined : { x: x2 }} className="block sm:pl-[14%]">
           <RevealText text="Kafanı" play={play} delay={0.16} duration={1.2} />{' '}
           <span className="relative inline-block">
             <motion.span

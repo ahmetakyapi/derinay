@@ -51,6 +51,7 @@ export function RouteTransition() {
   const fromPath = useRef(pathname)
   const ink = useAnimationControls()
   const inkActive = useRef(false)
+  const inkTimer = useRef<ReturnType<typeof setTimeout>>()
 
   // ── Tıklama yakalayıcı ───────────────────────────────────────────────
   useEffect(() => {
@@ -76,6 +77,14 @@ export function RouteTransition() {
       } else {
         // Panel içi: mürekkep çizgisi
         inkActive.current = true
+        clearTimeout(inkTimer.current)
+        // Yol hiç değişmezse (gezinmeyi başka bir işleyici iptal ettiyse)
+        // çizgi %82'de asılı kalmasın
+        inkTimer.current = setTimeout(() => {
+          if (!inkActive.current) return
+          inkActive.current = false
+          ink.start({ opacity: 0, transition: { duration: 0.4 } })
+        }, 8000)
         ink.set({ scaleX: 0, opacity: 1 })
         ink.start({ scaleX: 0.82, transition: { duration: 3.2, ease: [0.1, 0.7, 0.2, 1] } })
       }
@@ -109,6 +118,8 @@ export function RouteTransition() {
   const onCovered = () => {
     if (stage !== 'cover') return
     setStage('covered')
+    // Perde kapanırken Geri'ye basıldıysa kullanıcıyı tekrar ileri itme
+    if (window.location.pathname !== fromPath.current) return
     if (target.current) router.push(target.current)
   }
 

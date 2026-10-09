@@ -33,7 +33,6 @@ import { CommandPalette } from '@/components/dashboard/CommandPalette'
 import { logoutAction } from '@/app/actions/auth'
 import { clearAllNoteDrafts } from '@/hooks/useNoteDraft'
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton'
-import { EASE_OUT_EXPO } from '@/lib/variants'
 
 // Gruplu navigasyon — galeri katalogu gibi bölümlenmiş
 const NAV_GROUPS = [
@@ -179,6 +178,8 @@ function Brand() {
 
 /**
  * Gezinme listesi.
+ *  - Giriş kademesi saf CSS (`.nav-in` + satır başına animationDelay) —
+ *    sunucu HTML'i görünür gelir, JS gecikse de menü boş kalmaz.
  *  - Aktif satırın zemini bir satırdan ötekine KAYAR (`layoutId`). Masaüstü
  *    kenar çubuğu ile mobil çekmece aynı anda bağlı olabildiği için her örnek
  *    kendi `LayoutGroup` kimliğinde durur; yoksa iki liste aynı zemini
@@ -194,14 +195,12 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
     <nav className="flex flex-col gap-4">
       {NAV_GROUPS.map((group) => (
         <div key={group.label}>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 + n * 0.035 }}
-            className="mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500/80 dark:text-slate-400/80"
+          <p
+            style={{ animationDelay: `${100 + n * 35}ms` }}
+            className="nav-in mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
           >
             {group.label}
-          </motion.p>
+          </p>
           <div className="flex flex-col gap-0.5">
             {group.items.map((item) => {
               const order = n++
@@ -210,12 +209,7 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
                   ? pathname === '/dashboard'
                   : pathname.startsWith(item.href)
               return (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -14 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.12 + order * 0.035 }}
-                >
+                <div key={item.href} className="nav-in" style={{ animationDelay: `${120 + order * 35}ms` }}>
                 <Link
                   href={item.href}
                   onClick={onNavigate}
@@ -253,7 +247,7 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
                     {item.label}
                   </span>
                 </Link>
-                </motion.div>
+                </div>
               )
             })}
           </div>
@@ -383,11 +377,10 @@ export function DashboardShell({
       </a>
 
       {/* Desktop sidebar */}
-      <motion.aside
-        initial={{ x: -24, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
-        className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex"
+      {/* Giriş CSS ile (`.shell-in`): Framer `initial` sunucu HTML'ine
+          opacity:0 yazıyordu, JS yüklenene dek kenar çubuğu görünmezdi. */}
+      <aside
+        className="shell-in glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-500/10 px-5 pb-4 pt-6 lg:flex"
       >
         {/* min-h-0 + overflow-y-auto: kısa ekranlarda (13" dizüstü) menü kesilmesin,
             alttaki kimlik kartı her zaman görünür kalsın */}
@@ -447,7 +440,7 @@ export function DashboardShell({
             </div>
           </div>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Mobile topbar — safe-area (çentik) payı */}
       {/* Yükseklik çentik payını İÇERİR — sabit h-16 üstüne pt eklenince

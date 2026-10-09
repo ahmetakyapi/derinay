@@ -156,7 +156,8 @@ html.dark ::-webkit-scrollbar-thumb { background: rgba(var(--pine-soft), 0.3); }
   border-radius: 4px;
 }
 /* Koyu temada çam çok koyu kalıyor — scrollbar'da yapılan düzeltmenin aynısı */
-html.dark :focus-visible {
+html.dark :focus-visible,
+.dark :focus-visible {
   outline-color: rgba(var(--pine-soft), 0.75);
 }
 
@@ -492,6 +493,14 @@ html.intro-seen .preloader { display: none; }
 .page-enter > *:nth-child(7) { animation-delay: 330ms; }
 .page-enter > *:nth-child(n+8) { animation-delay: 370ms; }
 
+/* Panel kabuğu: kenar çubuğu soldan, menü satırları kademeli süzülür */
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translate3d(-16px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.shell-in { animation: slide-in-left 0.8s var(--ease-out-expo) backwards; }
+.nav-in { animation: slide-in-left 0.7s var(--ease-out-expo) backwards; }
+
 /* KPI kartları kendi aralarında da kademelenir */
 .stat-rise { animation: page-rise 0.8s var(--ease-out-expo) 0.1s backwards; }
 .stat-rise:nth-child(2) { animation-delay: 0.17s; }
@@ -558,6 +567,8 @@ html.intro-seen .preloader { display: none; }
 }
 .roll > span::after {
   content: attr(data-t);
+  /* Alternatif metin boş: ekran okuyucu etiketi iki kez okumasın */
+  content: attr(data-t) / '';
   position: absolute;
   left: 0;
   top: 100%;

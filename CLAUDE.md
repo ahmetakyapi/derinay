@@ -473,6 +473,17 @@ Tipik akış (örnek: yeni bir varlık/sekme):
 25. **Panel içi `<a>` tıklamasını durdurma** — RouteTransition yakalama evresinde dinler;
     bölge değişmiyorsa yalnız çizgiyi başlatır, `preventDefault` ETMEZ. Yeni bir tam ekran
     bölge eklenirse `zoneOf()`'a yaz, yoksa perde oynamaz.
+26. **`<body>`'ye next/font `className` VERME** — font-family'yi doğrudan Schibsted'e
+    kilitler, `var(--font-sans)` yığınının başındaki `DerinayLira` hiç yüklenmez ve ₺
+    sitenin her yerinde £ çizilir (Ekim 2026'da böyle bulundu). Aile html'deki
+    `variable` sınıfından gelir.
+27. **Framer `style` transform'u Tailwind translate sınıfını ezer** — `style={{ rotate }}`
+    olan bir öğede `-translate-y-1/2` çalışmaz; ötelemeyi de style'a yaz (`y: '-50%'`).
+28. **Kaydırmaya bağlı `style` değerleri `MotionConfig reducedMotion`'dan etkilenmez** —
+    paralaks/eğim/dönüş `useReducedMotion()` ile elle kapatılır (Hero, Showcase, Scenes, Footer).
+29. **Sunucu HTML'inde görünmesi gereken kabuğa Framer `initial` koyma** — `opacity:0`
+    SSR'a yazılır, JS gecikirse/çökerse menü boş kalır. Kabuk girişleri CSS (`.shell-in`,
+    `.nav-in`). Hareket eden kartta `.glass-static` (backdrop-filter yok) kullan.
 
 ---
 
