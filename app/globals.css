@@ -6,7 +6,8 @@
    Derinay "Atölye" — sanat galerisi estetiği
    Light (varsayılan): sıcak fildişi kâğıt + suluboya yıkamaları + grain
    Dark: gece galerisi — mürekkep zemin, aynı paletin loş hali
-   Fontlar next/font ile yüklenir (layout.tsx) — burada @import YOK.
+   Fontlar fontsource paketlerinden yüklenir (layout.tsx CSS import'u) —
+   burada @import YOK; aile adları aşağıdaki `--font-*-face` tokenlarında sabit.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ─── ₺ düzeltmesi ────────────────────────────────────────────────────────
@@ -31,7 +32,7 @@
   --font-mono-face: 'IBM Plex Mono';
   --font-serif-face: 'Fraunces Variable';
 
-  /* Tipografi tokenları — next/font `-face` değişkenlerini sarar (layout.tsx).
+  /* Tipografi tokenları — yukarıdaki sabit `-face` aile adlarını sarar (fontsource).
      Display ile sans AYNI aileyi işaret eder; fark ağırlık + tracking'ten gelir.
      'DerinayLira' en başta: yalnız ₺ için devreye girer (yukarıdaki not). */
   --font-sans: 'DerinayLira', var(--font-sans-face), 'Segoe UI', system-ui, -apple-system, sans-serif;

@@ -40,7 +40,7 @@ import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
  *  - Sağda kemerli pencere: koyu çam gökyüzü, ufka inen altın güneş, suda
  *    yansıyan çizgiler ve kendi kendine çizilen orkide — "kafanı dinlendir"
  *    vaadinin resmi. Etrafında panelin gerçek bölümlerini adlandıran cam
- *    çipler süzülür; uydurma rakam/isim YOK (bkz. CLAUDE.md §10/22).
+ *    çipler süzülür; uydurma rakam/isim YOK (bkz. CLAUDE.md §10, "Sahte ekran görüntüsü borcu").
  *  - Fare pencerenin üstünde gezinince katmanlar farklı derinlikte kayar.
  *
  * Metin kuralı: başlık, alt başlık ve düğmeler Title Case (sahibinin isteği).
