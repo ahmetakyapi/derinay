@@ -57,7 +57,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   // Statik başlangıç değeri (light varsayılan) — sonrası ThemeColorSync'te:
   // tema class-tabanlı olduğundan prefers-color-scheme media'sı yanlış olur.
-  themeColor: '#f6f2e9',
+  themeColor: '#f4eee2',
 }
 
 export default function RootLayout({

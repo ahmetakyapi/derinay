@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useTheme } from 'next-themes'
 
 // globals.css --bg değerleriyle senkron (kâğıt galeri / gece galerisi)
-const THEME_COLOR = { light: '#f6f2e9', dark: '#04070d' } as const
+const THEME_COLOR = { light: '#f4eee2', dark: '#04070d' } as const
 
 /**
  * Tarayıcı çubuğu rengini UYGULAMA temasıyla eşler. Tema class-tabanlı
