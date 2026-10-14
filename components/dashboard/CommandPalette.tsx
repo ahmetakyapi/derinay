@@ -7,14 +7,39 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, LayoutDashboard, CalendarRange, Users, ArrowLeftRight, LineChart,
   FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft, Hourglass,
+  CalendarPlus, UserPlus, Plus,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
+import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
+import { NewClientDialog } from '@/components/forms/NewClientDialog'
+import { NewTransactionDialog } from '@/components/forms/NewTransactionDialog'
 import { EASE } from '@/lib/variants'
 import { cn } from '@/lib/utils'
 
-type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
+type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null; sessionFee: number }
 type Cmd = { label: string; href: string; group: string; icon: typeof Search; keywords?: string }
-type Entry = { key: string; label: string; href: string; group: string; icon: typeof Search; client: ClientLite | null }
+type QuickDialog = 'session' | 'client' | 'tx'
+type Entry = {
+  key: string
+  label: string
+  href: string
+  group: string
+  icon: typeof Search
+  client: ClientLite | null
+  /** Doluysa satır sayfaya gitmez, ilgili "ekle" diyaloğunu açar */
+  action?: QuickDialog
+}
+
+/**
+ * Hızlı ekleme — en sık üç kayıt her sayfadan ⌘K ile açılır. Önceden yalnız
+ * Genel Bakış'taki "Ekle" menüsünde vardı; ajandadayken seans eklemek için
+ * sayfa değiştirmek gerekiyordu. Diyaloglar sayfalardakilerin AYNISI.
+ */
+const ACTIONS: (Cmd & { action: QuickDialog })[] = [
+  { label: 'Yeni Seans', href: '#seans', group: 'Hızlı Ekle', icon: CalendarPlus, action: 'session', keywords: 'seans ekle randevu planla' },
+  { label: 'Yeni Danışan', href: '#danisan', group: 'Hızlı Ekle', icon: UserPlus, action: 'client', keywords: 'danışan ekle kayıt hasta' },
+  { label: 'Gelir / Gider Ekle', href: '#islem', group: 'Hızlı Ekle', icon: Plus, action: 'tx', keywords: 'işlem gelir gider harcama ödeme ekle' },
+]
 
 const COMMANDS: Cmd[] = [
   { label: 'Genel Bakış', href: '/dashboard', group: 'Klinik', icon: LayoutDashboard, keywords: 'ana sayfa dashboard özet' },
@@ -38,6 +63,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const [mounted, setMounted] = useState(false)
+  const [dialog, setDialog] = useState<QuickDialog | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -79,6 +105,10 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
 
   const results = useMemo<Entry[]>(() => {
     const q = trLower(query.trim())
+    const actions: Entry[] = (q
+      ? ACTIONS.filter((c) => trLower(c.label + ' ' + (c.keywords ?? '')).includes(q))
+      : ACTIONS
+    ).map((c) => ({ key: `act-${c.action}`, label: c.label, href: c.href, group: c.group, icon: c.icon, client: null, action: c.action }))
     const pages: Entry[] = (q
       ? COMMANDS.filter((c) => trLower(c.label + ' ' + (c.keywords ?? '') + ' ' + c.group).includes(q))
       : COMMANDS
@@ -89,7 +119,8 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
           .slice(0, 8)
           .map((c) => ({ key: `c-${c.id}`, label: c.name, href: `/dashboard/clients/${c.id}`, group: 'Danışan', icon: Users, client: c }))
       : []
-    return [...pages, ...cl]
+    // Arama yazılınca danışanlar öne geçer: "ay" yazan büyük ihtimalle Ayşe'yi arıyor
+    return q ? [...cl, ...actions, ...pages] : [...actions, ...pages]
   }, [query, clients])
 
   useEffect(() => {
@@ -102,100 +133,116 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
     activeRef.current?.scrollIntoView({ block: 'nearest' })
   }, [active])
 
-  function go(href: string) {
+  function go(entry: Entry) {
     setOpen(false)
-    router.push(href)
+    if (entry.action) setDialog(entry.action)
+    else router.push(entry.href)
   }
 
   function onInputKey(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(a + 1, results.length - 1)) }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)) }
-    else if (e.key === 'Enter') { e.preventDefault(); const r = results[active]; if (r) go(r.href) }
+    else if (e.key === 'Enter') { e.preventDefault(); const r = results[active]; if (r) go(r) }
+    // Odak alanda kalır (combobox + aria-activedescendant): Tab arkadaki sayfaya kaçmasın
+    else if (e.key === 'Tab') e.preventDefault()
   }
 
   if (!mounted) return null
 
-  return createPortal(
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[200] flex items-start justify-center bg-slate-950/40 px-4 pt-[12vh] backdrop-blur-sm"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: -12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: EASE }}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Komut paleti"
-            className="surface w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
-          >
-            {/* Arama */}
-            <div className="flex items-center gap-3 border-b border-slate-500/10 px-4">
-              <Search className="h-4 w-4 shrink-0 text-slate-400" />
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={onInputKey}
-                placeholder="Sayfa veya danışan ara…"
-                aria-label="Sayfa veya danışan ara"
-                role="combobox"
-                aria-expanded
-                aria-controls="cmdk-list"
-                aria-activedescendant={results[active] ? `cmdk-${results[active].key}` : undefined}
-                autoComplete="off"
-                className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
-              />
-              <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs text-slate-500 dark:text-slate-400 sm:block">ESC</kbd>
-            </div>
+  const closeDialog = (v: boolean) => !v && setDialog(null)
 
-            {/* Sonuçlar */}
-            <div id="cmdk-list" role="listbox" aria-label="Sonuçlar" className="max-h-[52vh] overflow-y-auto p-2">
-              {results.length === 0 ? (
-                <p className="px-3 py-6 text-center text-sm text-slate-400">Sonuç yok</p>
-              ) : (
-                results.map((r, i) => (
-                  <button
-                    key={r.key}
-                    id={`cmdk-${r.key}`}
-                    role="option"
-                    aria-selected={i === active}
-                    ref={i === active ? activeRef : undefined}
-                    onMouseEnter={() => setActive(i)}
-                    onClick={() => go(r.href)}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors',
-                      i === active ? 'bg-indigo-500/10' : 'hover:bg-slate-500/[0.05]',
-                    )}
-                  >
-                    {r.client ? (
-                      <Avatar name={r.client.name} color={r.client.colorTag} src={r.client.avatarUrl} size="sm" />
-                    ) : (
-                      <span className={cn(
-                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                        i === active ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300' : 'bg-slate-500/8 text-slate-500 dark:text-slate-400',
-                      )}>
-                        <r.icon className="h-4 w-4" />
-                      </span>
-                    )}
-                    <span className={cn('flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', r.client && 'sensitive')}>{r.label}</span>
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{r.group}</span>
-                    {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-300" />}
-                  </button>
-                ))
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
+  return (
+    <>
+      <NewSessionDialog clients={clients} hideTrigger open={dialog === 'session'} onOpenChange={closeDialog} />
+      <NewClientDialog hideTrigger open={dialog === 'client'} onOpenChange={closeDialog} />
+      <NewTransactionDialog clients={clients} hideTrigger open={dialog === 'tx'} onOpenChange={closeDialog} />
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-[200] flex items-start justify-center bg-slate-950/40 px-4 pt-[12vh] backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -12, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: EASE }}
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Komut paleti"
+                className="surface w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
+              >
+                {/* Arama */}
+                <div className="flex items-center gap-3 border-b border-slate-500/10 px-4">
+                  <Search className="h-4 w-4 shrink-0 text-slate-400" />
+                  <input
+                    ref={inputRef}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={onInputKey}
+                    placeholder="Sayfa, danışan veya işlem ara…"
+                    aria-label="Sayfa, danışan veya işlem ara"
+                    role="combobox"
+                    aria-expanded
+                    aria-controls="cmdk-list"
+                    aria-activedescendant={results[active] ? `cmdk-${results[active].key}` : undefined}
+                    autoComplete="off"
+                    // focus-visible:outline-none: globals.css'teki genel :focus-visible
+                    // halkası (katman dışı, yardımcı sınıfı eziyor) palet başlığının
+                    // içinde ikinci bir kutu çiziyordu; odağın yeri imleçten belli.
+                    className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-500 focus-visible:outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
+                  />
+                  <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs text-slate-500 dark:text-slate-400 sm:block">ESC</kbd>
+                </div>
+
+                {/* Sonuçlar */}
+                <div id="cmdk-list" role="listbox" aria-label="Sonuçlar" className="max-h-[52vh] overflow-y-auto p-2">
+                  {results.length === 0 ? (
+                    <p className="px-3 py-6 text-center text-sm text-slate-500 dark:text-slate-400">Sonuç yok</p>
+                  ) : (
+                    results.map((r, i) => (
+                      <button
+                        key={r.key}
+                        id={`cmdk-${r.key}`}
+                        role="option"
+                        aria-selected={i === active}
+                        ref={i === active ? activeRef : undefined}
+                        tabIndex={-1}
+                        onMouseEnter={() => setActive(i)}
+                        onClick={() => go(r)}
+                        className={cn(
+                          'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors',
+                          i === active ? 'bg-indigo-500/10' : 'hover:bg-slate-500/[0.05]',
+                        )}
+                      >
+                        {r.client ? (
+                          <Avatar name={r.client.name} color={r.client.colorTag} src={r.client.avatarUrl} size="sm" />
+                        ) : (
+                          <span className={cn(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                            i === active ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300' : 'bg-slate-500/8 text-slate-500 dark:text-slate-400',
+                          )}>
+                            <r.icon className="h-4 w-4" />
+                          </span>
+                        )}
+                        <span className={cn('flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100', r.client && 'sensitive')}>{r.label}</span>
+                        <span className="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">{r.group}</span>
+                        {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-300" />}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
       )}
-    </AnimatePresence>,
-    document.body,
+    </>
   )
 }

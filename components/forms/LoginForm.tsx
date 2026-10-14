@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { ArrowRight, Loader2, Lock, TriangleAlert } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, TriangleAlert } from 'lucide-react'
 
 /**
  * Giriş formu.
@@ -24,6 +24,9 @@ export function LoginForm({
 }) {
   const [pending, start] = useTransition()
   const [caps, setCaps] = useState(false)
+  // Telefonda şifre çoğu zaman tek parmakla, yanlış harfle yazılır; "hatalı"
+  // uyarısından önce ne yazdığını görebilmek tekrar denemeyi kısaltır.
+  const [reveal, setReveal] = useState(false)
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,17 +41,33 @@ export function LoginForm({
       <label className="block">
         <span className="field-label">Şifre</span>
         <div className="relative">
-          <Lock className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Lock className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
           <input
-            type="password"
+            type={reveal ? 'text' : 'password'}
             name="password"
             required
             autoFocus
             autoComplete="current-password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="••••••••"
             onKeyUp={(e) => setCaps(e.getModifierState?.('CapsLock') ?? false)}
-            className="field !pl-9"
+            className="field !pl-9 !pr-11"
           />
+          {/* Etiketin İÇİNDE ama ayrı düğme: tıklamak alanı göndermez, odağı
+              alanda bırakmak için mousedown varsayılanı engellenir. */}
+          <button
+            type="button"
+            onClick={() => setReveal((v) => !v)}
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label={reveal ? 'Şifreyi gizle' : 'Şifreyi göster'}
+            aria-pressed={reveal}
+            title={reveal ? 'Şifreyi Gizle' : 'Şifreyi Göster'}
+            className="absolute right-1.5 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-500/10 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+          >
+            {reveal ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+          </button>
         </div>
       </label>
 

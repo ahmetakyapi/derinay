@@ -227,6 +227,8 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - **Navigasyon**: `DashboardShell` → `NAV_GROUPS` (Klinik / Finans / Yaşam). Mobil alt sekme
   `TAB_ITEMS` (Genel/Ajanda/Danışan/Finans/Menü) — yeni sayfa ilgili sekmenin `match`'ine.
   İçerik `pb-28`; alta sabit pil/toast `bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-5`.
+  Komut paleti (⌘K, `CommandPalette`): sayfalar + danışanlar + "Hızlı Ekle" (Yeni Seans/Danışan,
+  Gelir / Gider — sayfalardaki diyalogların aynısı, kontrollü `open`/`hideTrigger` ile).
 - **Mobil taban**: `.field` mobilde 16px (iOS zoom), `touch-action: manipulation`,
   `viewportFit: 'cover'` + `env(safe-area-inset-*)` payları.
 - **Özel imleç YOK** — tekrar ekleme.

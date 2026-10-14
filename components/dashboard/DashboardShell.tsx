@@ -262,7 +262,7 @@ function ThemeToggle({ className }: { className?: string }) {
   return <ThemeToggleButton className={className} />
 }
 
-type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null }
+type ClientLite = { id: string; name: string; colorTag: string; avatarUrl: string | null; sessionFee: number }
 /** Panel sahibi — Ayarlar → İşletme Kimliği'nden gelir (kodda sabit kişi adı yok) */
 export type Owner = { name: string; title: string; isSet: boolean }
 
@@ -314,16 +314,47 @@ export function DashboardShell({
   const [privacy, setPrivacy] = useState(false)
   const privacySynced = useRef(false)
 
-  // Esc ile mobil menüyü kapat + arka plan kaydırmasını kilitle (modal davranışı)
+  // Mobil çekmece bir modal: Esc kapatır, arka plan kaydırması kilitlenir,
+  // odak çekmeceye girer, Tab içeride döner, kapanınca açan düğmeye geri döner.
+  // (Önceden odak arkadaki sayfada kalıyordu: klavyeyle açan kişi görünmeyen
+  // bağlantılarda geziniyordu — aria-modal yalnız ekran okuyucuyu kapsar.)
+  const drawerRef = useRef<HTMLElement>(null)
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const opener = document.activeElement as HTMLElement | null
+    const focusables = () =>
+      Array.from(drawerRef.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled])') ?? [])
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') return setOpen(false)
+      if (e.key !== 'Tab') return
+      const items = focusables()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      } else if (!drawerRef.current?.contains(document.activeElement)) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    // Aktif sayfanın bağlantısına odaklan (yoksa ilk öğeye) — çekmece kayarken
+    const raf = requestAnimationFrame(() => {
+      const current = drawerRef.current?.querySelector<HTMLElement>('[aria-current="page"]')
+      ;(current ?? focusables()[0])?.focus({ preventScroll: true })
+    })
     return () => {
+      cancelAnimationFrame(raf)
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
+      opener?.focus?.({ preventScroll: true })
     }
   }, [open])
 
@@ -391,7 +422,7 @@ export function DashboardShell({
           {/* Komut paleti tetikleyici */}
           <button
             onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
-            className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-400 transition-colors hover:border-indigo-500/30 hover:text-slate-600 dark:hover:text-slate-300"
+            className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-500 transition-colors hover:border-indigo-500/30 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
           >
             <Search className="h-4 w-4" />
             <span className="flex-1 text-left">Ara…</span>
@@ -485,6 +516,7 @@ export function DashboardShell({
             className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm lg:hidden"
           >
             <motion.aside
+              ref={drawerRef}
               role="dialog"
               aria-modal="true"
               aria-label="Gezinme menüsü"
@@ -500,7 +532,7 @@ export function DashboardShell({
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Kapat"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400"
                 >
                   <X className="h-4 w-4" />
                 </button>

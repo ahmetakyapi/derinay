@@ -372,10 +372,18 @@ export async function listPayments() {
 /** Komut paleti için hafif danışan listesi (ad + renk + avatar) */
 export async function clientSearchList() {
   noStore()
-  return db
-    .select({ id: clients.id, name: clients.name, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl })
+  // sessionFee: komut paletinin "Yeni Seans" eylemi ücreti danışandan doldurur
+  const rows = await db
+    .select({
+      id: clients.id,
+      name: clients.name,
+      colorTag: clients.colorTag,
+      avatarUrl: clients.avatarUrl,
+      sessionFee: clients.sessionFee,
+    })
     .from(clients)
     .orderBy(clients.name)
+  return rows.map((r) => ({ ...r, sessionFee: num(r.sessionFee) }))
 }
 
 export async function clientOptions() {
