@@ -33,7 +33,7 @@ export default function AppError({
             söylediğini ikinci kez söylüyordu ve dekoratif ✦ işareti taşıyordu.
             Hata ekranında her öğe tek iş yapar. */}
         <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          Bir şeyler ters gitti
+          Bir Şeyler Ters Gitti
         </h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Geçici bir sorun olabilir. Tekrar denemek çoğu zaman yeterlidir.

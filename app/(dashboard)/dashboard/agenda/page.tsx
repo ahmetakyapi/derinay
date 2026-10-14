@@ -74,7 +74,7 @@ export default async function AgendaPage({
           action={
             <div className="flex flex-wrap items-center gap-2">
               <ViewToggle view="month" />
-              <Link href={`/dashboard/agenda?view=month&month=${prev}`} aria-label="Önceki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
+              <Link href={`/dashboard/agenda?view=month&month=${prev}`} aria-label="Önceki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
                 <ChevronLeft className="h-4 w-4" />
               </Link>
               <span className="min-w-[110px] text-center text-sm font-bold text-slate-900 dark:text-white">
@@ -83,12 +83,12 @@ export default async function AgendaPage({
               {!isCurrentMonthView && (
                 <Link
                   href="/dashboard/agenda?view=month"
-                  className="rounded-xl border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                  className="rounded-xl border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
                 >
                   Bu Ay
                 </Link>
               )}
-              <Link href={`/dashboard/agenda?view=month&month=${next}`} aria-label="Sonraki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
+              <Link href={`/dashboard/agenda?view=month&month=${next}`} aria-label="Sonraki ay" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
                 <ChevronRight className="h-4 w-4" />
               </Link>
               <NewSessionDialog clients={clients} />
@@ -191,15 +191,15 @@ export default async function AgendaPage({
         action={
           <div className="flex flex-wrap items-center gap-2">
             <ViewToggle view="week" />
-            <Link href={`/dashboard/agenda?view=week&date=${week.prevAnchor}`} aria-label="Önceki hafta" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
+            <Link href={`/dashboard/agenda?view=week&date=${week.prevAnchor}`} aria-label="Önceki hafta" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
               <ChevronLeft className="h-4 w-4" />
             </Link>
             {!isCurrentWeek && (
-              <Link href="/dashboard/agenda" className="rounded-xl border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
+              <Link href="/dashboard/agenda" className="rounded-xl border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
                 Bugün
               </Link>
             )}
-            <Link href={`/dashboard/agenda?view=week&date=${week.nextAnchor}`} aria-label="Sonraki hafta" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
+            <Link href={`/dashboard/agenda?view=week&date=${week.nextAnchor}`} aria-label="Sonraki hafta" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300">
               <ChevronRight className="h-4 w-4" />
             </Link>
             <NewSessionDialog clients={clients} />
@@ -218,18 +218,20 @@ function ViewToggle({ view }: { view: 'week' | 'month' }) {
     <div className="flex items-center gap-1 rounded-xl border border-slate-500/15 p-1">
       <Link
         href="/dashboard/agenda?view=week"
+        aria-current={view === 'week' ? 'true' : undefined}
         className={cn(
           'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-          view === 'week' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+          view === 'week' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
         )}
       >
         Hafta
       </Link>
       <Link
         href="/dashboard/agenda?view=month"
+        aria-current={view === 'month' ? 'true' : undefined}
         className={cn(
           'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-          view === 'month' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+          view === 'month' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
         )}
       >
         Ay

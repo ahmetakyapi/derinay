@@ -212,19 +212,10 @@ export function Hero() {
         {/* ── Metin ─────────────────────────────────────────────── */}
         {/* Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu) */}
         <motion.div style={{ y: textY, opacity: fade }} className="motion-reduce:!transform-none motion-reduce:!opacity-100">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={play ? { opacity: 1, y: 0 } : undefined}
-            transition={{ duration: 0.9, ease: EASE_OUT_EXPO, delay: 0.1 }}
-            className="inline-flex items-center gap-2.5 rounded-full border border-slate-500/20 bg-[rgba(var(--paper),0.6)] py-1.5 pl-2 pr-4 text-[13px] font-semibold text-slate-700 backdrop-blur dark:text-slate-200"
-          >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-amber-500/60 motion-reduce:animate-none" />
-              <span className="relative h-2.5 w-2.5 rounded-full bg-amber-500" />
-            </span>
-            Psikologlar İçin Danışan ve Finans Takibi
-          </motion.div>
-
+          {/* Manşetin üstündeki "Psikologlar İçin…" hap etiketi KALDIRILDI
+              (Ekim 2026): başlık üstü künye/eyebrow yok kuralı. Kime hitap
+              ettiği bilgisi kaybolmadı, alt başlığın ilk cümlesine indi. Hapın
+              sonsuz `animate-ping` döngüsü de onunla gitti. */}
           {/* İki satır, üç ses: kalın grotesk komut, ince soluk "Kafanı", serif
               italik çam rengi vurgu. Tek ailede dört satırlık blok tekdüze ve
               ağır duruyordu; ağırlık + yüz karşıtlığı manşeti zenginleştirir. */}
@@ -232,7 +223,7 @@ export function Hero() {
               `text-wrap: wrap` (global balance kuralı kahramana uygulanmaz);
               punto sütuna sığacak şekilde vw ile ölçeklenir: en uzun satır
               ≈7em → telefonda (100vw-48px)/7, lg'de sütun genişliği/7. */}
-          <h1 className="mt-8 font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 [text-wrap:wrap] dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
+          <h1 className="font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 [text-wrap:wrap] dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
             <span className="block whitespace-nowrap font-extrabold tracking-[-0.055em]">
               <RevealText text="İşini Düzenle," play={play} stagger={0.08} duration={1.1} delay={0.15} />
             </span>
@@ -274,8 +265,8 @@ export function Hero() {
             transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.75 }}
             className="mt-8 max-w-[34rem] text-[1.125rem] [text-wrap:wrap] font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
           >
-            <span className="text-slate-900 dark:text-white">Danışanların, Randevuların, Seans Notların ve Gelirlerin</span>{' '}
-            Tek Bir Yerde. Sade, Hızlı ve Kullanması Kolay.
+            <span className="text-slate-900 dark:text-white">Psikologlar İçin Danışan ve Finans Takibi.</span>{' '}
+            Danışanların, Randevuların, Seans Notların ve Gelirlerin Tek Bir Yerde.
           </motion.p>
 
           <motion.div

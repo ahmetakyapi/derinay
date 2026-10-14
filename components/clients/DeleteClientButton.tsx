@@ -33,7 +33,7 @@ export function DeleteClientButton({ clientId, clientName }: { clientId: string;
         onClick={() => setOpen(true)}
         aria-label="Danışanı sil"
         title="Danışanı Sil"
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-400 transition-colors hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500"
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors dark:text-slate-400 hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500"
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -77,7 +77,7 @@ export function DeleteClientButton({ clientId, clientName }: { clientId: string;
                 setOpen(false)
                 setTyped('')
               }}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
             >
               Vazgeç
             </button>

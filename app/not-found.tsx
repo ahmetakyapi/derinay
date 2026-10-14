@@ -4,7 +4,9 @@ import { BloomMark } from '@/components/brand/BloomMark'
 
 export const metadata = { title: 'Sayfa Bulunamadı' }
 
-/** 404 — galeri dilinde: "bu duvarda böyle bir eser yok". */
+/** 404 — düz söz: başlık ne olduğunu söyler, metin ne yapılacağını.
+ *  (Eski "Bu duvarda böyle bir eser yok" galeri benzetmesiydi; sahibinin
+ *  "günlük Türkçe, edebi kurgu yok" kuralına takılıyordu.) */
 export default function NotFound() {
   return (
     <main className="flex min-h-[100dvh] items-center justify-center px-6">
@@ -13,12 +15,10 @@ export default function NotFound() {
           <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
         </div>
-        {/* Durum kodu gerçek bilgi taşır, kalsın; ama dekoratif ✦ işareti ve
-            geniş harf aralıklı etiket biçimi gitti (her bölüm başlığının üstüne
-            konan o mikro etiketin ta kendisiydi). */}
-        <p className="mb-1.5 font-mono text-xs text-slate-500 dark:text-slate-400">404</p>
+        {/* Başlık üstündeki "404" künyesi de gitti: başlık artık durumu kendisi
+            söylüyor ("Sayfa Bulunamadı"), kod bilgisi tekrar olurdu. */}
         <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          Bu duvarda böyle bir eser yok
+          Sayfa Bulunamadı
         </h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.

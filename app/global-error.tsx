@@ -46,21 +46,13 @@ export default function GlobalError({
             boxShadow: '0 24px 60px -30px rgba(60,55,40,0.45)',
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: '#8a6a22',
-            }}
-          >
-            ✦ Derinay
-          </p>
-          <h1 style={{ margin: '0.5rem 0 0', fontSize: '1.4rem', fontWeight: 600 }}>
-            Uygulama açılamadı
+          {/* Başlık üstündeki "✦ Derinay" künyesi kaldırıldı (başlık üstü etiket
+              yok kuralı, bkz. app/error.tsx); marka adı başlığın altına iner. */}
+          <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 600 }}>
+            Uygulama Açılamadı
           </h1>
           <p style={{ margin: '0.6rem 0 0', fontSize: '0.9rem', color: '#57534a', lineHeight: 1.6 }}>
-            Beklenmedik bir hata oluştu. Sayfayı yenilemek çoğu zaman yeterlidir.
+            Derinay&rsquo;da beklenmedik bir hata oluştu. Sayfayı yenilemek çoğu zaman yeterlidir.
           </p>
           {error.digest && (
             <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: '#94907f' }}>

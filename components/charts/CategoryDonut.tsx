@@ -39,7 +39,7 @@ function DonutTooltip({
       </p>
       <p className="flex items-baseline justify-between gap-3">
         <span className="font-mono font-bold tabular-nums">{formatTRY(value)}</span>
-        <span className="text-slate-400">%{pct}</span>
+        <span className="text-slate-500 dark:text-slate-400">%{pct}</span>
       </p>
     </div>
   )

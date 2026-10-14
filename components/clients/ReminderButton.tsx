@@ -98,7 +98,7 @@ export function ReminderButton({
         aria-label={kind === 'debt' ? 'Tahsilat hatırlatması gönder' : 'Seans hatırlatması gönder'}
         title={kind === 'debt' ? 'Tahsilat Hatırlatması Gönder' : 'Seans Hatırlatması Gönder'}
         className={cn(
-          'flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400',
+          'flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400',
           className,
         )}
       >
@@ -120,7 +120,7 @@ export function ReminderButton({
           <div>
             <label htmlFor="reminder-template" className="field-label">
               Mesaj şablonu{' '}
-              <span className="font-normal text-slate-400">
+              <span className="font-normal text-slate-500 dark:text-slate-400">
                 — {'{ad}'}, {'{tarih}'}, {'{terapist}'} otomatik dolar
               </span>
             </label>

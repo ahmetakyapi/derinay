@@ -121,7 +121,7 @@ export function NoteForm({
             type="button"
             onClick={clearDraft}
             aria-label="Taslağı sil"
-            className="rounded-lg p-1 text-slate-400 transition-colors hover:text-rose-600 dark:hover:text-rose-400"
+            className="rounded-lg p-1 text-slate-500 transition-colors dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
           >
             <X className="h-4 w-4" />
           </button>
@@ -141,7 +141,7 @@ export function NoteForm({
                 'rounded-full border px-3.5 py-2 text-sm font-semibold transition-all',
                 kind === k
                   ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 shadow-sm dark:text-indigo-300'
-                  : 'border-slate-500/20 bg-white/40 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/[0.02] dark:hover:text-slate-300',
+                  : 'border-slate-500/20 bg-white/40 text-slate-500 dark:text-slate-400 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/[0.02] dark:hover:text-slate-300',
               )}
             >
               {NOTE_KIND_LABEL[k]}

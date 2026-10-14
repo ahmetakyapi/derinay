@@ -67,9 +67,9 @@ export function NotePreview() {
         </div>
       </div>
 
-      {/* Duygu izleği */}
+      {/* Ruh hali takibi — panelde danışan dosyasındaki kartın adıyla aynı */}
       <div className="mt-3 rounded-xl border border-slate-500/12 bg-[rgba(var(--paper),0.55)] p-3.5">
-        <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">Duygu İzleği</p>
+        <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">Ruh Hali Takibi</p>
         <div className="mt-3 flex items-end gap-3">
           {TRAIL.map((t) => (
             <div key={t.day} className="flex flex-1 flex-col items-center gap-1.5">

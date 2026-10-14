@@ -48,9 +48,10 @@ export default async function ClientsPage({
         <div className="flex items-center gap-1 rounded-xl border border-slate-500/15 p-1">
           <Link
             href={statusHref()}
+            aria-current={!status ? 'true' : undefined}
             className={cn(
               'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-              !status ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+              !status ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
             )}
           >
             Tümü
@@ -59,9 +60,10 @@ export default async function ClientsPage({
             <Link
               key={st}
               href={statusHref(st)}
+              aria-current={status === st ? 'true' : undefined}
               className={cn(
                 'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-                status === st ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+                status === st ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
               )}
             >
               {CLIENT_STATUS_LABEL[st]}
@@ -77,6 +79,7 @@ export default async function ClientsPage({
             name="q"
             defaultValue={q ?? ''}
             placeholder="Danışan ara…"
+            aria-label="Danışan ara"
             className="field !py-2 !pl-9 text-sm"
           />
         </form>
@@ -92,7 +95,7 @@ export default async function ClientsPage({
             href={statusHref(status)}
             className="text-xs font-semibold text-indigo-600 hover:underline dark:text-indigo-300"
           >
-            etiketi kaldır
+            Etiketi Kaldır
           </Link>
         </div>
       )}
@@ -103,7 +106,7 @@ export default async function ClientsPage({
             <Link
               key={c.id}
               href={`/dashboard/clients/${c.id}`}
-              className="glass group rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-xl"
+              className="glass group flex flex-col rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="flex items-start justify-between">
                 <Avatar name={c.name} color={c.colorTag} src={c.avatarUrl} size="lg" />
@@ -137,7 +140,9 @@ export default async function ClientsPage({
                 </div>
               )}
 
-              <div className="mt-4 flex items-center justify-between">
+              {/* mt-auto: etiketi olmayan kartta da durum + sonraki seans satırı
+                  kartın dibine oturur; aynı sıradaki kartların alt çizgileri hizalanır */}
+              <div className="mt-auto flex items-center justify-between pt-4">
                 <StatusBadge label={CLIENT_STATUS_LABEL[c.status]} tone={STATUS_TONE[c.status]} />
                 <span className="text-xs text-slate-500 dark:text-slate-400">{durationSince(c.startDate)}</span>
               </div>
@@ -145,12 +150,12 @@ export default async function ClientsPage({
               <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-500/10 pt-3 text-xs text-slate-500 dark:text-slate-400">
                 <span className="min-w-0 truncate">
                   {c.nextSession ? (
-                    <span className="inline-flex items-center gap-1 font-medium text-indigo-600 dark:text-indigo-300">
+                    <span className="flex items-center gap-1 font-medium text-indigo-600 dark:text-indigo-300">
                       <CalendarClock className="h-3.5 w-3.5 shrink-0" />
                       {formatDateTime(c.nextSession)}
                     </span>
                   ) : (
-                    <span className="text-slate-400">Planlı seans yok</span>
+                    <span className="text-slate-500 dark:text-slate-400">Planlı seans yok</span>
                   )}
                 </span>
                 <span className="sensitive shrink-0 font-mono font-semibold tabular-nums text-slate-700 dark:text-slate-200">{formatTRY(c.sessionFee)}</span>
@@ -162,7 +167,7 @@ export default async function ClientsPage({
         <EmptyState
           icon={Users}
           title={q || status || tag ? 'Eşleşen danışan yok' : 'Henüz danışan yok'}
-          description={q || status || tag ? 'Filtreyi Temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
+          description={q || status || tag ? 'Filtreyi temizleyip tekrar dene.' : 'İlk danışanını ekleyerek başla.'}
           action={
             q || status || tag ? (
               <Link

@@ -91,7 +91,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
                 'rounded-full border px-2.5 py-1 text-xs font-semibold transition-all',
                 kind === k
                   ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
-                  : 'border-slate-500/20 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
+                  : 'border-slate-500/20 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300',
               )}
             >
               {NOTE_KIND_LABEL[k]}
@@ -128,7 +128,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+            className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
           >
             <X className="h-3.5 w-3.5" /> Vazgeç
           </button>
@@ -182,7 +182,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
             onClick={() => setEditing(true)}
             disabled={pending}
             aria-label="Düzenle"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
@@ -194,7 +194,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
               'flex h-7 w-7 items-center justify-center rounded-lg transition-colors',
               note.pinned
                 ? 'text-amber-600 hover:bg-amber-500/10 dark:text-amber-400'
-                : 'text-slate-400 hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400',
+                : 'text-slate-500 dark:text-slate-400 hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400',
             )}
           >
             <Pin className="h-3.5 w-3.5" />
@@ -202,7 +202,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           <button
             onClick={() => setConfirmOpen(true)}
             aria-label="Sil"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>

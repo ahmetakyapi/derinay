@@ -87,7 +87,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     <>
       <Link
         href="/dashboard/clients"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-white"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white"
       >
         <ArrowLeft className="h-4 w-4" /> Danışanlar
       </Link>
@@ -118,11 +118,11 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   <StatusBadge label={CLIENT_STATUS_LABEL[client.status]} tone={STATUS_TONE[client.status]} />
                   {client.consentGiven ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-                      <ShieldCheck className="h-3 w-3" /> Onam alındı
+                      <ShieldCheck className="h-3 w-3" /> Onam Alındı
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
-                      <ShieldAlert className="h-3 w-3" /> Onam eksik
+                      <ShieldAlert className="h-3 w-3" /> Onam Eksik
                     </span>
                   )}
                   <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/[0.07] px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
@@ -174,7 +174,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   target="_blank"
                   aria-label="Danışan dosyasını yazdır"
                   title="Danışan Dosyası (PDF)"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
                 >
                   <Printer className="h-4 w-4" />
                 </Link>
@@ -243,7 +243,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 <span className={cn(pkgDone ? 'text-rose-600 dark:text-rose-400' : pkgLow ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400')}>
                   {activePackage.remaining}
                 </span>
-                <span className="text-base font-medium text-slate-400"> / {activePackage.totalSessions} seans kaldı</span>
+                <span className="text-base font-medium text-slate-500 dark:text-slate-400"> / {activePackage.totalSessions} seans kaldı</span>
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {activePackage.used} kullanıldı
@@ -269,7 +269,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             )}
           </div>
         ) : (
-          <p className="py-2 text-sm text-slate-400">
+          <p className="py-2 text-sm text-slate-500 dark:text-slate-400">
             Aktif paket yok. Ön ödemeli bir paket eklersen tamamlanan seanslar otomatik düşülür.
           </p>
         )}
@@ -280,7 +280,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {/* Duygu Takibi */}
           <section className="glass rounded-2xl p-5">
             <h2 className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
-              <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Duygu Takibi
+              <HeartPulse className="h-4 w-4 text-rose-500 dark:text-rose-400" /> Ruh Hali Takibi
             </h2>
             <MoodTrail
               entries={notes
@@ -313,7 +313,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   {recentScores.map((s) => (
                     <li key={s.id} className="flex items-center gap-3 text-sm">
                       <span className="font-mono text-[13px] font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-                        {s.value}{s.scaleMax ? <span className="text-slate-400">/{s.scaleMax}</span> : null}
+                        {s.value}{s.scaleMax ? <span className="text-slate-500 dark:text-slate-400">/{s.scaleMax}</span> : null}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-slate-600 dark:text-slate-300">{s.label}</span>
                       <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{formatDate(s.date)}</span>
@@ -323,7 +323,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 </ul>
               </>
             ) : (
-              <p className="py-3 text-sm text-slate-400">
+              <p className="py-3 text-sm text-slate-500 dark:text-slate-400">
                 Henüz ölçüm yok. Bir ölçek puanı ekleyerek danışanın ilerlemesini grafikle izle.
               </p>
             )}
@@ -358,7 +358,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 ))}
               </ul>
             ) : (
-              <p className="py-4 text-center text-sm text-slate-400">Seans kaydı yok.</p>
+              <p className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Seans kaydı yok.</p>
             )}
             {sessions.length > SESSION_PREVIEW && (
               <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -387,7 +387,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 ))}
               </ul>
             ) : (
-              <p className="py-4 text-center text-sm text-slate-400">Ödeme kaydı yok.</p>
+              <p className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Ödeme kaydı yok.</p>
             )}
             {payments.length > LEDGER_PREVIEW && (
               <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -413,7 +413,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                         href={`/invoices/${i.id}/print`}
                         target="_blank"
                         aria-label="PDF / Yazdır"
-                        className="text-slate-400 transition-colors hover:text-indigo-600 dark:hover:text-indigo-300"
+                        className="text-slate-500 dark:text-slate-400 transition-colors hover:text-indigo-600 dark:hover:text-indigo-300"
                       >
                         <Printer className="h-4 w-4" />
                       </Link>
@@ -422,7 +422,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 ))}
               </ul>
             ) : (
-              <p className="py-4 text-center text-sm text-slate-400">Makbuz yok.</p>
+              <p className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Makbuz yok.</p>
             )}
             {invoices.length > LEDGER_PREVIEW && (
               <p className="mt-3 border-t border-slate-500/10 pt-2.5 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -468,7 +468,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 ))}
               </ul>
             ) : (
-              <p className="py-3 text-sm text-slate-400">
+              <p className="py-3 text-sm text-slate-500 dark:text-slate-400">
                 Belge bağlantısı yok. Onam formu, test veya rapor bağlantısını ekle — dosya kendi deponda kalır.
               </p>
             )}

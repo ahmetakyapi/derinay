@@ -39,7 +39,7 @@ export function DeleteButton({
         onClick={() => setOpen(true)}
         aria-label="Sil"
         className={cn(
-          'flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-500/10 hover:text-rose-500',
+          'flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors dark:text-slate-400 hover:bg-rose-500/10 hover:text-rose-500',
           className,
         )}
       >

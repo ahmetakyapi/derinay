@@ -136,7 +136,7 @@ export default async function FinancesPage({
           <Link
             href={buildHref({ month: prevKey })}
             aria-label="Önceki ay"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
@@ -156,7 +156,7 @@ export default async function FinancesPage({
             <Link
               href={buildHref({ month: nextKey })}
               aria-label="Sonraki ay"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronRight className="h-4 w-4" />
             </Link>
@@ -170,11 +170,12 @@ export default async function FinancesPage({
               <Link
                 key={f.value}
                 href={buildHref({ type: f.value })}
+                aria-current={active ? 'true' : undefined}
                 className={cn(
                   'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
                   active
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white',
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
                 )}
               >
                 {f.label}

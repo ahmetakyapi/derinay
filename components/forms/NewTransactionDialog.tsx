@@ -88,7 +88,7 @@ export function NewTransactionDialog({
                     ? t === 'income'
                       ? 'border-emerald-500/50 bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
                       : 'border-rose-500/50 bg-rose-500/12 text-rose-600 dark:text-rose-400'
-                    : 'border-slate-500/20 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
+                    : 'border-slate-500/20 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300',
                 )}
               >
                 {t === 'income' ? 'Gelir' : 'Gider'}
@@ -201,7 +201,7 @@ export function NewTransactionDialog({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
             >
               İptal
             </button>

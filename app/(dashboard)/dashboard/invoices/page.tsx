@@ -246,7 +246,7 @@ export default async function InvoicesPage({
                           href={`/invoices/${i.id}/print`}
                           target="_blank"
                           aria-label="PDF / Yazdır"
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors dark:text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300"
                         >
                           <Printer className="h-4 w-4" />
                         </Link>

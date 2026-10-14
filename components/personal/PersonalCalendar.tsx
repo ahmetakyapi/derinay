@@ -264,7 +264,7 @@ export function PersonalCalendar({
                     'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition-all',
                     active
                       ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
-                      : 'border-slate-500/20 text-slate-500 hover:border-slate-500/40 hover:text-slate-700 dark:hover:text-slate-300',
+                      : 'border-slate-500/20 text-slate-500 dark:text-slate-400 hover:border-slate-500/40 hover:text-slate-700 dark:hover:text-slate-300',
                   )}
                 >
                   <Icon className="h-3 w-3" />

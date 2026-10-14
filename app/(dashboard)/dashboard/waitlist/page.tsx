@@ -54,7 +54,7 @@ export default async function WaitlistPage() {
                         {e.phone && <span className="sensitive inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {e.phone}</span>}
                         {e.email && <span className="sensitive inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {e.email}</span>}
                         {e.source && <span className="inline-flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> {e.source}</span>}
-                        <span className="text-slate-400">· {formatDate(e.createdAt)}</span>
+                        <span className="text-slate-500 dark:text-slate-400">· {formatDate(e.createdAt)}</span>
                       </p>
                       {e.note && <p className="mt-1 line-clamp-2 max-w-md text-xs text-slate-500 dark:text-slate-400">{e.note}</p>}
                     </div>

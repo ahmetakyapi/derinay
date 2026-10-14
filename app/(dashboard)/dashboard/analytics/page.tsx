@@ -77,7 +77,7 @@ export default async function AnalyticsPage({
             <Link
               href={`/dashboard/analytics?year=${year - 1}`}
               aria-label="Önceki yıl"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronLeft className="h-4 w-4" />
             </Link>
@@ -96,7 +96,7 @@ export default async function AnalyticsPage({
               <Link
                 href={`/dashboard/analytics?year=${year + 1}`}
                 aria-label="Sonraki yıl"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
               >
                 <ChevronRight className="h-4 w-4" />
               </Link>

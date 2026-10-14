@@ -163,7 +163,7 @@ export function Modal({
               <button
                 onClick={onClose}
                 aria-label="Kapat"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-500/10 hover:text-slate-700 dark:hover:text-slate-200"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-500/10 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -241,7 +241,7 @@ export default async function DashboardPage({
               href={`/dashboard?week=${weekOffset - 1}`}
               scroll={false}
               aria-label="Önceki hafta"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronLeft className="h-4 w-4" />
             </Link>
@@ -249,7 +249,7 @@ export default async function DashboardPage({
               <Link
                 href="/dashboard"
                 scroll={false}
-                className="rounded-lg border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                className="rounded-lg border border-slate-500/20 px-2.5 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
               >
                 Bugün
               </Link>
@@ -258,7 +258,7 @@ export default async function DashboardPage({
               href={`/dashboard?week=${weekOffset + 1}`}
               scroll={false}
               aria-label="Sonraki hafta"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
               <ChevronRight className="h-4 w-4" />
             </Link>
@@ -300,7 +300,7 @@ export default async function DashboardPage({
               ))}
             </ul>
           ) : (
-            <p className="py-6 text-center text-sm text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
+            <p className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">Bugün planlı seans yok — sakin bir gün ✨</p>
           )}
 
           {/* Yarın — tek tık WhatsApp hatırlatması (no-show kıran ritüel) */}
@@ -391,7 +391,7 @@ export default async function DashboardPage({
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                        {rem.silentClients.length} danışan sessizleşti
+                        {rem.silentClients.length} danışan bir süredir gelmiyor
                       </p>
                       <p className="sensitive truncate text-xs text-slate-500 dark:text-slate-400">
                         {rem.silentClients.slice(0, 3).map((c) => `${c.clientName} (${c.daysSince}g)`).join(', ')}
@@ -417,7 +417,7 @@ export default async function DashboardPage({
               )}
             </ul>
           ) : (
-            <p className="py-6 text-center text-sm text-slate-400">Her şey güncel — defter temiz ✨</p>
+            <p className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">Her şey güncel — defter temiz ✨</p>
           )}
         </section>
       </div>
@@ -532,7 +532,7 @@ export default async function DashboardPage({
                             ? 'text-rose-600 dark:text-rose-400'
                             : b.overdueDays > 0
                               ? 'text-amber-600 dark:text-amber-400'
-                              : 'text-slate-400',
+                              : 'text-slate-500 dark:text-slate-400',
                         )}
                       >
                         {b.overdueDays > 0 ? `${b.overdueDays} gündür gecikmiş` : 'vadesi gelmedi'}
@@ -561,7 +561,7 @@ export default async function DashboardPage({
             </p>
           </>
         ) : (
-          <p className="py-4 text-center text-sm text-slate-400">
+          <p className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">
             Tüm tahsilatlar tamamlandı — defter temiz ✨
           </p>
         )}

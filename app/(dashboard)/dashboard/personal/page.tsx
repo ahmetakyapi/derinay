@@ -80,7 +80,7 @@ export default async function PersonalPage({
           <div className="flex items-center gap-2">
             <Link
               href={`/dashboard/personal?month=${prev}`}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
               aria-label="Önceki ay"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -100,7 +100,7 @@ export default async function PersonalPage({
             ) : (
               <Link
                 href={`/dashboard/personal?month=${next}`}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
                 aria-label="Sonraki ay"
               >
                 <ChevronRight className="h-4 w-4" />

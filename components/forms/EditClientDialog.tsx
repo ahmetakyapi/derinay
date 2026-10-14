@@ -74,7 +74,7 @@ export function EditClientDialog({
       <button
         onClick={() => setOpen(true)}
         aria-label="Düzenle"
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-500/20 text-slate-500 dark:text-slate-400 transition-colors hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
       >
         <Pencil className="h-4 w-4" />
       </button>
@@ -153,7 +153,7 @@ export function EditClientDialog({
           {error && <p role="alert" className="text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
             <SubmitButton pending={pending}>Değişiklikleri Kaydet</SubmitButton>

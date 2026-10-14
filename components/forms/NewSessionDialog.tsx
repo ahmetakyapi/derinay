@@ -154,7 +154,7 @@ export function NewSessionDialog({
           {error && <p role="alert" className="sensitive text-sm text-rose-500">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
               İptal
             </button>
             <SubmitButton pending={pending}>{everyWeeks > 0 ? `${count} Seans Oluştur` : 'Seansı Kaydet'}</SubmitButton>
