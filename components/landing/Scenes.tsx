@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
@@ -24,9 +24,9 @@ function FloatingFrame({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], [90, -90])
-  const still = useReducedMotion()
+  // Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu)
   return (
-    <motion.div ref={ref} style={still ? undefined : { y }}>
+    <motion.div ref={ref} style={{ y }} className="motion-reduce:!transform-none">
       <Reveal variant="clip">{children}</Reveal>
     </motion.div>
   )
@@ -109,7 +109,6 @@ export function TrustScene() {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const rotate = useTransform(scrollYProgress, [0, 1], [-30, 60])
-  const still = useReducedMotion()
 
   return (
     <section
@@ -117,15 +116,14 @@ export function TrustScene() {
       ref={ref}
       className="dark relative z-10 scroll-mt-0 overflow-hidden bg-indigo-950 px-6 py-28 text-[var(--ink)] sm:px-10 sm:py-40"
     >
-      <motion.div
-        aria-hidden
-        // y: '-50%' style İÇİNDE: Framer satır içi transform yazınca Tailwind'in
-        // -translate-y-1/2 sınıfı eziliyor, mühür 23rem aşağı kayıyordu.
-        style={still ? { y: '-50%' } : { rotate, y: '-50%' }}
-        className="pointer-events-none absolute -right-40 top-1/2 h-[46rem] w-[46rem] text-white/[0.035]"
-      >
-        <BloomMark className="h-full w-full" />
-      </motion.div>
+      {/* Ortalama dış kapta (Tailwind translate), dönüş içte: Framer'ın satır
+          içi transform'u aynı öğedeki translate sınıfını ezerdi. Hareket
+          azaltmada dönüş CSS ile sıfırlanır (bkz. Showcase.tsx notu). */}
+      <div aria-hidden className="pointer-events-none absolute -right-40 top-1/2 h-[46rem] w-[46rem] -translate-y-1/2 text-white/[0.035]">
+        <motion.div style={{ rotate }} className="h-full w-full motion-reduce:!transform-none">
+          <BloomMark className="h-full w-full" />
+        </motion.div>
+      </div>
 
       <div className="relative mx-auto max-w-7xl">
         <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-[1] tracking-[-0.06em] text-slate-50">

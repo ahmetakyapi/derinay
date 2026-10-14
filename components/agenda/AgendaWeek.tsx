@@ -46,6 +46,51 @@ function visibleRange(days: Day[]): { start: number; end: number } {
   }
 }
 
+/** Izgarada en kısa blok (px = dk) — çakışma hesabı da bu boyu kullanır */
+const MIN_BLOCK = 24
+
+/**
+ * Aynı saate düşen seansları yan yana şeritlere dağıtır.
+ *
+ * NEDEN: çakışma kontrolü iptal/gelmedi seanslarını saymıyor, yani iptal
+ * edilen 14:00'ün yerine aynı saate yeni seans girilebiliyor. İki blok da
+ * `inset-x-1` ile kolonun tamamını kaplayınca biri ötekinin ALTINDA
+ * kalıyordu: görünmüyor, tıklanamıyor, sürüklenemiyordu. Birbirine (zincirle)
+ * değen bloklar bir küme olur; küme içinde her blok ilk boş şeride oturur ve
+ * kümenin şerit sayısı genişliği böler.
+ */
+function laneLayout(items: AgendaItem[]): Map<string, { lane: number; lanes: number }> {
+  const out = new Map<string, { lane: number; lanes: number }>()
+  // Aynı saatte geçerli seans soldaki şeride, iptal/gelmedi sağa
+  const off = (x: AgendaItem) => (x.status === 'cancelled' || x.status === 'no_show' ? 1 : 0)
+  const sorted = [...items].sort((a, b) => a.startMin - b.startMin || off(a) - off(b))
+  let cluster: AgendaItem[] = []
+  let laneEnds: number[] = []
+  let clusterEnd = -1
+  const flush = () => {
+    for (const it of cluster) out.set(it.id, { lane: out.get(it.id)!.lane, lanes: laneEnds.length })
+    cluster = []
+    laneEnds = []
+    clusterEnd = -1
+  }
+  for (const it of sorted) {
+    const end = it.startMin + Math.max(MIN_BLOCK, it.durationMin)
+    if (cluster.length && it.startMin >= clusterEnd) flush()
+    let lane = laneEnds.findIndex((e) => e <= it.startMin)
+    if (lane === -1) {
+      lane = laneEnds.length
+      laneEnds.push(end)
+    } else {
+      laneEnds[lane] = end
+    }
+    out.set(it.id, { lane, lanes: 0 })
+    cluster.push(it)
+    clusterEnd = Math.max(clusterEnd, end)
+  }
+  if (cluster.length) flush()
+  return out
+}
+
 // Seans bloğu — danışan rengine göre yumuşak tint (galeri etiketi)
 const TINT: Record<string, { bar: string; bg: string; border: string; text: string }> = {
   indigo:  { bar: 'bg-indigo-500',  bg: 'bg-indigo-500/10',  border: 'border-indigo-500/25 hover:border-indigo-500/60',   text: 'text-indigo-700 dark:text-indigo-200' },
@@ -83,6 +128,7 @@ export function AgendaWeek({
 
   const { start: DAY_START, end: DAY_END } = useMemo(() => visibleRange(days), [days])
   const SPAN = DAY_END - DAY_START
+  const lanes = useMemo(() => new Map(days.map((d) => [d.key, laneLayout(d.items)])), [days])
 
   function showConflict(msg: string) {
     setConflict(msg)
@@ -245,9 +291,15 @@ export function AgendaWeek({
                 // Aralık artık seansları kapsıyor; yine de kelepçele ki
                 // bozuk veri (ör. 23:50 + 60dk) ızgarayı taşırmasın.
                 const top = Math.min(Math.max(0, it.startMin - DAY_START), SPAN - 20)
-                const height = Math.max(24, Math.min(it.durationMin, SPAN - top))
+                const height = Math.max(MIN_BLOCK, Math.min(it.durationMin, SPAN - top))
                 const dim = it.status === 'cancelled' || it.status === 'no_show'
                 const t = tintOf(it.colorTag)
+                // Şerit: tek blokta kolonun tamamı (eski inset-x-1 = 4px pay),
+                // çakışmada eşit dilimler, aralarında 2px boşluk
+                const { lane, lanes: n } = lanes.get(d.key)?.get(it.id) ?? { lane: 0, lanes: 1 }
+                const across = n > 1
+                  ? { left: `calc(4px + (100% - 8px) * ${lane / n})`, width: `calc((100% - 8px) / ${n} - 2px)` }
+                  : { left: 4, right: 4 }
                 return (
                   <div
                     key={it.id}
@@ -273,27 +325,34 @@ export function AgendaWeek({
                     className={cn(
                       // NOT: backdrop-blur kullanma — .glass (backdrop-filter) içinde iç içe
                       // backdrop blur, Chrome/Safari'de metinde smear/bulanıklık glitch'i yapar.
-                      'group absolute inset-x-1 z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm outline-none transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-500/60 active:cursor-grabbing',
+                      'group absolute z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm outline-none transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-500/60 active:cursor-grabbing',
                       t.border,
                       dim && 'opacity-45',
                       dragId === it.id && 'opacity-30',
                       pending && 'pointer-events-none',
                     )}
-                    style={{ top, height }}
+                    style={{ top, height, ...across }}
                   >
                     {/* Renk tonu — opak kâğıt üstünde yarı saydam katman */}
                     <span aria-hidden className={cn('pointer-events-none absolute inset-0', t.bg)} />
                     <span className={cn('absolute inset-y-1 left-0 w-[3px] rounded-r-full', t.bar)} />
-                    <div className="relative flex items-center gap-1 pl-1.5">
-                      <span className={cn('font-mono text-xs font-bold', t.text)}>{it.time}</span>
-                      {height >= 56 && (
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">· {it.durationMin}dk</span>
-                      )}
-                      <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
-                    </div>
-                    <p className={cn('sensitive relative truncate pl-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
-                      {it.clientName}
-                    </p>
+                    {/* Üç ve daha fazla şeritte dilim ~20px'e iniyor: kırpılmış "0"
+                        ve tek harf okunmuyordu. Orada yalnız renkli dilim kalır;
+                        saat erişilebilir adda, ayrıntı tıklayınca modalda. */}
+                    {n < 3 && (
+                      <>
+                        <div className="relative flex items-center gap-1 pl-1.5">
+                          <span className={cn('font-mono text-xs font-bold', t.text)}>{it.time}</span>
+                          {height >= 56 && n === 1 && (
+                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">· {it.durationMin}dk</span>
+                          )}
+                          <GripVertical className="ml-auto h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
+                        </div>
+                        <p className={cn('sensitive relative truncate pl-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100', dim && 'line-through')}>
+                          {it.clientName}
+                        </p>
+                      </>
+                    )}
                   </div>
                 )
               })}

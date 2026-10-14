@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import {
   motion,
   useAnimationFrame,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -33,6 +34,10 @@ export function VelocityMarquee({
   className?: string
 }) {
   const reduced = useReducedMotion()
+  // Bant ekrandan çıkınca döngü durur: iki bant sayfanın en başında, okuyucu
+  // sayfanın geri kalanındayken her karede boşuna transform yazıyordu.
+  const box = useRef<HTMLDivElement>(null)
+  const visible = useInView(box, { margin: '120px 0px' })
   const baseX = useMotionValue(0)
   const { scrollY } = useScroll()
   const velocity = useVelocity(scrollY)
@@ -42,7 +47,7 @@ export function VelocityMarquee({
   const dir = useRef(1)
 
   useAnimationFrame((_, delta) => {
-    if (reduced) return
+    if (reduced || !visible) return
     let moveBy = dir.current * baseVelocity * (delta / 1000)
     const f = factor.get()
     if (f < 0) dir.current = -1
@@ -52,7 +57,7 @@ export function VelocityMarquee({
   })
 
   return (
-    <div className={`overflow-hidden whitespace-nowrap ${className ?? ''}`}>
+    <div ref={box} className={`overflow-hidden whitespace-nowrap ${className ?? ''}`}>
       <motion.div className="flex w-max flex-nowrap" style={{ x }}>
         {[0, 1, 2, 3].map((i) => (
           <div key={i} aria-hidden={i > 0} className="flex shrink-0 items-center">

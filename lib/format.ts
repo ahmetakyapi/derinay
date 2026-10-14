@@ -8,6 +8,10 @@ export function formatTRY(value: number | string, opts?: { compact?: boolean }):
       style: 'currency',
       currency: CURRENCY,
       notation: 'compact',
+      // minimumFractionDigits AÇIKÇA 0: verilmezse varsayılan motora göre
+      // değişiyor — sunucudaki Node 1000'i "1,0 B ₺", Chrome "1 B ₺" yazıyordu.
+      // İstemci bileşeninde (Kişisel takvim) bu hidrasyon hatası üretiyordu.
+      minimumFractionDigits: 0,
       maximumFractionDigits: 1,
     }).format(n)
   }

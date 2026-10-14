@@ -155,7 +155,7 @@ function GalleryWindow({ play }: { play: boolean }) {
         <div className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)]" />
 
         {/* Güneş — ufka doğru iner */}
-        <motion.div style={still ? undefined : sun} className="absolute inset-0">
+        <motion.div style={sun} className="absolute inset-0">
           <motion.div
             initial={{ y: '-60%', opacity: 0 }}
             animate={play ? { y: '0%', opacity: 1 } : undefined}
@@ -182,7 +182,7 @@ function GalleryWindow({ play }: { play: boolean }) {
         <div className="absolute inset-x-0 top-[66%] h-px bg-amber-200/60" />
 
         {/* Orkide — kendi kendine çizilir */}
-        <motion.div style={still ? undefined : bloom} className="absolute bottom-[6%] left-[6%] h-[62%] w-[42%]">
+        <motion.div style={bloom} className="absolute bottom-[6%] left-[6%] h-[62%] w-[42%]">
           {play && <BloomArt tone="night" className="h-full w-full" delay={1} />}
         </motion.div>
       </motion.div>
@@ -197,7 +197,6 @@ function GalleryWindow({ play }: { play: boolean }) {
 
 export function Hero() {
   const play = useIntroDone()
-  const still = useReducedMotion()
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const textY = useTransform(scrollYProgress, [0, 1], [0, -60])
@@ -211,7 +210,8 @@ export function Hero() {
     >
       <div className="mx-auto grid w-full max-w-7xl items-center gap-x-12 gap-y-20 lg:grid-cols-[1.15fr_1fr]">
         {/* ── Metin ─────────────────────────────────────────────── */}
-        <motion.div style={still ? undefined : { y: textY, opacity: fade }}>
+        {/* Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu) */}
+        <motion.div style={{ y: textY, opacity: fade }} className="motion-reduce:!transform-none motion-reduce:!opacity-100">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={play ? { opacity: 1, y: 0 } : undefined}
@@ -330,7 +330,7 @@ export function Hero() {
         </motion.div>
 
         {/* ── Görsel ────────────────────────────────────────────── */}
-        <motion.div style={still ? undefined : { y: artY }} className="px-10 pb-10 sm:px-16 lg:px-8">
+        <motion.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:!transform-none sm:px-16 lg:px-8">
           <GalleryWindow play={play} />
         </motion.div>
       </div>

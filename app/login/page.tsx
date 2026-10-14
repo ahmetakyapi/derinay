@@ -74,7 +74,10 @@ export default async function LoginPage({
 
       {/* ── Sağ: kâğıt — form ─────────────────────────────────────────── */}
       <section className="relative flex flex-col px-6 py-10 sm:px-12">
-        <div className="pointer-events-none absolute inset-0 lg:hidden" aria-hidden>
+        {/* overflow-hidden ŞART: `-right-20` hâlesi kutudan 80px taşıyor ve
+            telefonda belgeyi 470px'e genişletiyordu (390'lık ekranda sayfa
+            uzaklaşıp yana kayıyordu). */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden lg:hidden" aria-hidden>
           <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
           <div className="absolute -right-20 bottom-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
         </div>

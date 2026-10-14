@@ -63,7 +63,7 @@ function MomentCard({
       <motion.span
         aria-hidden
         style={{ x: numX }}
-        className="pointer-events-none absolute right-4 top-[20%] font-display text-[13rem] font-bold leading-none tracking-[-0.08em] text-slate-900/[0.05] dark:text-white/[0.05] max-md:hidden"
+        className="pointer-events-none absolute right-4 top-[20%] font-display motion-reduce:!transform-none text-[13rem] font-bold leading-none tracking-[-0.08em] text-slate-900/[0.05] dark:text-white/[0.05] max-md:hidden"
       >
         0{i + 1}
       </motion.span>

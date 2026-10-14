@@ -313,6 +313,8 @@ Para/tarih hep `lib/format.ts` (`formatTRY`, `formatDate*`); KDV/vergi hep `lib/
 - next-themes: `<html suppressHydrationWarning>` + tema bağımlı bileşende `useMounted` guard.
 - SSR'da görünmesi gereken kabuğa Framer `initial` koyma — `opacity:0` HTML'e yazılır, JS
   gecikirse menü boş kalır. Kabuk girişleri CSS (`.shell-in`, `.nav-in`).
+- `Intl` kısa para biçimi (`formatTRY(…, { compact })`) `minimumFractionDigits: 0`'ı AÇIK verir:
+  verilmezse Node "1,0 B ₺", Chrome "1 B ₺" yazar → istemci bileşeninde hidrasyon hatası.
 
 **Veri**
 - `desc()` metin sıralar: `desc(priority)` 'normal'ı 'high'ın önüne koyar. Anlamlı sıra için
@@ -337,9 +339,13 @@ Para/tarih hep `lib/format.ts` (`formatTRY`, `formatDate*`); KDV/vergi hep `lib/
 - `overflow-hidden` ata `position: sticky`'yi öldürür → yatay taşma için `overflow-x-clip` (landing `<main>`).
 - Framer `animate` bitince satır içi `transform: none` bırakır, `hover:-translate-y-1` ölür →
   hover'da kalkan kartın girişi CSS keyframe (StatCard).
-- Framer `style` transform'u Tailwind translate'ini ezer → ötelemeyi de style'a yaz (`y: '-50%'`).
-- Kaydırmaya bağlı `style` değerleri `MotionConfig reducedMotion`'dan etkilenmez →
-  `useReducedMotion()` ile elle kapat (Hero, Showcase, Scenes, Footer).
+- Framer `style` transform'u Tailwind translate'ini ezer → ötelemeyi de style'a yaz (`y: '-50%'`)
+  ya da translate'i dış kaba, dönüşü iç kaba ver (`TrustScene` mührü).
+- Kaydırmaya bağlı `style` değerleri `MotionConfig reducedMotion`'dan etkilenmez. Style'ı HER
+  ZAMAN ver, durağanlığı CSS kursun: `motion-reduce:!transform-none`, `motion-reduce:![clip-path:none]`
+  (Hero, Showcase, Scenes, Footer, DayScroll). `still ? undefined : {…}` YAZMA: sunucu hareket
+  tercihini bilmez, kaydırma-0 hâlini satır içi yazar ve hidrasyon bunu düzeltmez — vitrin
+  kırpık/yatık donuyor, telefonda etiketlerin baş harfi kesiliyordu (Ekim 2026).
 - Yeni tam ekran bölge → `RouteTransition` `zoneOf()`'a ekle, yoksa perde oynamaz. Panel içi
   tıklamada `preventDefault` ETMEZ, yalnız çizgiyi başlatır.
 - Modal efekt bağımlılığına `onClose` koyma (her render yeni closure → odak ilk öğeye kaçar);
