@@ -192,10 +192,12 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                     aria-controls="cmdk-list"
                     aria-activedescendant={results[active] ? `cmdk-${results[active].key}` : undefined}
                     autoComplete="off"
-                    // focus-visible:outline-none: globals.css'teki genel :focus-visible
+                    // focus-visible:!outline-none: globals.css'teki genel :focus-visible
                     // halkası (katman dışı, yardımcı sınıfı eziyor) palet başlığının
                     // içinde ikinci bir kutu çiziyordu; odağın yeri imleçten belli.
-                    className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-500 focus-visible:outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
+                    // `!` ŞART: koyu temadaki `html.dark :focus-visible` kuralı (0,2,1)
+                    // outline-color'ı yeniden boyuyor, önemsiz sınıf onu durduramıyordu.
+                    className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-500 focus-visible:!outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
                   />
                   <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs text-slate-500 dark:text-slate-400 sm:block">ESC</kbd>
                 </div>
