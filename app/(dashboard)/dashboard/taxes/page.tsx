@@ -146,7 +146,7 @@ export default async function TaxesPage() {
               </div>
             ))}
 
-            <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-4 sm:col-span-3">
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/6 p-4 sm:col-span-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
                 <Info className="h-4 w-4" />
               </span>
@@ -207,7 +207,7 @@ export default async function TaxesPage() {
                     key={m.key}
                     className={cn(
                       'text-slate-700 dark:text-slate-200',
-                      isCurrent && 'bg-amber-500/[0.06]',
+                      isCurrent && 'bg-amber-500/6',
                     )}
                   >
                     <td className="whitespace-nowrap px-5 py-3 font-medium">
@@ -230,7 +230,7 @@ export default async function TaxesPage() {
               })}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-slate-500/15 bg-slate-500/[0.05] font-bold text-slate-900 dark:text-white">
+              <tr className="border-t-2 border-slate-500/15 bg-slate-500/5 font-bold text-slate-900 dark:text-white">
                 <td className="px-5 py-3.5">Son {months.length} Ay</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-emerald-600 dark:text-emerald-400">{formatTRY(totals.income)}</td>
                 <td className="sensitive px-5 py-3.5 text-right font-mono text-[13px] tabular-nums text-rose-600 dark:text-rose-400">{formatTRY(totals.expense)}</td>

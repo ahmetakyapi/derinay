@@ -37,18 +37,18 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="relative grid min-h-[100dvh] lg:grid-cols-[1.1fr_1fr]">
+    <main className="relative grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       {/* ── Sol: gece adası — orkide çizilir, günün sözü yükselir ─────────
           Perde gibi soldan açılır (`.panel-wipe`). Telefonda gizli; söz
           formun altına iner. */}
       <section
         aria-hidden
-        className="panel-wipe dark relative hidden flex-col justify-between overflow-hidden bg-indigo-950 p-12 text-[var(--ink)] lg:flex xl:p-16"
+        className="panel-wipe dark relative hidden flex-col justify-between overflow-hidden bg-indigo-950 p-12 text-(--ink) lg:flex xl:p-16"
       >
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-32 -top-32 h-[30rem] w-[30rem] bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
-          <div className="absolute -bottom-40 right-0 h-[26rem] w-[26rem] bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
-          <BloomMark className="slow-spin absolute -right-48 top-1/2 h-[44rem] w-[44rem] -translate-y-1/2 text-white/[0.035]" />
+          <div className="absolute -left-32 -top-32 h-120 w-120 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
+          <div className="absolute -bottom-40 right-0 h-104 w-104 bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
+          <BloomMark className="slow-spin absolute -right-48 top-1/2 h-176 w-176 -translate-y-1/2 text-white/[0.035]" />
         </div>
 
         <div className="relative flex items-center gap-3">
@@ -59,7 +59,7 @@ export default async function LoginPage({
           <span className="font-display text-lg font-bold tracking-[-0.04em] text-slate-50">{APP.name}</span>
         </div>
 
-        <BloomArt className="relative mx-auto h-[22rem] w-[17rem] opacity-90" delay={0.7} />
+        <BloomArt className="relative mx-auto h-88 w-68 opacity-90" delay={0.7} />
 
         <figure className="relative max-w-lg">
           <blockquote className="title-mask font-display text-[1.9rem] font-medium italic leading-[1.2] tracking-[-0.03em] text-slate-50 xl:text-[2.2rem]">
@@ -93,9 +93,9 @@ export default async function LoginPage({
         <div className="page-enter relative mx-auto my-auto w-full max-w-sm py-16">
           <div className="relative mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50 lg:hidden">
             <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
-            <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
+            <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-(--bg)" />
           </div>
-          <h1 className="font-display text-[2.6rem] font-bold leading-[1] tracking-[-0.055em] text-slate-900 dark:text-white sm:text-[3.2rem]">
+          <h1 className="font-display text-[2.6rem] font-bold leading-none tracking-[-0.055em] text-slate-900 dark:text-white sm:text-[3.2rem]">
             Tekrar
             <br />
             Hoş Geldin

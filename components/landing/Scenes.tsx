@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
@@ -14,7 +14,7 @@ import { Magnetic } from '@/components/motion/Magnetic'
 import { lineDraw } from '@/lib/variants'
 
 const H2_SCENE =
-  'font-display text-[clamp(2.2rem,3.6vw,3.2rem)] font-bold leading-[1.06] tracking-[-0.05em] text-slate-900 dark:text-white'
+  'font-display text-[clamp(2.2rem,3.6vw,3.2rem)] font-bold leading-[1.06] tracking-tighter text-slate-900 dark:text-white'
 
 /**
  * Kesit kaydırmayla kendi hızında süzülür. DÖNMEZ: döndürülen kesitteki
@@ -26,7 +26,7 @@ function FloatingFrame({ children }: { children: React.ReactNode }) {
   const y = useTransform(scrollYProgress, [0, 1], [90, -90])
   // Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu)
   return (
-    <motion.div ref={ref} style={{ y }} className="motion-reduce:!transform-none">
+    <motion.div ref={ref} style={{ y }} className="motion-reduce:transform-none!">
       <Reveal variant="clip">{children}</Reveal>
     </motion.div>
   )
@@ -114,19 +114,19 @@ export function TrustScene() {
     <section
       id="guven"
       ref={ref}
-      className="dark relative z-10 scroll-mt-0 overflow-hidden bg-indigo-950 px-6 py-28 text-[var(--ink)] sm:px-10 sm:py-40"
+      className="dark relative z-10 scroll-mt-0 overflow-hidden bg-indigo-950 px-6 py-28 text-(--ink) sm:px-10 sm:py-40"
     >
       {/* Ortalama dış kapta (Tailwind translate), dönüş içte: Framer'ın satır
           içi transform'u aynı öğedeki translate sınıfını ezerdi. Hareket
           azaltmada dönüş CSS ile sıfırlanır (bkz. Showcase.tsx notu). */}
-      <div aria-hidden className="pointer-events-none absolute -right-40 top-1/2 h-[46rem] w-[46rem] -translate-y-1/2 text-white/[0.035]">
-        <motion.div style={{ rotate }} className="h-full w-full motion-reduce:!transform-none">
+      <div aria-hidden className="pointer-events-none absolute -right-40 top-1/2 h-184 w-184 -translate-y-1/2 text-white/[0.035]">
+        <motion.div style={{ rotate }} className="h-full w-full motion-reduce:transform-none!">
           <BloomMark className="h-full w-full" />
         </motion.div>
       </div>
 
       <div className="relative mx-auto max-w-7xl">
-        <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-[1] tracking-[-0.06em] text-slate-50">
+        <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-none tracking-[-0.06em] text-slate-50">
           <RevealText text="Bilgilerin Güvende" />
         </h2>
         <Reveal delay={0.15}>
@@ -170,7 +170,7 @@ export function Closing() {
     <section className="relative z-10 px-6 py-32 sm:px-10 sm:py-48">
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-14 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7.4vw,7.2rem)] font-bold leading-[1] tracking-[-0.06em] text-slate-900 dark:text-white">
+          <h2 className="max-w-4xl font-display text-[clamp(2.8rem,7.4vw,7.2rem)] font-bold leading-none tracking-[-0.06em] text-slate-900 dark:text-white">
             <RevealText text="Düzenini Kurmaya" />
             <br />
             <RevealText text="Bugün Başla" delay={0.12} />
@@ -190,7 +190,7 @@ export function Closing() {
             >
               <span
                 aria-hidden
-                className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-amber-500 transition-transform duration-[700ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100"
+                className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-amber-500 transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100"
               />
               <span className="relative flex flex-col items-center gap-2 text-sm font-semibold transition-colors duration-500 group-hover:text-slate-900">
                 <ArrowUpRight className="h-6 w-6 transition-transform duration-700 group-hover:rotate-45" />

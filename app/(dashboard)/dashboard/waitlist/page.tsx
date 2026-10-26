@@ -33,8 +33,8 @@ export default async function WaitlistPage() {
                 <div
                   key={e.id}
                   className={cn(
-                    'relative flex flex-col gap-3 py-4 pl-5 pr-4 transition-colors hover:bg-slate-500/[0.025] sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5',
-                    high && 'bg-amber-500/[0.05]',
+                    'relative flex flex-col gap-3 py-4 pl-5 pr-4 transition-colors hover:bg-slate-500/2.5 sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5',
+                    high && 'bg-amber-500/5',
                   )}
                 >
                   <span className={cn('absolute inset-y-3 left-0 w-1 rounded-r-full', high ? 'bg-amber-500/80' : 'bg-slate-400/40')} />

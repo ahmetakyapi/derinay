@@ -116,7 +116,7 @@ export default async function BackupPage() {
         <RestoreCard />
       </div>
 
-      <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-slate-500/15 bg-slate-500/[0.04] p-4 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-slate-500/15 bg-slate-500/4 p-4 text-xs text-slate-500 dark:text-slate-400">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
         <p>
           Dosyalar yalnızca giriş yapmış kullanıcıya sunulur ve tarayıcına doğrudan iner — hiçbir yere

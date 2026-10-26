@@ -27,7 +27,7 @@ export function QuoteCard({ quote }: { quote: Quote }) {
             {quote.text}
           </blockquote>
           <p className="mt-1.5 flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <span className="h-px w-6 bg-gradient-to-r from-amber-500/70 to-transparent" />
+            <span className="h-px w-6 bg-linear-to-r from-amber-500/70 to-transparent" />
             {quote.author}
           </p>
         </div>

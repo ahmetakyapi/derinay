@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { animate, motion, useInView, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'framer-motion'
+import { animate, motion, useInView, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'motion/react'
 import { PanelPreview } from '@/components/marketing/PanelPreview'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
 import { RevealText } from '@/components/motion/RevealText'
@@ -40,7 +40,7 @@ function CountUp({ to }: { to: number }) {
  */
 /*
  * Hareket azaltma: kaydırmaya bağlı stil HER ZAMAN verilir, durağanlık CSS'ten
- * gelir (`motion-reduce:!transform-none` vb.). Eski `still ? undefined : {…}`
+ * gelir (`motion-reduce:transform-none!` vb.). Eski `still ? undefined : {…}`
  * deseni sunucuyla istemciyi ayırıyordu: sunucu useReducedMotion'ı bilemez,
  * kaydırma-0 hâlini (vitrinde %7 kırpma + 26° yatık kesit) satır içi yazar;
  * hidrasyon bu öznitelikleri DÜZELTMEZ. Hareketi azaltan ziyaretçide vitrin
@@ -57,12 +57,12 @@ export function Showcase() {
   const y = useTransform(scrollYProgress, [0.2, 1], [80, 0])
 
   return (
-    <section ref={ref} aria-label="Panelden bir kesit" className="dark relative z-10 text-[var(--ink)]">
-      <motion.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950 motion-reduce:![clip-path:none]">
+    <section ref={ref} aria-label="Panelden bir kesit" className="dark relative z-10 text-(--ink)">
+      <motion.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950 motion-reduce:[clip-path:none]!">
         {/* Suluboya ışığı */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
-          <div className="absolute -bottom-40 right-0 h-[28rem] w-[28rem] bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
+          <div className="absolute -top-40 left-1/2 h-144 w-240 -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
+          <div className="absolute -bottom-40 right-0 h-112 w-md bg-[radial-gradient(closest-side,rgba(var(--gold),0.12),transparent)]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-28 sm:px-10 sm:pb-32 sm:pt-36">
@@ -77,8 +77,8 @@ export function Showcase() {
             </p>
           </div>
 
-          <div className="mt-16 [perspective:1800px] sm:mt-20">
-            <motion.div style={{ scale, rotateX, y, transformOrigin: 'center top' }} className="motion-reduce:!transform-none">
+          <div className="mt-16 perspective-[1800px] sm:mt-20">
+            <motion.div style={{ scale, rotateX, y, transformOrigin: 'center top' }} className="motion-reduce:transform-none!">
               <PreviewFrame caption="Derinay · Genel Bakış">
                 <PanelPreview />
               </PreviewFrame>

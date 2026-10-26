@@ -59,10 +59,11 @@ const TYPE_FILTERS = [
 ] as const
 
 export default async function FinancesPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { month?: string; type?: string; q?: string }
+  searchParams: Promise<{ month?: string; type?: string; q?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const now = new Date()
   const month = /^\d{4}-\d{2}$/.test(searchParams.month ?? '') ? searchParams.month! : monthKey(now)
   const type = searchParams.type === 'income' || searchParams.type === 'expense' ? (searchParams.type as TxType) : undefined
@@ -174,7 +175,7 @@ export default async function FinancesPage({
                 className={cn(
                   'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
                   active
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-xs'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
                 )}
               >
@@ -203,7 +204,7 @@ export default async function FinancesPage({
             name="q"
             defaultValue={q ?? ''}
             placeholder="Kategori veya not ara…"
-            className="field !py-2 !pl-9 text-sm"
+            className="field py-2! pl-9! text-sm"
           />
         </form>
       </div>
@@ -223,7 +224,7 @@ export default async function FinancesPage({
             const dayNet = rows.reduce((s, r) => s + (r.type === 'income' ? r.amount : -r.amount), 0)
             return (
               <section key={day} className="glass overflow-hidden rounded-2xl">
-                <header className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2.5 sm:px-5">
+                <header className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/4 px-4 py-2.5 sm:px-5">
                   <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">
                     {dayLabel(day)}
                   </span>
@@ -258,7 +259,7 @@ export default async function FinancesPage({
                             {t.kdvAmount > 0 && (
                               <span
                                 title="Bu giderden indirilecek KDV"
-                                className="mr-1.5 rounded bg-amber-500/12 px-1 py-0.5 font-mono text-xs font-semibold tabular-nums text-amber-700 dark:text-amber-300"
+                                className="mr-1.5 rounded-sm bg-amber-500/12 px-1 py-0.5 font-mono text-xs font-semibold tabular-nums text-amber-700 dark:text-amber-300"
                               >
                                 KDV {formatTRY(t.kdvAmount, { compact: true })}
                               </span>

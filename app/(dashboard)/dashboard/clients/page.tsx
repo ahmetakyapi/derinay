@@ -14,10 +14,11 @@ export const metadata = { title: 'Danışanlar' }
 export const dynamic = 'force-dynamic'
 
 export default async function ClientsPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { q?: string; status?: string; tag?: string }
+  searchParams: Promise<{ q?: string; status?: string; tag?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const q = searchParams.q?.trim() || undefined
   const tag = searchParams.tag?.trim() || undefined
   const status = (CLIENT_STATUSES as readonly string[]).includes(searchParams.status ?? '')
@@ -51,7 +52,7 @@ export default async function ClientsPage({
             aria-current={!status ? 'true' : undefined}
             className={cn(
               'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-              !status ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
+              !status ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
             )}
           >
             Tümü
@@ -63,7 +64,7 @@ export default async function ClientsPage({
               aria-current={status === st ? 'true' : undefined}
               className={cn(
                 'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-                status === st ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
+                status === st ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
               )}
             >
               {CLIENT_STATUS_LABEL[st]}
@@ -80,7 +81,7 @@ export default async function ClientsPage({
             defaultValue={q ?? ''}
             placeholder="Danışan ara…"
             aria-label="Danışan ara"
-            className="field !py-2 !pl-9 text-sm"
+            className="field py-2! pl-9! text-sm"
           />
         </form>
       </div>

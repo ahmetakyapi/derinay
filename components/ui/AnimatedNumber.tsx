@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'motion/react'
 import { formatTRY } from '@/lib/format'
 
 /**
@@ -21,7 +21,7 @@ export function AnimatedNumber({
   // Hydration güvenliği: SSR ve istemcinin İLK render'ı daima 0 olmalı.
   // (reduced-motion açıkken bile başlangıçta 0; effect içinde hedefe atlanır.)
   const [val, setVal] = useState(0)
-  const raf = useRef<number>()
+  const raf = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (reduced) {

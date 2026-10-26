@@ -44,7 +44,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        'sensitive inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br font-bold text-white shadow-lg shadow-black/10',
+        'sensitive inline-flex shrink-0 items-center justify-center rounded-xl bg-linear-to-br font-bold text-white shadow-lg shadow-black/10',
         CLIENT_COLOR_BG[color] ?? CLIENT_COLOR_BG.indigo,
         sizes[size],
         className,

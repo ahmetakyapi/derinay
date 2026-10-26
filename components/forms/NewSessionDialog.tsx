@@ -141,7 +141,7 @@ export function NewSessionDialog({
             )}
           </div>
           {everyWeeks > 0 && (
-            <p className="-mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Aynı gün ve saatte <span className="font-semibold text-indigo-600 dark:text-indigo-300">{count} seans</span> oluşturulur
               ({everyWeeks === 1 ? 'haftalık' : 'iki haftada bir'}).
             </p>

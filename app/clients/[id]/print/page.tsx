@@ -22,12 +22,14 @@ export const dynamic = 'force-dynamic'
  * seans geçmişi ve Seans Defteri tek belgede.
  */
 export default async function ClientFilePrintPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { id: string }
-  searchParams: { auto?: string }
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ auto?: string }>
 }) {
+  const params = await paramsPromise
+  const searchParams = await searchParamsPromise
   const [data, BUSINESS] = await Promise.all([getClientDetail(params.id), getBusinessInfo()])
   if (!data) notFound()
   const { client, notes, sessions, payments, stats, scores, goals } = data
@@ -192,8 +194,8 @@ export default async function ClientFilePrintPage({
                     {formatDateTimeLong(String(n.createdAt))} · {NOTE_KIND_LABEL[n.kind]}
                     {n.mood ? ` · duygu: ${MOOD_LABEL[n.mood]}` : ''}
                   </p>
-                  {n.title && <p className="break-words font-semibold">{n.title}</p>}
-                  <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{n.body}</p>
+                  {n.title && <p className="wrap-break-word font-semibold">{n.title}</p>}
+                  <p className="mt-0.5 whitespace-pre-wrap wrap-break-word text-sm leading-6 text-slate-700">{n.body}</p>
                 </div>
               ))}
             </div>

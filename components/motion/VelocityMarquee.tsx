@@ -11,7 +11,7 @@ import {
   useSpring,
   useTransform,
   useVelocity,
-} from 'framer-motion'
+} from 'motion/react'
 
 const wrap = (min: number, max: number, v: number) => {
   const r = max - min

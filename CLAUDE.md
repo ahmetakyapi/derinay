@@ -34,14 +34,15 @@ makbuz, ödeme, gelir-gider, vergi ve kişisel harcama tek, sakin arayüzde.
 
 | Katman | Seçim | Not |
 |---|---|---|
-| Framework | Next.js 14 App Router | Server Component varsayılan |
-| Stil | Tailwind 3.4, `darkMode: 'class'` | `postcss.config.js` ŞART |
-| Hareket | Framer Motion 11 + Lenis (yalnız landing) | GSAP yok |
+| Framework | Next.js 16 App Router + React 19 (Turbopack) | Server Component varsayılan; `proxy.ts` (§9) |
+| Stil | Tailwind v4, `tailwind.config.ts` `@config` ile | `postcss.config.js` (`@tailwindcss/postcss`) ŞART; v3 kaskadı korunur (§10) |
+| Hareket | `motion` (`motion/react`) + Lenis (yalnız landing) | GSAP yok; `framer-motion` import etme |
 | Grafik | Recharts | `components/charts/`, sayfalar `charts/lazy`den alır |
 | DB | Neon Postgres + Drizzle (`neon-http`) | `@neondatabase/serverless`, `pg` DEĞİL |
-| Tema | next-themes | `defaultTheme="light"`, `enableSystem={false}` |
+| Tema | next-themes 0.4 | `defaultTheme="light"`, `enableSystem={false}` |
 | Font | fontsource paketleri | next/font YASAK (§7 Tipografi) |
 | İkon | lucide-react | |
+| Lint | ESLint 9 flat (`eslint.config.mjs`, eslint-config-next 16) | `npm run lint` = `eslint .`; `next lint` yok |
 | Deploy | Vercel `fra1` | bkz. §11 |
 
 ## 3. Komutlar
@@ -88,7 +89,7 @@ npm run db:reset-owner # settings'teki kişi adını sil (`-- --all` = tüm kiml
 - `app/error.tsx`, `global-error.tsx`, `not-found.tsx` — Next varsayılan ekranı ASLA görünmez.
 - `lib/` — `schema`, `queries`, `finance` (vergi/makbuz hesabı), `constants` (enum + Türkçe
   etiket sözlükleri + `STATUS_TONE` + `TAX` + `BUSINESS` varsayılanları), `format`,
-  `palette` (grafik renkleri), `variants` (Framer), `revalidate`, `quotes`, `auth`, `db`.
+  `palette` (grafik renkleri), `variants` (motion), `revalidate`, `quotes`, `auth`, `db`.
 - `components/ui/` — ortak primitifler (§7 Envanter). `components/motion/` — hareket
   sistemi. `components/marketing/` — landing'deki panel kesitleri.
 - `scripts/` — seed, dump, restore, check-schema, reset-owner (`db-env.ts`: `DATABASE_URL`
@@ -149,10 +150,12 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
   **`blue/purple/orange/pink` KULLANMA** — remap edilmedi, paletle çatışır.
 - Token'lar `globals.css`: `--pine/--sage/--gold/--clay/--mist`, `--paper/--line/--ink/--bg/--sand`.
   Grafik renkleri `lib/palette.ts` (`CHART`, `CHART_SERIES`). **Hardcoded hex yok.**
-- **Opaklık ölçeği**: Tailwind 3.4 varsayılanı 5'in katlarıdır (`/15`, `/35` çalışır). Katı
-  OLMAYAN değer (`/12`, `/8`) **hiç CSS üretmez**, sınıf sessizce ölür. Config'te yalnız
-  `8` ve `12` tanımlı. 5'in katını config'e ekleme (ölü ayar); başka ara değer için ekle
-  ya da `/[0.12]` yaz. "Rozet zeminsiz" hatasında ilk bak.
+- **Opaklık ölçeği**: Tailwind v4'te renk modifier'ı her tam sayıyı kabul eder (`/12`, `/7`,
+  `/2.5`); config'e eklemek gerekmez. Config'teki `8` ve `12` v3 mirası (v3'te 5'in katı
+  OLMAYAN değer hiç CSS üretmiyordu) — zararsız, yenisini ekleme. Kanonik yazım `/4`,
+  `/[0.04]` değil.
+- **Koyu varyant** `globals.css` → `@custom-variant dark (&:is(.dark *))` — v3 `'class'`
+  stratejisinin birebir seçicisi: `.dark` öğesinin kendisi `dark:` almaz, ALTI alır.
 - **Soluk metin kontrastı (ölçüldü)**: tek başına `text-slate-400` kâğıtta 2.87:1 (AA altı);
   `dark:text-slate-500` koyuda 3.78:1. Doğru ikili **`text-slate-500 dark:text-slate-400`**
   (4.77 / 6.29). Landing gövdesi `text-slate-600 dark:text-slate-400`.
@@ -267,7 +270,7 @@ Eğriler: `EASE_OUT_EXPO [0.16,1,0.3,1]` giriş, `EASE_IN_OUT [0.76,0,0.24,1]` p
 - **Lenis yalnız landing** (`SmoothScroll`); panelin iç kaydırma alanları yerel kalır.
 - **Tema geçişi**: `useThemeTransition` — View Transitions ile tıklanan noktadan daire; sınıf
   geri çağrı İÇİNDE elle değişir (next-themes efekti geç kalır). Düğme `ThemeToggleButton` (landing + panel ortak).
-- **Hareket azaltma**: CSS animasyon/gecikme sıfırlanır, perde ve Lenis atlanır, Framer
+- **Hareket azaltma**: CSS animasyon/gecikme sıfırlanır, perde ve Lenis atlanır, motion
   `MotionConfig reducedMotion="user"` (landing + Shell); kaydırmaya bağlı `style` değerleri ayrıca (§10).
 
 ## 8. Yeni Özellik Reçetesi
@@ -289,8 +292,9 @@ Para/tarih hep `lib/format.ts` (`formatTRY`, `formatDate*`); KDV/vergi hep `lib/
 ## 9. Kararlar
 
 - **Auth**: next-auth v5 credentials, tek şifre (`APP_PASSWORD`), JWT (30 gün), adapter yok.
-  `lib/auth.ts` middleware'de (edge) çalışır → **oraya `lib/db` import etme**. Korunan yollar
-  `middleware.ts` matcher'ı (`/dashboard`, print sayfaları, `/api/export`); `/`, `/login`, `/api/health` açık.
+  `lib/auth.ts` her istekte proxy'de çalışır → **oraya `lib/db` import etme**. Korunan yollar
+  `proxy.ts` matcher'ı (`/dashboard`, print sayfaları, `/api/export`); `/`, `/login`, `/api/health`
+  açık. Next 16: `middleware.ts` → `proxy.ts` (`export { auth as proxy }`), Node çalışma zamanı.
 - **Tazeleme** `lib/revalidate.ts`: `revalidateFinance()`, `revalidateSessions(clientId?)`,
   `revalidateClients()` (⌘K listesi dahil, layout düzeyi), `revalidateSettings()`. Yeni sayfa → ilgili gruba.
 - Kişisel harcama ayrı tablo değil, `scope`.
@@ -303,17 +307,28 @@ Para/tarih hep `lib/format.ts` (`formatTRY`, `formatDate*`); KDV/vergi hep `lib/
 ## 10. Tuzaklar
 
 **Derleme / ortam**
-- `postcss.config.js` silinirse Tailwind derlenmez.
+- `postcss.config.js` (`@tailwindcss/postcss`) silinirse Tailwind derlenmez.
 - `build` dev açıkken `.next`'i bozar (`Cannot find module './xxx.js'`): dev'i durdur → `rm -rf .next`.
-- `tailwind.config` `content`'inde `./lib/**` OLMALI — `CLIENT_COLOR_BG`, `MOOD_BG`, `STATUS_TONE`
-  sınıfları orada; çıkarsa görünmez avatar.
+  (Next 16 dev çıktısı `.next/dev`'e yazar; çakışmanın kalktığı burada ölçülmedi, kural duruyor.)
+- `globals.css`'teki `@source '../lib'` (ve config `content`'indeki `./lib/**`) OLMALI —
+  `CLIENT_COLOR_BG`, `MOOD_BG`, `STATUS_TONE` sınıfları orada; çıkarsa görünmez avatar.
+- **Tailwind v4 ama v3 kaskadı** (Ekim 2026 geçişi): `globals.css` utility'leri KATMANSIZ basar
+  (`@tailwind utilities;` bileşenlerden sonra, katmansız kurallardan önce). Bu dosyanın kuralları
+  v3'ün düz kaskadına göre yazıldı (`h1.font-display` başlıktaki `tracking-*`'i, `.field:focus`
+  genel odak halkasını yener); `@import 'tailwindcss'`e geçmek bunları sessizce el
+  değiştirir — önce ekran görüntüsüyle karşılaştır. Punto ölçeği config'te v3 değerleriyle
+  (mutlak satır yüksekliği), preflight farkları (kenarlık rengi, düğme imleci, tarih alanı
+  dolgusu) `@layer base` uyum bloğunda.
+- `-webkit-backdrop-filter` HER ZAMAN `backdrop-filter`'dan ÖNCE yazılır: v4'ün küçülticisi
+  ters sırada standardı atıyor, Chrome'da cam bulanıklığı kayboluyordu.
+- Next 16'da `params`/`searchParams` Promise — `await` et (sayfa, layout, route).
 - drizzle-kit `.env.local`'i okumaz → `drizzle.config.ts` başında `dotenv`.
 
 **Server / Client**
 - Server'dan client bileşene lucide ikonu **element** olarak geçir (`icon={<X/>}`); bileşen referansı hata verir.
-- Server Component'e Framer/Recharts koyma; client parçaya ayır.
+- Server Component'e motion/Recharts koyma; client parçaya ayır.
 - next-themes: `<html suppressHydrationWarning>` + tema bağımlı bileşende `useMounted` guard.
-- SSR'da görünmesi gereken kabuğa Framer `initial` koyma — `opacity:0` HTML'e yazılır, JS
+- SSR'da görünmesi gereken kabuğa motion `initial` koyma — `opacity:0` HTML'e yazılır, JS
   gecikirse menü boş kalır. Kabuk girişleri CSS (`.shell-in`, `.nav-in`).
 - `Intl` kısa para biçimi (`formatTRY(…, { compact })`) `minimumFractionDigits: 0`'ı AÇIK verir:
   verilmezse Node "1,0 B ₺", Chrome "1 B ₺" yazar → istemci bileşeninde hidrasyon hatası.
@@ -336,15 +351,18 @@ Para/tarih hep `lib/format.ts` (`formatTRY`, `formatDate*`); KDV/vergi hep `lib/
 - next/font'a geri dönme, `DerinayLira`'yı font listelerinden çıkarma (§7 Tipografi).
 
 **Hareket / yerleşim**
-- `window.addEventListener('scroll', …)` ve `scrollY`'yi state'e yazmak YASAK → Framer
+- `window.addEventListener('scroll', …)` ve `scrollY`'yi state'e yazmak YASAK → motion
   `useScroll()` + `useMotionValueEvent()` (Header deseni) ya da IntersectionObserver.
 - `overflow-hidden` ata `position: sticky`'yi öldürür → yatay taşma için `overflow-x-clip` (landing `<main>`).
-- Framer `animate` bitince satır içi `transform: none` bırakır, `hover:-translate-y-1` ölür →
-  hover'da kalkan kartın girişi CSS keyframe (StatCard).
-- Framer `style` transform'u Tailwind translate'ini ezer → ötelemeyi de style'a yaz (`y: '-50%'`)
-  ya da translate'i dış kaba, dönüşü iç kaba ver (`TrustScene` mührü).
+- Tailwind v4'te `translate-*`/`scale-*`/`rotate-*` ayrı CSS özellikleri (`translate`, `scale`,
+  `rotate`); motion'ın satır içi `transform`u onları artık EZMEZ, ÜSTÜNE EKLENİR. Aynı öğeye
+  hem `-translate-y-1/2` hem motion `y` verirsen çift kayar → ötelemeyi tek yerde tut: style'da
+  (`y: '-50%'`) ya da translate dış kapta, hareket iç kapta (`TrustScene` mührü). v3'te tersi
+  sorundu (motion `transform: none` bırakıp `hover:-translate-y-1`'i öldürüyordu; StatCard'ın
+  CSS keyframe girişi o yüzden — kalabilir).
 - Kaydırmaya bağlı `style` değerleri `MotionConfig reducedMotion`'dan etkilenmez. Style'ı HER
-  ZAMAN ver, durağanlığı CSS kursun: `motion-reduce:!transform-none`, `motion-reduce:![clip-path:none]`
+  ZAMAN ver, durağanlığı CSS kursun: `motion-reduce:transform-none!`, `motion-reduce:[clip-path:none]!`
+  (v4'te `!` sona yazılır; `transform-none` `translate-*` sınıflarını sıfırlamaz)
   (Hero, Showcase, Scenes, Footer, DayScroll). `still ? undefined : {…}` YAZMA: sunucu hareket
   tercihini bilmez, kaydırma-0 hâlini satır içi yazar ve hidrasyon bunu düzeltmez — vitrin
   kırpık/yatık donuyor, telefonda etiketlerin baş harfi kesiliyordu (Ekim 2026).

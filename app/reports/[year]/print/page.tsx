@@ -13,12 +13,14 @@ export const dynamic = 'force-dynamic'
  * Yıllık finans raporu — tarayıcı yazdırma ile PDF (muhasebeci dostu format).
  */
 export default async function ReportPrintPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { year: string }
-  searchParams: { auto?: string }
+  params: Promise<{ year: string }>
+  searchParams: Promise<{ auto?: string }>
 }) {
+  const params = await paramsPromise
+  const searchParams = await searchParamsPromise
   const year = Number(params.year)
   if (!Number.isInteger(year) || year < 2000 || year > 2100) notFound()
   const [a, BUSINESS] = await Promise.all([getYearAnalytics(year), getBusinessInfo()])

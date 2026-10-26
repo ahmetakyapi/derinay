@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence, MotionConfig, LayoutGroup } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig, LayoutGroup } from 'motion/react'
 import {
   LayoutDashboard,
   LineChart,
@@ -113,7 +113,7 @@ function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
                   layoutId="tab-active"
                   aria-hidden
                   transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                  className="absolute inset-x-3 top-0 h-[2.5px] rounded-b-full bg-gradient-to-r from-indigo-500 to-amber-500"
+                  className="absolute inset-x-3 top-0 h-[2.5px] rounded-b-full bg-linear-to-r from-indigo-500 to-amber-500"
                 />
               )}
               <motion.span
@@ -161,8 +161,8 @@ function Brand() {
     <Link href="/dashboard" className="group flex items-center gap-3">
       {/* Mürekkep damgası — orkide işareti + altın nokta */}
       <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-300 group-hover:rotate-3 dark:bg-slate-50">
-        <BloomMark className="h-[22px] w-[22px] text-amber-50 transition-transform duration-500 group-hover:rotate-[72deg] dark:text-slate-900" />
-        <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
+        <BloomMark className="h-[22px] w-[22px] text-amber-50 transition-transform duration-500 group-hover:rotate-72 dark:text-slate-900" />
+        <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-(--bg)" />
       </div>
       <div className="leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -228,7 +228,7 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       className="absolute inset-0 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/10"
                     >
-                      <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-indigo-500 to-amber-500" />
+                      <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-linear-to-b from-indigo-500 to-amber-500" />
                     </motion.span>
                   ) : (
                     // Üstüne gelince zemin soldan dolar
@@ -276,7 +276,7 @@ function OwnerCard({ owner, onNavigate, children }: { owner: Owner; onNavigate?:
         title="Kimlik Bilgilerini Düzenle"
         className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-xl transition-opacity hover:opacity-80"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 font-display text-xs font-bold text-white">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-600 to-emerald-600 font-display text-xs font-bold text-white">
           {owner.isSet ? initials(owner.name) : <BloomMark className="h-4 w-4" />}
         </span>
         <div className="min-w-0 text-xs">
@@ -402,7 +402,7 @@ export function DashboardShell({
       {/* Klavye kullanıcısı için içeriğe atla — odaklanınca görünür */}
       <a
         href="#main-content"
-        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
+        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200"
       >
         İçeriğe Atla
       </a>
@@ -422,7 +422,7 @@ export function DashboardShell({
           {/* Komut paleti tetikleyici */}
           <button
             onClick={() => window.dispatchEvent(new Event('derinay:open-command'))}
-            className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] px-3 py-2 text-sm text-slate-500 transition-colors hover:border-indigo-500/30 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-slate-500/15 bg-slate-500/3 px-3 py-2 text-sm text-slate-500 transition-colors hover:border-indigo-500/30 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
           >
             <Search className="h-4 w-4" />
             <span className="flex-1 text-left">Ara…</span>
@@ -437,7 +437,7 @@ export function DashboardShell({
             <span className="text-[10px] text-amber-500/70">✦</span>
             <span className="h-px flex-1 bg-slate-500/15" />
           </div>
-          <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+          <div className="rounded-2xl border border-slate-500/10 bg-slate-500/4 p-3">
             <OwnerCard owner={owner} />
 
             <div className="mt-3 grid grid-cols-3 gap-1.5">
@@ -513,7 +513,7 @@ export function DashboardShell({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs lg:hidden"
           >
             <motion.aside
               ref={drawerRef}
@@ -548,7 +548,7 @@ export function DashboardShell({
                   <span className="text-[10px] text-amber-500/70">✦</span>
                   <span className="h-px flex-1 bg-slate-500/15" />
                 </div>
-                <div className="rounded-2xl border border-slate-500/10 bg-slate-500/[0.04] p-3">
+                <div className="rounded-2xl border border-slate-500/10 bg-slate-500/4 p-3">
                   <OwnerCard owner={owner} onNavigate={() => setOpen(false)}>
                     <form action={logoutAction} onSubmit={clearAllNoteDrafts}>
                       <button
@@ -571,7 +571,7 @@ export function DashboardShell({
       <CommandPalette clients={clients} />
 
       {/* Content — mobilde alt sekme çubuğuna pay bırak */}
-      <main id="main-content" tabIndex={-1} className="outline-none lg:pl-64">
+      <main id="main-content" tabIndex={-1} className="outline-hidden lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:py-10">
           <PageTransition>{children}</PageTransition>
         </div>
@@ -580,12 +580,12 @@ export function DashboardShell({
       <MobileTabBar onOpenMenu={() => setOpen(true)} />
 
       {/* Gizlilik modu göstergesi — mobilde tab bar'ın üstünde durur.
-          Çekmece açıkken gizlenir: aksi halde z-[120] ile z-50'lik çekmecenin
+          Çekmece açıkken gizlenir: aksi halde z-120 ile z-50'lik çekmecenin
           üstüne çıkıp menünün üzerinde yüzüyordu. */}
       {privacy && !open && (
         <button
           onClick={togglePrivacy}
-          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[120] flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300 lg:bottom-5"
+          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-120 flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-amber-700 shadow-xl dark:text-amber-300 lg:bottom-5"
         >
           <EyeOff className="h-4 w-4" /> Gizlilik açık — kimlikler gizli
         </button>

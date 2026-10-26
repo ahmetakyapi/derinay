@@ -32,10 +32,11 @@ function SummaryStrip({ tiles }: { tiles: { label: string; value: string; hint?:
 const WEEKDAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
 
 export default async function AgendaPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { view?: string; date?: string; month?: string }
+  searchParams: Promise<{ view?: string; date?: string; month?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const view = searchParams.view === 'month' ? 'month' : 'week'
   // Elle düzenlenmiş URL (?month=abc) Invalid Date üretip sorguyu patlatıyordu.
   const monthParam = /^\d{4}-\d{2}$/.test(searchParams.month ?? '') ? searchParams.month : undefined
@@ -137,7 +138,7 @@ export default async function AgendaPage({
                   </div>
                   <div className="hidden flex-1 flex-col gap-0.5 sm:flex">
                     {items.slice(0, 3).map((it) => (
-                      <span key={it.id} className="flex items-center gap-1 truncate rounded bg-slate-500/[0.06] px-1 py-0.5 text-xs text-slate-600 dark:text-slate-300">
+                      <span key={it.id} className="flex items-center gap-1 truncate rounded-sm bg-slate-500/6 px-1 py-0.5 text-xs text-slate-600 dark:text-slate-300">
                         <span className={cn('h-1 w-1 shrink-0 rounded-full', CLIENT_COLOR_DOT[it.colorTag] ?? CLIENT_COLOR_DOT.indigo)} />
                         <span className="font-mono font-semibold">{it.time}</span>
                         <span className="sensitive truncate">{it.clientName}</span>
@@ -221,7 +222,7 @@ function ViewToggle({ view }: { view: 'week' | 'month' }) {
         aria-current={view === 'week' ? 'true' : undefined}
         className={cn(
           'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-          view === 'week' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
+          view === 'week' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
         )}
       >
         Hafta
@@ -231,7 +232,7 @@ function ViewToggle({ view }: { view: 'week' | 'month' }) {
         aria-current={view === 'month' ? 'true' : undefined}
         className={cn(
           'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
-          view === 'month' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
+          view === 'month' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
         )}
       >
         Ay

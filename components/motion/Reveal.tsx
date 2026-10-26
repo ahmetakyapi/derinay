@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, type Variant as MotionVariant } from 'framer-motion'
+import { motion, type Variant as MotionVariant } from 'motion/react'
 import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 
 type Variant = 'up' | 'clip' | 'scale' | 'fade'

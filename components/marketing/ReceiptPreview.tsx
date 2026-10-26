@@ -39,7 +39,7 @@ export function ReceiptPreview() {
           <span className="flex h-9 items-center gap-2 rounded-xl border border-slate-500/15 bg-[rgba(var(--paper),0.7)] px-2.5">
             {/* Avatar gradyanı uygulamayla AYNI kaynaktan — `indigo` bu projede
                 çam/petrol yeşilidir, mor değil (tailwind.config.ts remap). */}
-            <span className={cn('flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br text-[9px] font-bold text-white', CLIENT_COLOR_BG.indigo)}>
+            <span className={cn('flex h-5 w-5 items-center justify-center rounded-md bg-linear-to-br text-[9px] font-bold text-white', CLIENT_COLOR_BG.indigo)}>
               AY
             </span>
             <span className="text-xs font-medium text-slate-700 dark:text-slate-200">A. Yılmaz</span>

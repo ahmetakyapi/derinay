@@ -137,10 +137,10 @@ export function NewClientDialog({
                   aria-label={CLIENT_COLOR_LABEL[c]}
                   aria-pressed={color === c}
                   className={cn(
-                    'h-8 w-8 rounded-lg bg-gradient-to-br transition-all',
+                    'h-8 w-8 rounded-lg bg-linear-to-br transition-all',
                     CLIENT_COLOR_BG[c],
                     color === c
-                      ? 'scale-110 ring-2 ring-slate-900/60 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
+                      ? 'scale-110 ring-2 ring-slate-900/60 ring-offset-2 ring-offset-(--bg) dark:ring-white/70'
                       : 'opacity-70 hover:opacity-100',
                   )}
                 />
@@ -149,7 +149,7 @@ export function NewClientDialog({
           </div>
 
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-500/15 px-3 py-2.5 text-sm text-slate-600 transition-colors hover:border-indigo-500/30 dark:text-slate-300">
-            <input type="checkbox" name="consentGiven" className="h-4 w-4 rounded accent-indigo-600" />
+            <input type="checkbox" name="consentGiven" className="h-4 w-4 rounded-sm accent-indigo-600" />
             <span>
               <span className="font-semibold">KVKK aydınlatma / onam alındı</span>
               <span className="block text-xs text-slate-500 dark:text-slate-400">danışan onayını kayda geç</span>

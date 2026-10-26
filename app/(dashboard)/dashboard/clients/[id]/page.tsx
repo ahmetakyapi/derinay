@@ -60,7 +60,8 @@ const SESSION_PREVIEW = 8
 const LEDGER_PREVIEW = 8
 export const dynamic = 'force-dynamic'
 
-export default async function ClientDetailPage({ params }: { params: { id: string } }) {
+export default async function ClientDetailPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
+  const params = await paramsPromise
   const [data, reminder, taxRates] = await Promise.all([getClientDetail(params.id), getReminderConfig(), getTaxSettings()])
   if (!data) notFound()
   const { client, notes, sessions, payments, invoices, stats, activePackage, scores, documents, goals } = data
@@ -96,8 +97,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       <div className="glass relative mb-6 overflow-hidden rounded-2xl">
         {/* Renk yıkamalı kapak + soluk orkide — kâğıda doğru erir */}
         <div className="relative h-24 sm:h-28">
-          <div className={cn('absolute inset-0 bg-gradient-to-br', CLIENT_COLOR_BG[client.colorTag] ?? CLIENT_COLOR_BG.indigo)} />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--paper),0.97)] via-[rgba(var(--paper),0.5)] to-[rgba(var(--paper),0.12)]" />
+          <div className={cn('absolute inset-0 bg-linear-to-br', CLIENT_COLOR_BG[client.colorTag] ?? CLIENT_COLOR_BG.indigo)} />
+          <div className="absolute inset-0 bg-linear-to-t from-[rgba(var(--paper),0.97)] via-[rgba(var(--paper),0.5)] to-[rgba(var(--paper),0.12)]" />
           <BloomArt className="pointer-events-none absolute -top-3 right-4 h-32 w-24 opacity-45" delay={0.3} />
         </div>
 
@@ -105,7 +106,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             {/* Avatar + kimlik */}
             <div className="flex items-end gap-4">
-              <div className="-mt-14 shrink-0 rounded-[1.15rem] bg-[var(--bg)] p-1 shadow-xl shadow-black/10">
+              <div className="-mt-14 shrink-0 rounded-[1.15rem] bg-(--bg) p-1 shadow-xl shadow-black/10">
                 <Avatar name={client.name} color={client.colorTag} src={client.avatarUrl} size="xl" />
               </div>
               <div className="min-w-0 pb-0.5">
@@ -168,7 +169,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <NewInvoiceDialog clients={[]} fixedClientId={client.id} defaultKdvRate={taxRates.kdvRate} defaultStopajRate={taxRates.stopajRate} />
               <NewPaymentDialog clients={[]} fixedClientId={client.id} />
-              <div className="flex items-center gap-1.5 rounded-xl border border-slate-500/15 bg-slate-500/[0.03] p-1">
+              <div className="flex items-center gap-1.5 rounded-xl border border-slate-500/15 bg-slate-500/3 p-1">
                 <Link
                   href={`/clients/${client.id}/print`}
                   target="_blank"
@@ -477,7 +478,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       </div>
 
       {/* Seans Defteri */}
-      <section className="glass mt-6 overflow-hidden rounded-[1.5rem]">
+      <section className="glass mt-6 overflow-hidden rounded-3xl">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/10 px-4 py-3.5 sm:px-5">
           <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-700 dark:text-slate-200">
             <StickyNote className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Seans Defteri

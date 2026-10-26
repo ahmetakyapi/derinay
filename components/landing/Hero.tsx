@@ -10,7 +10,7 @@ import {
   useSpring,
   useTransform,
   type MotionValue,
-} from 'framer-motion'
+} from 'motion/react'
 import {
   ArrowDown,
   ArrowUpRight,
@@ -131,7 +131,7 @@ function GalleryWindow({ play }: { play: boolean }) {
       ref={box}
       onPointerMove={onMove}
       onPointerLeave={reset}
-      className="relative mx-auto aspect-[4/5] w-full max-w-[19rem] sm:max-w-[25rem] lg:max-w-[28rem]"
+      className="relative mx-auto aspect-4/5 w-full max-w-76 sm:max-w-100 lg:max-w-md"
     >
       {/* Pencerenin arkasındaki altın hâle */}
       <motion.div
@@ -139,7 +139,7 @@ function GalleryWindow({ play }: { play: boolean }) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={play ? { opacity: 1, scale: 1 } : undefined}
         transition={{ duration: 1.6, ease: EASE_OUT_EXPO, delay: 0.5 }}
-        className="absolute -inset-[12%] bg-[radial-gradient(closest-side,rgba(var(--gold),0.22),transparent)]"
+        className="absolute inset-[-12%] bg-[radial-gradient(closest-side,rgba(var(--gold),0.22),transparent)]"
       />
 
       {/* Kemer — aşağıdan yukarı perde gibi açılır */}
@@ -149,7 +149,7 @@ function GalleryWindow({ play }: { play: boolean }) {
         transition={{ duration: 1.4, ease: EASE_IN_OUT, delay: 0.35 }}
         /* Kemer yarıçapı ÖLÇÜYLE: rounded-t-full (9999px) yazınca tarayıcı tüm köşeleri
            orantılı küçültüyor ve alt köşeler kare kalıyordu. Kutu 4:5 → yatay %50, dikey %40. */
-        className="dark absolute inset-0 overflow-hidden rounded-b-[2.5rem] rounded-t-[50%_40%] bg-gradient-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/30 ring-1 ring-white/10"
+        className="dark absolute inset-0 overflow-hidden rounded-b-[2.5rem] rounded-t-[50%_40%] bg-linear-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/30 ring-1 ring-white/10"
       >
         {/* Gökyüzü ışığı */}
         <div className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)]" />
@@ -160,12 +160,12 @@ function GalleryWindow({ play }: { play: boolean }) {
             initial={{ y: '-60%', opacity: 0 }}
             animate={play ? { y: '0%', opacity: 1 } : undefined}
             transition={{ duration: 2.2, ease: EASE_OUT_EXPO, delay: 0.7 }}
-            className="absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_80px_rgba(var(--gold),0.55)]"
+            className="absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-linear-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_80px_rgba(var(--gold),0.55)]"
           />
         </motion.div>
 
         {/* Su — ufuk ve yansıma çizgileri */}
-        <div className="absolute inset-x-0 bottom-0 top-[66%] bg-gradient-to-b from-indigo-950/90 to-indigo-950">
+        <div className="absolute inset-x-0 bottom-0 top-[66%] bg-linear-to-b from-indigo-950/90 to-indigo-950">
           {[0, 1, 2, 3, 4, 5].map((n) => (
             <motion.span
               key={n}
@@ -206,12 +206,12 @@ export function Hero() {
   return (
     <section
       ref={ref}
-      className="relative z-10 flex min-h-[100svh] items-center px-6 pb-20 pt-[calc(7rem+env(safe-area-inset-top))] sm:px-10 lg:pb-16"
+      className="relative z-10 flex min-h-svh items-center px-6 pb-20 pt-[calc(7rem+env(safe-area-inset-top))] sm:px-10 lg:pb-16"
     >
       <div className="mx-auto grid w-full max-w-7xl items-center gap-x-12 gap-y-20 lg:grid-cols-[1.15fr_1fr]">
         {/* ── Metin ─────────────────────────────────────────────── */}
         {/* Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu) */}
-        <motion.div style={{ y: textY, opacity: fade }} className="motion-reduce:!transform-none motion-reduce:!opacity-100">
+        <motion.div style={{ y: textY, opacity: fade }} className="motion-reduce:transform-none! motion-reduce:opacity-100!">
           {/* Manşetin üstündeki "Psikologlar İçin…" hap etiketi KALDIRILDI
               (Ekim 2026): başlık üstü künye/eyebrow yok kuralı. Kime hitap
               ettiği bilgisi kaybolmadı, alt başlığın ilk cümlesine indi. Hapın
@@ -223,7 +223,7 @@ export function Hero() {
               `text-wrap: wrap` (global balance kuralı kahramana uygulanmaz);
               punto sütuna sığacak şekilde vw ile ölçeklenir: en uzun satır
               ≈7em → telefonda (100vw-48px)/7, lg'de sütun genişliği/7. */}
-          <h1 className="font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 [text-wrap:wrap] dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
+          <h1 className="font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 text-wrap dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
             <span className="block whitespace-nowrap font-extrabold tracking-[-0.055em]">
               <RevealText text="İşini Düzenle," play={play} stagger={0.08} duration={1.1} delay={0.15} />
             </span>
@@ -233,7 +233,7 @@ export function Hero() {
                 play={play}
                 delay={0.3}
                 duration={1.1}
-                className="font-normal tracking-[-0.05em] text-slate-500 dark:text-slate-400"
+                className="font-normal tracking-tighter text-slate-500 dark:text-slate-400"
               />{' '}
               <span className="relative inline-block">
                 <motion.span
@@ -263,7 +263,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={play ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.75 }}
-            className="mt-8 max-w-[34rem] text-[1.125rem] [text-wrap:wrap] font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
+            className="mt-8 max-w-136 text-[1.125rem] text-wrap font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
           >
             <span className="text-slate-900 dark:text-white">Psikologlar İçin Danışan ve Finans Takibi.</span>{' '}
             Danışanların, Randevuların, Seans Notların ve Gelirlerin Tek Bir Yerde.
@@ -282,7 +282,7 @@ export function Hero() {
               >
                 <span
                   aria-hidden
-                  className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-slate-900 transition-transform duration-[600ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 dark:bg-amber-500"
+                  className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-slate-900 transition-transform duration-600 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 dark:bg-amber-500"
                 />
                 <span className="roll relative">
                   <span data-t="Panele Giriş Yap">Panele Giriş Yap</span>
@@ -321,7 +321,7 @@ export function Hero() {
         </motion.div>
 
         {/* ── Görsel ────────────────────────────────────────────── */}
-        <motion.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:!transform-none sm:px-16 lg:px-8">
+        <motion.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:transform-none! sm:px-16 lg:px-8">
           <GalleryWindow play={play} />
         </motion.div>
       </div>

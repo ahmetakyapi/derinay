@@ -28,8 +28,6 @@ function isoDate(d: Date) {
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
 const money = (n: number) => n.toFixed(2)
 
-const COLORS = ['indigo', 'emerald', 'sky', 'violet', 'amber', 'rose', 'teal', 'cyan']
-
 const CLIENTS = [
   { name: 'Ayşe Yılmaz',     status: 'active',    fee: 1500, since: 14, color: 'indigo' },
   { name: 'Mehmet Demir',    status: 'active',    fee: 1500, since: 8,  color: 'emerald' },

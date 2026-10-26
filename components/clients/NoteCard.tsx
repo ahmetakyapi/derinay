@@ -117,7 +117,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
                 'h-5 w-5 rounded-full transition-all',
                 MOOD_BG[m],
                 mood === m
-                  ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-1 ring-offset-[var(--bg)] dark:ring-white/70'
+                  ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-1 ring-offset-(--bg) dark:ring-white/70'
                   : 'opacity-45 hover:opacity-90',
               )}
             />
@@ -132,7 +132,7 @@ export function NoteCard({ note }: { note: NoteCardData }) {
           >
             <X className="h-3.5 w-3.5" /> Vazgeç
           </button>
-          <SubmitButton pending={pending} className="!px-3 !py-1.5 !text-xs !shadow-none">
+          <SubmitButton pending={pending} className="px-3! py-1.5! text-xs! shadow-none!">
             <Check className="h-3.5 w-3.5" /> Kaydet
           </SubmitButton>
         </div>
@@ -218,12 +218,12 @@ export function NoteCard({ note }: { note: NoteCardData }) {
       />
 
       {note.title && (
-        <p className="break-words font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+        <p className="wrap-break-word font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           {note.title}
         </p>
       )}
-      {/* break-words: boşluksuz uzun metin (URL, uzun kelime) kartı taşırıyordu */}
-      <p className="whitespace-pre-wrap break-words text-[15px] leading-7 text-slate-600 dark:text-slate-300">
+      {/* wrap-break-word: boşluksuz uzun metin (URL, uzun kelime) kartı taşırıyordu */}
+      <p className="whitespace-pre-wrap wrap-break-word text-[15px] leading-7 text-slate-600 dark:text-slate-300">
         {note.body}
       </p>
     </div>

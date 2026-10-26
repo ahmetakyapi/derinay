@@ -187,7 +187,7 @@ export function NewTransactionDialog({
             <input
               type="checkbox"
               name="recurring"
-              className="h-4 w-4 rounded accent-indigo-600"
+              className="h-4 w-4 rounded-sm accent-indigo-600"
             />
             <span>
               <span className="font-semibold">Her ay tekrarlanır</span>

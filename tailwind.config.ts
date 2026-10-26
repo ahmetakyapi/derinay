@@ -25,23 +25,47 @@ const config: Config = {
     // görmesi için ŞART — yoksa avatar gradientleri üretilmez (görünmez avatar bug'ı).
     './lib/**/*.{js,ts,jsx,tsx}',
   ],
-  darkMode: 'class',
+  // Koyu tema varyantı v4'te globals.css → `@custom-variant dark (&:is(.dark *))`
+  // (v3 'class' stratejisinin birebir seçicisi); burada ikinci tanım yok.
   theme: {
     extend: {
       /**
-       * Opaklık ölçeği — YALNIZCA 5'in katı OLMAYAN adımlar.
+       * Opaklık adımları 8 ve 12 — v3 mirası.
        *
-       * ÖLÇÜLDÜ (Tailwind 3.4): varsayılan `opacity` ölçeği 5'in katlarını
-       * üretir — /15, /35, /45 config'siz çalışır. 5'in katı OLMAYAN bir değer
-       * (ör. /12, /8) ise **hiç CSS üretmez**: sınıf sessizce yok sayılır ve
-       * rozet zeminsiz kalır. Bu projede yalnız bu ikisi kullanılıyor.
-       *
-       * Yeni bir değer eklemeden önce 5'in katı mı diye bak; katıysa buraya
-       * yazma (ölü konfigürasyon olur).
+       * v3'te (ölçüldü) yalnız 5'in katları config'siz çalışıyordu; /12, /8
+       * hiç CSS üretmiyordu, bu yüzden buraya eklenmişti. v4'te renk
+       * modifier'ı her tam sayıyı kabul eder (`bg-rose-500/12`, `/7`); bu
+       * kayıt artık yalnız `opacity-8` / `opacity-12` yardımcılarını üretir.
+       * Kaldırmak zararsız ama gereksiz risk — dokunma, yenisini ekleme.
        */
       opacity: {
         8: '0.08',
         12: '0.12',
+      },
+      /**
+       * Punto ölçeği — v3 değerleri, satır yüksekliği MUTLAK (rem).
+       *
+       * ÖLÇÜLDÜ (Tailwind v4 geçişi, Ekim 2026): v4 varsayılanı satır
+       * yüksekliğini oran olarak yazar (`text-sm` → 1.4286). Oran mirasla
+       * çocuğa geçer ve çocuğun kendi puntosuyla çarpılır: `text-sm` tablonun
+       * `text-[13px]` başlık satırı 20px yerine 18.6px oldu, Vergiler tablosu
+       * 3px kısaldı. v3'te mutlak değer miras alınıyordu; ekran aynı kalsın
+       * diye v3 ölçeği burada sabit.
+       */
+      fontSize: {
+        xs: ['0.75rem', { lineHeight: '1rem' }],
+        sm: ['0.875rem', { lineHeight: '1.25rem' }],
+        base: ['1rem', { lineHeight: '1.5rem' }],
+        lg: ['1.125rem', { lineHeight: '1.75rem' }],
+        xl: ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
+        '6xl': ['3.75rem', { lineHeight: '1' }],
+        '7xl': ['4.5rem', { lineHeight: '1' }],
+        '8xl': ['6rem', { lineHeight: '1' }],
+        '9xl': ['8rem', { lineHeight: '1' }],
       },
       // Fallback zinciri CSS değişkeninin İÇİNDE (globals.css :root) —
       // burada tek kaynak kullanılır, iki yerde fallback tutulmaz.

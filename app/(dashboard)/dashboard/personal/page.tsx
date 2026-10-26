@@ -12,10 +12,11 @@ import { cn } from '@/lib/utils'
 export const metadata = { title: 'Kişisel Harcamalar' }
 
 export default async function PersonalPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { month?: string }
+  searchParams: Promise<{ month?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const data = await getPersonalMonth(searchParams.month)
   const { year, month } = data.monthDate
 
@@ -177,7 +178,7 @@ export default async function PersonalPage({
               const dayTotal = rows.reduce((s, r) => s + r.amount, 0)
               return (
                 <div key={day}>
-                  <div className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/[0.04] px-4 py-2 sm:px-5">
+                  <div className="flex items-center justify-between border-b border-slate-500/10 bg-slate-500/4 px-4 py-2 sm:px-5">
                     <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">
                       {dayLabel(day)}
                     </span>
@@ -215,7 +216,7 @@ export default async function PersonalPage({
           })()}
 
           {/* Ay toplamı */}
-          <footer className="flex items-center justify-between border-t-2 border-slate-500/15 bg-slate-500/[0.05] px-4 py-3.5 sm:px-5">
+          <footer className="flex items-center justify-between border-t-2 border-slate-500/15 bg-slate-500/5 px-4 py-3.5 sm:px-5">
             <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
               {formatMonth(monthDate)} Toplamı
             </span>

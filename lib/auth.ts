@@ -4,7 +4,7 @@ import Credentials from 'next-auth/providers/credentials'
 /**
  * Tek kullanıcılı kilit — panel sahibi için parola tabanlı giriş.
  * Parola env'de tutulur (APP_PASSWORD); DB/adapter yok, JWT session.
- * DİKKAT: bu dosya middleware'de (edge) çalışır — buraya asla `lib/db` import etme
+ * DİKKAT: bu dosya proxy'de (proxy.ts, her istekte) çalışır — buraya asla `lib/db` import etme
  * (bu yüzden oturum adı da sabittir; görünen kimlik Ayarlar'dan okunur).
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -27,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    // Middleware bunu kullanır: oturum yoksa /login'e yönlendirilir
+    // Proxy bunu kullanır: oturum yoksa /login'e yönlendirilir
     authorized: ({ auth }) => !!auth?.user,
   },
 })

@@ -71,7 +71,7 @@ export function NewPackageDialog({
           </Field>
 
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-500/15 px-3 py-2.5 text-sm text-slate-600 transition-colors hover:border-indigo-500/30 dark:text-slate-300">
-            <input type="checkbox" name="recordIncome" defaultChecked className="h-4 w-4 rounded accent-indigo-600" />
+            <input type="checkbox" name="recordIncome" defaultChecked className="h-4 w-4 rounded-sm accent-indigo-600" />
             <span>
               <span className="font-semibold">Tutarı gelir olarak da kaydet</span>
               <span className="block text-xs text-slate-500 dark:text-slate-400">finans & vergiye yansısın (ayrıca ödeme eklemeyeceksen işaretle)</span>

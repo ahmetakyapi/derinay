@@ -113,7 +113,7 @@ export default async function PaymentsPage({
                   title={active ? 'Filtreyi kaldır' : `${m.label} tahsilatlarını göster`}
                   className={cn(
                     'flex items-center gap-3 rounded-xl border border-slate-500/10 p-3 transition-all hover:-translate-y-0.5 hover:border-slate-500/25',
-                    active && 'border-indigo-500/40 bg-indigo-500/[0.05] ring-1 ring-indigo-500/30',
+                    active && 'border-indigo-500/40 bg-indigo-500/5 ring-1 ring-indigo-500/30',
                   )}
                 >
                   <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', m.bg, m.tone)}>
@@ -153,7 +153,7 @@ export default async function PaymentsPage({
             name="q"
             defaultValue={q ?? ''}
             placeholder="Danışan veya not ara…"
-            className="field !py-2 !pl-9 text-sm"
+            className="field py-2! pl-9! text-sm"
           />
         </form>
       </div>
@@ -182,7 +182,7 @@ export default async function PaymentsPage({
               {visible.map((p) => {
                 const meta = METHOD_META[p.method]
                 return (
-                  <div key={p.id} className="relative flex items-center gap-3 py-3.5 pl-5 pr-4 transition-colors hover:bg-slate-500/[0.025] sm:gap-4 sm:pl-6 sm:pr-5">
+                  <div key={p.id} className="relative flex items-center gap-3 py-3.5 pl-5 pr-4 transition-colors hover:bg-slate-500/2.5 sm:gap-4 sm:pl-6 sm:pr-5">
                     <span className={cn('absolute inset-y-3 left-0 w-1 rounded-r-full', meta.bar)} />
                     <Avatar name={p.clientName ?? '—'} color={p.clientColor ?? 'indigo'} src={p.clientAvatar} size="sm" />
                     <div className="min-w-0 flex-1">

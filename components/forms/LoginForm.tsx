@@ -53,7 +53,7 @@ export function LoginForm({
             spellCheck={false}
             placeholder="••••••••"
             onKeyUp={(e) => setCaps(e.getModifierState?.('CapsLock') ?? false)}
-            className="field !pl-9 !pr-11"
+            className="field pl-9! pr-11!"
           />
           {/* Etiketin İÇİNDE ama ayrı düğme: tıklamak alanı göndermez, odağı
               alanda bırakmak için mousedown varsayılanı engellenir. */}
@@ -95,7 +95,7 @@ export function LoginForm({
         {/* Mürekkep dolgu aşağıdan yükselir */}
         <span
           aria-hidden
-          className="absolute inset-0 origin-bottom scale-y-0 bg-slate-900 transition-transform duration-[600ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 dark:bg-indigo-500"
+          className="absolute inset-0 origin-bottom scale-y-0 bg-slate-900 transition-transform duration-600 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 dark:bg-indigo-500"
         />
         {pending ? (
           <>
