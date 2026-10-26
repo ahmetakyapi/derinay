@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { EASE_OUT_EXPO } from '@/lib/variants'
 
@@ -55,7 +55,7 @@ export function RevealText({
       <span aria-hidden>
         {words.map((w, i) => (
           <Fragment key={i}>
-            <span className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em] align-top">
+            <span className="mb-[-0.14em] inline-block overflow-hidden pb-[0.14em] align-top">
               <motion.span
                 className={cn('inline-block will-change-transform', wordClassName?.(w, i))}
                 initial={{ y: '110%' }}

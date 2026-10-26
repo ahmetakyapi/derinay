@@ -20,7 +20,7 @@ const STATUS_META: Record<InvoiceStatus, { label: string; icon: typeof CircleChe
   paid:    { label: 'Ödendi',     icon: CircleCheck,   tone: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/12', bar: 'bg-emerald-500/70', rowTint: 'bg-emerald-500/[0.035]' },
   sent:    { label: 'Gönderildi', icon: Send,          tone: 'text-sky-600 dark:text-sky-400',         bg: 'bg-sky-500/12',     bar: 'bg-sky-500/70',     rowTint: '' },
   draft:   { label: 'Taslak',     icon: Clock3,        tone: 'text-slate-500 dark:text-slate-400',     bg: 'bg-slate-500/12',   bar: 'bg-slate-400/50',   rowTint: '' },
-  overdue: { label: 'Gecikmiş',   icon: AlertTriangle, tone: 'text-rose-600 dark:text-rose-400',       bg: 'bg-rose-500/12',    bar: 'bg-rose-500/80',    rowTint: 'bg-rose-500/[0.05]' },
+  overdue: { label: 'Gecikmiş',   icon: AlertTriangle, tone: 'text-rose-600 dark:text-rose-400',       bg: 'bg-rose-500/12',    bar: 'bg-rose-500/80',    rowTint: 'bg-rose-500/5' },
 }
 
 const STATUS_ORDER: InvoiceStatus[] = ['paid', 'sent', 'draft', 'overdue']
@@ -28,10 +28,11 @@ const STATUS_ORDER: InvoiceStatus[] = ['paid', 'sent', 'draft', 'overdue']
 const trLower = (v: string) => v.toLocaleLowerCase('tr')
 
 export default async function InvoicesPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { status?: string; q?: string }
+  searchParams: Promise<{ status?: string; q?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const [invoices, clients, taxRates] = await Promise.all([listInvoices(), clientOptions(), getTaxSettings()])
 
   // Filtreler yalnızca LİSTEYİ daraltır — üstteki özet her zaman tüm makbuzları anlatır
@@ -108,7 +109,7 @@ export default async function InvoicesPage({
         {/* Tahsilat ilerleme çubuğu */}
         <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-slate-500/10">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-[width] duration-700"
+            className="h-full rounded-full bg-linear-to-r from-emerald-500 to-emerald-400 transition-[width] duration-700"
             style={{ width: `${collectionRate}%` }}
           />
         </div>
@@ -168,7 +169,7 @@ export default async function InvoicesPage({
             name="q"
             defaultValue={q ?? ''}
             placeholder="Danışan veya makbuz no ara…"
-            className="field !py-2 !pl-9 text-sm"
+            className="field py-2! pl-9! text-sm"
           />
         </form>
       </div>
@@ -192,7 +193,7 @@ export default async function InvoicesPage({
                   <div
                     key={i.id}
                     className={cn(
-                      'relative flex flex-col gap-2.5 py-3.5 pl-5 pr-4 transition-colors hover:bg-slate-500/[0.025] sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5',
+                      'relative flex flex-col gap-2.5 py-3.5 pl-5 pr-4 transition-colors hover:bg-slate-500/2.5 sm:flex-row sm:items-center sm:gap-4 sm:pl-6 sm:pr-5',
                       m.rowTint,
                     )}
                   >

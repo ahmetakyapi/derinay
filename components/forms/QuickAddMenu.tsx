@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Plus, CalendarPlus, ArrowLeftRight, ChevronDown } from 'lucide-react'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { NewTransactionDialog } from '@/components/forms/NewTransactionDialog'

@@ -205,7 +205,7 @@ export function AgendaWeek({
                 className={cn(
                   'border-l border-slate-500/10 px-2 py-2.5 text-center',
                   isToday && 'bg-indigo-500/[0.07]',
-                  !isToday && isWeekend && 'bg-slate-500/[0.03]',
+                  !isToday && isWeekend && 'bg-slate-500/3',
                 )}
               >
                 <div className="flex items-center justify-center gap-1.5">
@@ -216,7 +216,7 @@ export function AgendaWeek({
                     className={cn(
                       'text-sm font-bold',
                       isToday
-                        ? 'flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs text-white shadow-sm shadow-indigo-600/30'
+                        ? 'flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs text-white shadow-xs shadow-indigo-600/30'
                         : 'text-slate-700 dark:text-slate-200',
                     )}
                   >
@@ -259,9 +259,9 @@ export function AgendaWeek({
               onDrop={(e) => onDrop(e, d.key)}
               className={cn(
                 'relative border-l border-slate-500/10 transition-colors',
-                d.key === todayKey && 'bg-indigo-500/[0.04]',
-                d.key !== todayKey && di >= 5 && 'bg-slate-500/[0.025]',
-                dragId && hoverDay === d.key && 'bg-indigo-500/[0.09] ring-1 ring-inset ring-indigo-500/30',
+                d.key === todayKey && 'bg-indigo-500/4',
+                d.key !== todayKey && di >= 5 && 'bg-slate-500/2.5',
+                dragId && hoverDay === d.key && 'bg-indigo-500/9 ring-1 ring-inset ring-indigo-500/30',
               )}
               style={{ height: SPAN }}
             >
@@ -323,9 +323,9 @@ export function AgendaWeek({
                     onDragEnd={() => setDragId(null)}
                     onClick={() => setSelected(it)}
                     className={cn(
-                      // NOT: backdrop-blur kullanma — .glass (backdrop-filter) içinde iç içe
+                      // NOT: backdrop-blur-sm kullanma — .glass (backdrop-filter) içinde iç içe
                       // backdrop blur, Chrome/Safari'de metinde smear/bulanıklık glitch'i yapar.
-                      'group absolute z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-sm outline-none transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-500/60 active:cursor-grabbing',
+                      'group absolute z-10 cursor-grab overflow-hidden rounded-lg border bg-[rgba(var(--paper),0.92)] px-1.5 py-1 text-left shadow-xs outline-hidden transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-500/60 active:cursor-grabbing',
                       t.border,
                       dim && 'opacity-45',
                       dragId === it.id && 'opacity-30',
@@ -419,7 +419,7 @@ export function AgendaWeek({
       {conflict && (
         <div
           role="alert"
-          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-[150] flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300 lg:bottom-5"
+          className="surface fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-150 flex -translate-x-1/2 items-center gap-2 rounded-full border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-xl dark:text-rose-300 lg:bottom-5"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-rose-500" />
           {/* Mesaj çakışan danışanın adını içerir → gizlilik modunda bulanmalı */}

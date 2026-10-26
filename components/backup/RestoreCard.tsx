@@ -43,7 +43,7 @@ export function RestoreCard() {
 
   return (
     <>
-      <section className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.04] p-5">
+      <section className="rounded-2xl border border-rose-500/25 bg-rose-500/4 p-5">
         <div className="flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/12 text-rose-600 dark:text-rose-400">
             <ArchiveRestore className="h-4 w-4" />
@@ -115,7 +115,7 @@ export function RestoreCard() {
         description="Bu işlem mevcut tüm verileri seçilen yedekle DEĞİŞTİRİR"
       >
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-rose-500/25 bg-rose-500/[0.06] p-3.5 text-sm text-slate-700 dark:text-slate-200">
+          <div className="flex items-start gap-3 rounded-xl border border-rose-500/25 bg-rose-500/6 p-3.5 text-sm text-slate-700 dark:text-slate-200">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
             <p>
               <span className="font-bold">{file?.name}</span> içeriği yüklenecek; şu an panelde

@@ -51,7 +51,7 @@ export const modalBackdrop = {
 // Yay ile oturur: kâğıt masaya bırakılmış gibi hafif bir esneme
 export const modalPanel = {
   hidden:  { opacity: 0, scale: 0.96, y: 40 },
-  visible: { opacity: 1, scale: 1,    y: 0, transition: { type: 'spring', stiffness: 380, damping: 32, mass: 0.8 } },
+  visible: { opacity: 1, scale: 1,    y: 0, transition: { type: 'spring' as const, stiffness: 380, damping: 32, mass: 0.8 } },
   exit:    { opacity: 0, scale: 0.97, y: 24, transition: { duration: 0.2, ease: EASE } },
 }
 

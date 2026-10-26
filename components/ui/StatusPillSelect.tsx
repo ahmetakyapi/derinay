@@ -60,7 +60,7 @@ export function StatusPillSelect<T extends string>({
           })
         }}
         className={cn(
-          'field !w-auto cursor-pointer appearance-none !rounded-full !py-1.5 !pl-3 !pr-7 !text-xs !font-semibold transition-colors disabled:cursor-wait',
+          'field w-auto! cursor-pointer appearance-none rounded-full! py-1.5! pl-3! pr-7! text-xs! font-semibold! transition-colors disabled:cursor-wait',
           styles[current],
           className,
         )}

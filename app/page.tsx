@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useSpring, MotionConfig } from 'framer-motion'
+import { motion, useScroll, useSpring, MotionConfig } from 'motion/react'
 import { useSpotlight } from '@/hooks/useSpotlight'
 import { BrushPull } from '@/components/brand/Brush'
 import { BloomMark } from '@/components/brand/BloomMark'
@@ -74,10 +74,10 @@ export default function Home() {
 
       {/* overflow-x-CLIP, hidden DEĞİL: hidden bir kaydırma kabı kurar ve
           içerideki `position: sticky` (dizin başlığı, gün sahnesi) ölür. */}
-      <main id="lp-main" tabIndex={-1} className="relative min-h-[100dvh] overflow-x-clip outline-none">
+      <main id="lp-main" tabIndex={-1} className="relative min-h-dvh overflow-x-clip outline-hidden">
         <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100svh]" aria-hidden>
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-svh" aria-hidden>
           <div className="absolute -left-24 top-32 hidden h-80 w-80 animate-float rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none md:block" />
           <div className="absolute right-[-80px] top-64 hidden h-96 w-96 animate-float-slow rounded-full bg-amber-500/10 blur-3xl motion-reduce:animate-none md:block" />
         </div>
@@ -95,7 +95,7 @@ export default function Home() {
 
         {/* Hız bandı — kaydırma hızlandıkça hızlanır, yön değişince döner */}
         <div
-          className="relative z-10 space-y-2 border-y border-slate-500/15 py-8 font-display text-[clamp(2.6rem,7vw,6.5rem)] font-bold leading-none tracking-[-0.05em] sm:py-12"
+          className="relative z-10 space-y-2 border-y border-slate-500/15 py-8 font-display text-[clamp(2.6rem,7vw,6.5rem)] font-bold leading-none tracking-tighter sm:py-12"
         >
           <MarqueeRow words={MARQUEE_A} velocity={-1.6} />
           <MarqueeRow words={MARQUEE_B} velocity={1.6} />

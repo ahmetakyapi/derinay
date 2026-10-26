@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import {
   Search, LayoutDashboard, CalendarRange, Users, ArrowLeftRight, LineChart,
   FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft, Hourglass,
@@ -164,7 +164,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[200] flex items-start justify-center bg-slate-950/40 px-4 pt-[12vh] backdrop-blur-sm"
+              className="fixed inset-0 z-200 flex items-start justify-center bg-slate-950/40 px-4 pt-[12vh] backdrop-blur-xs"
             >
               <motion.div
                 initial={{ opacity: 0, y: -12, scale: 0.98 }}
@@ -197,7 +197,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                     // içinde ikinci bir kutu çiziyordu; odağın yeri imleçten belli.
                     // `!` ŞART: koyu temadaki `html.dark :focus-visible` kuralı (0,2,1)
                     // outline-color'ı yeniden boyuyor, önemsiz sınıf onu durduramıyordu.
-                    className="w-full bg-transparent py-4 text-sm text-slate-800 outline-none placeholder:text-slate-500 focus-visible:!outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
+                    className="w-full bg-transparent py-4 text-sm text-slate-800 outline-hidden placeholder:text-slate-500 focus-visible:outline-hidden! dark:text-slate-100 dark:placeholder:text-slate-400"
                   />
                   <kbd className="hidden shrink-0 rounded-md border border-slate-500/20 px-1.5 py-0.5 font-mono text-xs text-slate-500 dark:text-slate-400 sm:block">ESC</kbd>
                 </div>
@@ -219,7 +219,7 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                         onClick={() => go(r)}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors',
-                          i === active ? 'bg-indigo-500/10' : 'hover:bg-slate-500/[0.05]',
+                          i === active ? 'bg-indigo-500/10' : 'hover:bg-slate-500/5',
                         )}
                       >
                         {r.client ? (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, type MotionValue } from 'motion/react'
 import { Sunrise, NotebookPen, MoonStar } from 'lucide-react'
 import { RevealText } from '@/components/motion/RevealText'
 import { Reveal } from '@/components/motion/Reveal'
@@ -57,13 +57,13 @@ function MomentCard({
   const Icon = m.icon
   return (
     <article
-      className="glass glass-static relative flex h-[min(34rem,70vh)] w-[min(34rem,78vw)] shrink-0 flex-col overflow-hidden rounded-[2rem] p-8 max-md:h-auto max-md:w-full sm:p-10"
+      className="glass glass-static relative flex h-[min(34rem,70vh)] w-[min(34rem,78vw)] shrink-0 flex-col overflow-hidden rounded-4xl p-8 max-md:h-auto max-md:w-full sm:p-10"
       style={{ backgroundImage: `radial-gradient(120% 90% at 100% 0%, ${m.wash}, transparent 60%)` }}
     >
       <motion.span
         aria-hidden
         style={{ x: numX }}
-        className="pointer-events-none absolute right-4 top-[20%] font-display motion-reduce:!transform-none text-[13rem] font-bold leading-none tracking-[-0.08em] text-slate-900/[0.05] dark:text-white/[0.05] max-md:hidden"
+        className="pointer-events-none absolute right-4 top-[20%] font-display motion-reduce:transform-none! text-[13rem] font-bold leading-none tracking-[-0.08em] text-slate-900/5 dark:text-white/5 max-md:hidden"
       >
         0{i + 1}
       </motion.span>
@@ -74,7 +74,7 @@ function MomentCard({
       </span>
       <Icon aria-hidden strokeWidth={1.25} className="mt-10 h-16 w-16 text-indigo-600 dark:text-indigo-300 sm:h-20 sm:w-20" />
       <div className="relative mt-auto pt-10">
-        <h3 className="font-display text-[1.85rem] font-bold leading-[1.05] tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[2.6rem]">
+        <h3 className="font-display text-[1.85rem] font-bold leading-[1.05] tracking-tighter text-slate-900 dark:text-white sm:text-[2.6rem]">
           {m.title}
         </h3>
         <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-slate-600 dark:text-slate-400">{m.body}</p>

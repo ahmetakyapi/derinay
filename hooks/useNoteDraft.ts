@@ -44,7 +44,7 @@ export function useNoteDraft(clientId: string) {
   const key = PREFIX + clientId
   /** Mount'ta bulunan taslak — kullanıcıya "geri yüklendi" derken gösterilir */
   const [restored, setRestored] = useState<NoteDraft | null>(null)
-  const timer = useRef<ReturnType<typeof setTimeout>>()
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // Mount'ta oku. SSR ile uyuşmazlık olmasın diye effect içinde.
   useEffect(() => {

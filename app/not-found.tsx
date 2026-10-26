@@ -9,11 +9,11 @@ export const metadata = { title: 'Sayfa Bulunamadı' }
  *  "günlük Türkçe, edebi kurgu yok" kuralına takılıyordu.) */
 export default function NotFound() {
   return (
-    <main className="flex min-h-[100dvh] items-center justify-center px-6">
+    <main className="flex min-h-dvh items-center justify-center px-6">
       <div className="card-rise surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
         <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
           <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
-          <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
+          <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-(--bg)" />
         </div>
         {/* Başlık üstündeki "404" künyesi de gitti: başlık artık durumu kendisi
             söylüyor ("Sayfa Bulunamadı"), kod bilgisi tekrar olurdu. */}

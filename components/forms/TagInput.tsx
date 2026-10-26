@@ -39,7 +39,7 @@ export function TagInput({
     <div>
       <span className="field-label">Etiketler (opsiyonel)</span>
 
-      <div className="field flex min-h-[44px] flex-wrap items-center gap-1.5 !py-2">
+      <div className="field flex min-h-[44px] flex-wrap items-center gap-1.5 py-2!">
         {value.map((t) => (
           <span
             key={t}
@@ -69,7 +69,7 @@ export function TagInput({
           }}
           onBlur={() => draft && add(draft)}
           placeholder={value.length ? '' : 'EMDR, Online…'}
-          className="min-w-[80px] flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-slate-400"
+          className="min-w-[80px] flex-1 border-0 bg-transparent p-0 text-sm outline-hidden placeholder:text-slate-400"
         />
       </div>
 

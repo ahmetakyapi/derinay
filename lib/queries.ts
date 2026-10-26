@@ -10,11 +10,6 @@ import { REMINDER_TEMPLATE_DEFAULT, DEBT_REMINDER_TEMPLATE_DEFAULT, APP, BUSINES
 const num = (x: string | number | null | undefined) => Number(x ?? 0)
 
 // ─── Tarih yardımcıları ──────────────────────────────────────────────────────
-function monthBounds(d = new Date()) {
-  const start = new Date(d.getFullYear(), d.getMonth(), 1)
-  const end = new Date(d.getFullYear(), d.getMonth() + 1, 0)
-  return { start: iso(start), end: iso(end) }
-}
 function iso(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }

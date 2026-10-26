@@ -81,7 +81,6 @@ export function NoteForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
-    const fd = new FormData(e.currentTarget)
     start(async () => {
       const res = await createNote({
         clientId,
@@ -140,8 +139,8 @@ export function NoteForm({
               className={cn(
                 'rounded-full border px-3.5 py-2 text-sm font-semibold transition-all',
                 kind === k
-                  ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 shadow-sm dark:text-indigo-300'
-                  : 'border-slate-500/20 bg-white/40 text-slate-500 dark:text-slate-400 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/[0.02] dark:hover:text-slate-300',
+                  ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 shadow-xs dark:text-indigo-300'
+                  : 'border-slate-500/20 bg-white/40 text-slate-500 dark:text-slate-400 hover:border-slate-500/40 hover:text-slate-700 dark:bg-white/2 dark:hover:text-slate-300',
               )}
             >
               {NOTE_KIND_LABEL[k]}
@@ -207,7 +206,7 @@ export function NoteForm({
                   'h-7 w-7 rounded-full transition-all',
                   MOOD_BG[m],
                   mood === m
-                    ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-2 ring-offset-[var(--bg)] dark:ring-white/70'
+                    ? 'scale-110 ring-2 ring-slate-900/50 ring-offset-2 ring-offset-(--bg) dark:ring-white/70'
                     : 'opacity-50 hover:scale-105 hover:opacity-90',
                 )}
               />

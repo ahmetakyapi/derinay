@@ -71,7 +71,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
       {goals.length > 0 && (
         <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-slate-500/10">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-[width] duration-700"
+            className="h-full rounded-full bg-linear-to-r from-amber-500 to-emerald-500 transition-[width] duration-700"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -84,7 +84,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
               key={g.id}
               className={cn(
                 'group flex items-center gap-2.5 rounded-xl border border-slate-500/10 px-3 py-2 transition-colors',
-                g.status === 'achieved' && 'border-emerald-500/20 bg-emerald-500/[0.05]',
+                g.status === 'achieved' && 'border-emerald-500/20 bg-emerald-500/5',
                 g.status === 'paused' && 'opacity-55',
               )}
             >
@@ -138,7 +138,7 @@ export function GoalsCard({ clientId, goals }: { clientId: string; goals: Goal[]
           ref={inputRef}
           required
           placeholder="Yeni hedef — örn. uyku düzenini iyileştirmek"
-          className="field flex-1 !py-2 text-sm"
+          className="field flex-1 py-2! text-sm"
         />
         {/* İkon-only: SubmitButton metin sözleşmesine uymuyor, meşguliyet
             aria-busy + spinner ile bildirilir. */}

@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useInView, useScroll, useTransform } from 'framer-motion'
+import { motion, useInView, useScroll, useTransform } from 'motion/react'
 import { ArrowUp } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { EASE_OUT_EXPO } from '@/lib/variants'
@@ -26,7 +26,7 @@ export default function Footer() {
   return (
     <footer ref={ref} className="dark relative z-10 overflow-hidden bg-indigo-950 text-slate-100">
       {/* Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu) */}
-      <motion.div style={{ y }} className="motion-reduce:!transform-none mx-auto max-w-7xl px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-20 sm:px-10">
+      <motion.div style={{ y }} className="motion-reduce:transform-none! mx-auto max-w-7xl px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-20 sm:px-10">
         <div className="grid gap-10 border-b border-white/10 pb-12 sm:grid-cols-12">
           <div className="sm:col-span-6">
             <BloomMark className="h-8 w-8 text-amber-400" />

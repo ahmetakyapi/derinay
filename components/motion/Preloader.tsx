@@ -195,9 +195,9 @@ export function Preloader() {
   if (gone) return null
 
   return (
-    <div className="preloader fixed inset-0 z-[400]" aria-hidden>
+    <div className="preloader fixed inset-0 z-400" aria-hidden>
       {/* Kâğıt — çıkışta kemer biçiminde delinir */}
-      <div ref={paper} className="absolute inset-0 bg-[var(--bg)]" />
+      <div ref={paper} className="absolute inset-0 bg-(--bg)" />
       <svg className="pointer-events-none absolute inset-0 h-full w-full" fill="none">
         <path ref={rim} stroke="rgba(var(--gold),0.6)" strokeWidth="1.25" />
       </svg>
@@ -205,14 +205,14 @@ export function Preloader() {
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center pb-[6vh]">
         {/* Resim katmanı: hâle + çerçeve + pencere */}
         <div ref={art} className="relative">
-          <div className="intro-halo absolute -inset-[45%] bg-[radial-gradient(closest-side,rgba(var(--gold),0.2),transparent)]" />
+          <div className="intro-halo absolute inset-[-45%] bg-[radial-gradient(closest-side,rgba(var(--gold),0.2),transparent)]" />
 
-          <div className="relative aspect-[4/5] w-[clamp(9.5rem,25vmin,13.5rem)]">
+          <div className="relative aspect-4/5 w-[clamp(9.5rem,25vmin,13.5rem)]">
             {/* Çerçeve — pencerenin biraz dışında, saç teli kalınlığında çizilir */}
             <svg
               viewBox="0 0 100 125"
               preserveAspectRatio="none"
-              className="absolute -inset-[7px] h-[calc(100%+14px)] w-[calc(100%+14px)] overflow-visible"
+              className="absolute inset-[-7px] h-[calc(100%+14px)] w-[calc(100%+14px)] overflow-visible"
               fill="none"
             >
               <path
@@ -227,15 +227,15 @@ export function Preloader() {
             {/* Pencere — çam gökyüzü aşağıdan dolar */}
             <div
               ref={arch}
-              className="intro-sky dark absolute inset-0 overflow-hidden bg-gradient-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/25 [border-radius:50%_50%_9%_9%/40%_40%_7.2%_7.2%]"
+              className="intro-sky dark absolute inset-0 overflow-hidden bg-linear-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/25 rounded-[50%_50%_9%_9%/40%_40%_7.2%_7.2%]"
             >
               <div className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)]" />
 
               {/* Güneş — ufka iner */}
-              <div className="intro-sun absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_60px_rgba(var(--gold),0.55)]" />
+              <div className="intro-sun absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-linear-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_60px_rgba(var(--gold),0.55)]" />
 
               {/* Su — güneşin alt yarısını örter; yansıma çizgileri ortadan açılır */}
-              <div className="absolute inset-x-0 bottom-0 top-[66%] bg-gradient-to-b from-indigo-950/90 to-indigo-950">
+              <div className="absolute inset-x-0 bottom-0 top-[66%] bg-linear-to-b from-indigo-950/90 to-indigo-950">
                 {[0, 1, 2, 3, 4].map((n) => (
                   <span
                     key={n}
@@ -299,14 +299,14 @@ export function Preloader() {
 
         {/* Marka sözcüğü */}
         <div ref={word} className="mt-9 flex items-baseline sm:mt-10">
-          <p className="flex overflow-hidden pb-[0.12em] font-display text-[2.1rem] font-bold leading-none tracking-[-0.05em] text-slate-900 dark:text-white sm:text-[2.5rem]">
+          <p className="flex overflow-hidden pb-[0.12em] font-display text-[2.1rem] font-bold leading-none tracking-tighter text-slate-900 dark:text-white sm:text-[2.5rem]">
             {WORD.split('').map((ch, i) => (
               <span key={i} className="intro-letter inline-block" style={{ animationDelay: `${480 + i * 40}ms` }}>
                 {ch}
               </span>
             ))}
           </p>
-          <span ref={dot} className="intro-dot ml-[0.12em] h-[0.5rem] w-[0.5rem] rounded-full bg-amber-500 sm:h-[0.58rem] sm:w-[0.58rem]" />
+          <span ref={dot} className="intro-dot ml-[0.12em] h-2 w-2 rounded-full bg-amber-500 sm:h-[0.58rem] sm:w-[0.58rem]" />
         </div>
       </div>
     </div>

@@ -10,12 +10,14 @@ import { formatTRY, formatDate } from '@/lib/format'
 export const dynamic = 'force-dynamic'
 
 export default async function InvoicePrintPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { id: string }
-  searchParams: { auto?: string }
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ auto?: string }>
 }) {
+  const params = await paramsPromise
+  const searchParams = await searchParamsPromise
   const [inv, BUSINESS] = await Promise.all([getInvoiceDetail(params.id), getBusinessInfo()])
   if (!inv) notFound()
 

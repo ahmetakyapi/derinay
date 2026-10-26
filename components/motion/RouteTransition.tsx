@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { AnimatePresence, motion, useAnimationControls } from 'framer-motion'
+import { AnimatePresence, motion, useAnimationControls } from 'motion/react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 
@@ -51,7 +51,7 @@ export function RouteTransition() {
   const fromPath = useRef(pathname)
   const ink = useAnimationControls()
   const inkActive = useRef(false)
-  const inkTimer = useRef<ReturnType<typeof setTimeout>>()
+  const inkTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // ── Tıklama yakalayıcı ───────────────────────────────────────────────
   useEffect(() => {
@@ -133,14 +133,14 @@ export function RouteTransition() {
         aria-hidden
         initial={{ scaleX: 0, opacity: 0 }}
         animate={ink}
-        className="nav-ink pointer-events-none fixed inset-x-0 top-0 z-[350] h-[2px] origin-left print:hidden"
+        className="nav-ink pointer-events-none fixed inset-x-0 top-0 z-350 h-[2px] origin-left print:hidden"
       />
 
       <AnimatePresence>
         {visible && (
           <motion.div
             key="curtain"
-            className="fixed inset-0 z-[380]"
+            className="fixed inset-0 z-380"
             aria-live="polite"
             exit={{ opacity: 0, transition: { duration: 0.01 } }}
           >
@@ -172,7 +172,7 @@ export function RouteTransition() {
                 </motion.span>
                 <span className="overflow-hidden pb-[0.1em]">
                   <motion.span
-                    className="block font-display text-[3rem] font-bold leading-none tracking-[-0.05em] text-slate-50 sm:text-[5.5rem]"
+                    className="block font-display text-[3rem] font-bold leading-none tracking-tighter text-slate-50 sm:text-[5.5rem]"
                     initial={{ y: '110%' }}
                     animate={{ y: closing ? '-110%' : '0%' }}
                     transition={{ duration: 0.8, ease: closing ? EASE_IN_OUT : EASE_OUT_EXPO, delay: closing ? 0 : 0.4 }}

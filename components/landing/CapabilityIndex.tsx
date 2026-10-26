@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Users, CalendarRange, StickyNote, FileText, Wallet, PieChart } from 'lucide-react'
 import { RevealText } from '@/components/motion/RevealText'
 import { Reveal } from '@/components/motion/Reveal'
@@ -29,7 +29,7 @@ export function CapabilityIndex() {
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-32">
-            <h2 className="font-display text-[clamp(2.3rem,4.6vw,3.8rem)] font-bold leading-[1.04] tracking-[-0.05em] text-slate-900 dark:text-white">
+            <h2 className="font-display text-[clamp(2.3rem,4.6vw,3.8rem)] font-bold leading-[1.04] tracking-tighter text-slate-900 dark:text-white">
               <RevealText text="İşin İçin Gereken Her Şey Burada" stagger={0.05} />
             </h2>
             <Reveal delay={0.2}>
@@ -54,7 +54,7 @@ export function CapabilityIndex() {
               {/* Hover mürekkebi */}
               <span
                 aria-hidden
-                className="absolute inset-0 origin-bottom scale-y-0 bg-indigo-900 transition-transform duration-[700ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100"
+                className="absolute inset-0 origin-bottom scale-y-0 bg-indigo-900 transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100"
               />
               <Reveal
                 delay={0.05}

@@ -200,7 +200,7 @@ export default async function AnalyticsPage({
           </div>
           {/* Gelir kaybı — iptal + gelmedi */}
           {a.sessionStats.lostRevenue > 0 && (
-            <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-3 py-2.5">
+            <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-rose-500/20 bg-rose-500/6 px-3 py-2.5">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400">
                 <TrendingDown className="h-3.5 w-3.5" />
               </span>
@@ -257,7 +257,7 @@ export default async function AnalyticsPage({
                       </div>
                       <div className="h-1.5 overflow-hidden rounded-full bg-slate-500/10">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500"
+                          className="h-full rounded-full bg-linear-to-r from-indigo-500 to-emerald-500"
                           style={{ width: `${maxClient ? (c.amount / maxClient) * 100 : 0}%` }}
                         />
                       </div>

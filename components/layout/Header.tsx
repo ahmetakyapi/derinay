@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton'
@@ -77,7 +77,7 @@ export default function Header() {
     <>
       <a
         href="#lp-main"
-        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200]"
+        className="sr-only rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200"
       >
         İçeriğe Atla
       </a>
@@ -96,15 +96,15 @@ export default function Header() {
         className={`fixed inset-x-0 top-0 z-50 h-[calc(4.5rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-500 ${
           scrolled && !menuOpen
             ? `glass ${hidden ? '' : 'shadow-xl shadow-black/5'}`
-            : 'border-b border-slate-500/10 bg-[var(--bg)] md:border-transparent md:bg-transparent'
+            : 'border-b border-slate-500/10 bg-(--bg) md:border-transparent md:bg-transparent'
         }`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 sm:px-10">
-          <Link href="/" className="group relative z-[70] flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
+          <Link href="/" className="group relative z-70 flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
             {/* Mürekkep damgası — orkide işareti + altın nokta */}
             <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 shadow-lg shadow-slate-900/20 transition-transform duration-500 group-hover:rotate-[8deg] dark:bg-slate-50">
-              <BloomMark className="h-5 w-5 text-amber-50 transition-transform duration-700 group-hover:rotate-[144deg] dark:text-slate-900" />
-              <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[var(--bg)]" />
+              <BloomMark className="h-5 w-5 text-amber-50 transition-transform duration-700 group-hover:rotate-144 dark:text-slate-900" />
+              <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-(--bg)" />
             </div>
             <span className="font-display text-lg font-bold tracking-[-0.04em] text-slate-900 dark:text-slate-100">
               Derinay
@@ -125,7 +125,7 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="relative z-[70] flex items-center gap-2">
+          <div className="relative z-70 flex items-center gap-2">
             <ThemeToggleButton />
 
             <Link
@@ -149,7 +149,7 @@ export default function Header() {
             >
               <span
                 className={`absolute h-[1.5px] w-5 bg-current transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-                  menuOpen ? 'rotate-45' : '-translate-y-[4px]'
+                  menuOpen ? 'rotate-45' : 'translate-y-[-4px]'
                 }`}
               />
               <span
@@ -178,7 +178,7 @@ export default function Header() {
             animate={{ clipPath: 'circle(150% at calc(100% - 2.6rem) 2.2rem)' }}
             exit={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.2rem)' }}
             transition={{ duration: 0.8, ease: EASE_IN_OUT }}
-            className="fixed inset-0 z-[45] flex flex-col bg-[var(--bg)] px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(6.5rem+env(safe-area-inset-top))] lg:hidden"
+            className="fixed inset-0 z-45 flex flex-col bg-(--bg) px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(6.5rem+env(safe-area-inset-top))] lg:hidden"
           >
             <nav className="flex flex-1 flex-col justify-center">
               {NAV_LINKS.map((link, i) => (
@@ -190,7 +190,7 @@ export default function Header() {
                     animate={{ y: '0%' }}
                     exit={{ y: '100%' }}
                     transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.25 + i * 0.06 }}
-                    className="flex items-baseline justify-between py-4 font-display text-[2.4rem] font-bold leading-none tracking-[-0.05em] text-slate-900 dark:text-white"
+                    className="flex items-baseline justify-between py-4 font-display text-[2.4rem] font-bold leading-none tracking-tighter text-slate-900 dark:text-white"
                   >
                     {link.label}
                     <span className="font-mono text-xs font-medium tracking-normal text-slate-500 dark:text-slate-400">

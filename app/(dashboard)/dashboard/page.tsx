@@ -43,10 +43,11 @@ export const metadata = { title: 'Genel Bakış' }
 const BIRTHDAY_PREVIEW = 4
 
 export default async function DashboardPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { week?: string }
+  searchParams: Promise<{ week?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   const weekOffset = Number.isFinite(Number(searchParams.week)) ? Number(searchParams.week) : 0
   const [d, week, out, birthdays, rem, reminder, incomeGoal, owner, clients] = await Promise.all([
     getDashboard(),
@@ -115,11 +116,11 @@ export default async function DashboardPage({
 
       {/* Yaklaşan doğum günleri — sıcak hatırlatma */}
       {birthdays.length > 0 && (
-        <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/[0.09] via-amber-500/[0.05] to-transparent px-4 py-3.5 sm:px-5">
+        <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-500/20 bg-linear-to-r from-amber-500/9 via-amber-500/5 to-transparent px-4 py-3.5 sm:px-5">
           <span aria-hidden className="pointer-events-none absolute -left-6 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-amber-500/10 blur-2xl" />
           <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 shadow-sm shadow-amber-500/10 dark:text-amber-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 shadow-xs shadow-amber-500/10 dark:text-amber-400">
                 <Cake className="h-5 w-5" />
               </span>
               <div className="leading-tight">
@@ -132,7 +133,7 @@ export default async function DashboardPage({
                 <Link
                   key={b.id}
                   href={`/dashboard/clients/${b.id}`}
-                  className="group inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-[rgba(var(--paper),0.7)] py-1 pl-1 pr-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/50 hover:shadow-md"
+                  className="group inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-[rgba(var(--paper),0.7)] py-1 pl-1 pr-3 shadow-xs transition-all hover:-translate-y-0.5 hover:border-amber-500/50 hover:shadow-md"
                 >
                   <Avatar name={b.name} color={b.colorTag} src={b.avatarUrl} size="sm" />
                   <span className="sensitive text-xs font-semibold text-slate-700 dark:text-slate-200">{b.name.split(' ')[0]}</span>
@@ -215,8 +216,8 @@ export default async function DashboardPage({
             <div
               className={`h-full rounded-full transition-[width] duration-700 ${
                 goalPct >= 100
-                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-400'
-                  : 'bg-gradient-to-r from-indigo-500 via-indigo-400 to-amber-400'
+                  ? 'bg-linear-to-r from-emerald-500 to-emerald-400'
+                  : 'bg-linear-to-r from-indigo-500 via-indigo-400 to-amber-400'
               }`}
               style={{ width: `${goalPct}%` }}
             />

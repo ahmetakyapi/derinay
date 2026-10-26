@@ -77,7 +77,7 @@ export function AvatarPicker({
         ) : (
           <span
             className={cn(
-              'flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-bold text-white shadow-lg shadow-black/10',
+              'flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br text-lg font-bold text-white shadow-lg shadow-black/10',
               CLIENT_COLOR_BG[color] ?? CLIENT_COLOR_BG.indigo,
             )}
           >
@@ -89,7 +89,7 @@ export function AvatarPicker({
             type="button"
             onClick={() => onChange(null)}
             aria-label="Fotoğrafı kaldır"
-            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white shadow transition-transform hover:scale-110"
+            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white shadow-sm transition-transform hover:scale-110"
           >
             <X className="h-3 w-3" />
           </button>

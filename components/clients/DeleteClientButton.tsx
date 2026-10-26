@@ -48,7 +48,7 @@ export function DeleteClientButton({ clientId, clientName }: { clientId: string;
         description="Bu işlem geri alınamaz"
       >
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-rose-500/25 bg-rose-500/[0.06] p-3.5 text-sm text-slate-700 dark:text-slate-200">
+          <div className="flex items-start gap-3 rounded-xl border border-rose-500/25 bg-rose-500/6 p-3.5 text-sm text-slate-700 dark:text-slate-200">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
             <p>
               <span className="sensitive font-bold">{clientName}</span> ile birlikte{' '}

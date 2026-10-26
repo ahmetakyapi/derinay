@@ -60,7 +60,7 @@ export function PanelPreview() {
   return (
     <div className="flex min-h-[400px] text-left">
       {/* Kenar çubuğu */}
-      <aside className="hidden w-44 shrink-0 flex-col gap-4 border-r border-slate-500/10 bg-slate-500/[0.02] p-4 sm:flex">
+      <aside className="hidden w-44 shrink-0 flex-col gap-4 border-r border-slate-500/10 bg-slate-500/2 p-4 sm:flex">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-50">
             <BloomMark className="h-4 w-4 text-amber-50 dark:text-slate-900" />

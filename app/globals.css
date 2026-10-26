@@ -1,13 +1,87 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ─── Tailwind v4 — v3 kaskadı BİREBİR ────────────────────────────────────
+   v3 her şeyi tek düz kaskadda basıyordu: preflight → bileşenler → utility'ler
+   → katmansız kurallar; kazananı ÖZGÜLLÜK, eşitse SIRA belirliyordu. Bu
+   dosyanın kuralları o düzene göre yazıldı (ör. `h1.font-display` başlıktaki
+   `tracking-*`'i, `.field:focus` genel `:focus-visible` halkasını yeniyor).
+   v4'ün `@import 'tailwindcss'` hâli utility'leri native `@layer`a koyar ve
+   katmanlar arasında özgüllük sayılmaz — birçok kural sessizce el
+   değiştirirdi. Bu yüzden yalnız tema değişkenleri ve preflight katmanda;
+   utility'ler KATMANSIZ ve v3'teki yerinde: bileşenlerden sonra, katmansız
+   kurallardan önce. (dev-starter mistakes #74'teki "katmansız kural her
+   utility'yi ezer" tuzağı burada yok: utility'ler de katmansız.) */
+@layer theme, base;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+
+/* Palet REMAP'i (slate→mürekkep, indigo→çam …), font aileleri ve opaklık
+   adımları tailwind.config.ts'te kalır; v4 onu @config ile okur. Tek kaynak
+   orası — buraya @theme kopyası yazma (iki palet sessizce ayrışır). */
+@config '../tailwind.config.ts';
+/* lib'deki sınıf haritaları (CLIENT_COLOR_BG, STATUS_TONE, MOOD_*) — v4'ün
+   otomatik taraması da görür; açık yazıldı ki biri "gereksiz" sanıp
+   kaldırmasın (kalkarsa görünmez avatar, CLAUDE.md §10). */
+@source '../lib';
+
+/* Koyu tema v3'teki `darkMode: 'class'` ile BİREBİR: `:is(.dark *)` —
+   yalnız `.dark` öğesinin ALTINDAKİLER (öğenin kendisi değil), özgüllük
+   (0,2,0). Landing'in gece adaları `.dark` alt ağacıyla çalışır. */
+@custom-variant dark (&:is(.dark *));
+/* v4 `hover:`'ı `(hover: hover)` medyasına sarar; v3'te dokunmatikte de
+   tetikleniyordu (sm:opacity-0 sm:group-hover:opacity-100 düğmeleri tablette
+   dokununca açılıyor). Davranış aynı kalsın diye v3 tanımı. */
+@custom-variant hover (&:hover);
+
+/* v3 preflight farkları: v4 varsayılan kenarlık rengini currentColor yaptı
+   (v3: gray-200), düğmelerden el imlecini kaldırdı, yer tutucuyu
+   currentColor %50 yaptı (v3: gray-400). */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+  /* v4 preflight tarih/saat alanının iç dolgusunu sıfırlıyor: `.field`
+     tarih girişi 46.4px yerine 44.4px kaldı, yanındaki metin alanından
+     2px kısa (ölçüldü, Yeni Danışan formu). Tarayıcı varsayılanına dön. */
+  ::-webkit-date-and-time-value {
+    min-height: revert;
+    text-align: revert;
+  }
+  ::-webkit-datetime-edit {
+    display: revert;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: revert;
+  }
+  ::-webkit-datetime-edit,
+  ::-webkit-datetime-edit-year-field,
+  ::-webkit-datetime-edit-month-field,
+  ::-webkit-datetime-edit-day-field,
+  ::-webkit-datetime-edit-hour-field,
+  ::-webkit-datetime-edit-minute-field,
+  ::-webkit-datetime-edit-second-field,
+  ::-webkit-datetime-edit-millisecond-field,
+  ::-webkit-datetime-edit-meridiem-field {
+    padding-block: revert;
+  }
+}
 
 /* ════════════════════════════════════════════════════════════════════════
    Derinay "Atölye" — sanat galerisi estetiği
    Light (varsayılan): sıcak fildişi kâğıt + suluboya yıkamaları + grain
    Dark: gece galerisi — mürekkep zemin, aynı paletin loş hali
    Fontlar fontsource paketlerinden yüklenir (layout.tsx CSS import'u) —
-   burada @import YOK; aile adları aşağıdaki `--font-*-face` tokenlarında sabit.
+   burada font @import'u YOK; aile adları aşağıdaki `--font-*-face` tokenlarında sabit.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ─── ₺ düzeltmesi ────────────────────────────────────────────────────────
@@ -67,6 +141,280 @@ html.dark, .dark {
   --ink: #e4e1d8;
   --paper: 13, 18, 20;
   --line: 196, 205, 196;
+}
+
+/* ─── Components ──────────────────────────────────────────────────────────
+   v3'te `@layer components` idi; burada katmansız ve utility'lerden ÖNCE —
+   eşit özgüllükte utility kazanır, daha özgül bileşen kuralı (`.dark .glass`,
+   `.field:focus`, `h1.font-display`) v3'teki gibi utility'yi yener. */
+
+/* ══ PARA BİRİMİ TUZAĞI ══════════════════════════════════════════════
+   Schibsted Grotesk'in U+20BA (₺) glifi ÇİFT ÇİZGİLİ £ olarak çizilmiş —
+   Türk lirası işareti değil. IBM Plex Mono doğru glifi taşıyor.
+   ÇÖZÜLDÜ, kaçınılarak değil: yukarıdaki 'DerinayLira' @font-face yalnız
+   U+20BA taşıyan bir alt küme ve hem --font-sans hem --font-display
+   listesinin EN BAŞINDA duruyor. Bu yüzden ₺ hangi ailede yazılırsa
+   yazılsın doğru çizilir; tutarı font-mono'ya taşımak artık zorunlu değil,
+   yalnızca sütun hizası için tercih edilir.
+   KURAL: bu iki listenin başındaki 'DerinayLira' KALDIRILMAZ.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
+   Ağırlık SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın.
+   utility'lerden ÖNCE olmalı (bileşen bölümü) — sonrasına taşınınca utilities'ten
+   sonra geldiği için `tracking-*` yardımcılarını eziyordu. */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.032em;
+  /* tabular-nums BURAYA YAZILMAZ. Schibsted Grotesk'in `tnum` özelliği
+     yalnız rakamlara değil NOKTALAMAYA da dokunuyor: comma → comma.tf
+     (543 → 1300 birim), period → period.tf (574 → 1300). Yani her başlık
+     virgülü ve noktası, tam bir boşluktan (520 birim) daha geniş bir
+     rakam yuvası kadar yer kaplıyor ve "Defter Önce , Fatura" gibi
+     okunuyordu. Başlıklar metindir, sütun değil — hizalanacak rakam
+     sütunları zaten IBM Plex Mono + tabular-nums kullanır (bkz. CLAUDE.md §7). */
+}
+/* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
+   Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı
+   varyantlar bileşik seçiciyle eşleşmez, h1 her kırılımda eşleşir. */
+h1.font-display {
+  letter-spacing: -0.04em;
+}
+
+/* Kâğıt kart — light'ta sıcak kâğıt, dark'ta mürekkep camı.
+   `-webkit-backdrop-filter` HEP standart özellikten ÖNCE: v4'ün küçülticisi
+   (Lightning CSS) ters sırada standardı atıp yalnız önekliyi bırakıyordu,
+   Chrome'da cam bulanıklığı kayboldu (ölçüldü, modal paneli). */
+.glass {
+  /* Açık temada kâğıt daha dolu ve kenarı daha net: eski 0.74 alt ton
+     zeminle karışıyor, kart "yıkanmış" görünüyordu. İki katlı gölge —
+     yakın keskin + uzak yumuşak — kâğıdı masadan kaldırır. */
+  background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.88));
+  border: 1px solid rgba(var(--line), 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(var(--line), 0.06),
+    0 24px 48px -24px rgba(var(--line), 0.3);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.dark .glass {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 40px -16px rgba(0, 0, 0, 0.5);
+}
+
+/* Kayan/hareketli kartlar: arkasında bulanacak bir şey yok, ama
+   backdrop-filter her karede yeniden hesaplanıyordu (yatay gün sahnesi). */
+.glass-static {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(var(--paper), 0.98), rgba(var(--paper), 0.9));
+}
+
+/* Güçlü yüzey (modal, panel, drawer) */
+.surface {
+  background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.92));
+  border: 1px solid rgba(var(--line), 0.12);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+
+/* Pill chip / rozet */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--line), 0.14);
+  background: rgba(var(--paper), 0.75);
+  padding: 0.55rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Form alanları */
+.field {
+  width: 100%;
+  min-width: 0; /* grid/flex içinde date input taşmasını önler */
+  border-radius: 0.75rem;
+  border: 1px solid rgba(var(--line), 0.16);
+  background: rgba(var(--paper), 0.85);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field::placeholder { color: rgba(var(--line), 0.42); }
+.dark .field::placeholder { color: rgba(var(--line), 0.38); }
+.field:focus {
+  outline: none;
+  border-color: rgba(var(--pine), 0.6);
+  box-shadow: 0 0 0 3px rgba(var(--pine), 0.16);
+}
+.dark .field:focus {
+  border-color: rgba(var(--pine-soft), 0.55);
+  box-shadow: 0 0 0 3px rgba(var(--pine-soft), 0.14);
+}
+.field:disabled,
+.field[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background: rgba(var(--line), 0.05);
+}
+/* Geçersiz alan — tarayıcı doğrulaması kullanıcı etkileşiminden sonra kızarır */
+.field:user-invalid {
+  border-color: rgba(187, 96, 62, 0.55);
+}
+.field-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(var(--line), 0.78);
+}
+.dark .field-label { color: rgba(var(--line), 0.7); }
+
+/* Tarih/saat alanının yerli takvim ikonu light'ta neredeyse görünmez;
+   dark'ta ise beyaz parlar. İkisini de mürekkep tonuna çek. */
+.field::-webkit-calendar-picker-indicator {
+  opacity: 0.45;
+  cursor: pointer;
+}
+.field::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
+.dark .field::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
+
+/* iOS Safari, 16px altındaki input'a odaklanınca sayfayı zoom'lar —
+   mobilde alan yazısını 16px'e sabitleyerek istenmeyen zoom'u engelle */
+@media (max-width: 640px) {
+  .field { font-size: 1rem; }
+}
+
+/* Seans Defteri — çizgili kâğıt dokulu not kartı */
+.note-paper {
+  background-color: rgba(var(--paper), 0.9);
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(var(--line), 0.07) 27px,
+    rgba(var(--line), 0.07) 28px
+  );
+  border: 1px solid rgba(var(--line), 0.1);
+  box-shadow: 0 10px 24px -14px rgba(var(--line), 0.25);
+}
+.dark .note-paper {
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
+}
+
+/* Seans Defteri — yazı masası paneli */
+.note-studio {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--line), 0.1);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(var(--gold), 0.08), transparent 45%),
+    radial-gradient(120% 120% at 0% 0%, rgba(var(--pine), 0.08), transparent 40%),
+    linear-gradient(180deg, rgba(var(--paper), 0.9), rgba(var(--paper), 0.76));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 18px 36px -24px rgba(var(--line), 0.28);
+}
+.dark .note-studio {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 36px -24px rgba(0, 0, 0, 0.55);
+}
+
+/* Seans Defteri — daha zengin kâğıt kartı */
+.note-paper-rich {
+  background:
+    linear-gradient(180deg, rgba(var(--paper), 0.96), rgba(var(--paper), 0.86)),
+    repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(var(--line), 0.07) 27px,
+      rgba(var(--line), 0.07) 28px
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 16px 32px -24px rgba(var(--line), 0.32);
+}
+.dark .note-paper-rich {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 32px -24px rgba(0, 0, 0, 0.6);
+}
+
+/* Sayfa başlığı altındaki fırça vurgusu */
+.brush-line {
+  height: 3px;
+  width: 3.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(var(--pine), 0.9), rgba(var(--gold), 0.75), transparent);
+}
+
+/* Recharts tooltip kutusu */
+.recharts-default-tooltip {
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(var(--line), 0.14) !important;
+  background: rgba(var(--paper), 0.97) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12) !important;
+  padding: 0.6rem 0.8rem !important;
+  color: var(--ink) !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label,
+.recharts-default-tooltip .recharts-tooltip-item {
+  color: var(--ink) !important;
+}
+
+/* ─── Utility'ler ──────────────────────────────────────────────────────────
+   KATMANSIZ (başlıktaki nota bak). Altındaki her şey v3'te de utility'lerden
+   sonra geliyordu. */
+@tailwind utilities;
+
+/* ─── Animations (v3'te `@layer utilities`) ─────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-16px); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+/* Skeleton shimmer — kâğıt üstünde geçen ışık */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+/* İskelet 150ms GECİKMEYLE belirir: hızlı gezinmede bir kare yanıp sönen
+   gri kutular yerine doğrudan içerik görünür. */
+@keyframes skel-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(var(--line), 0.07);
+  border-radius: 0.5rem;
+  animation: skel-in 0.5s ease 0.15s backwards;
+}
+/* Kâğıt üstünden geçen ışık — çapraz, yavaş, sıcak. Düz yatay şerit
+   "yükleniyor çubuğu" gibi okunuyordu; çapraz süpürme atölye ışığına benzer. */
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(105deg, transparent 20%, rgba(var(--paper), 0.7) 45%, rgba(var(--gold), 0.08) 55%, transparent 80%);
+  animation: shimmer 1.8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+.dark .skeleton::after {
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.06) 45%, rgba(var(--gold), 0.05) 55%, transparent 80%);
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────── */
@@ -196,274 +544,6 @@ html.dark :focus-visible,
     print-color-adjust: exact !important;
   }
   @page { margin: 16mm; }
-}
-
-/* ─── Components ────────────────────────────────────────────────────────── */
-@layer components {
-
-  /* ══ PARA BİRİMİ TUZAĞI ══════════════════════════════════════════════
-     Schibsted Grotesk'in U+20BA (₺) glifi ÇİFT ÇİZGİLİ £ olarak çizilmiş —
-     Türk lirası işareti değil. IBM Plex Mono doğru glifi taşıyor.
-     ÇÖZÜLDÜ, kaçınılarak değil: yukarıdaki 'DerinayLira' @font-face yalnız
-     U+20BA taşıyan bir alt küme ve hem --font-sans hem --font-display
-     listesinin EN BAŞINDA duruyor. Bu yüzden ₺ hangi ailede yazılırsa
-     yazılsın doğru çizilir; tutarı font-mono'ya taşımak artık zorunlu değil,
-     yalnızca sütun hizası için tercih edilir.
-     KURAL: bu iki listenin başındaki 'DerinayLira' KALDIRILMAZ.
-     ═══════════════════════════════════════════════════════════════════════ */
-
-  /* Display tipografi — grotesk, punto büyüdükçe daralan optik sıkılık.
-     Ağırlık SET EDİLMEZ: çağrı yerindeki font-semibold/bold kazansın.
-     @layer components İÇİNDE olmalı — dışarıda tanımlanınca utilities'ten
-     sonra geldiği için `tracking-*` yardımcılarını eziyordu. */
-  .font-display {
-    font-family: var(--font-display);
-    letter-spacing: -0.032em;
-    /* tabular-nums BURAYA YAZILMAZ. Schibsted Grotesk'in `tnum` özelliği
-       yalnız rakamlara değil NOKTALAMAYA da dokunuyor: comma → comma.tf
-       (543 → 1300 birim), period → period.tf (574 → 1300). Yani her başlık
-       virgülü ve noktası, tam bir boşluktan (520 birim) daha geniş bir
-       rakam yuvası kadar yer kaplıyor ve "Defter Önce , Fatura" gibi
-       okunuyordu. Başlıklar metindir, sütun değil — hizalanacak rakam
-       sütunları zaten IBM Plex Mono + tabular-nums kullanır (bkz. CLAUDE.md §7). */
-  }
-  /* Manşet ölçeği daha da daralır (Mimio ölçeği: h1 -0.04em).
-     Boyut sınıfına değil ETİKETE bağlanır — `sm:text-6xl` gibi duyarlı
-     varyantlar bileşik seçiciyle eşleşmez, h1 her kırılımda eşleşir. */
-  h1.font-display {
-    letter-spacing: -0.04em;
-  }
-
-  /* Kâğıt kart — light'ta sıcak kâğıt, dark'ta mürekkep camı */
-  .glass {
-    /* Açık temada kâğıt daha dolu ve kenarı daha net: eski 0.74 alt ton
-       zeminle karışıyor, kart "yıkanmış" görünüyordu. İki katlı gölge —
-       yakın keskin + uzak yumuşak — kâğıdı masadan kaldırır. */
-    background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.88));
-    border: 1px solid rgba(var(--line), 0.12);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.8),
-      0 1px 2px rgba(var(--line), 0.06),
-      0 24px 48px -24px rgba(var(--line), 0.3);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
-  .dark .glass {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 18px 40px -16px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Kayan/hareketli kartlar: arkasında bulanacak bir şey yok, ama
-     backdrop-filter her karede yeniden hesaplanıyordu (yatay gün sahnesi). */
-  .glass-static {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: linear-gradient(180deg, rgba(var(--paper), 0.98), rgba(var(--paper), 0.9));
-  }
-
-  /* Güçlü yüzey (modal, panel, drawer) */
-  .surface {
-    background: linear-gradient(180deg, rgba(var(--paper), 0.97), rgba(var(--paper), 0.92));
-    border: 1px solid rgba(var(--line), 0.12);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-  }
-
-  /* Pill chip / rozet */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: 999px;
-    border: 1px solid rgba(var(--line), 0.14);
-    background: rgba(var(--paper), 0.75);
-    padding: 0.55rem 1rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-
-  /* Form alanları */
-  .field {
-    width: 100%;
-    min-width: 0; /* grid/flex içinde date input taşmasını önler */
-    border-radius: 0.75rem;
-    border: 1px solid rgba(var(--line), 0.16);
-    background: rgba(var(--paper), 0.85);
-    padding: 0.65rem 0.9rem;
-    font-size: 0.9rem;
-    color: var(--ink);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .field::placeholder { color: rgba(var(--line), 0.42); }
-  .dark .field::placeholder { color: rgba(var(--line), 0.38); }
-  .field:focus {
-    outline: none;
-    border-color: rgba(var(--pine), 0.6);
-    box-shadow: 0 0 0 3px rgba(var(--pine), 0.16);
-  }
-  .dark .field:focus {
-    border-color: rgba(var(--pine-soft), 0.55);
-    box-shadow: 0 0 0 3px rgba(var(--pine-soft), 0.14);
-  }
-  .field:disabled,
-  .field[aria-disabled='true'] {
-    cursor: not-allowed;
-    opacity: 0.55;
-    background: rgba(var(--line), 0.05);
-  }
-  /* Geçersiz alan — tarayıcı doğrulaması kullanıcı etkileşiminden sonra kızarır */
-  .field:user-invalid {
-    border-color: rgba(187, 96, 62, 0.55);
-  }
-  .field-label {
-    display: block;
-    margin-bottom: 0.35rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgba(var(--line), 0.78);
-  }
-  .dark .field-label { color: rgba(var(--line), 0.7); }
-
-  /* Tarih/saat alanının yerli takvim ikonu light'ta neredeyse görünmez;
-     dark'ta ise beyaz parlar. İkisini de mürekkep tonuna çek. */
-  .field::-webkit-calendar-picker-indicator {
-    opacity: 0.45;
-    cursor: pointer;
-  }
-  .field::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
-  .dark .field::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
-
-  /* iOS Safari, 16px altındaki input'a odaklanınca sayfayı zoom'lar —
-     mobilde alan yazısını 16px'e sabitleyerek istenmeyen zoom'u engelle */
-  @media (max-width: 640px) {
-    .field { font-size: 1rem; }
-  }
-
-  /* Seans Defteri — çizgili kâğıt dokulu not kartı */
-  .note-paper {
-    background-color: rgba(var(--paper), 0.9);
-    background-image: repeating-linear-gradient(
-      transparent,
-      transparent 27px,
-      rgba(var(--line), 0.07) 27px,
-      rgba(var(--line), 0.07) 28px
-    );
-    border: 1px solid rgba(var(--line), 0.1);
-    box-shadow: 0 10px 24px -14px rgba(var(--line), 0.25);
-  }
-  .dark .note-paper {
-    box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Seans Defteri — yazı masası paneli */
-  .note-studio {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(var(--line), 0.1);
-    background:
-      radial-gradient(120% 120% at 100% 0%, rgba(var(--gold), 0.08), transparent 45%),
-      radial-gradient(120% 120% at 0% 0%, rgba(var(--pine), 0.08), transparent 40%),
-      linear-gradient(180deg, rgba(var(--paper), 0.9), rgba(var(--paper), 0.76));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      0 18px 36px -24px rgba(var(--line), 0.28);
-  }
-  .dark .note-studio {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 18px 36px -24px rgba(0, 0, 0, 0.55);
-  }
-
-  /* Seans Defteri — daha zengin kâğıt kartı */
-  .note-paper-rich {
-    background:
-      linear-gradient(180deg, rgba(var(--paper), 0.96), rgba(var(--paper), 0.86)),
-      repeating-linear-gradient(
-        transparent,
-        transparent 27px,
-        rgba(var(--line), 0.07) 27px,
-        rgba(var(--line), 0.07) 28px
-      );
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      0 16px 32px -24px rgba(var(--line), 0.32);
-  }
-  .dark .note-paper-rich {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 16px 32px -24px rgba(0, 0, 0, 0.6);
-  }
-
-  /* Sayfa başlığı altındaki fırça vurgusu */
-  .brush-line {
-    height: 3px;
-    width: 3.5rem;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(var(--pine), 0.9), rgba(var(--gold), 0.75), transparent);
-  }
-
-  /* Recharts tooltip kutusu */
-  .recharts-default-tooltip {
-    border-radius: 0.75rem !important;
-    border: 1px solid rgba(var(--line), 0.14) !important;
-    background: rgba(var(--paper), 0.97) !important;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12) !important;
-    padding: 0.6rem 0.8rem !important;
-    color: var(--ink) !important;
-  }
-  .recharts-default-tooltip .recharts-tooltip-label,
-  .recharts-default-tooltip .recharts-tooltip-item {
-    color: var(--ink) !important;
-  }
-
-}
-
-/* ─── Animations ────────────────────────────────────────────────────────── */
-@layer utilities {
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-16px); }
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-  }
-  /* Skeleton shimmer — kâğıt üstünde geçen ışık */
-  @keyframes shimmer {
-    100% { transform: translateX(100%); }
-  }
-  /* İskelet 150ms GECİKMEYLE belirir: hızlı gezinmede bir kare yanıp sönen
-     gri kutular yerine doğrudan içerik görünür. */
-  @keyframes skel-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  .skeleton {
-    position: relative;
-    overflow: hidden;
-    background: rgba(var(--line), 0.07);
-    border-radius: 0.5rem;
-    animation: skel-in 0.5s ease 0.15s backwards;
-  }
-  /* Kâğıt üstünden geçen ışık — çapraz, yavaş, sıcak. Düz yatay şerit
-     "yükleniyor çubuğu" gibi okunuyordu; çapraz süpürme atölye ışığına benzer. */
-  .skeleton::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(105deg, transparent 20%, rgba(var(--paper), 0.7) 45%, rgba(var(--gold), 0.08) 55%, transparent 80%);
-    animation: shimmer 1.8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-  }
-  .dark .skeleton::after {
-    background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.06) 45%, rgba(var(--gold), 0.05) 55%, transparent 80%);
-  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
