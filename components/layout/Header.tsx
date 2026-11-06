@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'motion/react'
+import { AnimatePresence, m, useScroll, useMotionValueEvent } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton'
@@ -85,7 +85,7 @@ export default function Header() {
       {/* TELEFONDA KAYDIRMADAN ÖNCE DE OPAK (3 Ekim 2026). Saydam başlıkta iOS 26
           Safari durum çubuğunun altına kendi "kenar efektini" uyguluyor ve
           altından geçen içeriği bulanıklaştırıyordu. Masaüstünde saydam kalıyor. */}
-      <motion.header
+      <m.header
         initial={{ y: '-100%' }}
         // Gizliyken saydamlaşır da: `.glass` gölgesi ekranın üst kenarından
         // aşağı sızıp gri bir şerit bırakıyordu.
@@ -160,11 +160,11 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </motion.header>
+      </m.header>
 
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
+          <m.div
             ref={menuRef}
             id="landing-mobile-menu"
             /* aria-modal YOK: kapatma düğmesi başlıkta, diyaloğun dışında;
@@ -183,7 +183,7 @@ export default function Header() {
             <nav className="flex flex-1 flex-col justify-center">
               {NAV_LINKS.map((link, i) => (
                 <span key={link.href} className="block overflow-hidden border-b border-slate-500/15">
-                  <motion.a
+                  <m.a
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
                     initial={{ y: '100%' }}
@@ -196,11 +196,11 @@ export default function Header() {
                     <span className="font-mono text-xs font-medium tracking-normal text-slate-500 dark:text-slate-400">
                       0{i + 1}
                     </span>
-                  </motion.a>
+                  </m.a>
                 </span>
               ))}
             </nav>
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -214,8 +214,8 @@ export default function Header() {
                 Giriş Yap
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

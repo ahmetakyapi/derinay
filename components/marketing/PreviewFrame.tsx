@@ -38,7 +38,7 @@ export function PreviewFrame({
 }) {
   return (
     <figure className={cn('m-0', className)}>
-      <div className="glass overflow-hidden rounded-2xl p-1.5 shadow-2xl shadow-slate-900/10 dark:shadow-black/50">
+      <div className="glass glass-static overflow-hidden rounded-2xl p-1.5 shadow-2xl shadow-slate-900/10 dark:shadow-black/50">
         <div className="overflow-hidden rounded-xl bg-[rgba(var(--paper),0.35)]">{children}</div>
       </div>
       <figcaption className="mt-4 flex items-baseline justify-between gap-6 border-t border-slate-500/15 pt-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-400">

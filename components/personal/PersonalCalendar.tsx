@@ -11,6 +11,10 @@ import { createTransaction, deleteTransaction } from '@/app/actions/transactions
 import { PERSONAL_CATEGORIES } from '@/lib/constants'
 import { personalCategoryIcon } from '@/components/personal/categoryIcon'
 import { formatTRY, formatDate } from '@/lib/format'
+
+/** Telefon hücresi için simgesiz kısa sayı. minimumFractionDigits AÇIK: Node ile
+ *  Chrome farklı varsayılan basıp hidrasyonu bozuyordu (CLAUDE.md §10). */
+const CELL_NUM = new Intl.NumberFormat('tr-TR', { notation: 'compact', minimumFractionDigits: 0, maximumFractionDigits: 1 })
 import { cn } from '@/lib/utils'
 
 type Item = { id: string; amount: number; category: string; description: string | null; date: string }
@@ -144,7 +148,10 @@ export function PersonalCalendar({
                       )}
                     </div>
                     <p className="sensitive truncate text-xs font-bold tracking-[-0.02em] text-rose-700 dark:text-rose-300 sm:font-mono sm:tracking-normal sm:tabular-nums">
-                      {formatTRY(data.total, { compact: true })}
+                      {/* Telefonda hücre ~40 px: "₺530" bile "₺53…" diye kesiliyordu.
+                          Orada simgesiz kısa sayı (renk zaten harcamayı söylüyor). */}
+                      <span className="sm:hidden">{CELL_NUM.format(data.total)}</span>
+                      <span className="hidden sm:inline">{formatTRY(data.total, { compact: true })}</span>
                     </p>
                   </div>
                 ) : (

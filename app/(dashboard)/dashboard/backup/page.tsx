@@ -66,12 +66,14 @@ export default async function BackupPage() {
       {/* Tam yedek */}
       <a
         href="/api/export?type=json"
-        className="glass group mb-6 flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-xl"
+        // Telefonda ikon + metin üstte, düğme altta tam genişlik: yan yana
+        // düzende açıklama 120 px'lik bir sütuna sıkışıyordu.
+        className="glass group mb-6 flex flex-wrap items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-xl sm:flex-nowrap"
       >
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-600 dark:text-indigo-400">
           <DatabaseBackup className="h-6 w-6" />
         </span>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-[calc(100%-4rem)] sm:basis-auto">
           <h2 className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
             Tam Yedek (JSON)
           </h2>
@@ -80,7 +82,7 @@ export default async function BackupPage() {
             paketler, ölçümler, belgeler, hedefler, bekleme listesi ve ayarlar
           </p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all group-hover:bg-indigo-500">
+        <span className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all group-hover:bg-indigo-500 sm:w-auto">
           <Download className="h-4 w-4" /> İndir
         </span>
       </a>

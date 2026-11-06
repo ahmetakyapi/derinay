@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { inkWave } from '@/lib/ink'
 
@@ -69,12 +69,12 @@ export function InkEdge({
             </filter>
           </defs>
         </svg>
-        <motion.div style={{ y: bleedY, x: bleedX }} className="absolute inset-[-2%_-3%_0] motion-reduce:transform-none!">
+        <m.div style={{ y: bleedY, x: bleedX }} className="absolute inset-[-2%_-3%_0] motion-reduce:transform-none!">
           <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-full w-full overflow-visible">
             <path d={wave(seed * 31 + 3, 38, 16)} fill="currentColor" opacity={0.14} filter={`url(#${fid})`} />
           </svg>
-        </motion.div>
-        <motion.div style={{ y: bodyY }} className="absolute inset-0 motion-reduce:transform-none!">
+        </m.div>
+        <m.div style={{ y: bodyY }} className="absolute inset-0 motion-reduce:transform-none!">
           <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-full w-full overflow-visible">
             <g filter={`url(#${fid})`}>
               <path d={wave(seed, 66, 14)} fill="currentColor" />
@@ -82,7 +82,7 @@ export function InkEdge({
               <path d={wave(seed, 66, 14)} fill="none" stroke="black" strokeWidth={3} strokeOpacity={0.07} />
             </g>
           </svg>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   )

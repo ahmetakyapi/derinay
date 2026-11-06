@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
@@ -26,9 +26,9 @@ function FloatingFrame({ children }: { children: React.ReactNode }) {
   const y = useTransform(scrollYProgress, [0, 1], [90, -90])
   // Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu)
   return (
-    <motion.div ref={ref} style={{ y }} className="motion-reduce:transform-none!">
+    <m.div ref={ref} style={{ y }} className="motion-reduce:transform-none!">
       <Reveal variant="clip">{children}</Reveal>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -120,9 +120,9 @@ export function TrustScene() {
           içi transform'u aynı öğedeki translate sınıfını ezerdi. Hareket
           azaltmada dönüş CSS ile sıfırlanır (bkz. Showcase.tsx notu). */}
       <div aria-hidden className="pointer-events-none absolute -right-40 top-1/2 h-184 w-184 -translate-y-1/2 text-white/[0.035]">
-        <motion.div style={{ rotate }} className="h-full w-full motion-reduce:transform-none!">
+        <m.div style={{ rotate }} className="h-full w-full motion-reduce:transform-none!">
           <BloomMark className="h-full w-full" />
-        </motion.div>
+        </m.div>
       </div>
 
       <div className="relative mx-auto max-w-7xl">
@@ -140,7 +140,7 @@ export function TrustScene() {
             <div key={t.title} className="relative grid gap-3 py-9 sm:grid-cols-12 sm:gap-10">
               {/* <dl> satırında yalnız dt/dd olabilir: çizgi ve numara dt'nin içinde */}
               <dt className="flex items-baseline gap-6 font-display text-[1.6rem] font-bold leading-tight tracking-[-0.04em] text-slate-50 sm:col-span-5 sm:gap-10 sm:text-[1.9rem]">
-                <motion.span
+                <m.span
                   aria-hidden
                   variants={lineDraw}
                   initial="hidden"

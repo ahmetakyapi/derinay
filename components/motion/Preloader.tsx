@@ -101,7 +101,11 @@ export function Preloader() {
 
     const finish = () => {
       html.style.overflow = ''
-      html.classList.add('intro-seen')
+      // `intro-seen` kahraman kelimelerinin CSS gecikmesini de kısaltır
+      // (`--intro-wait`). Hemen eklenirse hâlâ oynayan "Dinlendir"in gecikmesi
+      // değişir ve kelime sona zıplar → kelimeler bitince ekle. Perdeyi
+      // gizlemek için gerekmez: perde `gone` ile zaten kalkıyor.
+      window.setTimeout(() => html.classList.add('intro-seen'), 1600)
       try {
         sessionStorage.setItem(INTRO_KEY, '1')
       } catch {}

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, type Variant as MotionVariant } from 'motion/react'
+import { m, type Variant as MotionVariant } from 'motion/react'
 import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 
 type Variant = 'up' | 'clip' | 'scale' | 'fade'
@@ -43,7 +43,7 @@ export function Reveal({
   delay?: number
   as?: 'div' | 'li' | 'section' | 'figure' | 'p'
 }) {
-  const Comp = motion[as] as typeof motion.div
+  const Comp = m[as] as typeof m.div
   const v = VARIANTS[variant]
   return (
     <Comp

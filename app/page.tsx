@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useScroll, useSpring, MotionConfig } from 'motion/react'
+import { Suspense } from 'react'
+import { m, useScroll, useSpring, MotionConfig } from 'motion/react'
 import { useSpotlight } from '@/hooks/useSpotlight'
 import { BrushPull } from '@/components/brand/Brush'
 import { BloomMark } from '@/components/brand/BloomMark'
@@ -76,7 +77,7 @@ export default function Home() {
       {/* overflow-x-CLIP, hidden DEĞİL: hidden bir kaydırma kabı kurar ve
           içerideki `position: sticky` (dizin başlığı, gün sahnesi) ölür. */}
       <main id="lp-main" tabIndex={-1} className="relative min-h-dvh overflow-x-clip outline-hidden">
-        <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
+        <m.div className="pointer-events-none fixed inset-0 z-0" style={{ background: spotlight }} />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-svh" aria-hidden>
           <div className="absolute -left-24 top-32 hidden h-80 w-80 animate-float rounded-full bg-indigo-500/10 blur-3xl motion-reduce:animate-none md:block" />
@@ -84,14 +85,18 @@ export default function Home() {
         </div>
 
         {/* Mürekkep omurgası — sayfanın ilerleme göstergesi */}
-        <motion.div
+        <m.div
           aria-hidden
           style={{ scaleY: progress }}
           className="pointer-events-none fixed bottom-24 left-4 top-24 z-40 hidden w-[8px] origin-top text-slate-900/25 mix-blend-multiply dark:text-white/20 dark:mix-blend-screen 2xl:block"
         >
           <BrushPull className="h-full w-full" />
-        </motion.div>
+        </m.div>
 
+        {/* Ekranın altındaki her bölüm kendi Suspense sınırında: içerik yine
+            sunucuda basılır (hiçbiri askıya alınmaz) ama React hidrasyonu
+            bölüm bölüm, araya tarayıcıya nefes vererek yapar — tek uzun
+            görev telefonda TBT'yi ~1 sn'ye çıkarıyordu. */}
         <Hero />
 
         {/* Hız bandı — kaydırma hızlandıkça hızlanır, yön değişince döner */}
@@ -103,25 +108,25 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 pt-24 sm:pt-32">
-          <Showcase />
+          <Suspense fallback={null}><Showcase /></Suspense>
         </div>
 
-        <CapabilityIndex />
+        <Suspense fallback={null}><CapabilityIndex /></Suspense>
         {/* Renk değişen her sınır suluboya kenarıyla birleşir (InkEdge notu) */}
         <InkEdge seed={3} className="text-[rgb(var(--sand))]" />
-        <DayScroll />
+        <Suspense fallback={null}><DayScroll /></Suspense>
         <InkEdge edge="bottom" seed={5} className="text-[rgb(var(--sand))]" />
-        <NotebookScene />
+        <Suspense fallback={null}><NotebookScene /></Suspense>
         <InkEdge seed={11} className="text-[rgb(var(--sand))]" />
-        <FinanceScene />
+        <Suspense fallback={null}><FinanceScene /></Suspense>
         <InkEdge seed={13} className="text-indigo-950" />
-        <TrustScene />
+        <Suspense fallback={null}><TrustScene /></Suspense>
         <InkEdge edge="bottom" seed={19} className="text-indigo-950" />
-        <Closing />
+        <Suspense fallback={null}><Closing /></Suspense>
         <InkEdge seed={17} className="text-indigo-950" />
       </main>
 
-      <Footer />
+      <Suspense fallback={null}><Footer /></Suspense>
     </MotionConfig>
   )
 }

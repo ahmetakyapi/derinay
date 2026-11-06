@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useMotionValue, useSpring } from 'motion/react'
+import { m, useMotionValue, useSpring } from 'motion/react'
 
 /**
  * Mıknatıs — imleç yaklaştıkça öğe ona doğru hafifçe çekilir, bırakınca
@@ -35,7 +35,7 @@ export function Magnetic({
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onPointerMove={onMove}
       onPointerLeave={reset}
@@ -43,6 +43,6 @@ export function Magnetic({
       className={className ?? 'inline-block'}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

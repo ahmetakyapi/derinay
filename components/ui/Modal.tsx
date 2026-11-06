@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { X } from 'lucide-react'
 import { modalBackdrop, modalPanel } from '@/lib/variants'
 
@@ -131,7 +131,7 @@ export function Modal({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           variants={modalBackdrop}
           initial="hidden"
           animate="visible"
@@ -140,7 +140,7 @@ export function Modal({
           className="fixed inset-0 z-9999 flex items-end justify-center overflow-y-auto bg-slate-950/50 backdrop-blur-xs sm:items-center sm:p-4"
         >
           {/* Mobil: alttan açılan sayfa (bottom sheet) · sm+: ortalanmış kart */}
-          <motion.div
+          <m.div
             ref={panelRef}
             variants={modalPanel}
             onClick={(e) => e.stopPropagation()}
@@ -169,8 +169,8 @@ export function Modal({
               </button>
             </div>
             {children}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body,

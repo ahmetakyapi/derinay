@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { EASE } from '@/lib/variants'
 import { cn } from '@/lib/utils'
 
@@ -31,7 +31,7 @@ export function BloomArt({
   // 5 yapraklı açmış çiçek — merkez (cx,cy) etrafında elips taç yaprakları
   const bloom = (cx: number, cy: number, r: number, i0: number, stroke: string) =>
     [0, 72, 144, 216, 288].map((deg, k) => (
-      <motion.ellipse
+      <m.ellipse
         key={`${cx}-${deg}`}
         cx={cx}
         cy={cy - r * 0.62}
@@ -47,7 +47,7 @@ export function BloomArt({
   return (
     <svg viewBox="0 0 140 180" fill="none" aria-hidden className={cn('pointer-events-none select-none', className)}>
       {/* Sap */}
-      <motion.path
+      <m.path
         d="M70 176 C66 140 78 116 72 86 C68 64 80 40 92 18"
         stroke={`rgba(${leaf}, ${0.42 * k})`}
         strokeWidth="1.8"
@@ -55,14 +55,14 @@ export function BloomArt({
         {...draw(0)}
       />
       {/* Yapraklar */}
-      <motion.path
+      <m.path
         d="M71 132 C54 130 44 120 41 106 C56 109 67 118 71 132 Z"
         stroke={`rgba(${leaf}, ${0.36 * k})`}
         strokeWidth="1.5"
         strokeLinejoin="round"
         {...draw(1)}
       />
-      <motion.path
+      <m.path
         d="M73 100 C88 95 95 84 95 71 C82 77 74 87 73 100 Z"
         stroke={`rgba(${leaf}, ${0.32 * k})`}
         strokeWidth="1.5"
@@ -71,12 +71,12 @@ export function BloomArt({
       />
       {/* Açmış çiçek — üst */}
       {bloom(93, 18, 12, 3, `rgba(var(--gold), ${0.5 * k})`)}
-      <motion.circle cx="93" cy="18" r="2.4" fill={`rgba(var(--gold), ${0.5 * k})`} {...draw(4)} />
+      <m.circle cx="93" cy="18" r="2.4" fill={`rgba(var(--gold), ${0.5 * k})`} {...draw(4)} />
       {/* Açmış çiçek — orta */}
       {bloom(58, 64, 9, 5, `rgba(var(--clay), ${0.4 * k})`)}
-      <motion.circle cx="58" cy="64" r="1.9" fill={`rgba(var(--clay), ${0.42 * k})`} {...draw(6)} />
+      <m.circle cx="58" cy="64" r="1.9" fill={`rgba(var(--clay), ${0.42 * k})`} {...draw(6)} />
       {/* Tomurcuk */}
-      <motion.path
+      <m.path
         d="M70 108 C66 102 67 95 72 90 C77 95 76 103 70 108 Z"
         stroke={`rgba(${leaf}, ${0.4 * k})`}
         strokeWidth="1.4"

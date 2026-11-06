@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import {
-  motion,
+  m,
   useAnimationFrame,
   useInView,
   useMotionValue,
@@ -58,13 +58,13 @@ export function VelocityMarquee({
 
   return (
     <div ref={box} className={`overflow-hidden whitespace-nowrap ${className ?? ''}`}>
-      <motion.div className="flex w-max flex-nowrap" style={{ x }}>
+      <m.div className="flex w-max flex-nowrap" style={{ x }}>
         {[0, 1, 2, 3].map((i) => (
           <div key={i} aria-hidden={i > 0} className="flex shrink-0 items-center">
             {children}
           </div>
         ))}
-      </motion.div>
+      </m.div>
     </div>
   )
 }

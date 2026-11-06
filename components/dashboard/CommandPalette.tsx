@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   Search, LayoutDashboard, CalendarRange, Users, ArrowLeftRight, LineChart,
   FileText, CreditCard, Landmark, CalendarDays, DatabaseBackup, Settings, CornerDownLeft, Hourglass,
@@ -159,14 +159,14 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
       {createPortal(
         <AnimatePresence>
           {open && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
               className="fixed inset-0 z-200 flex items-start justify-center bg-slate-950/40 px-4 pt-[12vh] backdrop-blur-xs"
             >
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -12, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -12, scale: 0.98 }}
@@ -239,8 +239,8 @@ export function CommandPalette({ clients = [] }: { clients?: ClientLite[] }) {
                     ))
                   )}
                 </div>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           )}
         </AnimatePresence>,
         document.body,

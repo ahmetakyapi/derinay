@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { Users, CalendarRange, StickyNote, FileText, Wallet, PieChart } from 'lucide-react'
 import { RevealText } from '@/components/motion/RevealText'
 import { Reveal } from '@/components/motion/Reveal'
@@ -43,7 +43,7 @@ export function CapabilityIndex() {
         <ol className="mt-16 lg:col-span-8 lg:mt-0">
           {ITEMS.map((c, i) => (
             <li key={c.title} className="group relative overflow-hidden">
-              <motion.span
+              <m.span
                 aria-hidden
                 variants={lineDraw}
                 initial="hidden"
@@ -81,7 +81,7 @@ export function CapabilityIndex() {
               </Reveal>
             </li>
           ))}
-          <motion.li
+          <m.li
             aria-hidden
             variants={lineDraw}
             initial="hidden"

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, type MotionValue } from 'motion/react'
+import { m, useScroll, useTransform, type MotionValue } from 'motion/react'
 import { Sunrise, NotebookPen, MoonStar } from 'lucide-react'
 import { RevealText } from '@/components/motion/RevealText'
 import { Reveal } from '@/components/motion/Reveal'
@@ -44,40 +44,40 @@ const MOMENTS = [
 ] as const
 
 function MomentCard({
-  m,
+  moment,
   i,
   progress,
 }: {
-  m: (typeof MOMENTS)[number]
+  moment: (typeof MOMENTS)[number]
   i: number
   progress: MotionValue<number>
 }) {
   // Kart içindeki dev numara kendi hızında kayar — katmanlı derinlik
   const numX = useTransform(progress, [0, 1], [60 + i * 30, -60 - i * 30])
-  const Icon = m.icon
+  const Icon = moment.icon
   return (
     <article
       className="glass glass-static relative flex h-[min(34rem,70vh)] w-[min(34rem,78vw)] shrink-0 flex-col overflow-hidden rounded-4xl p-8 max-md:h-auto max-md:w-full sm:p-10"
-      style={{ backgroundImage: `radial-gradient(120% 90% at 100% 0%, ${m.wash}, transparent 60%)` }}
+      style={{ backgroundImage: `radial-gradient(120% 90% at 100% 0%, ${moment.wash}, transparent 60%)` }}
     >
-      <motion.span
+      <m.span
         aria-hidden
         style={{ x: numX }}
         className="pointer-events-none absolute right-4 top-[20%] font-display motion-reduce:transform-none! text-[13rem] font-bold leading-none tracking-[-0.08em] text-slate-900/5 dark:text-white/5 max-md:hidden"
       >
         0{i + 1}
-      </motion.span>
+      </m.span>
       {/* Kartın tek künyesi: anın adı (çip). Eski "01 / 03" sayacı dev arka
           plan numarasını tekrar ediyordu — kaldırıldı. */}
       <span className="self-start rounded-full border border-slate-500/25 px-3 py-1 text-[13px] font-medium text-slate-600 dark:text-slate-400">
-        {m.time}
+        {moment.time}
       </span>
       <Icon aria-hidden strokeWidth={1.25} className="mt-10 h-16 w-16 text-indigo-600 dark:text-indigo-300 sm:h-20 sm:w-20" />
       <div className="relative mt-auto pt-10">
         <h3 className="font-display text-[1.85rem] font-bold leading-[1.05] tracking-tighter text-slate-900 dark:text-white sm:text-[2.6rem]">
-          {m.title}
+          {moment.title}
         </h3>
-        <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-slate-600 dark:text-slate-400">{m.body}</p>
+        <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-slate-600 dark:text-slate-400">{moment.body}</p>
       </div>
     </article>
   )
@@ -116,7 +116,7 @@ export function DayScroll() {
       style={dist ? { height: `calc(100vh + ${dist}px)` } : undefined}
     >
       <div className="md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-center md:overflow-hidden">
-        <motion.div
+        <m.div
           ref={track}
           style={{ x }}
           className="flex flex-col gap-6 px-6 py-24 md:w-max md:flex-row md:items-center md:gap-8 md:px-10 md:py-0"
@@ -135,18 +135,18 @@ export function DayScroll() {
             </Reveal>
           </div>
 
-          {MOMENTS.map((m, i) => (
-            <MomentCard key={m.time} m={m} i={i} progress={scrollYProgress} />
+          {MOMENTS.map((moment, i) => (
+            <MomentCard key={moment.time} moment={moment} i={i} progress={scrollYProgress} />
           ))}
 
           {/* Kapanış nefesi — son kart ekranın ortasında dursun */}
           <div aria-hidden className="hidden shrink-0 md:block md:w-[12vw]" />
-        </motion.div>
+        </m.div>
 
         {/* Zaman çizgisi */}
         <div className="pointer-events-none absolute inset-x-10 bottom-10 hidden md:block" aria-hidden>
           <div className="relative h-px bg-slate-500/20">
-            <motion.div style={{ scaleX: scrollYProgress }} className="nav-ink absolute inset-0 origin-left" />
+            <m.div style={{ scaleX: scrollYProgress }} className="nav-ink absolute inset-0 origin-left" />
           </div>
           <div className="mt-3 flex justify-between text-sm font-medium text-slate-600 dark:text-slate-400">
             <span>Sabah</span>

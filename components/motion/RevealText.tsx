@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useRef } from 'react'
-import { motion, useInView } from 'motion/react'
+import { m, useInView } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { EASE_OUT_EXPO } from '@/lib/variants'
 
@@ -35,6 +35,7 @@ export function RevealText({
   stagger = 0.055,
   duration = 1,
   play,
+  cssDelay,
   once = true,
 }: {
   text: string
@@ -48,12 +49,42 @@ export function RevealText({
   /** Verilirse görünürlük yerine bu bayrak oynatır (ör. açılış perdesi bitince) */
   play?: boolean
   once?: boolean
+  /**
+   * Verilirse hareket JS'siz, saf CSS ile oynar (`.reveal-word`): ilk boyamada
+   * başlar, hidrasyonu BEKLEMEZ. Gecikme açılış perdesinin CSS zaman
+   * çizelgesine eklenir (`--intro-wait`). Kahramanın LCP başlığı için:
+   * motion sürümü telefonda JS gelene kadar başlığı gizli tutuyordu (LCP 4,4 sn).
+   */
+  cssDelay?: number
 }) {
   const ref = useRef<HTMLElement>(null)
   const inView = useInView(ref, { once, margin: '0px 0px -10% 0px' })
   const show = play ?? inView
   const words = text.split(' ')
   const Comp = as as 'span'
+
+  if (cssDelay !== undefined) {
+    return (
+      <Comp className={className}>
+        <span className="sr-only">{text}</span>
+        <span aria-hidden>
+          {words.map((w, i) => (
+            <Fragment key={i}>
+              <span className="mb-[-0.14em] inline-block pb-[0.14em] align-top [clip-path:inset(-0.5em_-0.25em_0_-0.25em)]">
+                <span
+                  className={cn('reveal-word inline-block', wordClassName?.(w, i))}
+                  style={{ '--d': `${cssDelay + i * stagger}s`, '--dur': `${duration}s` } as React.CSSProperties}
+                >
+                  {w}
+                </span>
+              </span>
+              {i < words.length - 1 && ' '}
+            </Fragment>
+          ))}
+        </span>
+      </Comp>
+    )
+  }
 
   return (
     <Comp ref={ref as React.Ref<HTMLSpanElement>} className={className}>
@@ -62,14 +93,14 @@ export function RevealText({
         {words.map((w, i) => (
           <Fragment key={i}>
             <span className="mb-[-0.14em] inline-block pb-[0.14em] align-top [clip-path:inset(-0.5em_-0.25em_0_-0.25em)]">
-              <motion.span
+              <m.span
                 className={cn('inline-block', wordClassName?.(w, i))}
                 initial={{ y: '110%' }}
                 animate={{ y: show ? '0%' : '110%' }}
                 transition={{ duration, ease: EASE_OUT_EXPO, delay: show ? delay + i * stagger : 0 }}
               >
                 {w}
-              </motion.span>
+              </m.span>
             </span>
             {i < words.length - 1 && ' '}
           </Fragment>

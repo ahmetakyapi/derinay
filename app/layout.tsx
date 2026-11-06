@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 // Fontlar fontsource paketlerinden, SABİT aile adlarıyla (bkz. not aşağıda)
 import '@fontsource-variable/schibsted-grotesk/wght.css'
 import '@fontsource-variable/schibsted-grotesk/wght-italic.css'
-import '@fontsource-variable/fraunces/soft-italic.css'
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
 import '@fontsource/ibm-plex-mono/600.css'
@@ -10,6 +9,7 @@ import '@fontsource/ibm-plex-mono/700.css'
 import { ThemeProvider } from 'next-themes'
 import { ThemeColorSync } from '@/components/theme/ThemeColorSync'
 import { RouteTransition } from '@/components/motion/RouteTransition'
+import { MotionProvider } from '@/components/motion/MotionProvider'
 import './globals.css'
 
 /**
@@ -94,8 +94,10 @@ export default function RootLayout({
         {/* Varsayılan tema: light — "kâğıt galeri". enableSystem kapalı (bilinçli tercih). */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <ThemeColorSync />
-          <RouteTransition />
-          {children}
+          <MotionProvider>
+            <RouteTransition />
+            {children}
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

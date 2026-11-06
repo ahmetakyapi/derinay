@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { Moon, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useThemeTransition } from '@/hooks/useThemeTransition'
@@ -24,7 +24,7 @@ export function ThemeToggleButton({ className, iconClassName = 'h-4 w-4' }: { cl
     >
       <AnimatePresence mode="wait" initial={false}>
         {mounted && (
-          <motion.span
+          <m.span
             key={isDark ? 'sun' : 'moon'}
             initial={{ y: 14, rotate: -90, opacity: 0 }}
             animate={{ y: 0, rotate: 0, opacity: 1 }}
@@ -33,7 +33,7 @@ export function ThemeToggleButton({ className, iconClassName = 'h-4 w-4' }: { cl
             className="flex"
           >
             {isDark ? <Sun className={iconClassName} /> : <Moon className={iconClassName} />}
-          </motion.span>
+          </m.span>
         )}
       </AnimatePresence>
     </button>

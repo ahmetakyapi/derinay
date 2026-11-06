@@ -9,7 +9,7 @@ import { NewPaymentDialog } from '@/components/forms/NewPaymentDialog'
 import { listPayments, clientOptions } from '@/lib/queries'
 import { deletePayment } from '@/app/actions/payments'
 import { PAYMENT_METHOD_LABEL, PAYMENT_METHODS, type PaymentMethod } from '@/lib/constants'
-import { formatTRY, formatDate } from '@/lib/format'
+import { formatTRY, formatDate, formatDateShort } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'Ödemeler' }
@@ -23,10 +23,12 @@ const METHOD_META: Record<PaymentMethod, { icon: typeof Banknote; tone: string; 
 const trLower = (v: string) => v.toLocaleLowerCase('tr')
 
 export default async function PaymentsPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { method?: string; q?: string }
+  searchParams: Promise<{ method?: string; q?: string }>
 }) {
+  // Next 16: searchParams Promise (§10) — await edilmeden filtre/yıl hep boş geliyordu
+  const searchParams = await searchParamsPromise
   const [payments, clients] = await Promise.all([listPayments(), clientOptions()])
   const total = payments.reduce((s, p) => s + p.amount, 0)
 
@@ -199,7 +201,10 @@ export default async function PaymentsPage({
                         </span>
                       )}
                       <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
-                        <span className="shrink-0">{formatDate(p.date)}</span>
+                        {/* Telefonda kısa tarih: uzun tarih + "Havale/EFT" çipi satıra
+                            sığmıyor, çip "Havale/" diye kesiliyordu. */}
+                        <span className="shrink-0 sm:hidden">{formatDateShort(p.date)}</span>
+                        <span className="hidden shrink-0 sm:inline">{formatDate(p.date)}</span>
                         <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold', meta.bg, meta.tone)}>
                           <meta.icon className="h-3 w-3" />
                           {PAYMENT_METHOD_LABEL[p.method]}

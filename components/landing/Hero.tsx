@@ -1,9 +1,10 @@
 'use client'
 
 import { useRef } from 'react'
+import { preload } from 'react-dom'
 import Link from 'next/link'
 import {
-  motion,
+  m,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -87,14 +88,14 @@ function Chip({
   const { x, y } = useDepth(mx, my, chip.depth)
   const Icon = chip.icon
   return (
-    <motion.div style={{ x, y }} className={`absolute z-20 ${chip.pos}`}>
-      <motion.div
+    <m.div style={{ x, y }} className={`absolute z-20 ${chip.pos}`}>
+      <m.div
         initial={{ opacity: 0, scale: 0.7, y: 24 }}
         animate={play ? { opacity: 1, scale: 1, y: 0 } : undefined}
         transition={{ duration: 0.9, ease: EASE_OUT_EXPO, delay: 1.1 + i * 0.12 }}
       >
         <div
-          className={`glass flex items-center gap-2.5 rounded-2xl py-2.5 pl-2.5 pr-4 shadow-xl shadow-slate-900/10 motion-reduce:animate-none ${chip.float}`}
+          className={`glass glass-static flex items-center gap-2.5 rounded-2xl py-2.5 pl-2.5 pr-4 shadow-xl shadow-slate-900/10 motion-reduce:animate-none ${chip.float}`}
           style={{ animationDelay: `${i * -1.7}s` }}
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white">
@@ -104,8 +105,8 @@ function Chip({
             {chip.label}
           </span>
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   )
 }
 
@@ -147,7 +148,7 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
       className="relative mx-auto aspect-4/5 w-full max-w-76 sm:max-w-100 lg:max-w-md"
     >
       {/* Pencerenin arkasındaki altın hâle */}
-      <motion.div
+      <m.div
         aria-hidden
         initial={{ opacity: 0, scale: 0.8 }}
         animate={play ? { opacity: 1, scale: 1 } : undefined}
@@ -156,7 +157,7 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
       />
 
       {/* Kemer — aşağıdan yukarı perde gibi açılır */}
-      <motion.div
+      <m.div
         initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
         animate={play ? { clipPath: 'inset(0% 0% 0% 0%)' } : undefined}
         transition={{ duration: 1.4, ease: EASE_IN_OUT, delay: 0.35 }}
@@ -165,13 +166,13 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
         className="dark absolute inset-0 overflow-hidden rounded-b-[2.5rem] rounded-t-[50%_40%] bg-linear-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/30 ring-1 ring-white/10"
       >
         {/* Gökyüzü ışığı — gün batarken söner */}
-        <motion.div
+        <m.div
           style={{ opacity: glow }}
           className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)] motion-reduce:opacity-100!"
         />
         {/* Gece — gök koyulaşır, yıldızlar yanar */}
-        <motion.div style={{ opacity: dusk }} className="absolute inset-0 bg-linear-to-b from-slate-950 via-indigo-950/80 to-transparent motion-reduce:opacity-0!" />
-        <motion.div style={{ opacity: stars }} className="absolute inset-x-0 top-0 h-[60%] motion-reduce:opacity-0!">
+        <m.div style={{ opacity: dusk }} className="absolute inset-0 bg-linear-to-b from-slate-950 via-indigo-950/80 to-transparent motion-reduce:opacity-0!" />
+        <m.div style={{ opacity: stars }} className="absolute inset-x-0 top-0 h-[60%] motion-reduce:opacity-0!">
           {STARS.map(([x, y, r], n) => (
             <span
               key={n}
@@ -179,24 +180,24 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
               style={{ left: `${x}%`, top: `${y}%`, width: r, height: r, animationDelay: `${n * -0.7}s` }}
             />
           ))}
-        </motion.div>
+        </m.div>
 
         {/* Güneş — açılışta ufka iner, kaydırınca suya batar */}
-        <motion.div style={{ y: sunset }} className="absolute inset-0 motion-reduce:transform-none!">
-        <motion.div style={sun} className="absolute inset-0">
-          <motion.div
+        <m.div style={{ y: sunset }} className="absolute inset-0 motion-reduce:transform-none!">
+        <m.div style={sun} className="absolute inset-0">
+          <m.div
             initial={{ y: '-60%', opacity: 0 }}
             animate={play ? { y: '0%', opacity: 1 } : undefined}
             transition={{ duration: 2.2, ease: EASE_OUT_EXPO, delay: 0.7 }}
             className="absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-linear-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_80px_rgba(var(--gold),0.55)]"
           />
-        </motion.div>
-        </motion.div>
+        </m.div>
+        </m.div>
 
         {/* Su — ufuk ve yansıma çizgileri */}
         <div className="absolute inset-x-0 bottom-0 top-[66%] bg-linear-to-b from-indigo-950/90 to-indigo-950">
           {[0, 1, 2, 3, 4, 5].map((n) => (
-            <motion.span
+            <m.span
               key={n}
               aria-hidden
               initial={{ scaleX: 0, opacity: 0 }}
@@ -209,17 +210,17 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
           ))}
         </div>
         {/* Suya düşen ışık sütunu — güneş battıkça uzar */}
-        <motion.div
+        <m.div
           style={{ scaleY: column }}
           className="absolute left-[38%] top-[66%] h-[32%] w-[24%] origin-top bg-[radial-gradient(50%_100%_at_50%_0%,rgba(var(--gold),0.42),transparent)] motion-reduce:transform-none!"
         />
         <div className="absolute inset-x-0 top-[66%] h-px bg-amber-200/60" />
 
         {/* Orkide — kendi kendine çizilir */}
-        <motion.div style={bloom} className="absolute bottom-[6%] left-[6%] h-[62%] w-[42%]">
+        <m.div style={bloom} className="absolute bottom-[6%] left-[6%] h-[62%] w-[42%]">
           {play && <BloomArt tone="night" className="h-full w-full" delay={1} />}
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
 
       {CHIPS.map((c, i) => (
@@ -230,6 +231,8 @@ function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValu
 }
 
 export function Hero() {
+  // Manşet vurgusunun 2 KB'lık fontu LCP başlığıyla aynı anda insin
+  preload('/fonts/fraunces-dinlendir.woff2', { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' })
   const play = useIntroDone()
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -245,7 +248,7 @@ export function Hero() {
       <div className="mx-auto grid w-full max-w-7xl items-center gap-x-12 gap-y-20 lg:grid-cols-[1.15fr_1fr]">
         {/* ── Metin ─────────────────────────────────────────────── */}
         {/* Hareket azaltmada durağanlık CSS'ten (bkz. Showcase.tsx notu) */}
-        <motion.div style={{ y: textY, opacity: fade }} className="motion-reduce:transform-none! motion-reduce:opacity-100!">
+        <m.div style={{ y: textY, opacity: fade }} className="motion-reduce:transform-none! motion-reduce:opacity-100!">
           {/* Manşetin üstündeki "Psikologlar İçin…" hap etiketi KALDIRILDI
               (Ekim 2026): başlık üstü künye/eyebrow yok kuralı. Kime hitap
               ettiği bilgisi kaybolmadı, alt başlığın ilk cümlesine indi. Hapın
@@ -259,18 +262,17 @@ export function Hero() {
               ≈7em → telefonda (100vw-48px)/7, lg'de sütun genişliği/7. */}
           <h1 className="font-display text-[clamp(2.2rem,10.5vw,5.25rem)] leading-[1.08] text-slate-900 text-wrap dark:text-white lg:text-[clamp(3rem,5.6vw,5.25rem)]">
             <span className="block whitespace-nowrap font-extrabold tracking-[-0.055em]">
-              <RevealText text="İşini Düzenle," play={play} stagger={0.08} duration={1.1} delay={0.15} />
+              <RevealText text="İşini Düzenle," cssDelay={0.15} stagger={0.08} duration={1.1} />
             </span>
             <span className="mt-[0.06em] block whitespace-nowrap">
               <RevealText
                 text="Kafanı"
-                play={play}
-                delay={0.3}
+                cssDelay={0.3}
                 duration={1.1}
                 className="font-normal tracking-tighter text-slate-500 dark:text-slate-400"
               />{' '}
               <span className="relative inline-block">
-                <motion.span
+                <m.span
                   aria-hidden
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: play ? 1 : 0 }}
@@ -279,11 +281,10 @@ export function Hero() {
                   className="pointer-events-none absolute inset-x-[-3%] bottom-[-0.02em] top-[0.7em] origin-left text-amber-500"
                 >
                   <BrushSweep className="h-full w-full" />
-                </motion.span>
+                </m.span>
                 <RevealText
                   text="Dinlendir"
-                  play={play}
-                  delay={0.42}
+                  cssDelay={0.42}
                   duration={1.1}
                   // İtalik çıkıntı kelime maskesinde kesilmesin: pay içteki kelimeye
                   wordClassName={() => 'pr-[0.1em]'}
@@ -293,21 +294,21 @@ export function Hero() {
             </span>
           </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={play ? { opacity: 1, y: 0 } : undefined}
-            transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.75 }}
-            className="mt-8 max-w-136 text-[1.125rem] text-wrap font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
+          {/* Paragraf, düğmeler ve güven satırı da CSS ile girer (perdenin
+              zaman çizelgesine bağlı). Paragraf telefonda LCP öğesi: opaklığı
+              0'dan BAŞLAMAZ (Chrome opacity 0 öğeyi LCP saymaz, fade bitene
+              dek LCP 4,9 sn'ye uzuyordu), yalnız yukarı kayar — `.hero-in-lcp`. */}
+          <p
+            style={{ '--d': '0.75s' } as React.CSSProperties}
+            className="hero-in-lcp mt-8 max-w-136 text-[1.125rem] text-wrap font-medium leading-[1.6] text-slate-600 dark:text-slate-300 sm:text-[1.25rem]"
           >
             <span className="text-slate-900 dark:text-white">Psikologlar İçin Danışan ve Finans Takibi.</span>{' '}
             Danışanların, Randevuların, Seans Notların ve Gelirlerin Tek Bir Yerde.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={play ? { opacity: 1, y: 0 } : undefined}
-            transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.9 }}
-            className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-4 sm:gap-4"
+          <div
+            style={{ '--d': '0.9s' } as React.CSSProperties}
+            className="hero-in mt-10 flex flex-wrap items-center gap-x-2 gap-y-4 sm:gap-4"
           >
             <Magnetic strength={0.25}>
               <Link
@@ -337,13 +338,11 @@ export function Hero() {
                 <ArrowDown className="h-3.5 w-3.5 animate-[nudge_2.2s_ease-in-out_infinite]" />
               </span>
             </a>
-          </motion.div>
+          </div>
 
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={play ? { opacity: 1 } : undefined}
-            transition={{ duration: 1, delay: 1.2 }}
-            className="mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-slate-500/15 pt-6"
+          <ul
+            style={{ '--d': '1.2s' } as React.CSSProperties}
+            className="hero-in mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-slate-500/15 pt-6"
           >
             {TRUST.map((t) => (
               <li key={t.label} className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
@@ -351,13 +350,13 @@ export function Hero() {
                 {t.label}
               </li>
             ))}
-          </motion.ul>
-        </motion.div>
+          </ul>
+        </m.div>
 
         {/* ── Görsel ────────────────────────────────────────────── */}
-        <motion.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:transform-none! sm:px-16 lg:px-8">
+        <m.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:transform-none! sm:px-16 lg:px-8">
           <GalleryWindow play={play} progress={scrollYProgress} />
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

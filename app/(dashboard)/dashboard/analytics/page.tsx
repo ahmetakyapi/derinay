@@ -40,10 +40,12 @@ function SectionTitle({ children, className }: { children: React.ReactNode; clas
 }
 
 export default async function AnalyticsPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { year?: string }
+  searchParams: Promise<{ year?: string }>
 }) {
+  // Next 16: searchParams Promise (§10) — await edilmeden filtre/yıl hep boş geliyordu
+  const searchParams = await searchParamsPromise
   const currentYear = new Date().getFullYear()
   const parsed = Number(searchParams.year)
   const year = Number.isInteger(parsed) && parsed >= 2000 && parsed <= currentYear + 1 ? parsed : currentYear

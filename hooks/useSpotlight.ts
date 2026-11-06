@@ -8,7 +8,7 @@ import { useMotionTemplate, useMotionValue } from 'motion/react'
  * Hero bölümü veya sayfa arka planına uygulanır.
  *
  * const spotlight = useSpotlight()
- * <motion.div style={{ background: spotlight }} />
+ * <m.div style={{ background: spotlight }} />
  */
 // Varsayılan renk palet token'ından gelir — hardcoded rgba yasağı (CLAUDE.md §7)
 export function useSpotlight(radius = 620, color = 'rgba(var(--pine), 0.08)') {

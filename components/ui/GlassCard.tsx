@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { m, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { useRef, useCallback } from 'react'
 
 interface GlassCardProps {
@@ -47,7 +47,7 @@ export function GlassCard({ children, className, tilt = false, glow = false }: G
   const shine  = useMotionTemplate`radial-gradient(400px circle at ${shineX} ${shineY}, rgba(var(--pine), 0.12), rgba(var(--gold), 0.07), transparent 70%)`
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       style={tilt ? { rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' } : undefined}
       onMouseMove={onMove}
@@ -55,12 +55,12 @@ export function GlassCard({ children, className, tilt = false, glow = false }: G
       className={cn('glass relative rounded-2xl overflow-hidden', className)}
     >
       {(tilt || glow) && (
-        <motion.div
+        <m.div
           className="pointer-events-none absolute inset-0 z-10"
           style={{ background: shine }}
         />
       )}
       {children}
-    </motion.div>
+    </m.div>
   )
 }

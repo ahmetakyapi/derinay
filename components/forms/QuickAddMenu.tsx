@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import { Plus, CalendarPlus, ArrowLeftRight, ChevronDown } from 'lucide-react'
 import { NewSessionDialog } from '@/components/forms/NewSessionDialog'
 import { NewTransactionDialog } from '@/components/forms/NewTransactionDialog'
@@ -55,7 +55,7 @@ export function QuickAddMenu({
 
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
+          <m.div
             /* role="menu" ok tuşu gezinmesi + odak yönetimi zorunlu kılar;
                burada ikisi de yok. Basit açılır liste olarak bırakılıyor. */
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
@@ -82,7 +82,7 @@ export function QuickAddMenu({
                 </span>
               </button>
             ))}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

@@ -19,6 +19,9 @@ const db = drizzle(neon(process.env.DATABASE_URL), { schema })
 
 // ─── Tarih yardımcıları ──────────────────────────────────────────────────────
 const now = new Date()
+/** Seans saatleri — geçmiş ve bu haftanın seansları aynı listeden */
+const HOURS = [10, 11, 13, 14, 15, 16, 17]
+
 function monthsAgo(m: number, day = 15) {
   return new Date(now.getFullYear(), now.getMonth() - m, day)
 }
@@ -100,14 +103,17 @@ async function main() {
   const sessRows: (typeof sessions.$inferInsert)[] = []
   const noteRows: (typeof clientNotes.$inferInsert)[] = []
 
-  for (const c of inserted) {
+  for (const [ci, c] of inserted.entries()) {
     if (c.status === 'completed') continue
     const fee = Number(c.fee)
     // son 5 ay, her ay ~3 seans
     for (let m = 4; m >= 0; m--) {
       const count = c.status === 'paused' && m < 2 ? 0 : 2 + Math.floor(Math.random() * 2)
       for (let s = 0; s < count; s++) {
-        const d = monthsAgo(m, 4 + s * 8)
+        // Gün ve saat danışana göre kayar: eskiden hepsi aynı günlerde gece
+        // yarısındaydı, ajandada "00:00" yığınları oluşuyordu.
+        const d = monthsAgo(m, 3 + s * 8 + (ci % 4))
+        d.setHours(HOURS[(ci * 3 + s * 2 + m) % HOURS.length], 0, 0, 0)
         sessRows.push({ clientId: c.id, date: d, durationMin: 50, status: 'completed', fee: money(fee) })
         txRows.push({
           type: 'income',
@@ -123,8 +129,13 @@ async function main() {
     const KINDS = ['session', 'session', 'observation', 'homework', 'important'] as const
     const MOOD_POOL = ['great', 'good', 'good', 'neutral', 'low', 'difficult'] as const
     const noteCount = 2 + Math.floor(Math.random() * 3)
+    // Not, danışanın son seanslarından birinin bitişine düşer: ruh hali
+    // takibi ve Seans Yolculuğu gerçek tarihlere yayılır (eskiden hepsi "şimdi").
+    const mine = sessRows.filter((r) => r.clientId === c.id)
     for (let n = 0; n < noteCount; n++) {
+      const sess = mine[mine.length - 1 - n * 2]
       noteRows.push({
+        ...(sess ? { createdAt: new Date(+new Date(sess.date as Date) + 55 * 60_000) } : {}),
         clientId: c.id,
         body: pick(NOTES),
         kind: pick([...KINDS]),
@@ -141,7 +152,6 @@ async function main() {
     const day = (n.getDay() + 6) % 7 // Pzt=0
     return new Date(n.getFullYear(), n.getMonth(), n.getDate() - day)
   })()
-  const HOURS = [10, 11, 13, 14, 15, 16, 17]
   for (let wd = 0; wd < 5; wd++) {
     // her iş günü 2-3 seans
     const slots = 2 + Math.floor(Math.random() * 2)

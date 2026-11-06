@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { animate, motion, useInView, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'motion/react'
+import { animate, m, useInView, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'motion/react'
 import { PanelPreview } from '@/components/marketing/PanelPreview'
 import { PreviewFrame } from '@/components/marketing/PreviewFrame'
 import { RevealText } from '@/components/motion/RevealText'
@@ -27,7 +27,7 @@ function CountUp({ to }: { to: number }) {
     const c = animate(v, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1] })
     return () => c.stop()
   }, [inView, to, v])
-  return <motion.span ref={ref}>{text}</motion.span>
+  return <m.span ref={ref}>{text}</m.span>
 }
 
 /**
@@ -58,7 +58,7 @@ export function Showcase() {
 
   return (
     <section ref={ref} aria-label="Panelden bir kesit" className="dark relative z-10 text-(--ink)">
-      <motion.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950 motion-reduce:[clip-path:none]!">
+      <m.div style={{ clipPath: clip }} className="relative overflow-hidden bg-indigo-950 motion-reduce:[clip-path:none]!">
         {/* Suluboya ışığı */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="absolute -top-40 left-1/2 h-144 w-240 -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
@@ -78,11 +78,11 @@ export function Showcase() {
           </div>
 
           <div className="mt-16 perspective-[1800px] sm:mt-20">
-            <motion.div style={{ scale, rotateX, y, transformOrigin: 'center top' }} className="motion-reduce:transform-none!">
+            <m.div style={{ scale, rotateX, y, transformOrigin: 'center top' }} className="motion-reduce:transform-none!">
               <PreviewFrame caption="Derinay · Genel Bakış">
                 <PanelPreview />
               </PreviewFrame>
-            </motion.div>
+            </m.div>
           </div>
 
           <dl className="mt-20 grid gap-10 border-t border-white/10 pt-10 sm:grid-cols-3">
@@ -96,7 +96,7 @@ export function Showcase() {
             ))}
           </dl>
         </div>
-      </motion.div>
+      </m.div>
     </section>
   )
 }

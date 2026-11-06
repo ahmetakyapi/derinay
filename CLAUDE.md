@@ -36,7 +36,7 @@ makbuz, ödeme, gelir-gider, vergi ve kişisel harcama tek, sakin arayüzde.
 |---|---|---|
 | Framework | Next.js 16 App Router + React 19 (Turbopack) | Server Component varsayılan; `proxy.ts` (§9) |
 | Stil | Tailwind v4, `tailwind.config.ts` `@config` ile | `postcss.config.js` (`@tailwindcss/postcss`) ŞART; v3 kaskadı korunur (§10) |
-| Hareket | `motion` (`motion/react`) + Lenis (yalnız landing) | GSAP yok; `framer-motion` import etme |
+| Hareket | `motion` (`motion/react`) `LazyMotion` + `m.*` + Lenis (yalnız landing) | GSAP yok; `framer-motion` import etme; `motion.div` DEĞİL `m.div` (§7 Hareket) |
 | Grafik | Recharts | `components/charts/`, sayfalar `charts/lazy`den alır |
 | DB | Neon Postgres + Drizzle (`neon-http`) | `@neondatabase/serverless`, `pg` DEĞİL |
 | Tema | next-themes 0.4 | `defaultTheme="light"`, `enableSystem={false}` |
@@ -170,7 +170,8 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - Rakam: IBM Plex Mono (`font-mono` + `tabular-nums`) — yalnız gerçek sayısal içerik
   (tutar, tarih, saat, sayaç, makbuz no), ≥12px, ek tracking yok.
 - **Vurgu yüzü Fraunces italik** (`font-serif`, SOFT 100) yalnız landing manşetindeki
-  "Dinlendir"de. Başka dekoratif italik YOK; italik yalnız gerçek alıntı ve not satırında.
+  "Dinlendir"de. Font yalnız o harflerin 2 KB'lık alt kümesi (`public/fonts/fraunces-dinlendir.woff2`,
+  `unicode-range` globals.css'te); kelime değişirse dosyayı yeniden üret (`public/fonts/README.txt`). Başka dekoratif italik YOK; italik yalnız gerçek alıntı ve not satırında.
 - **Yükleme fontsource, next/font DEĞİL** (9 Ekim 2026): Vercel'de next/font sunucu HTML'i ile
   CSS'e farklı sınıf hash'i yazdı, `--font-sans-face` tanımsız kaldı, canlı site Times'a
   düştü (yerelde tekrar etmedi). `layout.tsx`'te CSS import; aile adları `globals.css`'te sabit.
@@ -287,7 +288,7 @@ Eğriler: `EASE_OUT_EXPO [0.16,1,0.3,1]` giriş, `EASE_IN_OUT [0.76,0,0.24,1]` p
 - **Panel kaydırma girişi** (Kasım 2026): ilk ekranın altındaki `.glass` kartlar
   `scroll-rise` ile görünüme girerken yükselir — saf CSS `animation-timeline: view()`,
   `@supports` + `prefers-reduced-motion: no-preference` içinde. Aralık px ile
-  (`entry 0px entry 220px`), yüzde DEĞİL (uzun kart ekranda yarı saydam kalıyordu).
+  (`entry 0px entry min(100%, 220px)`), yüzde DEĞİL (uzun kart ekranda yarı saydam kalıyordu).
   `.page-enter`in doğrudan çocuğunda page-rise ile LİSTE olarak ve uzun el yazımıyla
   (kısa yazım nth-child gecikmelerini sıfırlar). `.stat-rise` hariç.
 - **Suluboya kenarı** (`landing/InkEdge`): landing'de renk değişen her sınırda (kâğıt ↔ kum,
@@ -295,6 +296,16 @@ Eğriler: `EASE_OUT_EXPO [0.16,1,0.3,1]` giriş, `EASE_IN_OUT [0.76,0,0.24,1]` p
   `overflow-hidden`). Filtre (`feTurbulence`) durağan, yalnız sarmalayıcı `transform`u oynar.
 - **Kahraman gün batımı**: kaydırdıkça güneş suya iner, gök koyulaşır, yıldızlar yanar
   (`GalleryWindow progress`). Hareket azaltmada gündüz hâli durur (CSS `!` sınıfları).
+- **LazyMotion** (Kasım 2026): kökte `MotionProvider` (`LazyMotion strict`, `domMax` ayrı
+  parçada, ilk boyamadan SONRA iner). Bileşenler `m.*` kullanır — `motion.div` `strict`
+  yüzünden hata verir. Özellikler inene kadar `m.*` `initial`'da durur: ilk ekranda görünmesi
+  ŞART olan şey CSS ile girer. Dosyada `m` adlı değişken/prop açma (JSX `m.div`'i gölgeler).
+- **Kahraman girişi CSS** (LCP): başlık kelimeleri `RevealText cssDelay` (`.reveal-word`),
+  paragraf `.hero-in-lcp` (opaklıksız — Chrome opacity 0 öğeyi LCP saymaz), düğmeler `.hero-in`.
+  Hepsi `--intro-wait`e bağlı (perde ≈1,43 sn; `html.intro-seen` → hemen). Preloader
+  `intro-seen`i kelimeler bitince ekler (erken eklenirse oynayan kelime sona zıplar).
+- **Grafikler görününce yüklenir**: `charts/lazy` her grafiği `whenVisible` ile sarar (iskelet
+  yerinde, 400 px kala bağlanır) — Recharts ilk yüklemeden çıktı.
 - **Hareket azaltma**: CSS animasyon/gecikme sıfırlanır, perde ve Lenis atlanır, motion
   `MotionConfig reducedMotion="user"` (landing + Shell); kaydırmaya bağlı `style` değerleri ayrıca (§10).
 

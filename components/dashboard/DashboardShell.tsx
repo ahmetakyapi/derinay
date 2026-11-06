@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence, MotionConfig, LayoutGroup } from 'motion/react'
+import { m, AnimatePresence, MotionConfig, LayoutGroup } from 'motion/react'
 import {
   LayoutDashboard,
   LineChart,
@@ -109,20 +109,20 @@ function MobileTabBar({ onOpenMenu }: { onOpenMenu: () => void }) {
             >
               {/* Aktif sekme: çam şerit sekmeden sekmeye KAYAR (layoutId) */}
               {active && (
-                <motion.span
+                <m.span
                   layoutId="tab-active"
                   aria-hidden
                   transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   className="absolute inset-x-3 top-0 h-[2.5px] rounded-b-full bg-linear-to-r from-indigo-500 to-amber-500"
                 />
               )}
-              <motion.span
+              <m.span
                 animate={{ y: active ? -1 : 0, scale: active ? 1.08 : 1 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 22 }}
                 className="flex"
               >
                 <item.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />
-              </motion.span>
+              </m.span>
               {item.label}
               <span
                 aria-hidden
@@ -222,14 +222,14 @@ function NavList({ onNavigate, id }: { onNavigate?: () => void; id: string }) {
                   )}
                 >
                   {active ? (
-                    <motion.span
+                    <m.span
                       layoutId="nav-active"
                       aria-hidden
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       className="absolute inset-0 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/10"
                     >
                       <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-linear-to-b from-indigo-500 to-amber-500" />
-                    </motion.span>
+                    </m.span>
                   ) : (
                     // Üstüne gelince zemin soldan dolar
                     <span
@@ -508,14 +508,14 @@ export function DashboardShell({
       {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs lg:hidden"
           >
-            <motion.aside
+            <m.aside
               ref={drawerRef}
               role="dialog"
               aria-modal="true"
@@ -563,8 +563,8 @@ export function DashboardShell({
                   </OwnerCard>
                 </div>
               </div>
-            </motion.aside>
-          </motion.div>
+            </m.aside>
+          </m.div>
         )}
       </AnimatePresence>
 

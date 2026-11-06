@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { AnimatePresence, motion, useAnimationControls } from 'motion/react'
+import { AnimatePresence, m, useAnimationControls } from 'motion/react'
 import { BloomMark } from '@/components/brand/BloomMark'
 import { EASE_IN_OUT, EASE_OUT_EXPO } from '@/lib/variants'
 
@@ -129,7 +129,7 @@ export function RouteTransition() {
   return (
     <>
       {/* Mürekkep gezinti çizgisi */}
-      <motion.div
+      <m.div
         aria-hidden
         initial={{ scaleX: 0, opacity: 0 }}
         animate={ink}
@@ -138,7 +138,7 @@ export function RouteTransition() {
 
       <AnimatePresence>
         {visible && (
-          <motion.div
+          <m.div
             key="curtain"
             className="fixed inset-0 z-380"
             aria-live="polite"
@@ -146,7 +146,7 @@ export function RouteTransition() {
           >
             <span className="sr-only">{label} açılıyor</span>
             {/* Arka kat — öncü şerit */}
-            <motion.div
+            <m.div
               className="absolute inset-0 bg-indigo-600"
               initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
               animate={{ clipPath: closing ? 'inset(0% 0% 100% 0%)' : 'inset(0% 0% 0% 0%)' }}
@@ -154,7 +154,7 @@ export function RouteTransition() {
               onAnimationComplete={() => closing && setStage('idle')}
             />
             {/* Ön kat — derin çam, yazı burada */}
-            <motion.div
+            <m.div
               className="absolute inset-0 flex items-center justify-center bg-indigo-950"
               initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
               animate={{ clipPath: closing ? 'inset(0% 0% 100% 0%)' : 'inset(0% 0% 0% 0%)' }}
@@ -162,27 +162,27 @@ export function RouteTransition() {
               onAnimationComplete={onCovered}
             >
               <div className="flex items-center gap-4 sm:gap-6">
-                <motion.span
+                <m.span
                   initial={{ rotate: -90, scale: 0.4, opacity: 0 }}
                   animate={{ rotate: closing ? 90 : 0, scale: 1, opacity: closing ? 0 : 1 }}
                   transition={{ duration: 0.8, ease: EASE_OUT_EXPO, delay: closing ? 0 : 0.35 }}
                   className="text-amber-400"
                 >
                   <BloomMark className="h-10 w-10 sm:h-14 sm:w-14" />
-                </motion.span>
+                </m.span>
                 <span className="overflow-hidden pb-[0.1em]">
-                  <motion.span
+                  <m.span
                     className="block font-display text-[3rem] font-bold leading-none tracking-tighter text-slate-50 sm:text-[5.5rem]"
                     initial={{ y: '110%' }}
                     animate={{ y: closing ? '-110%' : '0%' }}
                     transition={{ duration: 0.8, ease: closing ? EASE_IN_OUT : EASE_OUT_EXPO, delay: closing ? 0 : 0.4 }}
                   >
                     {label}
-                  </motion.span>
+                  </m.span>
                 </span>
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>
