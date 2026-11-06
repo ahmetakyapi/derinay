@@ -835,3 +835,7 @@ html.intro-seen .preloader { display: none; }
   0%, 100% { opacity: 1; scale: 1; }
   50%      { opacity: 0.35; scale: 0.7; }
 }
+
+/* Zaman çizelgesi noktaları: soldan sağa sırayla kâğıda düşer (`--i` sıra) */
+@keyframes dot-in { from { opacity: 0; scale: 0.2; } }
+.dot-in { animation: dot-in 0.55s var(--ease-out-expo) calc(0.3s + min(var(--i, 0), 40) * 28ms) backwards; }

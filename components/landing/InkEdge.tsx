@@ -3,6 +3,7 @@
 import { useId, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { inkWave } from '@/lib/ink'
 
 /**
  * Suluboya kenarı — iki bölüm arasındaki düz çizgiyi kâğıda sızan boya
@@ -30,40 +31,7 @@ import { cn } from '@/lib/utils'
 
 const W = 1440
 const H = 120
-
-function seeded(seed: number) {
-  let s = seed
-  return () => {
-    s = (s * 16807) % 2147483647
-    return (s - 1) / 2147483646
-  }
-}
-
-/** Yumuşak dalga + küçük titreşim; tabanı kapalı dolgu yolu. */
-function wave(seed: number, base: number, amp: number) {
-  const rnd = seeded(seed)
-  const phase = rnd() * Math.PI * 2
-  const steps = 36
-  const pts: [number, number][] = []
-  for (let i = 0; i <= steps; i++) {
-    const x = (i / steps) * W
-    const y =
-      base +
-      Math.sin((i / steps) * Math.PI * 2.2 + phase) * amp +
-      Math.sin((i / steps) * Math.PI * 5.3 + phase * 1.7) * amp * 0.35 +
-      (rnd() - 0.5) * amp * 0.5
-    pts.push([x, y])
-  }
-  let d = `M -20 ${pts[0][1].toFixed(1)}`
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [x0, y0] = pts[i]
-    const [x1, y1] = pts[i + 1]
-    const mx = (x0 + x1) / 2
-    d += ` Q ${x0.toFixed(1)} ${y0.toFixed(1)} ${mx.toFixed(1)} ${((y0 + y1) / 2).toFixed(1)}`
-  }
-  d += ` L ${W + 20} ${pts[pts.length - 1][1].toFixed(1)} L ${W + 20} ${H + 10} L -20 ${H + 10} Z`
-  return d
-}
+const wave = (seed: number, base: number, amp: number) => inkWave(seed, base, amp, W, H)
 
 export function InkEdge({
   edge = 'top',

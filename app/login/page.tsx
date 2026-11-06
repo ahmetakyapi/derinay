@@ -1,21 +1,25 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Lock } from 'lucide-react'
 import { AuthError } from 'next-auth'
 import { signIn, auth } from '@/lib/auth'
 import { LoginForm } from '@/components/forms/LoginForm'
 import { BloomArt } from '@/components/art/BloomArt'
 import { BloomMark } from '@/components/brand/BloomMark'
+import { InkSeam } from '@/components/brand/InkSeam'
 import { APP } from '@/lib/constants'
 import { quoteOfTheDay } from '@/lib/quotes'
 
 export const metadata = { title: 'Giriş' }
 
 export default async function LoginPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { error?: string }
+  searchParams: Promise<{ error?: string }>
 }) {
+  // Next 16: searchParams Promise (§10). Eskiden await edilmiyordu ve
+  // `searchParams.error` hep undefined kalıyordu: yanlış şifre uyarısı görünmüyordu.
+  const searchParams = await searchParamsPromise
   // Zaten girişliyse panele
   const session = await auth()
   if (session?.user) redirect('/dashboard')
@@ -74,6 +78,12 @@ export default async function LoginPage({
 
       {/* ── Sağ: kâğıt — form ─────────────────────────────────────────── */}
       <section className="relative flex flex-col px-6 py-10 sm:px-12">
+        {/* Gece paneli kâğıda düz çizgiyle değil boya kenarıyla geçer; perde
+            açıldıktan sonra belirir (`.ink-fill`, --d ile). */}
+        <InkSeam
+          seed={23}
+          className="ink-fill pointer-events-none absolute inset-y-0 -left-px z-10 hidden h-full w-[clamp(40px,4vw,72px)] text-indigo-950 [--d:0.5s] lg:block"
+        />
         {/* overflow-hidden ŞART: `-right-20` hâlesi kutudan 80px taşıyor ve
             telefonda belgeyi 470px'e genişletiyordu (390'lık ekranda sayfa
             uzaklaşıp yana kayıyordu). */}
@@ -87,7 +97,9 @@ export default async function LoginPage({
             <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-1" />
             Ana Sayfa
           </Link>
-          <span>Güvenli Giriş</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Lock className="h-3.5 w-3.5" /> Güvenli Giriş
+          </span>
         </div>
 
         <div className="page-enter relative mx-auto my-auto w-full max-w-sm py-16">

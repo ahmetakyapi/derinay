@@ -39,6 +39,7 @@ import { GoalsCard } from '@/components/clients/GoalsCard'
 import { NewDocumentDialog } from '@/components/forms/NewDocumentDialog'
 import { EditClientDialog } from '@/components/forms/EditClientDialog'
 import { getClientDetail, getReminderConfig, getTaxSettings } from '@/lib/queries'
+import { SessionJourney } from '@/components/clients/SessionJourney'
 import { deletePackage } from '@/app/actions/packages'
 import { deleteScore } from '@/app/actions/scores'
 import { deleteDocument } from '@/app/actions/documents'
@@ -218,6 +219,16 @@ export default async function ClientDetailPage({ params: paramsPromise }: { para
           }
         />
       </div>
+
+      {/* Seans yolculuğu — ilk seanstan bugüne tek çizgi */}
+      <SessionJourney
+        sessions={sessions}
+        notes={notes}
+        goals={goals}
+        scores={scores}
+        packagePurchase={activePackage?.purchaseDate}
+        now={new Date().toISOString()}
+      />
 
       {/* Seans Paketi — ön ödemeli kullanım takibi */}
       <section className="glass mb-6 rounded-2xl p-5">

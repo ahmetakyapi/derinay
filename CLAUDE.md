@@ -226,6 +226,11 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - `ConfirmDialog` — yıkıcı VE geri alınamaz her işlem onay ister (silme, danışana çevirme, geri yükleme).
 - `DeleteButton action={fn.bind(null,id)} redirectTo confirmText` — kişi adı geçiyorsa `<span className="sensitive">`.
 - `404` (`not-found.tsx`): boş gece penceresi (hilal, yıldız) + kendiliğinden çizilen orkide.
+- `SessionJourney` (danışan detayı → Seans Yolculuğu): ilk seanstan bugüne çizgi; noktalar
+  durum + o günün ruh hali, üstte hedef/ölçüm/paket taşları. Sunucuda çizilir; telefonda
+  `direction: rtl` kap + `ltr` içerik ile açılışta en yeni uçta durur (JS'siz).
+- `InkSeam` (giriş: gece paneli | kâğıt) — `InkEdge`in dikey, durağan kardeşi; dalga
+  geometrisi ikisinde de `lib/ink.ts`. SVG'ye `h-full` ŞART (yoksa yükseklik viewBox oranından).
 - `EmptyState icon title description action` — server bileşeni, `icon` lucide bileşeni alır.
 - Grafikler `charts/lazy.tsx` üzerinden (dynamic + iskelet): AreaTrendChart, CategoryDonut,
   MonthlyBar, CumulativeArea, TaxRadial, TaxBars, ScoreTrend. Yeni grafik → bileşen + lazy export.
