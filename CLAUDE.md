@@ -229,8 +229,9 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - `SessionJourney` (danışan detayı → Seans Yolculuğu): ilk seanstan bugüne çizgi; noktalar
   durum + o günün ruh hali, üstte hedef/ölçüm/paket taşları. Sunucuda çizilir; telefonda
   `direction: rtl` kap + `ltr` içerik ile açılışta en yeni uçta durur (JS'siz).
-- `InkSeam` (giriş: gece paneli | kâğıt) — `InkEdge`in dikey, durağan kardeşi; dalga
-  geometrisi ikisinde de `lib/ink.ts`. SVG'ye `h-full` ŞART (yoksa yükseklik viewBox oranından).
+- Giriş gece panelinin yırtık kenarı `.ink-seam-mask` — panelin KENDİ maskesi
+  (`public/ink-seam-mask.svg`, `lib/ink.ts` dalgası); panel `--seam` kadar sağ sütuna taşar.
+  Ayrı düz renkli şerit KOYMA: panelin içi (orkide, ışık) yanında düz kesilip "kesik kart" gibi duruyordu.
 - `EmptyState icon title description action` — server bileşeni, `icon` lucide bileşeni alır.
 - Grafikler `charts/lazy.tsx` üzerinden (dynamic + iskelet): AreaTrendChart, CategoryDonut,
   MonthlyBar, CumulativeArea, TaxRadial, TaxBars, ScoreTrend. Yeni grafik → bileşen + lazy export.

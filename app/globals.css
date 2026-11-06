@@ -839,3 +839,23 @@ html.intro-seen .preloader { display: none; }
 /* Zaman çizelgesi noktaları: soldan sağa sırayla kâğıda düşer (`--i` sıra) */
 @keyframes dot-in { from { opacity: 0; scale: 0.2; } }
 .dot-in { animation: dot-in 0.55s var(--ease-out-expo) calc(0.3s + min(var(--i, 0), 40) * 28ms) backwards; }
+
+/* ─── Giriş: gece panelinin yırtık boya kenarı ───────────────────────────
+   Kenar ayrı bir şerit DEĞİL, panelin kendi maskesi: içerideki orkide,
+   ışık ve doku kenara kadar akar, boyayla birlikte yırtılır. (Önceki
+   `InkSeam` düz renkli ayrı şeritti; panelin içi onun yanında düz bir
+   çizgiyle kesiliyor, "kesik kart" gibi duruyordu.) Panel `--seam` kadar
+   sağdaki sütunun üstüne taşar; maske geometrisi `public/ink-seam-mask.svg`
+   (`lib/ink.ts` dalgası, sabit tohum). Yalnız lg+: telefonda panel gizli. */
+@media (min-width: 1024px) {
+  .ink-seam-mask {
+    -webkit-mask-image: linear-gradient(#000, #000), url('/ink-seam-mask.svg');
+    mask-image: linear-gradient(#000, #000), url('/ink-seam-mask.svg');
+    -webkit-mask-size: calc(100% - var(--seam) + 1px) 100%, var(--seam) 100%;
+    mask-size: calc(100% - var(--seam) + 1px) 100%, var(--seam) 100%;
+    -webkit-mask-position: left top, right top;
+    mask-position: left top, right top;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+}

@@ -19,6 +19,12 @@ type Tag = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'blockquote'
  *
  * Kuyruklu harfler (ğ, ç, ş, y, g) maskede kesilmesin diye kutu altta
  * 0.14em pay alır ve aynı kadar negatif marjla satır aralığı korunur.
+ *
+ * Maske `overflow-hidden` DEĞİL, yalnız alt kenarı kesen `clip-path`: eskisi
+ * kutunun üstünü de kesiyordu ve kahramandaki "İşini"nin İ noktası, Ş/Ü
+ * işaretleri ve italik "Dinlendir"in çıkıntısı kırpılıyordu (Kasım 2026).
+ * Kelime alttan geldiği için yalnız alt kenarın kesmesi yeterli.
+ * Kalıcı `will-change` yok: her kelime ayrı katman olarak bellekte kalıyordu.
  */
 export function RevealText({
   text,
@@ -55,9 +61,9 @@ export function RevealText({
       <span aria-hidden>
         {words.map((w, i) => (
           <Fragment key={i}>
-            <span className="mb-[-0.14em] inline-block overflow-hidden pb-[0.14em] align-top">
+            <span className="mb-[-0.14em] inline-block pb-[0.14em] align-top [clip-path:inset(-0.5em_-0.25em_0_-0.25em)]">
               <motion.span
-                className={cn('inline-block will-change-transform', wordClassName?.(w, i))}
+                className={cn('inline-block', wordClassName?.(w, i))}
                 initial={{ y: '110%' }}
                 animate={{ y: show ? '0%' : '110%' }}
                 transition={{ duration, ease: EASE_OUT_EXPO, delay: show ? delay + i * stagger : 0 }}

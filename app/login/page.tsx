@@ -6,7 +6,6 @@ import { signIn, auth } from '@/lib/auth'
 import { LoginForm } from '@/components/forms/LoginForm'
 import { BloomArt } from '@/components/art/BloomArt'
 import { BloomMark } from '@/components/brand/BloomMark'
-import { InkSeam } from '@/components/brand/InkSeam'
 import { APP } from '@/lib/constants'
 import { quoteOfTheDay } from '@/lib/quotes'
 
@@ -41,13 +40,13 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="relative grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
+    <main className="relative grid min-h-dvh [--seam:clamp(48px,4.5vw,84px)] lg:grid-cols-[1.1fr_1fr]">
       {/* ── Sol: gece adası — orkide çizilir, günün sözü yükselir ─────────
           Perde gibi soldan açılır (`.panel-wipe`). Telefonda gizli; söz
           formun altına iner. */}
       <section
         aria-hidden
-        className="panel-wipe dark relative hidden flex-col justify-between overflow-hidden bg-indigo-950 p-12 text-(--ink) lg:flex xl:p-16"
+        className="panel-wipe ink-seam-mask dark relative z-10 hidden flex-col justify-between overflow-hidden bg-indigo-950 p-12 text-(--ink) lg:-mr-(--seam) lg:flex xl:p-16"
       >
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-32 -top-32 h-120 w-120 bg-[radial-gradient(closest-side,rgba(var(--pine-soft),0.22),transparent)]" />
@@ -77,13 +76,9 @@ export default async function LoginPage({
       </section>
 
       {/* ── Sağ: kâğıt — form ─────────────────────────────────────────── */}
-      <section className="relative flex flex-col px-6 py-10 sm:px-12">
-        {/* Gece paneli kâğıda düz çizgiyle değil boya kenarıyla geçer; perde
-            açıldıktan sonra belirir (`.ink-fill`, --d ile). */}
-        <InkSeam
-          seed={23}
-          className="ink-fill pointer-events-none absolute inset-y-0 -left-px z-10 hidden h-full w-[clamp(40px,4vw,72px)] text-indigo-950 [--d:0.5s] lg:block"
-        />
+      {/* Panelin sağ kenarı kâğıda yırtık boya gibi taşar (`.ink-seam-mask`);
+          form tarafı o taşma kadar içeriden başlar. */}
+      <section className="relative flex flex-col px-6 py-10 sm:px-12 lg:pl-[calc(3rem+var(--seam))]">
         {/* overflow-hidden ŞART: `-right-20` hâlesi kutudan 80px taşıyor ve
             telefonda belgeyi 470px'e genişletiyordu (390'lık ekranda sayfa
             uzaklaşıp yana kayıyordu). */}

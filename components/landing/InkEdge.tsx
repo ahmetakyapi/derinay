@@ -71,7 +71,7 @@ export function InkEdge({
         </svg>
         <motion.div style={{ y: bleedY, x: bleedX }} className="absolute inset-[-2%_-3%_0] motion-reduce:transform-none!">
           <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-full w-full overflow-visible">
-            <path d={wave(seed * 31 + 3, 38, 16)} fill="currentColor" opacity={0.28} filter={`url(#${fid})`} />
+            <path d={wave(seed * 31 + 3, 38, 16)} fill="currentColor" opacity={0.14} filter={`url(#${fid})`} />
           </svg>
         </motion.div>
         <motion.div style={{ y: bodyY }} className="absolute inset-0 motion-reduce:transform-none!">

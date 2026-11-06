@@ -2,24 +2,21 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useInView, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform } from 'motion/react'
 import { ArrowUp } from 'lucide-react'
 import { BloomMark } from '@/components/brand/BloomMark'
-import { EASE_OUT_EXPO } from '@/lib/variants'
-
-const WORD = 'Derinay'
 
 /**
  * Landing altlığı — sayfanın imzası.
  *
- * Dev marka sözcüğü ekran genişliğini doldurur; harfler görünüme girince
- * sırayla yükselir. İçerik kaydırmaya bağlı hafif bir paralaksla aşağıdan
- * "açılır" — sayfanın sonunda bir kapak kalkıyormuş gibi.
+ * Marka işareti + tek satır tanım + bağlantılar. İçerik kaydırmaya bağlı
+ * hafif bir paralaksla aşağıdan "açılır" — sayfanın sonunda kapak kalkar gibi.
+ *
+ * Ekranı dolduran dev "Derinay" sözcüğü KALDIRILDI (Kasım 2026, sahibinin
+ * isteği) — geri ekleme. Marka burada küçük damga + ad olarak durur.
  */
 export default function Footer() {
   const ref = useRef<HTMLElement>(null)
-  const wordRef = useRef<HTMLParagraphElement>(null)
-  const inView = useInView(wordRef, { once: true, margin: '0px 0px -5% 0px' })
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-30%', '0%'])
 
@@ -29,7 +26,13 @@ export default function Footer() {
       <motion.div style={{ y }} className="motion-reduce:transform-none! mx-auto max-w-7xl px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-20 sm:px-10">
         <div className="grid gap-10 border-b border-white/10 pb-12 sm:grid-cols-12">
           <div className="sm:col-span-6">
-            <BloomMark className="h-8 w-8 text-amber-400" />
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50">
+                <BloomMark className="h-[22px] w-[22px] text-slate-900" />
+                <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-indigo-950" />
+              </span>
+              <span className="font-display text-lg font-bold tracking-[-0.04em] text-slate-50">Derinay</span>
+            </div>
             <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-slate-300">
               Psikologlar İçin Danışan, Seans ve Finans Takibi.
             </p>
@@ -61,27 +64,7 @@ export default function Footer() {
           </nav>
         </div>
 
-        {/* Dev imza — genişliği dolduran sözcük */}
-        <p
-          ref={wordRef}
-          className="mt-8 flex select-none overflow-hidden pb-[0.16em] font-display text-[22vw] font-bold leading-[0.85] tracking-[-0.07em] text-slate-50 xl:text-[19.5rem]"
-        >
-          <span className="sr-only">{WORD}</span>
-          {WORD.split('').map((ch, i) => (
-            <motion.span
-              key={i}
-              aria-hidden
-              className="inline-block"
-              initial={{ y: '100%' }}
-              animate={{ y: inView ? '0%' : '100%' }}
-              transition={{ duration: 1.2, ease: EASE_OUT_EXPO, delay: i * 0.06 }}
-            >
-              {ch}
-            </motion.span>
-          ))}
-        </p>
-
-        <div className="mt-6 flex flex-col justify-between gap-2 text-[13px] text-slate-400 sm:flex-row">
+        <div className="mt-8 flex flex-col justify-between gap-2 text-[13px] text-slate-400 sm:flex-row">
           <span>© {new Date().getFullYear()} Derinay</span>
           <span>Tüm Hakları Saklıdır</span>
         </div>
