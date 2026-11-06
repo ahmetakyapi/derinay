@@ -54,6 +54,11 @@ const CHIPS = [
   { icon: FileText, label: 'Makbuz & Vergi', pos: 'hidden sm:block right-[-12%] bottom-[10%]', depth: 22, float: 'animate-float' },
 ] as const
 
+/** Yıldızlar: [x%, y%, çap px] — elle yerleştirildi, orkidenin üstüne düşmez */
+const STARS: readonly (readonly [number, number, number])[] = [
+  [18, 14, 2], [34, 8, 1.5], [52, 18, 2], [66, 10, 1.5], [78, 22, 2.5], [86, 12, 1.5], [44, 30, 1.5], [26, 26, 1.5], [72, 34, 1.5],
+]
+
 const TRUST = [
   { icon: Lock, label: 'Şifreyle Korunur' },
   { icon: EyeOff, label: 'Gizlilik Modu' },
@@ -105,7 +110,7 @@ function Chip({
 }
 
 /** Kemerli pencere: çam gökyüzü, inen altın güneş, ufuk çizgileri, orkide */
-function GalleryWindow({ play }: { play: boolean }) {
+function GalleryWindow({ play, progress }: { play: boolean; progress: MotionValue<number> }) {
   const still = useReducedMotion()
   const box = useRef<HTMLDivElement>(null)
   const rawX = useMotionValue(0)
@@ -114,6 +119,14 @@ function GalleryWindow({ play }: { play: boolean }) {
   const my = useSpring(rawY, { stiffness: 120, damping: 20, mass: 0.6 })
   const sun = useDepth(mx, my, 14)
   const bloom = useDepth(mx, my, -10)
+  // Kaydırdıkça gün batar: güneş suya iner (su katmanı onu yutar), gök
+  // gecenin rengine döner, yıldızlar yanar, suya düşen ışık sütunu uzar.
+  // Stil her zaman verilir; hareket azaltmada durağanlık CSS'ten.
+  const sunset = useTransform(progress, [0, 0.85], ['0%', '24%'])
+  const dusk = useTransform(progress, [0.05, 0.6], [0, 0.8])
+  const glow = useTransform(progress, [0, 0.6], [1, 0.25])
+  const stars = useTransform(progress, [0.15, 0.6], [0, 1])
+  const column = useTransform(progress, [0, 0.7], [0.35, 1])
 
   const onMove = (e: React.PointerEvent) => {
     if (still || e.pointerType !== 'mouse' || !box.current) return
@@ -151,10 +164,25 @@ function GalleryWindow({ play }: { play: boolean }) {
            orantılı küçültüyor ve alt köşeler kare kalıyordu. Kutu 4:5 → yatay %50, dikey %40. */
         className="dark absolute inset-0 overflow-hidden rounded-b-[2.5rem] rounded-t-[50%_40%] bg-linear-to-b from-indigo-700 via-indigo-900 to-indigo-950 shadow-2xl shadow-indigo-950/30 ring-1 ring-white/10"
       >
-        {/* Gökyüzü ışığı */}
-        <div className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)]" />
+        {/* Gökyüzü ışığı — gün batarken söner */}
+        <motion.div
+          style={{ opacity: glow }}
+          className="absolute inset-x-0 bottom-[30%] h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(var(--gold),0.35),transparent)] motion-reduce:opacity-100!"
+        />
+        {/* Gece — gök koyulaşır, yıldızlar yanar */}
+        <motion.div style={{ opacity: dusk }} className="absolute inset-0 bg-linear-to-b from-slate-950 via-indigo-950/80 to-transparent motion-reduce:opacity-0!" />
+        <motion.div style={{ opacity: stars }} className="absolute inset-x-0 top-0 h-[60%] motion-reduce:opacity-0!">
+          {STARS.map(([x, y, r], n) => (
+            <span
+              key={n}
+              className="absolute animate-[twinkle_3.6s_ease-in-out_infinite] rounded-full bg-amber-100 motion-reduce:animate-none"
+              style={{ left: `${x}%`, top: `${y}%`, width: r, height: r, animationDelay: `${n * -0.7}s` }}
+            />
+          ))}
+        </motion.div>
 
-        {/* Güneş — ufka doğru iner */}
+        {/* Güneş — açılışta ufka iner, kaydırınca suya batar */}
+        <motion.div style={{ y: sunset }} className="absolute inset-0 motion-reduce:transform-none!">
         <motion.div style={sun} className="absolute inset-0">
           <motion.div
             initial={{ y: '-60%', opacity: 0 }}
@@ -162,6 +190,7 @@ function GalleryWindow({ play }: { play: boolean }) {
             transition={{ duration: 2.2, ease: EASE_OUT_EXPO, delay: 0.7 }}
             className="absolute left-[29%] top-[44%] h-[34%] w-[42%] rounded-full bg-linear-to-b from-amber-200 via-amber-400 to-amber-600 shadow-[0_0_80px_rgba(var(--gold),0.55)]"
           />
+        </motion.div>
         </motion.div>
 
         {/* Su — ufuk ve yansıma çizgileri */}
@@ -179,6 +208,11 @@ function GalleryWindow({ play }: { play: boolean }) {
             />
           ))}
         </div>
+        {/* Suya düşen ışık sütunu — güneş battıkça uzar */}
+        <motion.div
+          style={{ scaleY: column }}
+          className="absolute left-[38%] top-[66%] h-[32%] w-[24%] origin-top bg-[radial-gradient(50%_100%_at_50%_0%,rgba(var(--gold),0.42),transparent)] motion-reduce:transform-none!"
+        />
         <div className="absolute inset-x-0 top-[66%] h-px bg-amber-200/60" />
 
         {/* Orkide — kendi kendine çizilir */}
@@ -322,7 +356,7 @@ export function Hero() {
 
         {/* ── Görsel ────────────────────────────────────────────── */}
         <motion.div style={{ y: artY }} className="px-10 pb-10 motion-reduce:transform-none! sm:px-16 lg:px-8">
-          <GalleryWindow play={play} />
+          <GalleryWindow play={play} progress={scrollYProgress} />
         </motion.div>
       </div>
     </section>

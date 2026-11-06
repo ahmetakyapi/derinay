@@ -2,9 +2,19 @@
 
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { RollingNumber } from '@/components/ui/RollingNumber'
+import { Sparkline } from '@/components/ui/Sparkline'
 
 type Accent = 'emerald' | 'rose' | 'indigo' | 'amber' | 'sky'
+
+/** Mürekkep eğrisinin rengi — kartın vurgusuyla aynı aile */
+const INK: Record<Accent, string> = {
+  emerald: 'text-emerald-500 dark:text-emerald-400',
+  rose: 'text-rose-500 dark:text-rose-400',
+  indigo: 'text-indigo-500 dark:text-indigo-400',
+  amber: 'text-amber-500 dark:text-amber-400',
+  sky: 'text-sky-500 dark:text-sky-400',
+}
 
 const ACCENTS: Record<Accent, { icon: string; glow: string }> = {
   emerald: {
@@ -36,8 +46,8 @@ export function StatCard({
   accent = 'indigo',
   change,
   hint,
-  animateTo,
-  animateKind = 'currency',
+  roll = false,
+  trend,
   goodDirection = 'up',
 }: {
   label: string
@@ -46,9 +56,11 @@ export function StatCard({
   accent?: Accent
   change?: number | null
   hint?: string
-  /** Verilirse büyük rakam 0'dan bu değere sayılır (value yine fallback) */
-  animateTo?: number
-  animateKind?: 'currency' | 'count'
+  /** Rakamlar ilk yüklemede yuvarlanarak oturur (yalnız ilk ekrandaki KPI'lar).
+   *  0'dan SAYMAZ: değer HTML'de zaten son hâliyle durur. */
+  roll?: boolean
+  /** Son ayların serisi — sağ altta mürekkep eğrisi (eğilim işareti) */
+  trend?: { values: number[]; title: string }
   /** Hangi yön "iyi"dir — gelir/net için 'up', gider için 'down'.
    *  Ok yönü artış/azalışı, renk ise iyi/kötü olduğunu gösterir. */
   goodDirection?: 'up' | 'down'
@@ -80,7 +92,7 @@ export function StatCard({
           {/* sensitive: gizlilik modunda tutarlar da bulanır */}
           {/* font-mono ŞART: display ailesinin ₺ glifi yanlış (bkz. globals.css) */}
           <p className="sensitive mt-2 font-mono text-[1.3rem] font-bold leading-none tracking-tight tabular-nums text-slate-900 dark:text-white sm:text-[1.6rem]">
-            {animateTo !== undefined ? <AnimatedNumber to={animateTo} kind={animateKind} /> : value}
+            {roll ? <RollingNumber value={value} /> : value}
           </p>
         </div>
         <span
@@ -111,7 +123,16 @@ export function StatCard({
               %{Math.abs(change).toFixed(0)}
             </span>
           )}
-          {hint && <span className="text-slate-500 dark:text-slate-400">{hint}</span>}
+          {hint && <span className="min-w-0 truncate text-slate-500 dark:text-slate-400">{hint}</span>}
+          {trend && (
+            <Sparkline
+              values={trend.values}
+              title={trend.title}
+              width={72}
+              height={24}
+              className={cn('ml-auto hidden shrink-0 sm:block', INK[accent])}
+            />
+          )}
         </div>
       ) : null}
     </div>

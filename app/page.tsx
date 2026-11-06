@@ -14,6 +14,7 @@ import { Showcase } from '@/components/landing/Showcase'
 import { CapabilityIndex } from '@/components/landing/CapabilityIndex'
 import { DayScroll } from '@/components/landing/DayScroll'
 import { NotebookScene, FinanceScene, TrustScene, Closing } from '@/components/landing/Scenes'
+import { InkEdge } from '@/components/landing/InkEdge'
 
 /**
  * Landing — "Atölye Sahnesi" (görsel revizyon, Ekim 2026).
@@ -106,11 +107,18 @@ export default function Home() {
         </div>
 
         <CapabilityIndex />
+        {/* Renk değişen her sınır suluboya kenarıyla birleşir (InkEdge notu) */}
+        <InkEdge seed={3} className="text-[rgb(var(--sand))]" />
         <DayScroll />
+        <InkEdge edge="bottom" seed={5} className="text-[rgb(var(--sand))]" />
         <NotebookScene />
+        <InkEdge seed={11} className="text-[rgb(var(--sand))]" />
         <FinanceScene />
+        <InkEdge seed={13} className="text-indigo-950" />
         <TrustScene />
+        <InkEdge edge="bottom" seed={19} className="text-indigo-950" />
         <Closing />
+        <InkEdge seed={17} className="text-indigo-950" />
       </main>
 
       <Footer />

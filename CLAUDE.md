@@ -208,7 +208,14 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - `PageHeader title subtitle action` — `title` ReactNode; solda dikey `BrushPull`. `eyebrow` yok.
 - `components/brand/Brush.tsx`: `BrushPull` (dikey, sayfa başlığı), `BrushSweep` (yatay,
   manşet vurgusu) — ikisi DOLGU geometrisi, ince `stroke` değil.
-- `StatCard label value icon accent change hint` — `icon` **render edilmiş element** (§10).
+- `StatCard label value icon accent change hint roll trend` — `icon` **render edilmiş element** (§10).
+  `roll`: rakamlar yüklemede yuvarlanır (`RollingNumber`, JS'siz, SSR'da son değer; 0'dan
+  SAYAN sayaç kaldırıldı — ölçülmüş veri 0'dan sayılmaz). `trend={{ values, title }}`: sağ altta
+  mürekkep eğrisi (`Sparkline`, sm+).
+- `Sparkline values title` — eksensiz eğilim çizgisi, renk `currentColor`, kalemle çekilir (`.ink-draw`).
+- `SessionHeatmap data end weeks` (Analiz → Seans Ritmi) — kare boyu kart genişliğinden
+  (container query); bitiş günü prop'tan, `Date.now` değil (hidrasyon).
+- `.beam` — çerçevede dolaşan ışık; YALNIZ süren iş (panelde: şu an süren seans). Süs değil.
 - `StatusBadge label tone` (emerald/amber/slate/sky/red/indigo/violet; `STATUS_TONE[...]`).
 - `Avatar name color size src` — `sensitive` otomatik.
 - `Modal open onClose title description` — **portal ile `document.body`'ye** (backdrop-filter'lı
@@ -218,6 +225,7 @@ suluboya yıkamaları + grain. Dark "gece galerisi": `--bg #04070d`.
 - `StatusPillSelect` — satır içi durum (Session/InvoiceStatusSelect bunun üstünde).
 - `ConfirmDialog` — yıkıcı VE geri alınamaz her işlem onay ister (silme, danışana çevirme, geri yükleme).
 - `DeleteButton action={fn.bind(null,id)} redirectTo confirmText` — kişi adı geçiyorsa `<span className="sensitive">`.
+- `404` (`not-found.tsx`): boş gece penceresi (hilal, yıldız) + kendiliğinden çizilen orkide.
 - `EmptyState icon title description action` — server bileşeni, `icon` lucide bileşeni alır.
 - Grafikler `charts/lazy.tsx` üzerinden (dynamic + iskelet): AreaTrendChart, CategoryDonut,
   MonthlyBar, CumulativeArea, TaxRadial, TaxBars, ScoreTrend. Yeni grafik → bileşen + lazy export.
@@ -270,6 +278,17 @@ Eğriler: `EASE_OUT_EXPO [0.16,1,0.3,1]` giriş, `EASE_IN_OUT [0.76,0,0.24,1]` p
 - **Lenis yalnız landing** (`SmoothScroll`); panelin iç kaydırma alanları yerel kalır.
 - **Tema geçişi**: `useThemeTransition` — View Transitions ile tıklanan noktadan daire; sınıf
   geri çağrı İÇİNDE elle değişir (next-themes efekti geç kalır). Düğme `ThemeToggleButton` (landing + panel ortak).
+- **Panel kaydırma girişi** (Kasım 2026): ilk ekranın altındaki `.glass` kartlar
+  `scroll-rise` ile görünüme girerken yükselir — saf CSS `animation-timeline: view()`,
+  `@supports` + `prefers-reduced-motion: no-preference` içinde. Aralık px ile
+  (`entry 0px entry 220px`), yüzde DEĞİL (uzun kart ekranda yarı saydam kalıyordu).
+  `.page-enter`in doğrudan çocuğunda page-rise ile LİSTE olarak ve uzun el yazımıyla
+  (kısa yazım nth-child gecikmelerini sıfırlar). `.stat-rise` hariç.
+- **Suluboya kenarı** (`landing/InkEdge`): landing'de renk değişen her sınırda (kâğıt ↔ kum,
+  kum/kâğıt → gece adası) sıfır yükseklikli kardeş öğe; bölümün İÇİNE konmaz (gece adaları
+  `overflow-hidden`). Filtre (`feTurbulence`) durağan, yalnız sarmalayıcı `transform`u oynar.
+- **Kahraman gün batımı**: kaydırdıkça güneş suya iner, gök koyulaşır, yıldızlar yanar
+  (`GalleryWindow progress`). Hareket azaltmada gündüz hâli durur (CSS `!` sınıfları).
 - **Hareket azaltma**: CSS animasyon/gecikme sıfırlanır, perde ve Lenis atlanır, motion
   `MotionConfig reducedMotion="user"` (landing + Shell); kaydırmaya bağlı `style` değerleri ayrıca (§10).
 

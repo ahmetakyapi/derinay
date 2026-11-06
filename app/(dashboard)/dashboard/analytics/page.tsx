@@ -17,7 +17,8 @@ import { StatCard } from '@/components/ui/StatCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Avatar } from '@/components/ui/Avatar'
 import { AreaTrendChart, MonthlyBar, CumulativeArea, CategoryDonut } from '@/components/charts/lazy'
-import { getYearAnalytics } from '@/lib/queries'
+import { getYearAnalytics, getSessionRhythm } from '@/lib/queries'
+import { SessionHeatmap } from '@/components/analytics/SessionHeatmap'
 import { formatTRY } from '@/lib/format'
 import { PAYMENT_METHOD_LABEL, type PaymentMethod } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -46,7 +47,15 @@ export default async function AnalyticsPage({
   const currentYear = new Date().getFullYear()
   const parsed = Number(searchParams.year)
   const year = Number.isInteger(parsed) && parsed >= 2000 && parsed <= currentYear + 1 ? parsed : currentYear
-  const a = await getYearAnalytics(year)
+  const [a, rhythm] = await Promise.all([getYearAnalytics(year), getSessionRhythm(52)])
+  // En yoğun gün: Pazartesi=0 … Pazar=6 (ısı haritasıyla aynı sıra)
+  const WEEKDAYS = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
+  const byWeekday = Array(7).fill(0) as number[]
+  for (const d of rhythm.days) {
+    const [y, m, dd] = d.date.split('-').map(Number)
+    byWeekday[(new Date(Date.UTC(y, m - 1, dd)).getUTCDay() + 6) % 7] += d.value
+  }
+  const busiest = rhythm.total ? WEEKDAYS[byWeekday.indexOf(Math.max(...byWeekday))] : null
 
   const completionPct = a.sessionStats.total
     ? Math.round((a.sessionStats.completed / a.sessionStats.total) * 100)
@@ -214,6 +223,18 @@ export default async function AnalyticsPage({
           )}
         </section>
       </div>
+
+      {/* Seans ritmi — son 52 hafta, gün gün (telefonda yatay kayar) */}
+      <section className="glass mt-6 rounded-2xl p-5">
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+          <SectionTitle>Seans Ritmi</SectionTitle>
+          <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400">
+            Son 52 hafta · <span className="font-mono tabular-nums">{rhythm.total}</span> seans
+            {busiest && <> · en yoğun gün {busiest}</>}
+          </p>
+        </div>
+        <SessionHeatmap data={rhythm.days} end={rhythm.end} weeks={rhythm.weeks} />
+      </section>
 
       {/* Aylık net + kümülatif birikim */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">

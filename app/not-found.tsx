@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { LayoutDashboard, ArrowLeft } from 'lucide-react'
-import { BloomMark } from '@/components/brand/BloomMark'
+import { BloomArt } from '@/components/art/BloomArt'
 
 export const metadata = { title: 'Sayfa Bulunamadı' }
 
@@ -9,12 +9,35 @@ export const metadata = { title: 'Sayfa Bulunamadı' }
  *  "günlük Türkçe, edebi kurgu yok" kuralına takılıyordu.) */
 export default function NotFound() {
   return (
-    <main className="flex min-h-dvh items-center justify-center px-6">
-      <div className="card-rise surface w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
-        <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg shadow-slate-900/20 dark:bg-slate-50">
-          <BloomMark className="h-8 w-8 text-amber-50 dark:text-slate-900" />
-          <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-500 ring-2 ring-(--bg)" />
+    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
+      {/* Boş pencere: kahramandaki galeri penceresinin gece hâli — güneş yok,
+          hilal ve yıldızlar; yanında orkide kendi kendine çizilir. "Burada bir
+          şey olmalıydı" duygusunu sözsüz verir; metin düz kalır. */}
+      <div aria-hidden className="card-rise relative mb-[-3.5rem] h-56 w-44 sm:h-64 sm:w-52">
+        <div className="absolute inset-0 overflow-hidden rounded-b-3xl rounded-t-[50%_40%] bg-linear-to-b from-slate-950 via-indigo-950 to-indigo-950 shadow-2xl shadow-indigo-950/30 ring-1 ring-white/10">
+          {[[22, 16], [64, 10], [78, 30], [38, 34], [54, 22]].map(([x, y], n) => (
+            <span
+              key={n}
+              className="absolute h-[2px] w-[2px] animate-[twinkle_3.6s_ease-in-out_infinite] rounded-full bg-amber-100 motion-reduce:animate-none"
+              style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${n * -0.8}s` }}
+            />
+          ))}
+          {/* Hilal: saydam dairenin kaydırılmış gölgesi — renk token'dan, ek katman yok */}
+          <span className="absolute left-[58%] top-[18%] h-9 w-9 rounded-full shadow-[-9px_6px_0_0_rgba(var(--gold),0.95)]" />
+          <span className="absolute left-[50%] top-[16%] h-14 w-14 rounded-full bg-[radial-gradient(closest-side,rgba(var(--gold),0.22),transparent)]" />
+          <div className="absolute inset-x-0 bottom-0 top-[68%] bg-indigo-950">
+            {[0, 1, 2].map((n) => (
+              <span key={n} className="absolute h-[2px] rounded-full bg-amber-300/30" style={{ top: `${18 + n * 22}%`, left: `${30 + n * 6}%`, width: `${40 - n * 12}%` }} />
+            ))}
+          </div>
+          <div className="absolute inset-x-0 top-[68%] h-px bg-amber-200/40" />
         </div>
+        <div className="absolute -left-10 bottom-6 h-40 w-24 sm:-left-14 sm:h-48 sm:w-28">
+          <BloomArt className="h-full w-full" delay={0.5} />
+        </div>
+      </div>
+
+      <div className="card-rise surface relative w-full max-w-md rounded-3xl p-8 pt-20 text-center shadow-2xl [animation-delay:120ms]">
         {/* Başlık üstündeki "404" künyesi de gitti: başlık artık durumu kendisi
             söylüyor ("Sayfa Bulunamadı"), kod bilgisi tekrar olurdu. */}
         <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">

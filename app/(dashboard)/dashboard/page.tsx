@@ -74,6 +74,16 @@ export default async function DashboardPage({
   const weekTitle = weekOffset === 0 ? 'Bu Haftanın Seansları' : 'Haftalık Seanslar'
   const quote = quoteOfTheDay()
 
+  // Bugünün akışı: süren seans ışık kenarı alır, sıradaki "N dk sonra" der.
+  // Saat dilimi bağımsız: ISO anlarını karşılaştırır.
+  const nowMs = new Date().getTime()
+  const startOf = (s: { dateIso: string }) => new Date(s.dateIso).getTime()
+  const live = rem.todaySessions.find(
+    (s) => s.status !== 'cancelled' && s.status !== 'no_show' && startOf(s) <= nowMs && nowMs < startOf(s) + s.durationMin * 60_000,
+  )
+  const next = live ? undefined : rem.todaySessions.find((s) => s.status === 'scheduled' && startOf(s) > nowMs)
+  const untilNext = next ? Math.round((startOf(next) - nowMs) / 60_000) : 0
+
   return (
     <>
       <PageHeader
@@ -162,7 +172,8 @@ export default async function DashboardPage({
         <StatCard
           label="Aylık Gelir"
           value={formatTRY(k.income)}
-          animateTo={k.income}
+          roll
+          trend={{ values: d.trend.map((t) => t.income), title: 'Son Altı Ay Gelir' }}
           icon={<TrendingUp className="h-5 w-5" />}
           accent="emerald"
           change={pctChange(k.income, k.prevIncome)}
@@ -171,7 +182,8 @@ export default async function DashboardPage({
         <StatCard
           label="Aylık Gider"
           value={formatTRY(k.expense)}
-          animateTo={k.expense}
+          roll
+          trend={{ values: d.trend.map((t) => t.expense), title: 'Son Altı Ay Gider' }}
           icon={<TrendingDown className="h-5 w-5" />}
           accent="rose"
           change={pctChange(k.expense, k.prevExpense)}
@@ -181,7 +193,8 @@ export default async function DashboardPage({
         <StatCard
           label="Net Kâr"
           value={formatTRY(k.net)}
-          animateTo={k.net}
+          roll
+          trend={{ values: d.trend.map((t) => t.net), title: 'Son Altı Ay Net Kâr' }}
           icon={<Wallet className="h-5 w-5" />}
           accent="indigo"
           change={pctChange(k.net, k.prevNet)}
@@ -190,7 +203,7 @@ export default async function DashboardPage({
         <StatCard
           label="Ödenecek Vergi"
           value={formatTRY(k.taxDue)}
-          animateTo={k.taxDue}
+          roll
           icon={<Landmark className="h-5 w-5" />}
           accent="amber"
           hint={`KDV ${formatTRY(d.tax.kdvPayable, { compact: true })} + gelir v.`}
@@ -212,9 +225,14 @@ export default async function DashboardPage({
               <span className={`ml-2 font-bold ${goalPct >= 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'}`}>%{goalPct}</span>
             </span>
           </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-slate-500/10">
+          {/* Fırça dolgusu soldan boyanır; çeyrek çentikleri cetvel gibi
+              altta durur (ilerleme yalnız renkle değil konumla da okunur). */}
+          <div className="relative h-2.5 overflow-hidden rounded-full bg-slate-500/10">
+            {[25, 50, 75].map((q) => (
+              <span key={q} aria-hidden className="absolute inset-y-0 w-px bg-[rgb(var(--paper))]/80" style={{ left: `${q}%` }} />
+            ))}
             <div
-              className={`h-full rounded-full transition-[width] duration-700 ${
+              className={`brush-fill relative h-full rounded-full ${
                 goalPct >= 100
                   ? 'bg-linear-to-r from-emerald-500 to-emerald-400'
                   : 'bg-linear-to-r from-indigo-500 via-indigo-400 to-amber-400'
@@ -278,7 +296,17 @@ export default async function DashboardPage({
           {rem.todaySessions.length ? (
             <ul className="space-y-2">
               {rem.todaySessions.map((s) => (
-                <li key={s.id} className="group flex items-center gap-3 rounded-xl border border-slate-500/10 px-3 py-2.5 transition-all hover:border-indigo-500/40">
+                <li
+                  key={s.id}
+                  className={cn(
+                    'group flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors',
+                    s.id === live?.id
+                      ? 'beam border-indigo-500/25 bg-indigo-500/6'
+                      : s.id === next?.id
+                        ? 'border-indigo-500/25 border-dashed hover:border-indigo-500/45'
+                        : 'border-slate-500/10 hover:border-indigo-500/40',
+                  )}
+                >
                   <span className="w-10 shrink-0 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{s.time}</span>
                   <Avatar name={s.clientName} color={s.colorTag} src={s.avatarUrl} size="sm" />
                   {s.clientId ? (
@@ -291,6 +319,20 @@ export default async function DashboardPage({
                   ) : (
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-100">
                       <span className="sensitive">{s.clientName}</span>
+                    </span>
+                  )}
+                  {s.id === live?.id && (
+                    <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inset-0 animate-ping rounded-full bg-indigo-500/60 motion-reduce:hidden" />
+                        <span className="relative h-2 w-2 rounded-full bg-indigo-500" />
+                      </span>
+                      Şu An
+                    </span>
+                  )}
+                  {s.id === next?.id && (
+                    <span className="shrink-0 font-mono text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                      {untilNext < 60 ? `${untilNext} dk sonra` : `${Math.floor(untilNext / 60)} sa ${untilNext % 60} dk sonra`}
                     </span>
                   )}
                   {s.status === 'scheduled' && (

@@ -739,3 +739,99 @@ html.intro-seen .preloader { display: none; }
   background: linear-gradient(90deg, rgba(var(--pine), 0.95), rgba(var(--gold), 0.9));
   box-shadow: 0 0 12px rgba(var(--gold), 0.45);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   KAYDIRMA SAHNESİ — panel ve landing (Kasım 2026, dev-starter seçki turu)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Panel: kaydırmaya bağlı kart girişi ────────────────────────────────
+   İlk ekranın altındaki kartlar görünüme girerken kâğıda oturur gibi
+   yükselir. Saf CSS (`animation-timeline: view()`), JS yok, gözlemci yok.
+   - Aralık KARTIN BOYUNDAN bağımsız: üst kenar ekranın altından 220 px
+     içeri girene dek. Yüzdeyle (entry 70%) uzun kart ekrandayken yarı
+     saydam kalıyordu.
+   - `backwards` dolgu: aralık bitince hiçbir dönüşüm kalmaz (fixed çocuk
+     hapsolmaz; bkz. page-rise notu). Desteklemeyen tarayıcı ve baskı
+     doğrudan son hâli görür.
+   - `.page-enter`in doğrudan çocukları page-rise taşır; onlara ikisi
+     birden liste olarak verilir (biri saat, biri kaydırma zaman çizgisi).
+     Kaydırma zaman çizgisinde saat cinsinden gecikme yok sayılır. */
+@keyframes scroll-rise {
+  from { opacity: 0; translate: 0 44px; scale: 0.975; }
+  to   { opacity: 1; translate: none; scale: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .page-enter * > .glass:not(.stat-rise),
+    .page-enter .scroll-rise {
+      animation: scroll-rise linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0px entry 220px;
+    }
+    .page-enter > .glass,
+    .page-enter > .scroll-rise {
+      /* Uzun el yazımı: kısa yazım nth-child gecikmelerini sıfırlardı */
+      animation-name: page-rise, scroll-rise;
+      animation-duration: 0.75s, auto;
+      animation-timing-function: var(--ease-out-expo), linear;
+      animation-fill-mode: backwards;
+      animation-timeline: auto, view();
+      animation-range: normal, entry 0px entry 220px;
+    }
+  }
+}
+
+/* ─── Işık kenarı (dev-starter `border-beam`) ────────────────────────────
+   Kartın çerçevesinde dolaşan kısa ışık: "bu iş ŞU AN sürüyor". Panelde
+   yalnız süren seansta. Durağan karta süs olarak KONMAZ. Hareket
+   azaltmada ışık dönmez, çerçeve durağan çizilir (bilgi kaybolmaz). */
+@property --beam-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes beam-spin { to { --beam-angle: 360deg; } }
+.beam { position: relative; isolation: isolate; --beam-color: rgb(var(--pine)); }
+.dark .beam { --beam-color: rgb(var(--pine-soft)); }
+.beam::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg,
+    transparent 250deg,
+    color-mix(in oklab, var(--beam-color) 35%, transparent) 300deg,
+    var(--beam-color) 360deg
+  );
+  -webkit-mask: linear-gradient(black 0 0) content-box, linear-gradient(black 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(black 0 0) content-box exclude, linear-gradient(black 0 0);
+  animation: beam-spin 4.5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .beam::after { animation: none; background: color-mix(in oklab, var(--beam-color) 55%, transparent); }
+}
+
+/* ─── Mürekkep çizimi ────────────────────────────────────────────────────
+   `pathLength="1"` taşıyan yol kalemle çekilir gibi belirir (sparkline,
+   hedef fırçası, 404 orkidesi). Gecikme `--d` ile. */
+@keyframes ink-draw { from { stroke-dashoffset: 1; } }
+.ink-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: ink-draw 1.4s var(--ease-in-out) var(--d, 0.2s) backwards;
+}
+@keyframes ink-fill { from { opacity: 0; } }
+.ink-fill { animation: ink-fill 1.2s var(--ease-out-expo) calc(var(--d, 0.2s) + 0.6s) backwards; }
+
+/* Fırça dolgusu: hedef çubuğu soldan sağa boyanır */
+@keyframes brush-fill { from { clip-path: inset(0 100% 0 0 round 999px); } }
+.brush-fill { animation: brush-fill 1.6s var(--ease-in-out) 0.35s backwards; }
+
+
+/* Kahraman penceresinde yıldız ışıltısı (yalnız gün batınca görünür) */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; scale: 1; }
+  50%      { opacity: 0.35; scale: 0.7; }
+}

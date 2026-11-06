@@ -427,7 +427,7 @@ export async function getDashboardReminders() {
 
   const [clientRows, sess, pkgs, scoreRows] = await Promise.all([
     db.select({ id: clients.id, name: clients.name, phone: clients.phone, colorTag: clients.colorTag, avatarUrl: clients.avatarUrl, status: clients.status, consentGiven: clients.consentGiven }).from(clients),
-    db.select({ id: sessions.id, clientId: sessions.clientId, date: sessions.date, status: sessions.status, note: sessions.note, fee: sessions.fee }).from(sessions),
+    db.select({ id: sessions.id, clientId: sessions.clientId, date: sessions.date, durationMin: sessions.durationMin, status: sessions.status, note: sessions.note, fee: sessions.fee }).from(sessions),
     db.select().from(sessionPackages).orderBy(desc(sessionPackages.purchaseDate)),
     db.select({ clientId: clientScores.clientId, date: clientScores.date, label: clientScores.label }).from(clientScores),
   ])
@@ -458,6 +458,7 @@ export async function getDashboardReminders() {
       avatarUrl: c?.avatarUrl ?? null,
       time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
       dateIso: d.toISOString(),
+      durationMin: s.durationMin,
       status: s.status,
     }
   }
@@ -1149,4 +1150,25 @@ export async function getOwnerIdentity(): Promise<{
     title: b.title.trim() || BUSINESS.title,
     isSet: owner.length > 0,
   }
+}
+
+// ─── Seans ritmi — günlük seans sayısı (Analiz ısı haritası) ────────────────
+/** Son `weeks` hafta: iptal/gelmedi hariç seansların gün gün sayısı. `end` bugün. */
+export async function getSessionRhythm(weeks = 26) {
+  noStore()
+  const now = new Date()
+  const since = new Date(now.getFullYear(), now.getMonth(), now.getDate() - weeks * 7 - 7)
+  const rows = await db
+    .select({ date: sessions.date, status: sessions.status })
+    .from(sessions)
+    .where(gte(sessions.date, since))
+  const byDay = new Map<string, number>()
+  for (const r of rows) {
+    if (r.status === 'cancelled' || r.status === 'no_show') continue
+    const k = iso(new Date(r.date))
+    byDay.set(k, (byDay.get(k) ?? 0) + 1)
+  }
+  const days = [...byDay].map(([date, value]) => ({ date, value }))
+  const total = days.reduce((s, d) => s + d.value, 0)
+  return { days, end: iso(now), weeks, total }
 }
